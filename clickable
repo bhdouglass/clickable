@@ -7,17 +7,18 @@ import os
 import json
 import shutil
 
-#TODO better help text & version
+# TODO better help text & version
 parser = argparse.ArgumentParser(description='clickable')
 parser.add_argument('commands', nargs='*')
 args = parser.parse_args()
 
-#TODO print command output and catch errors
-#TODO add command to tail the logfile
-#TODO generate clickable.json file
-#TODO add Golang template
-#TODO add desktop arch
-#TODO allow ssh ip to be passed in via cli arg
+# TODO print command output and catch errors
+# TODO add command to tail the logfile
+# TODO generate clickable.json file
+# TODO add Golang template
+# TODO add desktop arch
+# TODO allow ssh ip to be passed in via cli arg
+
 
 class Clickable:
     cwd = None
@@ -37,6 +38,7 @@ class Clickable:
     }
 
     required = ['package', 'app', 'sdk', 'arch', 'template', 'dir']
+    # TODO add pure qml (qml only)
     templates = ['pure-qml-qmake', 'qmake', 'pure-qml-cmake', 'cmake', 'custom']
 
     def __init__(self):
@@ -93,7 +95,7 @@ class Clickable:
             command = 'click chroot -a %s -f %s run qt5-qmake-arm-linux-gnueabihf %s' % (self.build_arch, self.config['sdk'], self.cwd)
             subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
         else:
-            #TODO implement this
+            # TODO implement this
             raise Exception('%s is not supported by the qmake build yet' % self.build_arch)
 
     def cmake(self):
@@ -111,7 +113,7 @@ class Clickable:
         try:
             os.makedirs(self.temp)
         except:
-            pass #TODO do something meaningful
+            pass  # TODO do something meaningful
 
         if self.config['template'] == 'qmake' or self.config['template'] == 'pure-qml-qmake':
             command = 'click chroot -a %s -f %s run make INSTALL_ROOT=%s install' % (self.build_arch, self.config['sdk'], self.temp)
@@ -122,13 +124,13 @@ class Clickable:
             subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
 
     def click_build(self):
-        command = 'click build %s' % self.temp #TODO no click review here
+        command = 'click build %s --no-validate' % self.temp  # TODO no click review here
         subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
 
-        self.click_review() #TODO do something meaningful with the output
+        self.click_review()  # TODO do something meaningful with the output
 
     def click_review(self):
-        pass #TODO implement this
+        pass  # TODO implement this
 
     def install(self):
         click = '%s_%s_%s.click' % (self.config['package'], self.find_version(), self.config['arch'])
@@ -143,16 +145,30 @@ class Clickable:
 
         else:
             command = 'adb push %s /home/phablet/' % click_path
-            print(command)
             subprocess.check_call(command, cwd=self.config['dir'], shell=True)
 
             command = 'echo "pkcon install-local --allow-untrusted %s" | phablet-shell' % click
             subprocess.check_call(command, cwd=self.config['dir'], shell=True)
 
-    def launch(self): #TODO kill running app
+    def kill_qmlscene(self):
+        try:
+            if self.config['ssh']:
+                command = 'echo "pkill qmlscene" | ssh phablet@%s' % (self.config['ssh'])
+                subprocess.check_call(command, cwd=self.config['dir'], shell=True)
+            else:
+                command = 'echo "pkill qmlscene" | phablet-shell'
+                subprocess.check_call(command, cwd=self.config['dir'], shell=True)
+        except:
+            pass  # Nothing to do, qmlscene probably wasn't running
+
+    def launch(self):  # TODO kill running app
         launch = 'ubuntu-app-launch %s_%s_%s' % (self.config['package'], self.config['app'], self.find_version())
         if self.config['launch']:
             launch = self.config['launch']
+
+        # TODO make a reusable function for ssh/phablet-shell commands
+        if self.config['template'] == 'pure-qml-qmake' or self.config['template'] == 'pure-qml-cmake':
+            self.kill_qmlscene()
 
         if self.config['ssh']:
             command = 'echo "sleep 1s && %s" | ssh phablet@%s' % (launch, self.config['ssh'])
@@ -161,11 +177,17 @@ class Clickable:
             command = 'echo "sleep 1s && %s" | phablet-shell' % launch
             subprocess.check_call(command, cwd=self.config['dir'], shell=True)
 
+    def clean(self):
+        try:
+            shutil.rmtree(self.config['dir'])
+        except:
+            pass  # TODO do something meaningful
+
     def build(self):
         try:
             os.makedirs(self.config['dir'])
         except:
-            pass #TODO do something meaningful
+            pass  # TODO do something meaningful
 
         if self.config['prebuild']:
             subprocess.check_call(self.config['prebuild'], cwd=self.cwd, shell=True)
@@ -173,6 +195,7 @@ class Clickable:
         if self.config['template'] == 'qmake' or self.config['template'] == 'pure-qml-qmake':
             self.qmake()
         elif self.config['template'] == 'cmake' or self.config['template'] == 'pure-qml-cmake':
+            # TODO this doesn't always need to be run
             self.cmake()
         else:
             subprocess.check_call(self.config['build'], cwd=self.cwd, shell=True)
@@ -207,6 +230,12 @@ if len(args.commands) == 0:
     commands = ['build', 'click_build', 'install', 'launch']
 
 for command in commands:
+    if command == 'kill_qmlscene':
+        clickable.kill_qmlscene()
+
+    if command == 'clean':
+        clickable.clean()
+
     if command == 'build':
         clickable.build()
 
