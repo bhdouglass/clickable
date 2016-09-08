@@ -45,7 +45,7 @@ class Clickable:
     def __init__(self):
         self.cwd = os.getcwd()
         self.load_config()
-        self.temp = '/tmp/clickable-build-%s' % self.config['package']
+        self.temp = '/tmp/clickable-build-{}'.format(self.config['package'])
         self.build_arch = self.config['arch']
         if self.config['template'] == 'pure-qml-qmake' or self.config['template'] == 'pure-qml-cmake':
             self.build_arch = 'armhf'
@@ -56,7 +56,7 @@ class Clickable:
             try:
                 config_json = json.load(f)
             except ValueError:
-                raise ValueError('Failed reading "%s", it is not valid json' % file)
+                raise ValueError('Failed reading "{}", it is not valid json'.format(file))
 
             for key in self.config:
                 value = config_json.get(key, None)
@@ -66,13 +66,13 @@ class Clickable:
 
         for key in self.required:
             if not self.config[key]:
-                raise ValueError('"%s" is empty in the config file' % key)
+                raise ValueError('"{}" is empty in the config file'.format(key))
 
         if self.config['template'] == 'custom' and not self.config['build']:
             raise ValueError('When using the "custom" template you must specify a "build" in the config')
 
         if self.config['template'] not in self.templates:
-            raise ValueError('"%s" is not a valid template (%s)' % (self.config['template'], ', '.join(self.templates)))
+            raise ValueError('"{}" is not a valid template ({})'.format(self.config['template'], ', '.join(self.templates)))
 
         if self.config['template'] == 'pure-qml-qmake' or self.config['template'] == 'pure-qml-cmake':
             self.config['arch'] = 'all'
@@ -93,18 +93,18 @@ class Clickable:
 
     def qmake(self):
         if self.build_arch == 'armhf':
-            command = 'click chroot -a %s -f %s run qt5-qmake-arm-linux-gnueabihf %s' % (self.build_arch, self.config['sdk'], self.cwd)
+            command = 'click chroot -a {} -f {} run qt5-qmake-arm-linux-gnueabihf {}'.format(self.build_arch, self.config['sdk'], self.cwd)
             subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
         else:
             # TODO implement this
-            raise Exception('%s is not supported by the qmake build yet' % self.build_arch)
+            raise Exception('{} is not supported by the qmake build yet'.format(self.build_arch))
 
     def cmake(self):
-        command = 'click chroot -a %s -f %s run cmake %s' % (self.build_arch, self.config['sdk'], self.cwd)
+        command = 'click chroot -a {} -f {} run cmake {}'.format(self.build_arch, self.config['sdk'], self.cwd)
         subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
 
     def make(self):
-        command = 'click chroot -a %s -f %s run make' % (self.build_arch, self.config['sdk'])
+        command = 'click chroot -a {} -f {} run make'.format(self.build_arch, self.config['sdk'])
         subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
 
     def make_install(self):
@@ -117,15 +117,15 @@ class Clickable:
             pass  # TODO do something meaningful
 
         if self.config['template'] == 'qmake' or self.config['template'] == 'pure-qml-qmake':
-            command = 'click chroot -a %s -f %s run make INSTALL_ROOT=%s install' % (self.build_arch, self.config['sdk'], self.temp)
+            command = 'click chroot -a {} -f {} run make INSTALL_ROOT={} install'.format(self.build_arch, self.config['sdk'], self.temp)
             subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
 
         elif self.config['template'] == 'cmake' or self.config['template'] == 'pure-qml-cmake':
-            command = 'click chroot -a %s -f %s run make DESTDIR=%s install' % (self.build_arch, self.config['sdk'], self.temp)
+            command = 'click chroot -a {} -f {} run make DESTDIR={} install'.format(self.build_arch, self.config['sdk'], self.temp)
             subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
 
     def click_build(self):
-        command = 'click build %s --no-validate' % self.temp  # TODO no click review here
+        command = 'click build {} --no-validate'.format(self.temp)
         subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
 
         self.click_review()  # TODO do something meaningful with the output
@@ -134,46 +134,46 @@ class Clickable:
         pass  # TODO implement this
 
     def install(self):
-        click = '%s_%s_%s.click' % (self.config['package'], self.find_version(), self.config['arch'])
+        click = '{}_{}_{}.click'.format(self.config['package'], self.find_version(), self.config['arch'])
         click_path = os.path.join(self.config['dir'], click)
 
         if self.config['ssh']:
-            command = 'scp %s phablet@%s:/home/phablet/' % (click_path, self.config['ssh'])
+            command = 'scp {} phablet@{}:/home/phablet/'.format(click_path, self.config['ssh'])
             subprocess.check_call(command, cwd=self.config['dir'], shell=True)
 
-            command = 'echo "pkcon install-local --allow-untrusted %s" | ssh phablet@%s' % (click, self.config['ssh'])
+            command = 'echo "pkcon install-local --allow-untrusted {}" | ssh phablet@{}'.format(click, self.config['ssh'])
             subprocess.check_call(command, cwd=self.config['dir'], shell=True)
 
         else:
-            command = 'adb push %s /home/phablet/' % click_path
+            command = 'adb push {} /home/phablet/'.format(click_path)
             subprocess.check_call(command, cwd=self.config['dir'], shell=True)
 
-            command = 'echo "pkcon install-local --allow-untrusted %s" | phablet-shell' % click
+            command = 'echo "pkcon install-local --allow-untrusted {}" | phablet-shell'.format(click)
             subprocess.check_call(command, cwd=self.config['dir'], shell=True)
 
     def kill(self):
         if self.config['kill']:
             try:
                 if self.config['ssh']:
-                    command = 'echo "pkill %s" | ssh phablet@%s' % (self.config['kill'], self.config['ssh'])
+                    command = 'echo "pkill {}" | ssh phablet@{}'.format(self.config['kill'], self.config['ssh'])
                     subprocess.check_call(command, cwd=self.config['dir'], shell=True)
                 else:
-                    command = 'echo "pkill %s" | phablet-shell' % (self.config['kill'])
+                    command = 'echo "pkill {}" | phablet-shell'.format(self.config['kill'])
                     subprocess.check_call(command, cwd=self.config['dir'], shell=True)
             except:
                 pass  # Nothing to do, qmlscene probably wasn't running
 
     def launch(self):
-        launch = 'ubuntu-app-launch %s_%s_%s' % (self.config['package'], self.config['app'], self.find_version())
+        launch = 'ubuntu-app-launch {}_{}_{}'.format(self.config['package'], self.config['app'], self.find_version())
         if self.config['launch']:
             launch = self.config['launch']
 
         # TODO make a reusable function for ssh/phablet-shell commands
         if self.config['ssh']:
-            command = 'echo "sleep 1s && %s" | ssh phablet@%s' % (launch, self.config['ssh'])
+            command = 'echo "sleep 1s && {}" | ssh phablet@{}'.format(launch, self.config['ssh'])
             subprocess.check_call(command, cwd=self.config['dir'], shell=True)
         else:
-            command = 'echo "sleep 1s && %s" | phablet-shell' % launch
+            command = 'echo "sleep 1s && {}" | phablet-shell'.format(launch)
             subprocess.check_call(command, cwd=self.config['dir'], shell=True)
 
     def clean(self):
