@@ -20,7 +20,7 @@ args = parser.parse_args()
 # TODO allow ssh ip to be passed in via cli arg
 
 
-class Clickable:
+class Clickable(object):
     cwd = None
     config = {
         'package': None,
@@ -91,6 +91,15 @@ class Clickable:
 
         return '1.0'
 
+    def run_device_command(self, command):
+        wrapped_command = ''
+        if self.config['ssh']:
+            wrapped_command = '{} | ssh phablet@{}'.format(command, self.config['ssh'])
+        else:
+            command = '{} | phablet-shell'.format(command)
+
+        subprocess.check_call(wrapped_command, cwd=self.config['dir'], shell=True)
+
     def qmake(self):
         if self.build_arch == 'armhf':
             command = 'click chroot -a {} -f {} run qt5-qmake-arm-linux-gnueabihf {}'.format(self.build_arch, self.config['sdk'], self.cwd)
@@ -141,40 +150,25 @@ class Clickable:
             command = 'scp {} phablet@{}:/home/phablet/'.format(click_path, self.config['ssh'])
             subprocess.check_call(command, cwd=self.config['dir'], shell=True)
 
-            command = 'echo "pkcon install-local --allow-untrusted {}" | ssh phablet@{}'.format(click, self.config['ssh'])
-            subprocess.check_call(command, cwd=self.config['dir'], shell=True)
-
         else:
             command = 'adb push {} /home/phablet/'.format(click_path)
             subprocess.check_call(command, cwd=self.config['dir'], shell=True)
 
-            command = 'echo "pkcon install-local --allow-untrusted {}" | phablet-shell'.format(click)
-            subprocess.check_call(command, cwd=self.config['dir'], shell=True)
+        self.run_device_command('echo "pkcon install-local --allow-untrusted {}"'.format(click))
 
     def kill(self):
         if self.config['kill']:
             try:
-                if self.config['ssh']:
-                    command = 'echo "pkill {}" | ssh phablet@{}'.format(self.config['kill'], self.config['ssh'])
-                    subprocess.check_call(command, cwd=self.config['dir'], shell=True)
-                else:
-                    command = 'echo "pkill {}" | phablet-shell'.format(self.config['kill'])
-                    subprocess.check_call(command, cwd=self.config['dir'], shell=True)
+                self.run_device_command('echo "pkill {}"'.format(self.config['kill']))
             except:
-                pass  # Nothing to do, qmlscene probably wasn't running
+                pass  # Nothing to do, the process probably wasn't running
 
     def launch(self):
         launch = 'ubuntu-app-launch {}_{}_{}'.format(self.config['package'], self.config['app'], self.find_version())
         if self.config['launch']:
             launch = self.config['launch']
 
-        # TODO make a reusable function for ssh/phablet-shell commands
-        if self.config['ssh']:
-            command = 'echo "sleep 1s && {}" | ssh phablet@{}'.format(launch, self.config['ssh'])
-            subprocess.check_call(command, cwd=self.config['dir'], shell=True)
-        else:
-            command = 'echo "sleep 1s && {}" | phablet-shell'.format(launch)
-            subprocess.check_call(command, cwd=self.config['dir'], shell=True)
+        self.run_device_command('echo "sleep 1s && {}"'.format(launch))
 
     def clean(self):
         try:
