@@ -21,12 +21,15 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
   "postbuild": "custom command for after build, pre click build [Optional]",
   "launch": "custom launch command [Optional]",
   "ssh": "IP of device to install to (if not using phablet-shell) [Optional]",
-  "dir": "./path/to/build/dir/ [Required]"
+  "dir": "./path/to/build/dir/ [Required]",
+  "kill": "Name of the process to kill (useful for killing the running app, then relaunching it) [Optional]"
 }
 ```
 
 3) From the root directory of your project you have the following commands available:
 
+* `clickable kill` - Kills a running process (specified by the config). Using this you can relaunch your app.
+* `clickable clean` - Cleans out the build dir
 * `clickable build` - Builds the project using the specified template, build dir, and build commands
 * `clickable click_build` - Takes the built files and compiles them into a click package (you can find it in the build dir)
 * `clickable install` - Takes a built click package and installs it on a device

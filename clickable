@@ -35,6 +35,7 @@ class Clickable:
         'launch': None,
         'dir': './build/',
         'ssh': False,
+        'kill': None,
     }
 
     required = ['package', 'app', 'sdk', 'arch', 'template', 'dir']
@@ -150,26 +151,24 @@ class Clickable:
             command = 'echo "pkcon install-local --allow-untrusted %s" | phablet-shell' % click
             subprocess.check_call(command, cwd=self.config['dir'], shell=True)
 
-    def kill_qmlscene(self):
-        try:
-            if self.config['ssh']:
-                command = 'echo "pkill qmlscene" | ssh phablet@%s' % (self.config['ssh'])
-                subprocess.check_call(command, cwd=self.config['dir'], shell=True)
-            else:
-                command = 'echo "pkill qmlscene" | phablet-shell'
-                subprocess.check_call(command, cwd=self.config['dir'], shell=True)
-        except:
-            pass  # Nothing to do, qmlscene probably wasn't running
+    def kill(self):
+        if self.config['kill']:
+            try:
+                if self.config['ssh']:
+                    command = 'echo "pkill %s" | ssh phablet@%s' % (self.config['kill'], self.config['ssh'])
+                    subprocess.check_call(command, cwd=self.config['dir'], shell=True)
+                else:
+                    command = 'echo "pkill %s" | phablet-shell' % (self.config['kill'])
+                    subprocess.check_call(command, cwd=self.config['dir'], shell=True)
+            except:
+                pass  # Nothing to do, qmlscene probably wasn't running
 
-    def launch(self):  # TODO kill running app
+    def launch(self):
         launch = 'ubuntu-app-launch %s_%s_%s' % (self.config['package'], self.config['app'], self.find_version())
         if self.config['launch']:
             launch = self.config['launch']
 
         # TODO make a reusable function for ssh/phablet-shell commands
-        if self.config['template'] == 'pure-qml-qmake' or self.config['template'] == 'pure-qml-cmake':
-            self.kill_qmlscene()
-
         if self.config['ssh']:
             command = 'echo "sleep 1s && %s" | ssh phablet@%s' % (launch, self.config['ssh'])
             subprocess.check_call(command, cwd=self.config['dir'], shell=True)
@@ -227,11 +226,11 @@ class Clickable:
 clickable = Clickable()
 commands = args.commands
 if len(args.commands) == 0:
-    commands = ['build', 'click_build', 'install', 'launch']
+    commands = ['kill', 'clean', 'build', 'click_build', 'install', 'launch']
 
 for command in commands:
-    if command == 'kill_qmlscene':
-        clickable.kill_qmlscene()
+    if command == 'kill':
+        clickable.kill()
 
     if command == 'clean':
         clickable.clean()
