@@ -20,35 +20,37 @@ args = parser.parse_args()
 # TODO allow ssh ip to be passed in via cli arg
 
 
-class Clickable(object):
-    cwd = None
-    config = {
-        'package': None,
-        'app': None,
-        'sdk': 'ubuntu-sdk-15.04',
-        'arch': 'armhf',
-        'prebuild': None,
-        'template': None,
-        'premake': None,
-        'build': None,
-        'postbuild': None,
-        'launch': None,
-        'dir': './build/',
-        'ssh': False,
-        'kill': None,
-    }
+class Config(object):
+    package = None
+    app = None
+    sdk = 'ubuntu-sdk-15.04'
+    arch = 'armhf'
+    prebuild = None
+    template = None
+    premake = None
+    build = None
+    postbuild = None
+    launch = None
+    dir = './build/'
+    ssh = False
+    kill = None
 
     required = ['package', 'app', 'sdk', 'arch', 'template', 'dir']
+    keys = ['package', 'app', 'sdk', 'arch', 'prebuild', 'template', 'premake', 'build', 'postbuild', 'launch', 'dir', 'ssh', 'kill']
+
+    PURE_QML_QMAKE = 'pure-qml-qmake'
+    QMAKE = 'qmake'
+    PURE_QML_CMAKE = 'pure-qml-cmake'
+    CMAKE = 'cmake'
+    CUSTOM = 'custom'
+    CORDOVA = 'cordova'
+
     # TODO add pure qml (qml only)
-    templates = ['pure-qml-qmake', 'qmake', 'pure-qml-cmake', 'cmake', 'custom']
+    templates = [PURE_QML_CMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA]
 
     def __init__(self):
         self.cwd = os.getcwd()
         self.load_config()
-        self.temp = '/tmp/clickable-build-{}'.format(self.config['package'])
-        self.build_arch = self.config['arch']
-        if self.config['template'] == 'pure-qml-qmake' or self.config['template'] == 'pure-qml-cmake':
-            self.build_arch = 'armhf'
 
     def load_config(self, file='clickable.json'):
         with open(os.path.join(self.cwd, file), 'r') as f:
@@ -58,29 +60,41 @@ class Clickable(object):
             except ValueError:
                 raise ValueError('Failed reading "{}", it is not valid json'.format(file))
 
-            for key in self.config:
+            for key in self.keys:
                 value = config_json.get(key, None)
 
                 if value:
-                    self.config[key] = value
+                    setattr(self, key, value)
 
         for key in self.required:
-            if not self.config[key]:
+            if not getattr(self, key):
                 raise ValueError('"{}" is empty in the config file'.format(key))
 
-        if self.config['template'] == 'custom' and not self.config['build']:
+        if self.template == self.CUSTOM and not self.build:
             raise ValueError('When using the "custom" template you must specify a "build" in the config')
 
-        if self.config['template'] not in self.templates:
-            raise ValueError('"{}" is not a valid template ({})'.format(self.config['template'], ', '.join(self.templates)))
+        if self.template not in self.templates:
+            raise ValueError('"{}" is not a valid template ({})'.format(self.template, ', '.join(self.templates)))
 
-        if self.config['template'] == 'pure-qml-qmake' or self.config['template'] == 'pure-qml-cmake':
-            self.config['arch'] = 'all'
+        if self.template == self.PURE_QML_CMAKE or self.template == self.PURE_QML_QMAKE:
+            self.arch = 'all'
 
-        self.config['dir'] = os.path.abspath(self.config['dir'])
+        self.dir = os.path.abspath(self.dir)
+
+
+class Clickable(object):
+    cwd = None
+
+    def __init__(self, config):
+        self.cwd = os.getcwd()
+        self.config = config
+        self.temp = '/tmp/clickable-build-{}'.format(self.config.package)
+        self.build_arch = self.config.arch
+        if self.config.template == self.config.PURE_QML_QMAKE or self.config.template == self.config.PURE_QML_CMAKE:
+            self.build_arch = 'armhf'
 
     def find_version(self):
-        with open(os.path.join(self.config['dir'], 'manifest.json'), 'r') as f:
+        with open(os.path.join(self.config.dir, 'manifest.json'), 'r') as f:
             manifest = {}
             try:
                 manifest = json.load(f)
@@ -93,28 +107,28 @@ class Clickable(object):
 
     def run_device_command(self, command):
         wrapped_command = ''
-        if self.config['ssh']:
-            wrapped_command = '{} | ssh phablet@{}'.format(command, self.config['ssh'])
+        if self.config.ssh:
+            wrapped_command = '{} | ssh phablet@{}'.format(command, self.config.ssh)
         else:
-            command = '{} | phablet-shell'.format(command)
+            wrapped_command = '{} | phablet-shell'.format(command)
 
-        subprocess.check_call(wrapped_command, cwd=self.config['dir'], shell=True)
+        subprocess.check_call(wrapped_command, cwd=self.config.dir, shell=True)
 
     def qmake(self):
         if self.build_arch == 'armhf':
-            command = 'click chroot -a {} -f {} run qt5-qmake-arm-linux-gnueabihf {}'.format(self.build_arch, self.config['sdk'], self.cwd)
-            subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
+            command = 'click chroot -a {} -f {} run qt5-qmake-arm-linux-gnueabihf {}'.format(self.build_arch, self.config.sdk, self.cwd)
+            subprocess.check_call(shlex.split(command), cwd=self.config.dir)
         else:
             # TODO implement this
             raise Exception('{} is not supported by the qmake build yet'.format(self.build_arch))
 
     def cmake(self):
-        command = 'click chroot -a {} -f {} run cmake {}'.format(self.build_arch, self.config['sdk'], self.cwd)
-        subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
+        command = 'click chroot -a {} -f {} run cmake {}'.format(self.build_arch, self.config.sdk, self.cwd)
+        subprocess.check_call(shlex.split(command), cwd=self.config.dir)
 
     def make(self):
-        command = 'click chroot -a {} -f {} run make'.format(self.build_arch, self.config['sdk'])
-        subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
+        command = 'click chroot -a {} -f {} run make'.format(self.build_arch, self.config.sdk)
+        subprocess.check_call(shlex.split(command), cwd=self.config.dir)
 
     def make_install(self):
         if os.path.exists(self.temp) and os.path.isdir(self.temp):
@@ -125,17 +139,17 @@ class Clickable(object):
         except:
             pass  # TODO do something meaningful
 
-        if self.config['template'] == 'qmake' or self.config['template'] == 'pure-qml-qmake':
-            command = 'click chroot -a {} -f {} run make INSTALL_ROOT={} install'.format(self.build_arch, self.config['sdk'], self.temp)
-            subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
+        if self.config.template == self.config.QMAKE or self.config.template == self.config.PURE_QML_QMAKE:
+            command = 'click chroot -a {} -f {} run make INSTALL_ROOT={} install'.format(self.build_arch, self.config.sdk, self.temp)
+            subprocess.check_call(shlex.split(command), cwd=self.config.dir)
 
-        elif self.config['template'] == 'cmake' or self.config['template'] == 'pure-qml-cmake':
-            command = 'click chroot -a {} -f {} run make DESTDIR={} install'.format(self.build_arch, self.config['sdk'], self.temp)
-            subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
+        elif self.config.template == self.config.CMAKE or self.config.template == self.config.PURE_QML_CMAKE:
+            command = 'click chroot -a {} -f {} run make DESTDIR={} install'.format(self.build_arch, self.config.sdk, self.temp)
+            subprocess.check_call(shlex.split(command), cwd=self.config.dir)
 
     def click_build(self):
         command = 'click build {} --no-validate'.format(self.temp)
-        subprocess.check_call(shlex.split(command), cwd=self.config['dir'])
+        subprocess.check_call(shlex.split(command), cwd=self.config.dir)
 
         self.click_review()  # TODO do something meaningful with the output
 
@@ -143,67 +157,67 @@ class Clickable(object):
         pass  # TODO implement this
 
     def install(self):
-        click = '{}_{}_{}.click'.format(self.config['package'], self.find_version(), self.config['arch'])
-        click_path = os.path.join(self.config['dir'], click)
+        click = '{}_{}_{}.click'.format(self.config.package, self.find_version(), self.config.arch)
+        click_path = os.path.join(self.config.dir, click)
 
-        if self.config['ssh']:
-            command = 'scp {} phablet@{}:/home/phablet/'.format(click_path, self.config['ssh'])
-            subprocess.check_call(command, cwd=self.config['dir'], shell=True)
+        if self.config.ssh:
+            command = 'scp {} phablet@{}:/home/phablet/'.format(click_path, self.config.ssh)
+            subprocess.check_call(command, cwd=self.config.dir, shell=True)
 
         else:
             command = 'adb push {} /home/phablet/'.format(click_path)
-            subprocess.check_call(command, cwd=self.config['dir'], shell=True)
+            subprocess.check_call(command, cwd=self.config.dir, shell=True)
 
         self.run_device_command('echo "pkcon install-local --allow-untrusted {}"'.format(click))
 
     def kill(self):
-        if self.config['kill']:
+        if self.config.kill:
             try:
-                self.run_device_command('echo "pkill {}"'.format(self.config['kill']))
+                self.run_device_command('echo "pkill {}"'.format(self.config.kill))
             except:
                 pass  # Nothing to do, the process probably wasn't running
 
     def launch(self):
-        launch = 'ubuntu-app-launch {}_{}_{}'.format(self.config['package'], self.config['app'], self.find_version())
-        if self.config['launch']:
-            launch = self.config['launch']
+        launch = 'ubuntu-app-launch {}_{}_{}'.format(self.config.package, self.config.app, self.find_version())
+        if self.config.launch:
+            launch = self.config.launch
 
         self.run_device_command('echo "sleep 1s && {}"'.format(launch))
 
     def clean(self):
         try:
-            shutil.rmtree(self.config['dir'])
+            shutil.rmtree(self.config.dir)
         except:
             pass  # TODO do something meaningful
 
     def build(self):
         try:
-            os.makedirs(self.config['dir'])
+            os.makedirs(self.config.dir)
         except:
             pass  # TODO do something meaningful
 
-        if self.config['prebuild']:
-            subprocess.check_call(self.config['prebuild'], cwd=self.cwd, shell=True)
+        if self.config.prebuild:
+            subprocess.check_call(self.config.prebuild, cwd=self.cwd, shell=True)
 
-        if self.config['template'] == 'qmake' or self.config['template'] == 'pure-qml-qmake':
+        if self.config.template == self.config.QMAKE or self.config.template == self.config.PURE_QML_QMAKE:
             self.qmake()
-        elif self.config['template'] == 'cmake' or self.config['template'] == 'pure-qml-cmake':
+        elif self.config.template == self.config.CMAKE or self.config.template == self.config.PURE_QML_CMAKE:
             # TODO this doesn't always need to be run
             self.cmake()
         else:
-            subprocess.check_call(self.config['build'], cwd=self.cwd, shell=True)
+            subprocess.check_call(self.config.build, cwd=self.cwd, shell=True)
 
-        if self.config['premake']:
-            subprocess.check_call(self.config['premake'], cwd=self.config['dir'], shell=True)
+        if self.config.premake:
+            subprocess.check_call(self.config.premake, cwd=self.config.dir, shell=True)
 
-        if self.config['template'] != 'custom':
+        if self.config.template != self.config.CUSTOM:
             self.make()
 
-        if self.config['postbuild']:
-            subprocess.check_call(self.config['postbuild'], cwd=self.config['dir'], shell=True)
+        if self.config.postbuild:
+            subprocess.check_call(self.config.postbuild, cwd=self.config.dir, shell=True)
 
-        if self.config['template'] == 'pure-qml-qmake' or self.config['template'] == 'pure-qml-cmake':
-            with open(os.path.join(self.config['dir'], 'manifest.json'), 'r') as f:
+        if self.config.template == self.config.PURE_QML_QMAKE or self.config.template == self.config.PURE_QML_CMAKE:
+            with open(os.path.join(self.config.dir, 'manifest.json'), 'r') as f:
                 manifest = {}
                 try:
                     manifest = json.load(f)
@@ -211,13 +225,14 @@ class Clickable(object):
                     raise ValueError('Failed reading "manifest.json", it is not valid json')
 
                 manifest['architecture'] = 'all'
-                with open(os.path.join(self.config['dir'], 'manifest.json'), 'w') as writer:
+                with open(os.path.join(self.config.dir, 'manifest.json'), 'w') as writer:
                     json.dump(manifest, writer, indent=4)
 
-        if self.config['template'] != 'custom':
+        if self.config.template != self.config.CUSTOM:
             self.make_install()
 
-clickable = Clickable()
+config = Config()
+clickable = Clickable(config)
 commands = args.commands
 if len(args.commands) == 0:
     commands = ['kill', 'clean', 'build', 'click_build', 'install', 'launch']
