@@ -7,11 +7,6 @@ import os
 import json
 import shutil
 
-# TODO better help text & version
-parser = argparse.ArgumentParser(description='clickable')
-parser.add_argument('commands', nargs='*')
-args = parser.parse_args()
-
 # TODO print command output and catch errors
 # TODO add command to tail the logfile
 # TODO generate clickable.json file
@@ -25,9 +20,10 @@ class Config(object):
     app = None
     sdk = 'ubuntu-sdk-15.04'
     arch = 'armhf'
-    prebuild = None
     template = None
     premake = None
+    postmake = None
+    prebuild = None
     build = None
     postbuild = None
     launch = None
@@ -36,7 +32,7 @@ class Config(object):
     kill = None
 
     required = ['package', 'app', 'sdk', 'arch', 'template', 'dir']
-    keys = ['package', 'app', 'sdk', 'arch', 'prebuild', 'template', 'premake', 'build', 'postbuild', 'launch', 'dir', 'ssh', 'kill']
+    keys = ['package', 'app', 'sdk', 'arch', 'prebuild', 'template', 'premake', 'postmake', 'build', 'postbuild', 'launch', 'dir', 'ssh', 'kill']
 
     PURE_QML_QMAKE = 'pure-qml-qmake'
     QMAKE = 'qmake'
@@ -114,39 +110,6 @@ class Clickable(object):
 
         subprocess.check_call(wrapped_command, cwd=self.config.dir, shell=True)
 
-    def qmake(self):
-        if self.build_arch == 'armhf':
-            command = 'click chroot -a {} -f {} run qt5-qmake-arm-linux-gnueabihf {}'.format(self.build_arch, self.config.sdk, self.cwd)
-            subprocess.check_call(shlex.split(command), cwd=self.config.dir)
-        else:
-            # TODO implement this
-            raise Exception('{} is not supported by the qmake build yet'.format(self.build_arch))
-
-    def cmake(self):
-        command = 'click chroot -a {} -f {} run cmake {}'.format(self.build_arch, self.config.sdk, self.cwd)
-        subprocess.check_call(shlex.split(command), cwd=self.config.dir)
-
-    def make(self):
-        command = 'click chroot -a {} -f {} run make'.format(self.build_arch, self.config.sdk)
-        subprocess.check_call(shlex.split(command), cwd=self.config.dir)
-
-    def make_install(self):
-        if os.path.exists(self.temp) and os.path.isdir(self.temp):
-            shutil.rmtree(self.temp)
-
-        try:
-            os.makedirs(self.temp)
-        except:
-            pass  # TODO do something meaningful
-
-        if self.config.template == self.config.QMAKE or self.config.template == self.config.PURE_QML_QMAKE:
-            command = 'click chroot -a {} -f {} run make INSTALL_ROOT={} install'.format(self.build_arch, self.config.sdk, self.temp)
-            subprocess.check_call(shlex.split(command), cwd=self.config.dir)
-
-        elif self.config.template == self.config.CMAKE or self.config.template == self.config.PURE_QML_CMAKE:
-            command = 'click chroot -a {} -f {} run make DESTDIR={} install'.format(self.build_arch, self.config.sdk, self.temp)
-            subprocess.check_call(shlex.split(command), cwd=self.config.dir)
-
     def click_build(self):
         command = 'click build {} --no-validate'.format(self.temp)
         subprocess.check_call(shlex.split(command), cwd=self.config.dir)
@@ -190,6 +153,9 @@ class Clickable(object):
         except:
             pass  # TODO do something meaningful
 
+    def _build(self):
+        raise NotImplementedError()
+
     def build(self):
         try:
             os.makedirs(self.config.dir)
@@ -199,59 +165,149 @@ class Clickable(object):
         if self.config.prebuild:
             subprocess.check_call(self.config.prebuild, cwd=self.cwd, shell=True)
 
-        if self.config.template == self.config.QMAKE or self.config.template == self.config.PURE_QML_QMAKE:
-            self.qmake()
-        elif self.config.template == self.config.CMAKE or self.config.template == self.config.PURE_QML_CMAKE:
-            # TODO this doesn't always need to be run
-            self.cmake()
-        else:
-            subprocess.check_call(self.config.build, cwd=self.cwd, shell=True)
-
-        if self.config.premake:
-            subprocess.check_call(self.config.premake, cwd=self.config.dir, shell=True)
-
-        if self.config.template != self.config.CUSTOM:
-            self.make()
+        self._build()
 
         if self.config.postbuild:
             subprocess.check_call(self.config.postbuild, cwd=self.config.dir, shell=True)
 
-        if self.config.template == self.config.PURE_QML_QMAKE or self.config.template == self.config.PURE_QML_CMAKE:
-            with open(os.path.join(self.config.dir, 'manifest.json'), 'r') as f:
-                manifest = {}
-                try:
-                    manifest = json.load(f)
-                except ValueError:
-                    raise ValueError('Failed reading "manifest.json", it is not valid json')
 
-                manifest['architecture'] = 'all'
-                with open(os.path.join(self.config.dir, 'manifest.json'), 'w') as writer:
-                    json.dump(manifest, writer, indent=4)
+class MakeClickable(Clickable):
+    def pre_make(self):
+        if self.config.premake:
+            subprocess.check_call(self.config.premake, cwd=self.config.dir, shell=True)
 
-        if self.config.template != self.config.CUSTOM:
-            self.make_install()
+    def post_make(self):
+        if self.config.postmake:
+            subprocess.check_call(self.config.premake, cwd=self.config.dir, shell=True)
 
-config = Config()
-clickable = Clickable(config)
-commands = args.commands
-if len(args.commands) == 0:
-    commands = ['kill', 'clean', 'build', 'click_build', 'install', 'launch']
+    def make(self):
+        command = 'click chroot -a {} -f {} run make'.format(self.build_arch, self.config.sdk)
+        subprocess.check_call(shlex.split(command), cwd=self.config.dir)
 
-for command in commands:
-    if command == 'kill':
-        clickable.kill()
+    def make_install(self):
+        if os.path.exists(self.temp) and os.path.isdir(self.temp):
+            shutil.rmtree(self.temp)
 
-    if command == 'clean':
-        clickable.clean()
+        try:
+            os.makedirs(self.temp)
+        except:
+            pass  # TODO do something meaningful
 
-    if command == 'build':
-        clickable.build()
+        # The actual make command is implemented in the subclasses
 
-    if command == 'click_build':
-        clickable.click_build()
+    def _build(self):
+        self.pre_make()
+        self.make()
+        self.post_make()
+        self.make_install()
 
-    if command == 'install':
-        clickable.install()
 
-    if command == 'launch':
-        clickable.launch()
+class CMakeClickable(MakeClickable):
+    def make_install(self):
+        super(CMakeClickable, self).make_install()
+
+        command = 'click chroot -a {} -f {} run make DESTDIR={} install'.format(self.build_arch, self.config.sdk, self.temp)
+        subprocess.check_call(shlex.split(command), cwd=self.config.dir)
+
+    def _build(self):
+        command = 'click chroot -a {} -f {} run cmake {}'.format(self.build_arch, self.config.sdk, self.cwd)
+        subprocess.check_call(shlex.split(command), cwd=self.config.dir)
+
+        super(CMakeClickable, self)._build()
+
+
+class QMakeClickable(Clickable):
+    def make_install(self):
+        super(QMakeClickable, self).make_install()
+
+        command = 'click chroot -a {} -f {} run make INSTALL_ROOT={} install'.format(self.build_arch, self.config.sdk, self.temp)
+        subprocess.check_call(shlex.split(command), cwd=self.config.dir)
+
+    def _build(self):
+        if self.build_arch == 'armhf':
+            command = 'click chroot -a {} -f {} run qt5-qmake-arm-linux-gnueabihf {}'.format(self.build_arch, self.config.sdk, self.cwd)
+            subprocess.check_call(shlex.split(command), cwd=self.config.dir)
+        else:
+            # TODO implement this
+            raise Exception('{} is not supported by the qmake build yet'.format(self.build_arch))
+
+        super(CMakeClickable, self)._build()
+
+
+class CustomClickable(Clickable):
+    def _build(self):
+        subprocess.check_call(self.config.build, cwd=self.cwd, shell=True)
+
+
+class PureClickable(MakeClickable):
+    def post_make(self):
+        super(PureClickable, self).post_make()
+
+        with open(os.path.join(self.config.dir, 'manifest.json'), 'r') as f:
+            manifest = {}
+            try:
+                manifest = json.load(f)
+            except ValueError:
+                raise ValueError('Failed reading "manifest.json", it is not valid json')
+
+            manifest['architecture'] = 'all'
+            with open(os.path.join(self.config.dir, 'manifest.json'), 'w') as writer:
+                json.dump(manifest, writer, indent=4)
+
+
+class PureQMakeClickable(PureClickable, QMakeClickable):
+    pass
+
+
+class PureCMakeClickable(PureClickable, CMakeClickable):
+    pass
+
+
+class CordovaClickable(Clickable):
+    def _build(self):
+        pass  # TODO implement this
+
+
+if __name__ == "__main__":
+    config = Config()
+    clickable = None
+    if config.template == config.PURE_QML_QMAKE:
+        clickable = PureQMakeClickable(config)
+    elif config.template == config.QMAKE:
+        clickable = QMakeClickable(config)
+    elif config.template == config.PURE_QML_CMAKE:
+        clickable = PureCMakeClickable(config)
+    elif config.template == config.CMAKE:
+        clickable = CMakeClickable(config)
+    elif config.template == config.CUSTOM:
+        clickable = CustomClickable(config)
+    elif config.template == config.CORDOVA:
+        clickable = CordovaClickable(config)
+
+    # TODO better help text & version
+    parser = argparse.ArgumentParser(description='clickable')
+    parser.add_argument('commands', nargs='*')
+    args = parser.parse_args()
+
+    commands = args.commands
+    if len(args.commands) == 0:
+        commands = ['kill', 'clean', 'build', 'click_build', 'install', 'launch']
+
+    for command in commands:
+        if command == 'kill':
+            clickable.kill()
+
+        if command == 'clean':
+            clickable.clean()
+
+        if command == 'build':
+            clickable.build()
+
+        if command == 'click_build':
+            clickable.click_build()
+
+        if command == 'install':
+            clickable.install()
+
+        if command == 'launch':
+            clickable.launch()
