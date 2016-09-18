@@ -6,6 +6,7 @@ import shlex
 import os
 import json
 import shutil
+import xml.etree.ElementTree as ElementTree
 
 # TODO print command output and catch errors
 # TODO add command to tail the logfile
@@ -13,6 +14,7 @@ import shutil
 # TODO add Golang template
 # TODO add desktop arch
 # TODO allow ssh ip to be passed in via cli arg
+# TODO default kill commands
 
 
 class Config(object):
@@ -265,7 +267,20 @@ class PureCMakeClickable(PureClickable, CMakeClickable):
 
 class CordovaClickable(Clickable):
     def _build(self):
-        pass  # TODO implement this
+        command = "cordova -d build --device -- --framework={}".format(self.config.sdk)
+        subprocess.check_call(shlex.split(command), cwd=self.cwd)
+
+    def click_build(self):
+        click = '{}_{}_{}.click'.format(self.config.package, self.find_version(), self.config.arch)
+        src = '{}/platforms/ubuntu/{}/armhf/prefix/{}'.format(self.cwd, self.config.sdk, click)
+        dest = '{}/{}'.format(self.config.dir, click)
+
+        shutil.copyfile(src, dest)
+
+    def find_version(self):
+        tree = ElementTree.parse('config.xml')
+        root = tree.getroot()
+        return root.attrib['version'] if 'version' in root.attrib else '1.0.0'
 
 
 if __name__ == "__main__":
