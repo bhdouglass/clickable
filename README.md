@@ -23,6 +23,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
   "ssh": "IP of device to install to (if not using phablet-shell) [Optional]",
   "dir": "./path/to/build/dir/ [Required]",
   "kill": "Name of the process to kill (useful for killing the running app, then relaunching it) [Optional]"
+  "scripts": "An object that lists custom scripts to run, see below for mor details"
 }
 ```
 
@@ -34,6 +35,8 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 * `clickable click_build` - Takes the built files and compiles them into a click package (you can find it in the build dir)
 * `clickable install` - Takes a built click package and installs it on a device
 * `clickable launch` - Launches the app on a device
+* `clickable <custom command>` - Runs a custom command specified in the "scripts" config
+* `clickable <custom command> --device` - Runs a custom command specified in the "scripts" config on the device
 
 You can combine the commands together like `clickable build click_build install launch`
 
