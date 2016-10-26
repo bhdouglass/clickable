@@ -22,8 +22,9 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
   "launch": "custom launch command [Optional]",
   "ssh": "IP of device to install to (if not using phablet-shell) [Optional]",
   "dir": "./path/to/build/dir/ [Required]",
-  "kill": "Name of the process to kill (useful for killing the running app, then relaunching it) [Optional]"
-  "scripts": "An object that lists custom scripts to run, see below for mor details"
+  "kill": "Name of the process to kill (useful for killing the running app, then relaunching it) [Optional]",
+  "scripts": "An object that lists custom scripts to run, see below for more details",
+  "chroot": "Whether or not to use a chroot (default is False, which means use an lxd container) [Optional]"
 }
 ```
 
@@ -32,13 +33,28 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 * `clickable kill` - Kills a running process (specified by the config). Using this you can relaunch your app.
 * `clickable clean` - Cleans out the build dir
 * `clickable build` - Builds the project using the specified template, build dir, and build commands
-* `clickable click_build` - Takes the built files and compiles them into a click package (you can find it in the build dir)
+* `clickable click-build` - Takes the built files and compiles them into a click package (you can find it in the build dir)
 * `clickable install` - Takes a built click package and installs it on a device
 * `clickable launch` - Launches the app on a device
+* `clickable setup-lxd` - Setup an lxd container for building in
 * `clickable <custom command>` - Runs a custom command specified in the "scripts" config
 * `clickable <custom command> --device` - Runs a custom command specified in the "scripts" config on the device
 
 You can combine the commands together like `clickable build click_build install launch`
+
+## LXD Container Building
+
+Clickable supports building in a lxd container. In order to use them you first
+need to setup a container using `clickable setup-lxd` (once for each target architecture).
+This requires that you have `usdk-target` command installed. If you have the Ubuntu
+SDK IDE installed you should already have this command. If you are on a non-ubuntu
+distro, a prebuilt binary is included in this repo.
+
+## Chroot Building
+
+Clickable supports the legacy chroots for building apps. In order to use them just
+specify `"chroot": true` in your clickable.json. This requires that you already
+have a chroot setup (via `click chroot create...`).
 
 ## Templates
 

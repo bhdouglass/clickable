@@ -6,6 +6,7 @@ import shlex
 import os
 import json
 import shutil
+import platform
 import xml.etree.ElementTree as ElementTree
 
 # TODO print command output and catch errors
@@ -15,6 +16,7 @@ import xml.etree.ElementTree as ElementTree
 # TODO add desktop arch
 # TODO allow ssh ip to be passed in via cli arg
 # TODO default kill commands
+# TODO add dependency packages to automatically install
 
 
 class Config(object):
@@ -33,11 +35,13 @@ class Config(object):
     ssh = False
     kill = None
     scripts = {}
+    chroot = False
 
     required = ['package', 'app', 'sdk', 'arch', 'template', 'dir']
     keys = [
         'package', 'app', 'sdk', 'arch', 'prebuild', 'template', 'premake',
-        'postmake', 'build', 'postbuild', 'launch', 'dir', 'ssh', 'kill', 'scripts'
+        'postmake', 'build', 'postbuild', 'launch', 'dir', 'ssh', 'kill', 'scripts',
+        'chroot'
     ]
 
     PURE_QML_QMAKE = 'pure-qml-qmake'
@@ -91,11 +95,16 @@ class Clickable(object):
         self.cwd = os.getcwd()
         self.config = config
         self.temp = '/tmp/clickable-build-{}'.format(self.config.package)
+        if not self.config.chroot:
+            self.temp = self.config.dir + '/tmp'
+
+        self.host_arch = 'amd64' if platform.architecture()[0] == '64bit' else 'i386'
         self.build_arch = self.config.arch
         if self.config.template == self.config.PURE_QML_QMAKE or self.config.template == self.config.PURE_QML_CMAKE:
             self.build_arch = 'armhf'
 
     def find_version(self):
+        # TODO the manifest might not be in the build directory, check in the src directory
         with open(os.path.join(self.config.dir, 'manifest.json'), 'r') as f:
             manifest = {}
             try:
@@ -116,9 +125,66 @@ class Clickable(object):
 
         subprocess.check_call(wrapped_command, cwd=self.config.dir, shell=True)
 
+    def run_container_command(self, command, force_lxd=False, sudo=False):
+        if self.config.chroot and not force_lxd:
+            wrapped_command = 'click chroot -a {} -f {} run {}'.format(self.build_arch, self.config.sdk, command)
+            subprocess.check_call(shlex.split(wrapped_command), cwd=self.config.dir)
+        else:
+            if not self.check_lxd():
+                raise Exception('No lxd container exists to build in, please run `clickable setup-lxd`')
+
+            wrapped_command = 'usdk-target exec clickable-{} -- bash -c "cd {}; {}"'.format(self.build_arch, self.config.dir, command)
+            if sudo:
+                wrapped_command = 'sudo {}'.format(wrapped_command)
+
+            subprocess.check_call(shlex.split(wrapped_command), cwd=self.config.dir)
+
+    def check_lxd(self):
+        name = 'clickable-{}'.format(self.build_arch)
+
+        # Check for existing container
+        existing = subprocess.check_output(shlex.split('usdk-target list'))
+        existing = json.loads(existing)
+
+        found = False
+        for container in existing:
+            if container['name'] == name:
+                found = True
+
+        return found
+
+    def setup_lxd(self):
+        name = 'clickable-{}'.format(self.build_arch)
+        alias = '{}-{}-{}-dev'.format(self.config.sdk, self.host_arch, self.build_arch)
+
+        if not self.check_lxd():
+            # Find the image we want
+            images = subprocess.check_output(shlex.split('usdk-target images'))
+            images = json.loads(images)
+
+            fingerprint = None
+            for image in images:
+                if image['alias'] == alias:
+                    fingerprint = image['fingerprint']
+
+            if not fingerprint:
+                raise Exception('The {} lxd image could not be found'.format(alias))
+
+            print('Asking for root to create the lxd container')
+
+            # Create a new container
+            subprocess.check_call(shlex.split('sudo usdk-target create -n {} -p {}'.format(name, fingerprint)))
+
+            self.run_container_command('apt-get install -y click', force_lxd=True, sudo=True)
+
     def click_build(self):
         command = 'click build {} --no-validate'.format(self.temp)
-        subprocess.check_call(shlex.split(command), cwd=self.config.dir)
+
+        if self.config.chroot:
+            subprocess.check_call(shlex.split(command), cwd=self.config.dir)
+        else:
+            # Run this in the container so the host doesn't need to have click installed
+            self.run_container_command(command)
 
         self.click_review()  # TODO do something meaningful with the output
 
@@ -194,8 +260,7 @@ class MakeClickable(Clickable):
             subprocess.check_call(self.config.premake, cwd=self.config.dir, shell=True)
 
     def make(self):
-        command = 'click chroot -a {} -f {} run make'.format(self.build_arch, self.config.sdk)
-        subprocess.check_call(shlex.split(command), cwd=self.config.dir)
+        self.run_container_command('make')
 
     def make_install(self):
         if os.path.exists(self.temp) and os.path.isdir(self.temp):
@@ -219,32 +284,28 @@ class CMakeClickable(MakeClickable):
     def make_install(self):
         super(CMakeClickable, self).make_install()
 
-        command = 'click chroot -a {} -f {} run make DESTDIR={} install'.format(self.build_arch, self.config.sdk, self.temp)
-        subprocess.check_call(shlex.split(command), cwd=self.config.dir)
+        self.run_container_command('make DESTDIR={} install'.format(self.temp))
 
     def _build(self):
-        command = 'click chroot -a {} -f {} run cmake {}'.format(self.build_arch, self.config.sdk, self.cwd)
-        subprocess.check_call(shlex.split(command), cwd=self.config.dir)
+        self.run_container_command('cmake {}'.format(self.cwd))
 
         super(CMakeClickable, self)._build()
 
 
-class QMakeClickable(Clickable):
+class QMakeClickable(MakeClickable):
     def make_install(self):
         super(QMakeClickable, self).make_install()
 
-        command = 'click chroot -a {} -f {} run make INSTALL_ROOT={} install'.format(self.build_arch, self.config.sdk, self.temp)
-        subprocess.check_call(shlex.split(command), cwd=self.config.dir)
+        self.run_container_command('make INSTALL_ROOT={} install'.format(self.temp))
 
     def _build(self):
         if self.build_arch == 'armhf':
-            command = 'click chroot -a {} -f {} run qt5-qmake-arm-linux-gnueabihf {}'.format(self.build_arch, self.config.sdk, self.cwd)
-            subprocess.check_call(shlex.split(command), cwd=self.config.dir)
+            self.run_container_command('qt5-qmake-arm-linux-gnueabihf {}'.format(self.cwd))
         else:
             # TODO implement this
             raise Exception('{} is not supported by the qmake build yet'.format(self.build_arch))
 
-        super(CMakeClickable, self)._build()
+        super(QMakeClickable, self)._build()
 
 
 class CustomClickable(Clickable):
@@ -329,11 +390,13 @@ if __name__ == "__main__":
             clickable.clean()
         elif command == 'build':
             clickable.build()
-        elif command == 'click_build':
+        elif command == 'click_build' or command == 'click-build' or command == 'build-click' or command == 'build_click':
             clickable.click_build()
         elif command == 'install':
             clickable.install()
         elif command == 'launch':
             clickable.launch()
+        elif command == 'setup-lxd':
+            clickable.setup_lxd()
         else:
             print('There is no builtin or custom command named "{}"'.format(command))
