@@ -17,6 +17,9 @@ import xml.etree.ElementTree as ElementTree
 # TODO allow ssh ip to be passed in via cli arg
 # TODO default kill commands
 # TODO add dependency packages to automatically install
+# TODO make a snap
+
+# TODO make sure lxd container is started
 
 
 class Config(object):
@@ -119,10 +122,11 @@ class Clickable(object):
     def run_device_command(self, command):
         wrapped_command = ''
         if self.config.ssh:
-            wrapped_command = '{} | ssh phablet@{}'.format(command, self.config.ssh)
+            wrapped_command = 'echo "{}" | ssh phablet@{}'.format(command, self.config.ssh)
         else:
-            wrapped_command = '{} | phablet-shell'.format(command)
+            wrapped_command = 'adb shell "{}"'.format(command)
 
+        print(wrapped_command)
         subprocess.check_call(wrapped_command, cwd=self.config.dir, shell=True)
 
     def run_container_command(self, command, force_lxd=False, sudo=False):
@@ -203,12 +207,12 @@ class Clickable(object):
             command = 'adb push {} /home/phablet/'.format(click_path)
             subprocess.check_call(command, cwd=self.config.dir, shell=True)
 
-        self.run_device_command('echo "pkcon install-local --allow-untrusted {}"'.format(click))
+        self.run_device_command('pkcon install-local --allow-untrusted {}'.format(click))
 
     def kill(self):
         if self.config.kill:
             try:
-                self.run_device_command('echo "pkill {}"'.format(self.config.kill))
+                self.run_device_command('pkill {}'.format(self.config.kill))
             except:
                 pass  # Nothing to do, the process probably wasn't running
 
@@ -217,7 +221,7 @@ class Clickable(object):
         if self.config.launch:
             launch = self.config.launch
 
-        self.run_device_command('echo "sleep 1s && {}"'.format(launch))
+        self.run_device_command('sleep 1s && {}'.format(launch))
 
     def clean(self):
         try:
@@ -245,7 +249,7 @@ class Clickable(object):
     def script(self, name, device=False):
         if name in self.config.scripts:
             if device:
-                self.run_device_command('echo "{}"'.format(self.config.scripts[name]))
+                self.run_device_command('{}'.format(self.config.scripts[name]))
             else:
                 subprocess.check_call(self.config.scripts[name], cwd=self.cwd, shell=True)
 
