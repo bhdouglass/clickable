@@ -63,6 +63,7 @@ have a chroot setup (via `click chroot create...`).
 * `pure-qml-cmake` - A purely qml cmake project
 * `cmake` - A project that builds using cmake (has more than just QML)
 * `custom` - The custom build command will be used
+* `cordova` - A project that builds using cordova
 
 ## License
 
