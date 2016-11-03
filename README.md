@@ -24,11 +24,12 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
   "dir": "./path/to/build/dir/ [Required]",
   "kill": "Name of the process to kill (useful for killing the running app, then relaunching it) [Optional]",
   "scripts": "An object that lists custom scripts to run, see below for more details",
-  "chroot": "Whether or not to use a chroot (default is False, which means use an lxd container) [Optional]"
+  "chroot": "Whether or not to use a chroot (default is False, which means use an lxd container) [Optional]",
+  "default": "A list of space separated sub-commands to run when no sub-commands are specified"
 }
 ```
 
-3) From the root directory of your project you have the following commands available:
+3) From the root directory of your project you have the following sub-commands available:
 
 * `clickable kill` - Kills a running process (specified by the config). Using this you can relaunch your app.
 * `clickable clean` - Cleans out the build dir
@@ -39,6 +40,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 * `clickable setup-lxd` - Setup an lxd container for building in
 * `clickable <custom command>` - Runs a custom command specified in the "scripts" config
 * `clickable <custom command> --device` - Runs a custom command specified in the "scripts" config on the device
+* `clickable` - Runs the default sub-commands specified in the "default" config
 
 You can combine the commands together like `clickable build click_build install launch`
 

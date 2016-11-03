@@ -39,12 +39,13 @@ class Config(object):
     kill = None
     scripts = {}
     chroot = False
+    default = 'kill clean build click-build install launch'
 
     required = ['package', 'app', 'sdk', 'arch', 'template', 'dir']
     keys = [
         'package', 'app', 'sdk', 'arch', 'prebuild', 'template', 'premake',
         'postmake', 'build', 'postbuild', 'launch', 'dir', 'ssh', 'kill', 'scripts',
-        'chroot'
+        'chroot', 'default'
     ]
 
     PURE_QML_QMAKE = 'pure-qml-qmake'
@@ -383,7 +384,7 @@ if __name__ == "__main__":
 
     commands = args.commands
     if len(args.commands) == 0:
-        commands = ['kill', 'clean', 'build', 'click_build', 'install', 'launch']
+        commands = config.default.split(' ')
 
     for command in commands:
         if command in config.scripts:
