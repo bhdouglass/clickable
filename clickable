@@ -107,9 +107,14 @@ class Clickable(object):
         if self.config.template == self.config.PURE_QML_QMAKE or self.config.template == self.config.PURE_QML_CMAKE:
             self.build_arch = 'armhf'
 
-    def find_version(self):
+    def find_manifest(self):
         # TODO the manifest might not be in the build directory, check in the src directory
-        with open(os.path.join(self.config.dir, 'manifest.json'), 'r') as f:
+        # TODO write this in python
+        manifest = subprocess.check_output('find . -path ./tmp -prune -o -name "manifest.json" -print', cwd=self.config.dir, shell=True)
+        return os.path.join(self.config.dir, manifest.strip())
+
+    def find_version(self):
+        with open(self.find_manifest(), 'r') as f:
             manifest = {}
             try:
                 manifest = json.load(f)
@@ -127,7 +132,6 @@ class Clickable(object):
         else:
             wrapped_command = 'adb shell "{}"'.format(command)
 
-        print(wrapped_command)
         subprocess.check_call(wrapped_command, cwd=self.config.dir, shell=True)
 
     def run_container_command(self, command, force_lxd=False, sudo=False):
@@ -213,7 +217,7 @@ class Clickable(object):
     def kill(self):
         if self.config.kill:
             try:
-                self.run_device_command('pkill {}'.format(self.config.kill))
+                self.run_device_command('pkill -f {}'.format(self.config.kill))
             except:
                 pass  # Nothing to do, the process probably wasn't running
 
@@ -322,7 +326,7 @@ class PureClickable(MakeClickable):
     def post_make(self):
         super(PureClickable, self).post_make()
 
-        with open(os.path.join(self.config.dir, 'manifest.json'), 'r') as f:
+        with open(self.find_manifest(), 'r') as f:
             manifest = {}
             try:
                 manifest = json.load(f)
@@ -330,7 +334,7 @@ class PureClickable(MakeClickable):
                 raise ValueError('Failed reading "manifest.json", it is not valid json')
 
             manifest['architecture'] = 'all'
-            with open(os.path.join(self.config.dir, 'manifest.json'), 'w') as writer:
+            with open(self.find_manifest(), 'w') as writer:
                 json.dump(manifest, writer, indent=4)
 
 
