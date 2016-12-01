@@ -25,7 +25,8 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
   "kill": "Name of the process to kill (useful for killing the running app, then relaunching it) [Optional]",
   "scripts": "An object that lists custom scripts to run, see below for more details",
   "chroot": "Whether or not to use a chroot (default is False, which means use an lxd container) [Optional]",
-  "default": "A list of space separated sub-commands to run when no sub-commands are specified"
+  "default": "A list of space separated sub-commands to run when no sub-commands are specified",
+  "dependencies": "An array of dependencies that will be installed in the build container"
 }
 ```
 
