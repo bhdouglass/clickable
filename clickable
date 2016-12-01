@@ -4,6 +4,7 @@ import argparse
 import subprocess
 import shlex
 import os
+import sys
 import json
 import shutil
 import platform
@@ -15,13 +16,12 @@ import xml.etree.ElementTree as ElementTree
 # TODO add desktop arch
 # TODO default kill commands
 # TODO make a snap
-
-# TODO make sure lxd container is started
+# TODO make sure lxd &lxd container is started
 
 
 class Config(object):
-    package = None
-    app = None
+    package = None  # TODO if not specified load this from the manifest
+    app = None  # TODO if not specified load from manifest
     sdk = 'ubuntu-sdk-15.04'
     arch = 'armhf'
     template = None
@@ -63,6 +63,14 @@ class Config(object):
 
         if ip:
             self.ssh = ip
+
+        if not self.kill:
+            if self.template == self.CORDOVA:
+                self.kill = 'cordova-ubuntu'
+            elif self.template == self.PURE_QML_CMAKE or self.template == self.PURE_QML_QMAKE:
+                self.kill = 'qmlscene'
+            else:
+                self.kill = self.app
 
     def load_config(self, file='clickable.json'):
         with open(os.path.join(self.cwd, file), 'r') as f:
@@ -217,7 +225,7 @@ class Clickable(object):
             # Run this in the container so the host doesn't need to have click installed
             self.run_container_command(command)
 
-        self.click_review()  # TODO do something meaningful with the output
+        self.click_review()
 
     def click_review(self):
         pass  # TODO implement this
@@ -263,7 +271,7 @@ class Clickable(object):
         try:
             shutil.rmtree(self.config.dir)
         except:
-            pass  # TODO do something meaningful
+            print('Failed to clean the build directory: {}'.format(str(sys.exc_info()[0])))
 
     def _build(self):
         raise NotImplementedError()
@@ -272,7 +280,7 @@ class Clickable(object):
         try:
             os.makedirs(self.config.dir)
         except:
-            pass  # TODO do something meaningful
+            print('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
 
         self.setup_dependencies()
 
@@ -311,7 +319,7 @@ class MakeClickable(Clickable):
         try:
             os.makedirs(self.temp)
         except:
-            pass  # TODO do something meaningful
+            print('Failed to create temp dir ({}): {}'.format(self.temp, str(sys.exc_info()[0])))
 
         # The actual make command is implemented in the subclasses
 
@@ -399,6 +407,7 @@ class CordovaClickable(Clickable):
 
 if __name__ == "__main__":
     # TODO better help text & version
+    # TODO add arg for template (then there may not be a clickable.json)
     parser = argparse.ArgumentParser(description='clickable')
     parser.add_argument('commands', nargs='*')
     parser.add_argument('--device', '-d', action="store_true", default=False)
