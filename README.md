@@ -37,12 +37,20 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 * `clickable click-build` - Takes the built files and compiles them into a click package (you can find it in the build dir)
 * `clickable install` - Takes a built click package and installs it on a device
 * `clickable launch` - Launches the app on a device
+* `clickable logs` - Follow the apps logfile on the device
 * `clickable setup-lxd` - Setup an lxd container for building in
 * `clickable <custom command>` - Runs a custom command specified in the "scripts" config
 * `clickable <custom command> --device` - Runs a custom command specified in the "scripts" config on the device
 * `clickable` - Runs the default sub-commands specified in the "default" config
 
 You can combine the commands together like `clickable build click_build install launch`
+
+## Connecting to a device over ssh
+
+By default the device is connected to via adb and phablet-shell.
+If you want to access a device over ssh you need to either specify the device
+IP address on the command line (ex: `clickable logs --ip 192.168.1.10`) or you
+can specify the IP address in the clickable.json file's `ssh` property.
 
 ## LXD Container Building
 
