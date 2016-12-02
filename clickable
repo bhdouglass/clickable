@@ -121,7 +121,7 @@ class Clickable(object):
         # TODO write this in python
 
         manifest = ''
-        if self.config.PURE:
+        if self.config.template == self.config.PURE:
             manifest = subprocess.check_output('find . -name "manifest.json" -print', cwd=self.config.dir, shell=True)
         else:
             manifest = subprocess.check_output('find . -path ./tmp -prune -o -name "manifest.json" -print', cwd=self.config.dir, shell=True)
