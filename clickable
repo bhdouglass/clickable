@@ -10,13 +10,11 @@ import shutil
 import platform
 import xml.etree.ElementTree as ElementTree
 
-# TODO print command output and catch errors
 # TODO generate clickable.json file
 # TODO add Golang template
 # TODO add desktop arch
-# TODO default kill commands
 # TODO make a snap
-# TODO make sure lxd &lxd container is started
+# TODO make sure lxd & lxd container is started
 
 
 class Config(object):
@@ -53,9 +51,10 @@ class Config(object):
     CMAKE = 'cmake'
     CUSTOM = 'custom'
     CORDOVA = 'cordova'
+    PURE = 'pure'
 
     # TODO add pure qml (qml only)
-    templates = [PURE_QML_CMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA]
+    templates = [PURE_QML_CMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE]
 
     def __init__(self, ip=None):
         self.cwd = os.getcwd()
@@ -67,7 +66,7 @@ class Config(object):
         if not self.kill:
             if self.template == self.CORDOVA:
                 self.kill = 'cordova-ubuntu'
-            elif self.template == self.PURE_QML_CMAKE or self.template == self.PURE_QML_QMAKE:
+            elif self.template == self.PURE_QML_CMAKE or self.template == self.PURE_QML_QMAKE or self.template == self.PURE:
                 self.kill = 'qmlscene'
             else:
                 self.kill = self.app
@@ -96,7 +95,7 @@ class Config(object):
         if self.template not in self.templates:
             raise ValueError('"{}" is not a valid template ({})'.format(self.template, ', '.join(self.templates)))
 
-        if self.template == self.PURE_QML_CMAKE or self.template == self.PURE_QML_QMAKE:
+        if self.template == self.PURE_QML_CMAKE or self.template == self.PURE_QML_QMAKE or self.template == self.PURE:
             self.arch = 'all'
 
         self.dir = os.path.abspath(self.dir)
@@ -114,13 +113,20 @@ class Clickable(object):
 
         self.host_arch = 'amd64' if platform.architecture()[0] == '64bit' else 'i386'
         self.build_arch = self.config.arch
-        if self.config.template == self.config.PURE_QML_QMAKE or self.config.template == self.config.PURE_QML_CMAKE:
+        if self.config.template == self.config.PURE_QML_QMAKE or self.config.template == self.config.PURE_QML_CMAKE or self.config.PURE:
             self.build_arch = 'armhf'
 
     def find_manifest(self):
         # TODO the manifest might not be in the build directory, check in the src directory
         # TODO write this in python
-        manifest = subprocess.check_output('find . -path ./tmp -prune -o -name "manifest.json" -print', cwd=self.config.dir, shell=True)
+
+        manifest = ''
+        if self.config.PURE:
+            manifest = subprocess.check_output('find . -name "manifest.json" -print', cwd=self.config.dir, shell=True)
+        else:
+            manifest = subprocess.check_output('find . -path ./tmp -prune -o -name "manifest.json" -print', cwd=self.config.dir, shell=True)
+
+        # TODO error if not found
         return os.path.join(self.config.dir, manifest.strip())
 
     def find_version(self):
@@ -268,10 +274,17 @@ class Clickable(object):
         self.run_device_command('tail -f {}'.format(log))
 
     def clean(self):
+        # TODO ignore file not found errors
+
         try:
             shutil.rmtree(self.config.dir)
         except:
             print('Failed to clean the build directory: {}'.format(str(sys.exc_info()[0])))
+
+        try:
+            shutil.rmtree(self.temp)
+        except:
+            print('Failed to clean the temp directory: {}'.format(str(sys.exc_info()[0])))
 
     def _build(self):
         raise NotImplementedError()
@@ -363,9 +376,9 @@ class CustomClickable(Clickable):
         subprocess.check_call(self.config.build, cwd=self.cwd, shell=True)
 
 
-class PureClickable(MakeClickable):
+class PureQMLMakeClickable(MakeClickable):
     def post_make(self):
-        super(PureClickable, self).post_make()
+        super(PureQMLMixin, self).post_make()
 
         with open(self.find_manifest(), 'r') as f:
             manifest = {}
@@ -379,12 +392,27 @@ class PureClickable(MakeClickable):
                 json.dump(manifest, writer, indent=4)
 
 
-class PureQMakeClickable(PureClickable, QMakeClickable):
+class PureQMLQMakeClickable(PureQMLMakeClickable, QMakeClickable):
     pass
 
 
-class PureCMakeClickable(PureClickable, CMakeClickable):
+class PureQMLCMakeClickable(PureQMLMakeClickable, CMakeClickable):
     pass
+
+
+class PureClickable(Clickable):
+    def _ignore(self, path, contents):
+        ignored = []
+        for content in contents:
+            cpath = os.path.abspath(os.path.join(path, content))
+            if cpath == os.path.abspath(self.temp) or cpath == os.path.abspath(self.config.dir):
+                ignored.append(content)
+
+        return ignored
+
+    def _build(self):
+        shutil.copytree(self.cwd, self.temp, ignore=self._ignore)
+        print('Copied files to temp directory for click building')
 
 
 class CordovaClickable(Clickable):
@@ -394,7 +422,7 @@ class CordovaClickable(Clickable):
 
     def click_build(self):
         click = '{}_{}_{}.click'.format(self.config.package, self.find_version(), self.config.arch)
-        src = '{}/platforms/ubuntu/{}/armhf/prefix/{}'.format(self.cwd, self.config.sdk, click)
+        src = '{}/platforms/ubuntu/{}/{}/prefix/{}'.format(self.cwd, self.config.sdk, self.config.arch, click)
         dest = '{}/{}'.format(self.config.dir, click)
 
         shutil.copyfile(src, dest)
@@ -417,17 +445,19 @@ if __name__ == "__main__":
     config = Config(ip=args.ip)
     clickable = None
     if config.template == config.PURE_QML_QMAKE:
-        clickable = PureQMakeClickable(config)
+        clickable = PureQMLQMakeClickable(config)
     elif config.template == config.QMAKE:
         clickable = QMakeClickable(config)
     elif config.template == config.PURE_QML_CMAKE:
-        clickable = PureCMakeClickable(config)
+        clickable = PureQMLCMakeClickable(config)
     elif config.template == config.CMAKE:
         clickable = CMakeClickable(config)
     elif config.template == config.CUSTOM:
         clickable = CustomClickable(config)
     elif config.template == config.CORDOVA:
         clickable = CordovaClickable(config)
+    elif config.template == config.PURE:
+        clickable = PureClickable(config)
 
     commands = args.commands
     if len(args.commands) == 0:

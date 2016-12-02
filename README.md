@@ -15,7 +15,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
   "sdk": "ubuntu-sdk-15.04 [Required]",
   "arch": "armhf [Required]",
   "prebuild": "custom prebuild command [Optional]",
-  "template": "pure-qml-qmake,qmake,pure-qml-cmake,cmake,custom [Required]",
+  "template": "pure-qml-qmake,qmake,pure-qml-cmake,cmake,custom,cordova,pure [Required]",
   "premake": "custom command before make is run [Optional]",
   "build": "custom build command [Required if using custom template]",
   "postbuild": "custom command for after build, pre click build [Optional]",
@@ -75,6 +75,7 @@ have a chroot setup (via `click chroot create...`).
 * `cmake` - A project that builds using cmake (has more than just QML)
 * `custom` - The custom build command will be used
 * `cordova` - A project that builds using cordova
+* `pure` - A project that does not need to be compiled. All files in the project root will be copied into the click
 
 ## License
 
