@@ -169,6 +169,7 @@ class Clickable(object):
 
         subprocess.check_call(shlex.split(wrapped_command), cwd=self.config.dir)
 
+    # TODO don't always check dependencies, possibly create a file in the container that says what's been installed for this project
     def setup_dependencies(self):
         if len(self.config.dependencies) > 0:
             print('Checking dependencies')
@@ -373,7 +374,7 @@ class QMakeClickable(MakeClickable):
 
 class CustomClickable(Clickable):
     def _build(self):
-        subprocess.check_call(self.config.build, cwd=self.cwd, shell=True)
+        self.run_container_command(self.config.build)
 
 
 class PureQMLMakeClickable(MakeClickable):
