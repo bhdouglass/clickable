@@ -15,6 +15,7 @@ import xml.etree.ElementTree as ElementTree
 # TODO add desktop arch
 # TODO make a snap
 # TODO make sure lxd & lxd container is started
+# TODO don't print out a stack trace for CTRL+C and subprocess errors
 
 
 class Config(object):
@@ -150,7 +151,7 @@ class Clickable(object):
 
         subprocess.check_call(wrapped_command, cwd=self.config.dir, shell=True)
 
-    def run_container_command(self, command, force_lxd=False, sudo=False):
+    def run_container_command(self, command, force_lxd=False, sudo=False, get_output=False):
         wrapped_command = command
         if self.config.chroot and not force_lxd:
             chroot_command = 'run'
@@ -167,21 +168,31 @@ class Clickable(object):
             if sudo:
                 wrapped_command = 'sudo {}'.format(wrapped_command)
 
-        subprocess.check_call(shlex.split(wrapped_command), cwd=self.config.dir)
+        if get_output:
+            return subprocess.check_output(shlex.split(wrapped_command), cwd=self.config.dir)
+        else:
+            subprocess.check_call(shlex.split(wrapped_command), cwd=self.config.dir)
 
-    # TODO don't always check dependencies, possibly create a file in the container that says what's been installed for this project
     def setup_dependencies(self):
         if len(self.config.dependencies) > 0:
             print('Checking dependencies')
 
             command = 'apt-get install -y'
+            run = False
             for dep in self.config.dependencies:
                 if self.config.arch == 'armhf' and 'armhf' not in dep:
                     dep = '{}:{}'.format(dep, self.config.arch)
 
-                command = '{} {}'.format(command, dep)
+                exists = self.run_container_command('dpkg -s {} | grep Status'.format(dep), get_output=True)
 
-            self.run_container_command(command, sudo=True)
+                if exists.strip() != 'Status: install ok installed':
+                    run = True
+                    command = '{} {}'.format(command, dep)
+
+            if run:
+                self.run_container_command(command, sudo=True)
+            else:
+                print('Dependencies already installed')
 
     def check_lxd(self):
         name = 'clickable-{}'.format(self.build_arch)
@@ -275,17 +286,23 @@ class Clickable(object):
         self.run_device_command('tail -f {}'.format(log))
 
     def clean(self):
-        # TODO ignore file not found errors
-
         try:
             shutil.rmtree(self.config.dir)
         except:
-            print('Failed to clean the build directory: {}'.format(str(sys.exc_info()[0])))
+            type, value, traceback = sys.exc_info()
+            if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
+                pass  # Nothing to do here, the directory didn't exist
+            else:
+                print('Failed to clean the build directory: {}: {}'.format(type, value))
 
         try:
             shutil.rmtree(self.temp)
         except:
-            print('Failed to clean the temp directory: {}'.format(str(sys.exc_info()[0])))
+            type, value, traceback = sys.exc_info()
+            if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
+                pass  # Nothing to do here, the directory didn't exist
+            else:
+                print('Failed to clean the temp directory: {}: {}'.format(type, value))
 
     def _build(self):
         raise NotImplementedError()
