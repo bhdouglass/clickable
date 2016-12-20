@@ -163,10 +163,11 @@ class Clickable(object):
             if not self.check_lxd():
                 raise Exception('No lxd container exists to build in, please run `clickable setup-lxd`')
 
-            wrapped_command = 'usdk-target exec clickable-{} -- bash -c "cd {}; {}"'.format(self.build_arch, self.config.dir, command)
-
+            target_command = 'exec'
             if sudo:
-                wrapped_command = 'sudo {}'.format(wrapped_command)
+                target_command = 'maint'
+
+            wrapped_command = 'usdk-target {} clickable-{} -- bash -c "cd {}; {}"'.format(target_command, self.build_arch, self.config.dir, command)
 
         if get_output:
             return subprocess.check_output(shlex.split(wrapped_command), cwd=self.config.dir)
@@ -177,13 +178,17 @@ class Clickable(object):
         if len(self.config.dependencies) > 0:
             print('Checking dependencies')
 
-            command = 'apt-get install -y'
+            command = 'apt-get install -y --force-yes'
             run = False
             for dep in self.config.dependencies:
                 if self.config.arch == 'armhf' and 'armhf' not in dep:
                     dep = '{}:{}'.format(dep, self.config.arch)
 
-                exists = self.run_container_command('dpkg -s {} | grep Status'.format(dep), get_output=True)
+                exists = ''
+                try:
+                    exists = self.run_container_command('dpkg -s {} | grep Status'.format(dep), get_output=True)
+                except subprocess.CalledProcessError:
+                    exists = ''
 
                 if exists.strip() != 'Status: install ok installed':
                     run = True
@@ -232,7 +237,8 @@ class Clickable(object):
             # Create a new container
             subprocess.check_call(shlex.split('sudo usdk-target create -n {} -p {}'.format(name, fingerprint)))
 
-            self.run_container_command('apt-get install -y click', force_lxd=True, sudo=True)
+            self.run_container_command('apt-get update', force_lxd=True, sudo=True)
+            self.run_container_command('apt-get install -y --force-yes click', force_lxd=True, sudo=True)
 
     def click_build(self):
         command = 'click build {} --no-validate'.format(self.temp)
