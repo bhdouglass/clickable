@@ -10,10 +10,10 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 
 ```
 {
-  "package": "full package name (appname.developer) [Required]",
-  "app": "app name (for auto launch) [Required]",
-  "sdk": "ubuntu-sdk-15.04 [Required]",
-  "arch": "armhf [Required]",
+  "package": "full package name (appname.developer) [Optional, will be read from manifest.json if left blank]",
+  "app": "app name (for auto launch) [Optional, will be read from manifest.json if left blank]",
+  "sdk": "ubuntu-sdk-15.04 [Optional]",
+  "arch": "armhf [Optional, default is armhf]",
   "prebuild": "custom prebuild command [Optional]",
   "template": "pure-qml-qmake,qmake,pure-qml-cmake,cmake,custom,cordova,pure [Required]",
   "premake": "custom command before make is run [Optional]",
@@ -21,7 +21,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
   "postbuild": "custom command for after build, pre click build [Optional]",
   "launch": "custom launch command [Optional]",
   "ssh": "IP of device to install to (if not using phablet-shell) [Optional]",
-  "dir": "./path/to/build/dir/ [Required]",
+  "dir": "./path/to/build/dir/ [Optional, default is ./build/]",
   "kill": "Name of the process to kill (useful for killing the running app, then relaunching it) [Optional, if not specified it will be assumed]",
   "scripts": "An object that lists custom scripts to run, see below for more details",
   "chroot": "Whether or not to use a chroot (default is False, which means use an lxd container) [Optional]",
