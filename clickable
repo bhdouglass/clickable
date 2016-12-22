@@ -38,12 +38,13 @@ class Config(object):
     default = 'kill clean build click-build install launch'
     log = None
     dependencies = []
+    ignore = []
 
     required = ['package', 'app', 'sdk', 'arch', 'template', 'dir']
     keys = [
         'package', 'app', 'sdk', 'arch', 'prebuild', 'template', 'premake',
         'postmake', 'build', 'postbuild', 'launch', 'dir', 'ssh', 'kill', 'scripts',
-        'chroot', 'default', 'log', 'dependencies'
+        'chroot', 'default', 'log', 'dependencies', 'ignore'
     ]
 
     PURE_QML_QMAKE = 'pure-qml-qmake'
@@ -429,7 +430,7 @@ class PureClickable(Clickable):
         ignored = []
         for content in contents:
             cpath = os.path.abspath(os.path.join(path, content))
-            if cpath == os.path.abspath(self.temp) or cpath == os.path.abspath(self.config.dir):
+            if cpath == os.path.abspath(self.temp) or cpath == os.path.abspath(self.config.dir) or content in self.config.ignore or content == 'clickable.json':
                 ignored.append(content)
 
         return ignored
