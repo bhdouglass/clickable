@@ -17,6 +17,7 @@ import xml.etree.ElementTree as ElementTree
 # TODO make sure lxd & lxd container is started
 # TODO don't print out a stack trace for CTRL+C and subprocess errors
 # TODO lxd setup shouldn't require a clickable.json
+# TODO check for a template based on CMake files, etc
 
 
 class Config(object):
@@ -56,15 +57,20 @@ class Config(object):
     CORDOVA = 'cordova'
     PURE = 'pure'
 
-    # TODO add pure qml (qml only)
     templates = [PURE_QML_CMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE]
 
-    def __init__(self, ip=None):
+    def __init__(self, ip=None, arch=None, template=None):
         self.cwd = os.getcwd()
         self.load_config()
 
         if ip:
             self.ssh = ip
+
+        if arch:
+            self.arch = arch
+
+        if template:
+            self.template = template
 
         if not self.kill:
             if self.template == self.CORDOVA:
@@ -74,23 +80,8 @@ class Config(object):
             else:
                 self.kill = self.app
 
-    def load_config(self, file='clickable.json'):
-        with open(os.path.join(self.cwd, file), 'r') as f:
-            config_json = {}
-            try:
-                config_json = json.load(f)
-            except ValueError:
-                raise ValueError('Failed reading "{}", it is not valid json'.format(file))
-
-            for key in self.keys:
-                value = config_json.get(key, None)
-
-                if value:
-                    setattr(self, key, value)
-
-        for key in self.required:
-            if not getattr(self, key):
-                raise ValueError('"{}" is empty in the config file'.format(key))
+        if self.template == self.PURE_QML_CMAKE or self.template == self.PURE_QML_QMAKE or self.template == self.PURE:
+            self.arch = 'all'
 
         if self.template == self.CUSTOM and not self.build:
             raise ValueError('When using the "custom" template you must specify a "build" in the config')
@@ -98,8 +89,27 @@ class Config(object):
         if self.template not in self.templates:
             raise ValueError('"{}" is not a valid template ({})'.format(self.template, ', '.join(self.templates)))
 
-        if self.template == self.PURE_QML_CMAKE or self.template == self.PURE_QML_QMAKE or self.template == self.PURE:
-            self.arch = 'all'
+    def load_config(self, file='clickable.json'):
+        # TODO check if file exists and only print a warning if none exist
+        if os.path.isfile(os.path.join(self.cwd, file)):
+            with open(os.path.join(self.cwd, file), 'r') as f:
+                config_json = {}
+                try:
+                    config_json = json.load(f)
+                except ValueError:
+                    raise ValueError('Failed reading "{}", it is not valid json'.format(file))
+
+                for key in self.keys:
+                    value = config_json.get(key, None)
+
+                    if value:
+                        setattr(self, key, value)
+        else:
+            print('No clickable.json was found, using defaults and cli args')
+
+        for key in self.required:
+            if not getattr(self, key):
+                raise ValueError('"{}" is empty in the config file'.format(key))
 
         self.dir = os.path.abspath(self.dir)
 
@@ -498,14 +508,15 @@ class CordovaClickable(Clickable):
 
 if __name__ == "__main__":
     # TODO better help text & version
-    # TODO add arg for template (then there may not be a clickable.json)
     parser = argparse.ArgumentParser(description='clickable')
     parser.add_argument('commands', nargs='*')
     parser.add_argument('--device', '-d', action="store_true", default=False)
     parser.add_argument('--ip', '-i')
+    parser.add_argument('--arch', '-a')
+    parser.add_argument('--template', '-t')
     args = parser.parse_args()
 
-    config = Config(ip=args.ip)
+    config = Config(ip=args.ip, arch=args.arch, template=args.template)
     clickable = None
     if config.template == config.PURE_QML_QMAKE:
         clickable = PureQMLQMakeClickable(config)
