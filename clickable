@@ -90,7 +90,6 @@ class Config(object):
             raise ValueError('"{}" is not a valid template ({})'.format(self.template, ', '.join(self.templates)))
 
     def load_config(self, file='clickable.json'):
-        # TODO check if file exists and only print a warning if none exist
         if os.path.isfile(os.path.join(self.cwd, file)):
             with open(os.path.join(self.cwd, file), 'r') as f:
                 config_json = {}
