@@ -499,7 +499,7 @@ class CordovaClickable(Clickable):
 
         shutil.copyfile(src, dest)
 
-    def find_package_name():
+    def find_package_name(self):
         tree = ElementTree.parse('config.xml')
         root = tree.getroot()
         return root.attrib['id'] if 'id' in root.attrib else '1.0.0'
