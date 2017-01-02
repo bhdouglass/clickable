@@ -39,6 +39,7 @@ class Config(object):
     chroot = False
     default = 'kill clean build click-build install launch'
     log = None
+    specificDependencies = False
     dependencies = []
     ignore = []
 
@@ -46,7 +47,7 @@ class Config(object):
     keys = [
         'package', 'app', 'sdk', 'arch', 'prebuild', 'template', 'premake',
         'postmake', 'build', 'postbuild', 'launch', 'dir', 'ssh', 'kill', 'scripts',
-        'chroot', 'default', 'log', 'dependencies', 'ignore'
+        'chroot', 'default', 'log', 'specificDependencies', 'dependencies', 'ignore'
     ]
 
     PURE_QML_QMAKE = 'pure-qml-qmake'
@@ -229,7 +230,7 @@ class Clickable(object):
             command = 'apt-get install -y --force-yes'
             run = False
             for dep in self.config.dependencies:
-                if self.config.arch == 'armhf' and 'armhf' not in dep:
+                if self.config.arch == 'armhf' and 'armhf' not in dep and not config.specificDependencies:
                     dep = '{}:{}'.format(dep, self.config.arch)
 
                 exists = ''
