@@ -512,9 +512,37 @@ class CordovaClickable(Clickable):
 
 
 if __name__ == "__main__":
+    config = None
+    COMMAND_HANDLERS = {
+        "kill": "kill",
+        "clean": "clean",
+        "build": "build",
+        "click_build": "click_build",
+        "click-build": "click_build",
+        "build_click": "click_build",
+        "build-click": "click_build",
+        "install": "install",
+        "launch": "launch",
+        "logs": "logs",
+        "setup-lxd": "setup_lxd"
+    }
+
+    def show_valid_commands():
+        n = [
+            'Valid commands:',
+            ", ".join(sorted(COMMAND_HANDLERS.keys()))
+        ]
+        if config and hasattr(config, "scripts") and config.scripts:
+            n += [
+                'Project-specific custom commands:',
+                ", ".join(sorted(config.scripts.keys()))
+            ]
+        return "\n".join(n)
+    def print_valid_commands(): print(show_valid_commands())
+
     # TODO better help text & version
     parser = argparse.ArgumentParser(description='clickable')
-    parser.add_argument('commands', nargs='*')
+    parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument('--device', '-d', action="store_true", default=False)
     parser.add_argument('--ip', '-i')
     parser.add_argument('--arch', '-a')
@@ -545,21 +573,10 @@ if __name__ == "__main__":
     for command in commands:
         if command in config.scripts:
             clickable.script(command, args.device)
-        elif command == 'kill':
-            clickable.kill()
-        elif command == 'clean':
-            clickable.clean()
-        elif command == 'build':
-            clickable.build()
-        elif command == 'click_build' or command == 'click-build' or command == 'build-click' or command == 'build_click':
-            clickable.click_build()
-        elif command == 'install':
-            clickable.install()
-        elif command == 'launch':
-            clickable.launch()
-        elif command == 'logs':
-            clickable.logs()
-        elif command == 'setup-lxd':
-            clickable.setup_lxd()
+        elif command in COMMAND_HANDLERS:
+            getattr(clickable, COMMAND_HANDLERS[command])()
+        elif command == "help":
+            parser.print_help()
         else:
             print('There is no builtin or custom command named "{}"'.format(command))
+            print_valid_commands()
