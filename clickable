@@ -451,7 +451,7 @@ class CustomClickable(Clickable):
 
 class PureQMLMakeClickable(MakeClickable):
     def post_make(self):
-        super(PureQMLMixin, self).post_make()
+        super(PureQMLMakeClickable, self).post_make()
 
         with open(self.find_manifest(), 'r') as f:
             manifest = {}
