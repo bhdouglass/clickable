@@ -117,10 +117,13 @@ class Config(object):
 class Clickable(object):
     cwd = None
 
-    def __init__(self, config):
+    def __init__(self, config, device_serial_number=None):
         self.cwd = os.getcwd()
         self.config = config
         self.temp = self.config.dir + '/tmp'
+        self.device_serial_number = device_serial_number
+        if type(self.device_serial_number) == type([]) and len(self.device_serial_number) > 0:
+            self.device_serial_number = self.device_serial_number[0]
 
         self.host_arch = 'amd64' if platform.architecture()[0] == '64bit' else 'i386'
         self.build_arch = self.config.arch
@@ -189,7 +192,10 @@ class Clickable(object):
         if self.config.ssh:
             wrapped_command = 'echo "{}" | ssh phablet@{}'.format(command, self.config.ssh)
         else:
-            wrapped_command = 'adb shell "{}"'.format(command)
+            if self.device_serial_number:
+                wrapped_command = 'adb -s {} shell "{}"'.format(self.device_serial_number, command)
+            else:
+                wrapped_command = 'adb shell "{}"'.format(command)
 
         subprocess.check_call(wrapped_command, cwd=self.config.dir, shell=True)
 
@@ -312,7 +318,10 @@ class Clickable(object):
             subprocess.check_call(command, cwd=self.config.dir, shell=True)
 
         else:
-            command = 'adb push {} /home/phablet/'.format(click_path)
+            if self.device_serial_number:
+                command = 'adb -s {} push {} /home/phablet/'.format(self.device_serial_number, click_path)
+            else:
+                command = 'adb push {} /home/phablet/'.format(click_path)
             subprocess.check_call(command, cwd=self.config.dir, shell=True)
 
         self.run_device_command('pkcon install-local --allow-untrusted {}'.format(click))
@@ -544,6 +553,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='clickable')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument('--device', '-d', action="store_true", default=False)
+    parser.add_argument('--device-serial-number', '-s', 
+        help="directs command to the device or emulator with the given serial number or qualifier",
+        nargs=1, default=None)
     parser.add_argument('--ip', '-i')
     parser.add_argument('--arch', '-a')
     parser.add_argument('--template', '-t')
@@ -552,19 +564,19 @@ if __name__ == "__main__":
     config = Config(ip=args.ip, arch=args.arch, template=args.template)
     clickable = None
     if config.template == config.PURE_QML_QMAKE:
-        clickable = PureQMLQMakeClickable(config)
+        clickable = PureQMLQMakeClickable(config, args.device_serial_number)
     elif config.template == config.QMAKE:
-        clickable = QMakeClickable(config)
+        clickable = QMakeClickable(config, args.device_serial_number)
     elif config.template == config.PURE_QML_CMAKE:
-        clickable = PureQMLCMakeClickable(config)
+        clickable = PureQMLCMakeClickable(config, args.device_serial_number)
     elif config.template == config.CMAKE:
-        clickable = CMakeClickable(config)
+        clickable = CMakeClickable(config, args.device_serial_number)
     elif config.template == config.CUSTOM:
-        clickable = CustomClickable(config)
+        clickable = CustomClickable(config, args.device_serial_number)
     elif config.template == config.CORDOVA:
-        clickable = CordovaClickable(config)
+        clickable = CordovaClickable(config, args.device_serial_number)
     elif config.template == config.PURE:
-        clickable = PureClickable(config)
+        clickable = PureClickable(config, args.device_serial_number)
 
     commands = args.commands
     if len(args.commands) == 0:
