@@ -1,0 +1,23 @@
+name: clickable
+version: '1.0.0'
+summary: Compile, build, and deploy click packages from the cli
+description: |
+  Replace the Ubuntu IDE with clickable and streamline your
+  click development process.
+  For more info, read the docs: https://github.com/bhdouglass/clickable
+  In order for clickable to work you must have lxd already setup
+  and have the usdk tools installed.
+
+grade: stable
+confinement: classic
+
+apps:
+  clickable:
+    command: python2 clickable
+
+parts:
+  clickable:
+    plugin: dump
+    source: https://github.com/bhdouglass/clickable.git
+    stage-packages:
+      - python
