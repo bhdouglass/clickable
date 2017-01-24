@@ -18,6 +18,7 @@ import xml.etree.ElementTree as ElementTree
 # TODO don't print out a stack trace for CTRL+C and subprocess errors
 # TODO lxd setup shouldn't require a clickable.json
 # TODO check for a template based on CMake files, etc
+# TODO add command to uninstall
 
 
 class Config(object):
