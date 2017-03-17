@@ -188,7 +188,10 @@ class Clickable(object):
 
         return app
 
-    def run_device_command(self, command):
+    def run_device_command(self, command, cwd=None):
+        if not cwd:
+            cwd = self.config.dir
+
         wrapped_command = ''
         if self.config.ssh:
             wrapped_command = 'echo "{}" | ssh phablet@{}'.format(command, self.config.ssh)
@@ -198,7 +201,7 @@ class Clickable(object):
             else:
                 wrapped_command = 'adb shell "{}"'.format(command)
 
-        subprocess.check_call(wrapped_command, cwd=self.config.dir, shell=True)
+        subprocess.check_call(wrapped_command, cwd=cwd, shell=True)
 
     def run_container_command(self, command, force_lxd=False, sudo=False, get_output=False, use_dir=True):
         wrapped_command = command
@@ -310,22 +313,27 @@ class Clickable(object):
     def click_review(self):
         pass  # TODO implement this
 
-    def install(self):
-        click = '{}_{}_{}.click'.format(self.find_package_name(), self.find_version(), self.config.arch)
-        click_path = os.path.join(self.config.dir, click)
+    def install(self, click_path=None):
+        cwd = '.'
+        if click_path:
+            click = os.path.basename(click_path)
+        else:
+            click = '{}_{}_{}.click'.format(self.find_package_name(), self.find_version(), self.config.arch)
+            click_path = os.path.join(self.config.dir, click)
+            cwd = self.config.dir
 
         if self.config.ssh:
             command = 'scp {} phablet@{}:/home/phablet/'.format(click_path, self.config.ssh)
-            subprocess.check_call(command, cwd=self.config.dir, shell=True)
+            subprocess.check_call(command, cwd=cwd, shell=True)
 
         else:
             if self.device_serial_number:
                 command = 'adb -s {} push {} /home/phablet/'.format(self.device_serial_number, click_path)
             else:
                 command = 'adb push {} /home/phablet/'.format(click_path)
-            subprocess.check_call(command, cwd=self.config.dir, shell=True)
+            subprocess.check_call(command, cwd=cwd, shell=True)
 
-        self.run_device_command('pkcon install-local --allow-untrusted {}'.format(click))
+        self.run_device_command('pkcon install-local --allow-untrusted {}'.format(click), cwd=cwd)
 
     def kill(self):
         if self.config.kill:
@@ -334,12 +342,17 @@ class Clickable(object):
             except:
                 pass  # Nothing to do, the process probably wasn't running
 
-    def launch(self):
-        launch = 'ubuntu-app-launch {}_{}_{}'.format(self.find_package_name(), self.find_app_name(), self.find_version())
+    def launch(self, app=None):
+        cwd = '.'
+        if not app:
+            app = '{}_{}_{}'.format(self.find_package_name(), self.find_app_name(), self.find_version())
+            cwd = self.config.dir
+
+        launch = 'ubuntu-app-launch {}'.format(app)
         if self.config.launch:
             launch = self.config.launch
 
-        self.run_device_command('sleep 1s && {}'.format(launch))
+        self.run_device_command('sleep 1s && {}'.format(launch), cwd=cwd)
 
     def logs(self):
         # TODO Support scope logs
@@ -548,18 +561,45 @@ if __name__ == "__main__":
                 ", ".join(sorted(config.scripts.keys()))
             ]
         return "\n".join(n)
-    def print_valid_commands(): print(show_valid_commands())
+
+    def print_valid_commands():
+            print(show_valid_commands())
 
     # TODO better help text & version
     parser = argparse.ArgumentParser(description='clickable')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument('--device', '-d', action="store_true", default=False)
-    parser.add_argument('--device-serial-number', '-s', 
-        help="directs command to the device or emulator with the given serial number or qualifier",
-        nargs=1, default=None)
-    parser.add_argument('--ip', '-i')
-    parser.add_argument('--arch', '-a')
-    parser.add_argument('--template', '-t')
+    parser.add_argument(
+        '--device-serial-number',
+        '-s',
+        help='Directs command to the device or emulator with the given serial number or qualifier (using adb)',
+        default=None
+    )
+    parser.add_argument(
+        '--ip',
+        '-i',
+        help='Directs command to the device with the given IP address (using ssh)'
+    )
+    parser.add_argument(
+        '--arch',
+        '-a',
+        help='Use the specified arch when building (ignores the setting in clickable.json)'
+    )
+    parser.add_argument(
+        '--template',
+        '-t',
+        help='Use the specified template when building (ignores the setting in clickable.json)'
+    )
+    parser.add_argument(
+        '--click',
+        '-c',
+        help='Installs the specified click (use with the "install" command)'
+    )
+    parser.add_argument(
+        '--app',
+        '-p',
+        help='Launches the specified app (use with the "launch" command)'
+    )
     args = parser.parse_args()
 
     config = Config(ip=args.ip, arch=args.arch, template=args.template)
@@ -586,9 +626,13 @@ if __name__ == "__main__":
     for command in commands:
         if command in config.scripts:
             clickable.script(command, args.device)
+        elif command == 'install':
+            clickable.install(args.click)
+        elif command == 'launch':
+            clickable.launch(args.app)
         elif command in COMMAND_HANDLERS:
             getattr(clickable, COMMAND_HANDLERS[command])()
-        elif command == "help":
+        elif command == 'help':
             parser.print_help()
         else:
             print('There is no builtin or custom command named "{}"'.format(command))
