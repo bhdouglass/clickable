@@ -27,7 +27,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
   "chroot": "Whether or not to use a chroot (default is False, which means use an lxd container) [Optional]",
   "default": "A list of space separated sub-commands to run when no sub-commands are specified",
   "dependencies": "An array of dependencies that will be installed in the build container",
-  "ignore": "An array of files to ignore when building a 'pure' template [Optional, only for pure templates]",
+  "ignore": "An array of files to ignore when building a 'pure' template [Optional, only for pure templates]"
 }
 ```
 
