@@ -128,7 +128,7 @@ class Clickable(object):
 
         self.host_arch = 'amd64' if platform.architecture()[0] == '64bit' else 'i386'
         self.build_arch = self.config.arch
-        if self.config.template == self.config.PURE_QML_QMAKE or self.config.template == self.config.PURE_QML_CMAKE or self.config.PURE:
+        if self.config.template == self.config.PURE_QML_QMAKE or self.config.template == self.config.PURE_QML_CMAKE or self.config.template == self.config.PURE:
             self.build_arch = 'armhf'
 
     def find_manifest(self):
@@ -293,8 +293,13 @@ class Clickable(object):
 
             print('Asking for root to create the lxd container')
 
+            # If set, pass along the USDK_TEST_REMOTE env var (this allows user to use a different sdk image server)
+            env = ''
+            if 'USDK_TEST_REMOTE' in os.environ:
+                env = 'USDK_TEST_REMOTE={}'.format(os.environ['USDK_TEST_REMOTE'])
+
             # Create a new container
-            subprocess.check_call(shlex.split('sudo usdk-target create -n {} -p {}'.format(name, fingerprint)))
+            subprocess.check_call(shlex.split('sudo {} usdk-target create -n {} -p {}'.format(env, name, fingerprint)))
 
             self.run_container_command('apt-get update', force_lxd=True, sudo=True, use_dir=False)
             self.run_container_command('apt-get install -y --force-yes click', force_lxd=True, sudo=True, use_dir=False)
