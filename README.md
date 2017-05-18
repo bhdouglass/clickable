@@ -4,7 +4,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 
 ## Usage
 
-1) Put the `clickable` file on your PATH somewhere and make it executable
+1) Put the `clickable` and `usdk-target` scripts on your PATH somewhere and make them executable
 
 2) Create a `clickable.json` file in your project root with the contents:
 
@@ -59,8 +59,10 @@ can specify the IP address in the clickable.json file's `ssh` property.
 Clickable supports building in a lxd container. In order to use them you first
 need to setup a container using `clickable setup-lxd` (once for each target architecture).
 This requires that you have `usdk-target` command installed. If you have the Ubuntu
-SDK IDE installed you should already have this command. If you are on a non-ubuntu
-distro, a prebuilt binary is included in this repo.
+SDK IDE installed you may already have this command installed, but the version
+included in this repo is more up to date than the Ubuntu SDK IDE verion. If
+you are not running Ubuntu or do not already have the SDK IDE setup you will
+need to use the usdk-target binary included in this repo.
 
 ## Chroot Building
 
