@@ -43,13 +43,12 @@ class Config(object):
     specificDependencies = False
     dependencies = []
     ignore = []
-    thread = 1
 
     required = ['sdk', 'arch', 'template', 'dir']
     keys = [
         'package', 'app', 'sdk', 'arch', 'prebuild', 'template', 'premake',
         'postmake', 'build', 'postbuild', 'launch', 'dir', 'ssh', 'kill', 'scripts',
-        'chroot', 'default', 'log', 'specificDependencies', 'dependencies', 'ignore', 'thread'
+        'chroot', 'default', 'log', 'specificDependencies', 'dependencies', 'ignore'
     ]
 
     PURE_QML_QMAKE = 'pure-qml-qmake'
@@ -426,7 +425,7 @@ class MakeClickable(Clickable):
             subprocess.check_call(self.config.premake, cwd=self.config.dir, shell=True)
 
     def make(self):
-        self.run_container_command('make -j{}'.format(Config.thread))
+        self.run_container_command('make -j')
 
     def make_install(self):
         if os.path.exists(self.temp) and os.path.isdir(self.temp):
