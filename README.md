@@ -28,7 +28,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
   "default": "A list of space separated sub-commands to run when no sub-commands are specified",
   "dependencies": "An array of dependencies that will be installed in the build container",
   "ignore": "An array of files to ignore when building a 'pure' template [Optional, only for pure templates]",
-  "thread": "number of thread to use when building: 1,2,3,4,...32 [Optional, default: 1]"
+  "thread": "number of threads to use when building: 1,2,3,4,... [Optional, if missing will be used 1 thread]"
 }
 ```
 
