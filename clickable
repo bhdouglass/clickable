@@ -43,6 +43,7 @@ class Config(object):
     specificDependencies = False
     dependencies = []
     ignore = []
+    thread = 1
 
     required = ['sdk', 'arch', 'template', 'dir']
     keys = [
@@ -111,6 +112,7 @@ class Config(object):
         for key in self.required:
             if not getattr(self, key):
                 raise ValueError('"{}" is empty in the config file'.format(key))
+
 
         self.dir = os.path.abspath(self.dir)
 
@@ -424,7 +426,7 @@ class MakeClickable(Clickable):
             subprocess.check_call(self.config.premake, cwd=self.config.dir, shell=True)
 
     def make(self):
-        self.run_container_command('make')
+        self.run_container_command('make -j{}'.format(Config.thread))
 
     def make_install(self):
         if os.path.exists(self.temp) and os.path.isdir(self.temp):
