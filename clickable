@@ -16,7 +16,6 @@ import xml.etree.ElementTree as ElementTree
 # TODO make a snap
 # TODO lxd setup shouldn't require a clickable.json
 # TODO check for a template based on CMake files, etc
-# TODO add command to uninstall
 
 class Colors:
     INFO = '\033[94m'
