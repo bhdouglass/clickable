@@ -14,11 +14,29 @@ import xml.etree.ElementTree as ElementTree
 # TODO add Golang template
 # TODO add desktop arch
 # TODO make a snap
-# TODO don't print out a stack trace for CTRL+C and subprocess errors
 # TODO lxd setup shouldn't require a clickable.json
 # TODO check for a template based on CMake files, etc
 # TODO add command to uninstall
 # TODO check if external commands are available (adb, etc)
+
+class Colors:
+    INFO = '\033[94m'
+    SUCCESS = '\033[92m'
+    WARNING = '\033[93m'
+    ERROR = '\033[91m'
+    CLEAR = '\033[0m'
+
+def print_info(message):
+    print(Colors.INFO + message + Colors.CLEAR)
+
+def print_success(message):
+    print(Colors.SUCCESS + message + Colors.CLEAR)
+
+def print_warning(message):
+    print(Colors.WARNING + message + Colors.CLEAR)
+
+def print_error(message):
+    print(Colors.ERROR + message + Colors.CLEAR)
 
 
 class Config(object):
@@ -109,7 +127,7 @@ class Config(object):
                     if value:
                         self.config[key] = value
         else:
-            print('No clickable.json was found, using defaults and cli args')
+            print_warning('No clickable.json was found, using defaults and cli args')
 
         for key in self.required:
             if not getattr(self, key):
@@ -251,7 +269,7 @@ class Clickable(object):
 
     def setup_dependencies(self):
         if len(self.config.dependencies) > 0:
-            print('Checking dependencies')
+            print_info('Checking dependencies')
 
             command = 'apt-get install -y --force-yes'
             run = False
@@ -272,7 +290,7 @@ class Clickable(object):
             if run:
                 self.run_container_command(command, sudo=True, use_dir=False)
             else:
-                print('Dependencies already installed')
+                print_info('Dependencies already installed')
 
     def check_lxd(self):
         name = 'clickable-{}'.format(self.build_arch)
@@ -291,7 +309,7 @@ class Clickable(object):
                 raise e
 
         if status != 'Running':
-            print('Going to start lxd container "{}"'.format(name))
+            print_info('Going to start lxd container "{}"'.format(name))
             subprocess.check_call(shlex.split('lxc start {}'.format(name)))
 
     def lxd_container_exists(self):
@@ -312,8 +330,10 @@ class Clickable(object):
         name = 'clickable-{}'.format(self.build_arch)
         alias = '{}-{}-{}-dev'.format(self.config.sdk, self.host_arch, self.build_arch)
 
-        if not self.lxd_container_exists():
-            print('Going to setup the lxd container')
+        if self.lxd_container_exists():
+            print_success('Container already exists, nothing to do')
+        else:
+            print_info('Going to setup the lxd container')
 
             # Find the image we want
             images = subprocess.check_output(shlex.split('usdk-target images'))
@@ -327,7 +347,7 @@ class Clickable(object):
             if not fingerprint:
                 raise Exception('The {} lxd image could not be found'.format(alias))
 
-            print('Asking for root to create the lxd container')
+            print_info('Asking for root to create the lxd container')
 
             # If set, pass along the USDK_TEST_REMOTE env var (this allows user to use a different sdk image server)
             env = ''
@@ -339,6 +359,8 @@ class Clickable(object):
 
             self.run_container_command('apt-get update', force_lxd=True, sudo=True, use_dir=False)
             self.run_container_command('apt-get install -y --force-yes click', force_lxd=True, sudo=True, use_dir=False)
+
+            print_success('Finished setting up the lxd container')
 
     def click_build(self):
         command = 'click build {} --no-validate'.format(self.temp)
@@ -412,7 +434,7 @@ class Clickable(object):
             if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
                 pass  # Nothing to do here, the directory didn't exist
             else:
-                print('Failed to clean the build directory: {}: {}'.format(type, value))
+                print_warning('Failed to clean the build directory: {}: {}'.format(type, value))
 
         try:
             shutil.rmtree(self.temp)
@@ -421,7 +443,7 @@ class Clickable(object):
             if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
                 pass  # Nothing to do here, the directory didn't exist
             else:
-                print('Failed to clean the temp directory: {}: {}'.format(type, value))
+                print_warning('Failed to clean the temp directory: {}: {}'.format(type, value))
 
     def _build(self):
         raise NotImplementedError()
@@ -430,7 +452,7 @@ class Clickable(object):
         try:
             os.makedirs(self.config.dir)
         except:
-            print('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
+            print_warning('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
 
         self.setup_dependencies()
 
@@ -473,7 +495,7 @@ class MakeClickable(Clickable):
         try:
             os.makedirs(self.temp)
         except:
-            print('Failed to create temp dir ({}): {}'.format(self.temp, str(sys.exc_info()[0])))
+            print_warning('Failed to create temp dir ({}): {}'.format(self.temp, str(sys.exc_info()[0])))
 
         # The actual make command is implemented in the subclasses
 
@@ -553,7 +575,7 @@ class PureClickable(Clickable):
 
     def _build(self):
         shutil.copytree(self.cwd, self.temp, ignore=self._ignore)
-        print('Copied files to temp directory for click building')
+        print_info('Copied files to temp directory for click building')
 
 
 class CordovaClickable(Clickable):
@@ -645,6 +667,11 @@ if __name__ == "__main__":
         '-p',
         help='Launches the specified app (use with the "launch" command)'
     )
+    parser.add_argument(
+        '--debug',
+        action='store_true',
+        help='Runs in debug mode'
+    )
     args = parser.parse_args()
 
     config = Config(ip=args.ip, arch=args.arch, template=args.template)
@@ -669,16 +696,22 @@ if __name__ == "__main__":
         commands = config.default.split(' ')
 
     for command in commands:
-        if command in config.scripts:
-            clickable.script(command, args.device)
-        elif command == 'install':
-            clickable.install(args.click)
-        elif command == 'launch':
-            clickable.launch(args.app)
-        elif command in COMMAND_HANDLERS:
-            getattr(clickable, COMMAND_HANDLERS[command])()
-        elif command == 'help':
-            parser.print_help()
-        else:
-            print('There is no builtin or custom command named "{}"'.format(command))
-            print_valid_commands()
+        try:
+            if command in config.scripts:
+                clickable.script(command, args.device)
+            elif command == 'install':
+                clickable.install(args.click)
+            elif command == 'launch':
+                clickable.launch(args.app)
+            elif command in COMMAND_HANDLERS:
+                getattr(clickable, COMMAND_HANDLERS[command])()
+            elif command == 'help':
+                parser.print_help()
+            else:
+                print_error('There is no builtin or custom command named "{}"'.format(command))
+                print_valid_commands()
+        except:
+            if args.debug:
+                raise
+            else:
+                print_error(str(sys.exc_info()[1]))
