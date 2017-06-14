@@ -135,17 +135,31 @@ class Clickable(object):
             self.build_arch = 'armhf'
 
     def find_manifest(self):
-        # TODO the manifest might not be in the build directory, check in the src directory
-        # TODO write this in python
+        manifests = []
+        for (root, dirs, files) in os.walk(self.cwd, topdown=True):
+            for name in files:
+                if name == 'manifest.json':
+                    manifests.append(os.path.join(root, name))
 
+
+        if not manifests:
+            raise Exception('Could not find manifest.json')
+
+        # Favor the manifest in the install dir first, then fall back to the build dir and finally the source dir
         manifest = ''
-        if self.config.template == self.config.PURE:
-            manifest = subprocess.check_output('find . -name "manifest.json" -print', cwd=self.config.dir, shell=True)
-        else:
-            manifest = subprocess.check_output('find . -path ./tmp -prune -o -name "manifest.json" -print', cwd=self.config.dir, shell=True)
+        for m in manifests:
+            if m.startswith(self.temp):
+                manifest = m
 
-        # TODO error if not found
-        return os.path.join(self.config.dir, manifest.strip())
+        if not manifest:
+            for m in manifests:
+                if m.startswith(self.config.build):
+                    manifest = m
+
+        if not manifest:
+            manifest = manifests[0]
+
+        return manifest
 
     def get_manifest(self):
         manifest = {}
