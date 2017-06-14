@@ -28,6 +28,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
   "default": "A list of space separated sub-commands to run when no sub-commands are specified",
   "dependencies": "An array of dependencies that will be installed in the build container",
   "ignore": "An array of files to ignore when building a 'pure' template [Optional, only for pure templates]",
+  "make_jobs": "number of jobs to use when running make, equivalent to make's -j option [Optional, if missing `make -j` will be run]",
 }
 ```
 
