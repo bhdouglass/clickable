@@ -22,36 +22,30 @@ import xml.etree.ElementTree as ElementTree
 
 
 class Config(object):
-    package = None
-    app = None
-    sdk = 'ubuntu-sdk-15.04'
-    arch = 'armhf'
-    template = 'pure'
-    premake = None
-    postmake = None
-    prebuild = None
-    build = None
-    postbuild = None
-    launch = None
-    dir = './build/'
-    ssh = False
-    kill = None
-    scripts = {}
-    chroot = False
-    default = 'kill clean build click-build install launch'
-    log = None
-    specificDependencies = False
-    dependencies = []
-    ignore = []
-    make_jobs = 0
-
-    required = ['sdk', 'arch', 'template', 'dir']
-    keys = [
-        'package', 'app', 'sdk', 'arch', 'prebuild', 'template', 'premake',
-        'postmake', 'build', 'postbuild', 'launch', 'dir', 'ssh', 'kill', 'scripts',
-        'chroot', 'default', 'log', 'specificDependencies', 'dependencies', 'ignore',
-        'make_jobs'
-    ]
+    config = {
+        'package': None,
+        'app': None,
+        'sdk': 'ubuntu-sdk-15.04',
+        'arch': 'armhf',
+        'template': 'pure',
+        'premake': None,
+        'postmake': None,
+        'prebuild': None,
+        'build': None,
+        'postbuild': None,
+        'launch': None,
+        'dir': './build/',
+        'ssh': False,
+        'kill': None,
+        'scripts': {},
+        'chroot': False,
+        'default': 'kill clean build click-build install launch',
+        'log': None,
+        'specificDependencies': False,  # TODO make this less confusing
+        'dependencies': [],
+        'ignore': [],
+        'make_jobs': 0,
+    }
 
     PURE_QML_QMAKE = 'pure-qml-qmake'
     QMAKE = 'qmake'
@@ -61,6 +55,7 @@ class Config(object):
     CORDOVA = 'cordova'
     PURE = 'pure'
 
+    required = ['sdk', 'arch', 'template', 'dir']
     templates = [PURE_QML_CMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE]
 
     def __init__(self, ip=None, arch=None, template=None):
@@ -93,6 +88,12 @@ class Config(object):
         if self.template not in self.templates:
             raise ValueError('"{}" is not a valid template ({})'.format(self.template, ', '.join(self.templates)))
 
+    def __getattr__(self, name):
+        return self.config[name]
+
+    def __setattr__(self, name, value):
+        self.config[name] = value
+
     def load_config(self, file='clickable.json'):
         if os.path.isfile(os.path.join(self.cwd, file)):
             with open(os.path.join(self.cwd, file), 'r') as f:
@@ -102,11 +103,11 @@ class Config(object):
                 except ValueError:
                     raise ValueError('Failed reading "{}", it is not valid json'.format(file))
 
-                for key in self.keys:
+                for key in self.config:
                     value = config_json.get(key, None)
 
                     if value:
-                        setattr(self, key, value)
+                        self.config[key] = value
         else:
             print('No clickable.json was found, using defaults and cli args')
 
@@ -140,7 +141,6 @@ class Clickable(object):
             for name in files:
                 if name == 'manifest.json':
                     manifests.append(os.path.join(root, name))
-
 
         if not manifests:
             raise Exception('Could not find manifest.json')
