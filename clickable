@@ -14,11 +14,11 @@ import xml.etree.ElementTree as ElementTree
 # TODO add Golang template
 # TODO add desktop arch
 # TODO make a snap
-# TODO make sure lxd & lxd container is started
 # TODO don't print out a stack trace for CTRL+C and subprocess errors
 # TODO lxd setup shouldn't require a clickable.json
 # TODO check for a template based on CMake files, etc
 # TODO add command to uninstall
+# TODO check if external commands are available (adb, etc)
 
 
 class Config(object):
@@ -229,8 +229,7 @@ class Clickable(object):
 
             wrapped_command = 'click chroot -a {} -f {} {} {}'.format(self.build_arch, self.config.sdk, chroot_command, command)
         else:
-            if not self.check_lxd():
-                raise Exception('No lxd container exists to build in, please run `clickable setup-lxd`')
+            self.check_lxd()
 
             target_command = 'exec'
             if sudo:
@@ -278,6 +277,26 @@ class Clickable(object):
     def check_lxd(self):
         name = 'clickable-{}'.format(self.build_arch)
 
+        status = ''
+        try:
+            status = subprocess.check_output(shlex.split('usdk-target status {}'.format(name)), stderr=subprocess.STDOUT)
+            status = json.loads(status)['status']
+        except subprocess.CalledProcessError as e:
+            if e.output.strip() == 'error: Could not connect to the LXD server.':
+                # TODO explain how to start lxd and/or try to start it
+                raise Exception('LXD is not running, please start it')
+            elif e.output.strip() == 'error: Could not query container status. error: not found':
+                raise Exception('No lxd container exists to build in, please run `clickable setup-lxd`')
+            else:
+                raise e
+
+        if status != 'Running':
+            print('Going to start lxd container "{}"'.format(name))
+            subprocess.check_call(shlex.split('lxc start {}'.format(name)))
+
+    def lxd_container_exists(self):
+        name = 'clickable-{}'.format(self.build_arch)
+
         # Check for existing container
         existing = subprocess.check_output(shlex.split('usdk-target list'))
         existing = json.loads(existing)
@@ -293,7 +312,7 @@ class Clickable(object):
         name = 'clickable-{}'.format(self.build_arch)
         alias = '{}-{}-{}-dev'.format(self.config.sdk, self.host_arch, self.build_arch)
 
-        if not self.check_lxd():
+        if not self.lxd_container_exists():
             print('Going to setup the lxd container')
 
             # Find the image we want
