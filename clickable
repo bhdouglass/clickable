@@ -137,6 +137,7 @@ class Config(object):
 
 class Clickable(object):
     cwd = None
+    usdk_target = 'usdk-target'
 
     def __init__(self, config, device_serial_number=None):
         self.cwd = os.getcwd()
@@ -159,14 +160,20 @@ class Clickable(object):
 
         if self.config.chroot:
             self.check_command('click')
+
+        if self.config.template == Config.CORDOVA:
+            self.check_command('cordova')
+
+        usdk_target_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'usdk-target')
+        if os.path.isfile(usdk_target_path):
+            self.usdk_target = usdk_target_path
         else:
             try:
                 self.check_command('usdk-target')
             except Exception:
                 raise Exception('The command "usdk-target" does not exist on this system, you can find it in the clickable repo')
 
-        if self.config.template == Config.CORDOVA:
-            self.check_command('cordova')
+            print_warning('Using the system version of usdk-target and not clickable\'s')
 
     def check_command(self, command):
         error_code = subprocess.call(shlex.split('which {}'.format(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -277,7 +284,7 @@ class Clickable(object):
             if use_dir:
                 command = 'cd {}; {}'.format(self.config.dir, command)
 
-            wrapped_command = 'usdk-target {} clickable-{} -- bash -c "{}"'.format(target_command, self.build_arch, command)
+            wrapped_command = '{} {} clickable-{} -- bash -c "{}"'.format(self.usdk_target, target_command, self.build_arch, command)
 
         kwargs = {}
         if use_dir:
@@ -318,7 +325,7 @@ class Clickable(object):
 
         status = ''
         try:
-            status = subprocess.check_output(shlex.split('usdk-target status {}'.format(name)), stderr=subprocess.STDOUT)
+            status = subprocess.check_output(shlex.split('{} status {}'.format(self.usdk_target, name)), stderr=subprocess.STDOUT)
             status = json.loads(status)['status']
         except subprocess.CalledProcessError as e:
             if e.output.strip() == 'error: Could not connect to the LXD server.':
@@ -337,7 +344,7 @@ class Clickable(object):
         name = 'clickable-{}'.format(self.build_arch)
 
         # Check for existing container
-        existing = subprocess.check_output(shlex.split('usdk-target list'))
+        existing = subprocess.check_output(shlex.split('{} list'.format(self.usdk_target)))
         existing = json.loads(existing)
 
         found = False
@@ -357,7 +364,7 @@ class Clickable(object):
             print_info('Going to setup the lxd container')
 
             # Find the image we want
-            images = subprocess.check_output(shlex.split('usdk-target images'))
+            images = subprocess.check_output(shlex.split('{} images'.format(self.usdk_target)))
             images = json.loads(images)
 
             fingerprint = None
@@ -376,7 +383,7 @@ class Clickable(object):
                 env = 'USDK_TEST_REMOTE={}'.format(os.environ['USDK_TEST_REMOTE'])
 
             # Create a new container
-            subprocess.check_call(shlex.split('sudo {} usdk-target create -n {} -p {}'.format(env, name, fingerprint)))
+            subprocess.check_call(shlex.split('sudo {} {} create -n {} -p {}'.format(env, self.usdk_target, name, fingerprint)))
 
             self.run_container_command('apt-get update', force_lxd=True, sudo=True, use_dir=False)
             self.run_container_command('apt-get install -y --force-yes click', force_lxd=True, sudo=True, use_dir=False)
