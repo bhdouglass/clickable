@@ -17,7 +17,6 @@ import xml.etree.ElementTree as ElementTree
 # TODO lxd setup shouldn't require a clickable.json
 # TODO check for a template based on CMake files, etc
 # TODO add command to uninstall
-# TODO check if external commands are available (adb, etc)
 
 class Colors:
     INFO = '\033[94m'
@@ -152,6 +151,29 @@ class Clickable(object):
         self.build_arch = self.config.arch
         if self.config.template == self.config.PURE_QML_QMAKE or self.config.template == self.config.PURE_QML_CMAKE or self.config.template == self.config.PURE:
             self.build_arch = 'armhf'
+
+        if self.config.ssh:
+            self.check_command('ssh')
+            self.check_command('scp')
+        else:
+            self.check_command('adb')
+
+        if self.config.chroot:
+            self.check_command('click')
+        else:
+            try:
+                self.check_command('usdk-target')
+            except Exception:
+                raise Exception('The command "usdk-target" does not exist on this system, you can find it in the clickable repo')
+
+        if self.config.template == Config.CORDOVA:
+            self.check_command('cordova')
+
+    def check_command(self, command):
+        error_code = subprocess.call(shlex.split('which {}'.format(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        if error_code != 0:
+            raise Exception('The command "{}" does not exist on this system, please install it for clickable to work properly"'.format(command))
 
     def find_manifest(self):
         manifests = []
@@ -528,7 +550,6 @@ class QMakeClickable(MakeClickable):
         if self.build_arch == 'armhf':
             self.run_container_command('qt5-qmake-arm-linux-gnueabihf {}'.format(self.cwd))
         else:
-            # TODO implement this
             raise Exception('{} is not supported by the qmake build yet'.format(self.build_arch))
 
         super(QMakeClickable, self)._build()
