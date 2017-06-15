@@ -701,29 +701,29 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    config = Config(ip=args.ip, arch=args.arch, template=args.template)
-    clickable = None
-    if config.template == config.PURE_QML_QMAKE:
-        clickable = PureQMLQMakeClickable(config, args.device_serial_number)
-    elif config.template == config.QMAKE:
-        clickable = QMakeClickable(config, args.device_serial_number)
-    elif config.template == config.PURE_QML_CMAKE:
-        clickable = PureQMLCMakeClickable(config, args.device_serial_number)
-    elif config.template == config.CMAKE:
-        clickable = CMakeClickable(config, args.device_serial_number)
-    elif config.template == config.CUSTOM:
-        clickable = CustomClickable(config, args.device_serial_number)
-    elif config.template == config.CORDOVA:
-        clickable = CordovaClickable(config, args.device_serial_number)
-    elif config.template == config.PURE:
-        clickable = PureClickable(config, args.device_serial_number)
+    try:
+        config = Config(ip=args.ip, arch=args.arch, template=args.template)
+        clickable = None
+        if config.template == config.PURE_QML_QMAKE:
+            clickable = PureQMLQMakeClickable(config, args.device_serial_number)
+        elif config.template == config.QMAKE:
+            clickable = QMakeClickable(config, args.device_serial_number)
+        elif config.template == config.PURE_QML_CMAKE:
+            clickable = PureQMLCMakeClickable(config, args.device_serial_number)
+        elif config.template == config.CMAKE:
+            clickable = CMakeClickable(config, args.device_serial_number)
+        elif config.template == config.CUSTOM:
+            clickable = CustomClickable(config, args.device_serial_number)
+        elif config.template == config.CORDOVA:
+            clickable = CordovaClickable(config, args.device_serial_number)
+        elif config.template == config.PURE:
+            clickable = PureClickable(config, args.device_serial_number)
 
-    commands = args.commands
-    if len(args.commands) == 0:
-        commands = config.default.split(' ')
+        commands = args.commands
+        if len(args.commands) == 0:
+            commands = config.default.split(' ')
 
-    for command in commands:
-        try:
+        for command in commands:
             if command in config.scripts:
                 clickable.script(command, args.device)
             elif command == 'install':
@@ -737,8 +737,8 @@ if __name__ == "__main__":
             else:
                 print_error('There is no builtin or custom command named "{}"'.format(command))
                 print_valid_commands()
-        except:
-            if args.debug:
-                raise
-            else:
-                print_error(str(sys.exc_info()[1]))
+    except:
+        if args.debug:
+            raise
+        else:
+            print_error(str(sys.exc_info()[1]))

@@ -13,7 +13,7 @@ confinement: classic
 
 apps:
   clickable:
-    command: python2 clickable
+    command: clickable
 
 parts:
   clickable:
