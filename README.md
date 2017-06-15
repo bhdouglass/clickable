@@ -2,11 +2,31 @@
 
 Compile, build, and deploy Ubuntu Touch click packages all from the command line.
 
+## Install
+
+### Prerequisites
+
+* `adb` For installing and running commands on your device
+* `lxd` For building any binaries and the click package
+    * After installing lxd make sure you run `lxd init`
+
+### Via Snap
+
+* Download the latest version from the OpenStore: <https://open.uappexplorer.com/snap/clickable>
+* Install the snap: `sudo snap install --force-dangerous --classic <path/to/snap>`
+
+### Via Git
+
+* Clone this repo: `git clone https://github.com/bhdouglass/clickable.git`
+* Set the repo on your `PATH`
+
+### Post Setup
+
+Run `clickable setup-lxd` to create a container to build clicks and binaries in.
+
 ## Usage
 
-1) Put the `clickable` and `usdk-target` scripts on your PATH somewhere and make them executable
-
-2) Create a `clickable.json` file in your project root with the contents:
+1) Create a `clickable.json` file in your project root with the contents:
 
 ```
 {
@@ -32,7 +52,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 }
 ```
 
-3) From the root directory of your project you have the following sub-commands available:
+2) From the root directory of your project you have the following sub-commands available:
 
 * `clickable kill` - Kills a running process (specified by the config). Using this you can relaunch your app.
 * `clickable clean` - Cleans out the build dir
