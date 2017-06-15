@@ -131,7 +131,6 @@ class Config(object):
             if not getattr(self, key):
                 raise ValueError('"{}" is empty in the config file'.format(key))
 
-
         self.dir = os.path.abspath(self.dir)
 
 
@@ -163,6 +162,10 @@ class Clickable(object):
 
         if self.config.template == Config.CORDOVA:
             self.check_command('cordova')
+
+        if os.environ['SNAP']:
+            # If running as a snap, trick usdk-target into thinking its not in a snap
+            del os.environ['SNAP']
 
         usdk_target_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'usdk-target')
         if os.path.isfile(usdk_target_path):
@@ -334,6 +337,7 @@ class Clickable(object):
             elif e.output.strip() == 'error: Could not query container status. error: not found':
                 raise Exception('No lxd container exists to build in, please run `clickable setup-lxd`')
             else:
+                print(e.output)
                 raise e
 
         if status != 'Running':
