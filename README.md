@@ -4,6 +4,9 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 
 ## Install
 
+For a great tutorial on how to get started with clickable, check out the one in the
+[UBports Wiki](https://wiki.ubports.com/wiki/Set-up-an-app-development-environment).
+
 ### Prerequisites
 
 * `adb` For installing and running commands on your device
