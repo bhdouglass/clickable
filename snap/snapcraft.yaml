@@ -1,5 +1,5 @@
 name: clickable
-version: '1.0.0'
+version: '1.0.1'
 summary: Compile, build, and deploy click packages from the cli
 description: |
   Replace the Ubuntu IDE with clickable and streamline your

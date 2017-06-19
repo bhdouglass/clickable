@@ -36,6 +36,42 @@ def print_warning(message):
 def print_error(message):
     print(Colors.ERROR + message + Colors.CLEAR)
 
+def find_manifest(cwd, temp_dir=None, build_dir=None):
+    manifests = []
+    for (root, dirs, files) in os.walk(cwd, topdown=True):
+        for name in files:
+            if name == 'manifest.json':
+                manifests.append(os.path.join(root, name))
+
+    if not manifests:
+        raise Exception('Could not find manifest.json')
+
+    # Favor the manifest in the install dir first, then fall back to the build dir and finally the source dir
+    manifest = ''
+    for m in manifests:
+        if temp_dir and m.startswith(temp_dir):
+            manifest = m
+
+    if not manifest:
+        for m in manifests:
+            if build_dir and m.startswith(build_dir):
+                manifest = m
+
+    if not manifest:
+        manifest = manifests[0]
+
+    return manifest
+
+def get_manifest(cwd, temp_dir=None, build_dir=None):
+    manifest = {}
+    with open(find_manifest(cwd, temp_dir, build_dir), 'r') as f:
+        try:
+            manifest = json.load(f)
+        except ValueError:
+            raise ValueError('Failed reading "manifest.json", it is not valid json')
+
+    return manifest
+
 
 class Config(object):
     config = {
@@ -43,7 +79,7 @@ class Config(object):
         'app': None,
         'sdk': 'ubuntu-sdk-15.04',
         'arch': 'armhf',
-        'template': 'pure',
+        'template': None,
         'premake': None,
         'postmake': None,
         'prebuild': None,
@@ -71,7 +107,7 @@ class Config(object):
     CORDOVA = 'cordova'
     PURE = 'pure'
 
-    required = ['sdk', 'arch', 'template', 'dir']
+    required = ['sdk', 'arch', 'dir']
     templates = [PURE_QML_CMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE]
 
     def __init__(self, ip=None, arch=None, template=None):
@@ -86,6 +122,8 @@ class Config(object):
 
         if template:
             self.template = template
+
+        self.detect_template()
 
         if not self.kill:
             if self.template == self.CORDOVA:
@@ -132,6 +170,39 @@ class Config(object):
                 raise ValueError('"{}" is empty in the config file'.format(key))
 
         self.dir = os.path.abspath(self.dir)
+
+    def detect_template(self):
+        if not self.template:
+            template = None
+
+            try:
+                manifest = get_manifest(os.getcwd())
+            except ValueError:
+                manifest = None
+
+            directory = os.listdir(os.getcwd())
+            if not template and 'CMakeLists.txt' in directory:
+                template = Config.CMAKE
+
+                if manifest and manifest.get('architecture', None) == 'all':
+                    template = Config.PURE_QML_CMAKE
+
+            pro_files = [f for f in directory if f.endswith('.pro')]
+
+            if pro_files:
+                template = Config.QMAKE
+
+                if manifest and manifest.get('architecture', None) == 'all':
+                    template = Config.PURE_QML_QMAKE
+
+            if not template and 'config.xml' in directory:
+                template = Config.CORDOVA
+
+            if not template:
+                template = Config.PURE
+
+            self.template = template
+            print_info('Auto detected template to be "{}"'.format(template))
 
 
 class Clickable(object):
@@ -185,40 +256,10 @@ class Clickable(object):
             raise Exception('The command "{}" does not exist on this system, please install it for clickable to work properly"'.format(command))
 
     def find_manifest(self):
-        manifests = []
-        for (root, dirs, files) in os.walk(self.cwd, topdown=True):
-            for name in files:
-                if name == 'manifest.json':
-                    manifests.append(os.path.join(root, name))
-
-        if not manifests:
-            raise Exception('Could not find manifest.json')
-
-        # Favor the manifest in the install dir first, then fall back to the build dir and finally the source dir
-        manifest = ''
-        for m in manifests:
-            if m.startswith(self.temp):
-                manifest = m
-
-        if not manifest:
-            for m in manifests:
-                if m.startswith(self.config.dir):
-                    manifest = m
-
-        if not manifest:
-            manifest = manifests[0]
-
-        return manifest
+        return find_manifest(self.cwd, self.temp, self.config.dir)
 
     def get_manifest(self):
-        manifest = {}
-        with open(self.find_manifest(), 'r') as f:
-            try:
-                manifest = json.load(f)
-            except ValueError:
-                raise ValueError('Failed reading "manifest.json", it is not valid json')
-
-        return manifest
+        return get_manifest(self.cwd, self.temp, self.config.dir)
 
     def find_version(self):
         return self.get_manifest().get('version', '1.0')
