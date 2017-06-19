@@ -202,7 +202,7 @@ class Clickable(object):
 
         if not manifest:
             for m in manifests:
-                if m.startswith(self.config.build):
+                if m.startswith(self.config.dir):
                     manifest = m
 
         if not manifest:
