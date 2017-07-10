@@ -94,7 +94,7 @@ class Config(object):
         'default': 'kill clean build click-build install launch',
         'log': None,
         'specificDependencies': False,  # TODO make this less confusing
-        'dependencies': [],
+        'dependencies': [],  # TODO support this being a string
         'ignore': [],
         'make_jobs': 0,
     }
@@ -110,7 +110,7 @@ class Config(object):
     required = ['sdk', 'arch', 'dir']
     templates = [PURE_QML_CMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE]
 
-    def __init__(self, ip=None, arch=None, template=None):
+    def __init__(self, ip=None, arch=None, template=None, skip_detection=False):
         self.cwd = os.getcwd()
         self.load_config()
 
@@ -123,7 +123,11 @@ class Config(object):
         if template:
             self.template = template
 
-        self.detect_template()
+        if skip_detection:
+            if not template:
+                self.template = self.PURE
+        else:
+            self.detect_template()
 
         if not self.kill:
             if self.template == self.CORDOVA:
@@ -747,7 +751,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     try:
-        config = Config(ip=args.ip, arch=args.arch, template=args.template)
+        config = Config(ip=args.ip, arch=args.arch, template=args.template, skip_detection=bool(args.click))
         clickable = None
         if config.template == config.PURE_QML_QMAKE:
             clickable = PureQMLQMakeClickable(config, args.device_serial_number)
