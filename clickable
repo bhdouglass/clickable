@@ -106,9 +106,10 @@ class Config(object):
     CUSTOM = 'custom'
     CORDOVA = 'cordova'
     PURE = 'pure'
+    PYTHON = 'python'
 
     required = ['sdk', 'arch', 'dir']
-    templates = [PURE_QML_CMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE]
+    templates = [PURE_QML_CMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON]
 
     def __init__(self, ip=None, arch=None, template=None, skip_detection=False):
         self.cwd = os.getcwd()
@@ -654,6 +655,11 @@ class PureClickable(Clickable):
         print_info('Copied files to temp directory for click building')
 
 
+class PythonClickable(PureClickable):
+    # The only difference between this and the Pure template is that this doesn't force the "all" arch
+    pass
+
+
 class CordovaClickable(Clickable):
     def _build(self):
         command = "cordova -d build ubuntu --device -- --framework={}".format(self.config.sdk)
@@ -767,6 +773,8 @@ if __name__ == "__main__":
             clickable = CordovaClickable(config, args.device_serial_number)
         elif config.template == config.PURE:
             clickable = PureClickable(config, args.device_serial_number)
+        elif config.template == config.PYTHON:
+            clickable = PythonClickable(config, args.device_serial_number)
 
         commands = args.commands
         if len(args.commands) == 0:
