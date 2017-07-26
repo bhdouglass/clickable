@@ -756,8 +756,14 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    skip_detection = False
+    if args.click:
+        skip_detection = True
+    elif 'setup-lxd' in args.commands:
+        skip_detection = True
+
     try:
-        config = Config(ip=args.ip, arch=args.arch, template=args.template, skip_detection=bool(args.click))
+        config = Config(ip=args.ip, arch=args.arch, template=args.template, skip_detection=skip_detection)
         clickable = None
         if config.template == config.PURE_QML_QMAKE:
             clickable = PureQMLQMakeClickable(config, args.device_serial_number)
