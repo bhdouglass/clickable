@@ -109,7 +109,7 @@ class Config(object):
     PYTHON = 'python'
 
     required = ['sdk', 'arch', 'dir']
-    templates = [PURE_QML_CMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON]
+    templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON]
 
     def __init__(self, ip=None, arch=None, template=None, skip_detection=False):
         self.cwd = os.getcwd()
