@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 
 import argparse
+import itertools
 import subprocess
 import shlex
 import os
@@ -38,7 +39,13 @@ def print_error(message):
 
 def find_manifest(cwd, temp_dir=None, build_dir=None):
     manifests = []
-    for (root, dirs, files) in os.walk(cwd, topdown=True):
+    searchpaths = []
+    searchpaths.append(cwd)
+
+    if build_dir and not build_dir.startswith(os.path.realpath(cwd) + os.sep):
+        searchpaths.append(build_dir)
+
+    for (root, dirs, files) in itertools.chain.from_iterable(os.walk(path, topdown=True) for path in searchpaths):
         for name in files:
             if name == 'manifest.json':
                 manifests.append(os.path.join(root, name))
@@ -49,12 +56,12 @@ def find_manifest(cwd, temp_dir=None, build_dir=None):
     # Favor the manifest in the install dir first, then fall back to the build dir and finally the source dir
     manifest = ''
     for m in manifests:
-        if temp_dir and m.startswith(temp_dir):
+        if temp_dir and m.startswith(os.path.realpath(temp_dir) + os.sep):
             manifest = m
 
     if not manifest:
         for m in manifests:
-            if build_dir and m.startswith(build_dir):
+            if build_dir and m.startswith(os.path.realpath(build_dir) + os.sep):
                 manifest = m
 
     if not manifest:
@@ -217,7 +224,7 @@ class Clickable(object):
     def __init__(self, config, device_serial_number=None):
         self.cwd = os.getcwd()
         self.config = config
-        self.temp = self.config.dir + '/tmp'
+        self.temp = os.path.join(self.config.dir,'tmp')
         self.device_serial_number = device_serial_number
         if type(self.device_serial_number) == type([]) and len(self.device_serial_number) > 0:
             self.device_serial_number = self.device_serial_number[0]
