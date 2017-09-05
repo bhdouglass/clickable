@@ -18,6 +18,7 @@ import xml.etree.ElementTree as ElementTree
 # TODO lxd setup shouldn't require a clickable.json
 # TODO check for a template based on CMake files, etc
 
+
 class Colors:
     INFO = '\033[94m'
     SUCCESS = '\033[92m'
@@ -25,17 +26,22 @@ class Colors:
     ERROR = '\033[91m'
     CLEAR = '\033[0m'
 
+
 def print_info(message):
     print(Colors.INFO + message + Colors.CLEAR)
+
 
 def print_success(message):
     print(Colors.SUCCESS + message + Colors.CLEAR)
 
+
 def print_warning(message):
     print(Colors.WARNING + message + Colors.CLEAR)
 
+
 def print_error(message):
     print(Colors.ERROR + message + Colors.CLEAR)
+
 
 def find_manifest(cwd, temp_dir=None, build_dir=None):
     manifests = []
@@ -68,6 +74,7 @@ def find_manifest(cwd, temp_dir=None, build_dir=None):
         manifest = manifests[0]
 
     return manifest
+
 
 def get_manifest(cwd, temp_dir=None, build_dir=None):
     manifest = {}
