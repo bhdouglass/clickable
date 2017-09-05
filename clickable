@@ -455,7 +455,7 @@ class Clickable(object):
             print_success('Finished setting up the lxd container')
 
     def click_build(self):
-        command = 'click build {} --no-validate'.format(self.temp)
+        command = 'click build {} --no-validate'.format(os.path.dirname(self.find_manifest()))
 
         if self.config.chroot:
             subprocess.check_call(shlex.split(command), cwd=self.config.dir)
