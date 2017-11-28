@@ -480,6 +480,7 @@ class Clickable(object):
         self.run_device_command(command)
 
     def no_lock(self):
+        print_info('Turning off device activity timeout')
         command = 'gsettings set com.ubuntu.touch.system activity-timeout 0'
         self.run_device_command(command)
 
