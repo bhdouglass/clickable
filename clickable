@@ -9,14 +9,17 @@ import sys
 import json
 import shutil
 import platform
+import time
 import xml.etree.ElementTree as ElementTree
 
 # TODO generate clickable.json file
 # TODO add Golang template
 # TODO add desktop arch
-# TODO make a snap
-# TODO lxd setup shouldn't require a clickable.json
 # TODO check for a template based on CMake files, etc
+# TODO check if there are multiple devices attached
+
+# TODO include phablet-shell
+# TODO include phablet-config
 
 
 class Colors:
@@ -383,6 +386,18 @@ class Clickable(object):
             else:
                 print_info('Dependencies already installed')
 
+    def start_lxd(self):
+        started = False
+        error_code = subprocess.call(shlex.split('which systemctl'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        if error_code == 0:
+            print_info('Asking for root to start lxd')
+            error_code = subprocess.call(shlex.split('sudo systemctl start lxd'))
+
+            started = (error_code == 0)
+
+        return started
+
     def check_lxd(self):
         name = 'clickable-{}'.format(self.build_arch)
 
@@ -391,9 +406,15 @@ class Clickable(object):
             status = subprocess.check_output(shlex.split('{} status {}'.format(self.usdk_target, name)), stderr=subprocess.STDOUT)
             status = json.loads(status)['status']
         except subprocess.CalledProcessError as e:
-            if e.output.strip() == 'error: Could not connect to the LXD server.':
-                # TODO explain how to start lxd and/or try to start it
-                raise Exception('LXD is not running, please start it')
+            if e.output.strip() == 'error: Could not connect to the LXD server.' or 'Can\'t establish a working socket connection' in e.output.strip():
+                started = self.start_lxd()
+                if started:
+                    status = 'Running'  # Pretend it's started, but we will call this function again to check if it's actually ok
+
+                    time.sleep(3)  # Give it a sec to boot up
+                    self.check_lxd()
+                else:
+                    raise Exception('LXD is not running, please start it')
             elif e.output.strip() == 'error: Could not query container status. error: not found':
                 raise Exception('No lxd container exists to build in, please run `clickable setup-lxd`')
             else:
@@ -454,6 +475,14 @@ class Clickable(object):
 
             print_success('Finished setting up the lxd container')
 
+    def display_on(self):
+        command = 'powerd-cli display on'
+        self.run_device_command(command)
+
+    def no_lock(self):
+        command = 'gsettings set com.ubuntu.touch.system activity-timeout 0'
+        self.run_device_command(command)
+
     def click_build(self):
         command = 'click build {} --no-validate'.format(os.path.dirname(self.find_manifest()))
 
@@ -493,7 +522,7 @@ class Clickable(object):
     def kill(self):
         if self.config.kill:
             try:
-                self.run_device_command('pkill -f {}'.format(self.config.kill))
+                self.run_device_command('pkill {}'.format(self.config.kill))
             except:
                 pass  # Nothing to do, the process probably wasn't running
 
@@ -710,7 +739,9 @@ if __name__ == "__main__":
         "install": "install",
         "launch": "launch",
         "logs": "logs",
-        "setup-lxd": "setup_lxd"
+        "setup-lxd": "setup_lxd",
+        'display-on': 'display_on',
+        'no-lock': 'no_lock',
     }
 
     def show_valid_commands():
