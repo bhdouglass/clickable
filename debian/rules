@@ -1,0 +1,17 @@
+#!/usr/bin/make -f
+include /usr/share/dpkg/pkg-info.mk
+PKGDIR=debian/clickable
+
+%:
+	dh $@
+
+override_dh_install:
+	dh_install
+
+	# Install the manpages
+	mkdir -p $(PKGDIR)/usr/share/man/man1/
+	help2man $(PKGDIR)/usr/bin/clickable \
+	--no-info \
+	--help-option="--help" \
+	--version-string=$(DEB_VERSION_UPSTREAM) \
+	-o $(PKGDIR)/usr/share/man/man1/clickable.1
