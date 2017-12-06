@@ -108,6 +108,7 @@ class Config(object):
         'kill': None,
         'scripts': {},
         'chroot': False,
+        'docker': False,
         'default': 'kill clean build click-build install launch',
         'log': None,
         'specificDependencies': False,  # TODO make this less confusing
@@ -128,7 +129,7 @@ class Config(object):
     required = ['sdk', 'arch', 'dir']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON]
 
-    def __init__(self, ip=None, arch=None, template=None, skip_detection=False):
+    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, docker=False):
         self.cwd = os.getcwd()
         self.load_config()
 
@@ -140,6 +141,9 @@ class Config(object):
 
         if template:
             self.template = template
+
+        if docker:
+            self.docker = docker
 
         if skip_detection:
             if not template:
@@ -253,6 +257,9 @@ class Clickable(object):
         if self.config.chroot:
             self.check_command('click')
 
+        if self.config.docker:
+            self.check_command('docker')
+
         if self.config.template == Config.CORDOVA:
             self.check_command('cordova')
 
@@ -260,16 +267,15 @@ class Clickable(object):
             # If running as a snap, trick usdk-target into thinking its not in a snap
             del os.environ['SNAP']
 
-        usdk_target_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'usdk-target')
-        if os.path.isfile(usdk_target_path):
-            self.usdk_target = usdk_target_path
-        else:
-            try:
-                self.check_command('usdk-target')
-            except Exception:
-                raise Exception('The command "usdk-target" does not exist on this system, you can find it in the clickable repo')
-
-            print_warning('Using the system version of usdk-target and not clickable\'s')
+        if not self.config.chroot and not self.config.docker:
+            usdk_target_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'usdk-target')
+            if os.path.isfile(usdk_target_path):
+                self.usdk_target = usdk_target_path
+            else:
+                try:
+                    self.check_command('usdk-target')
+                except Exception:
+                    raise Exception('The command "usdk-target" does not exist on this system, you can find it in the clickable repo')
 
     def check_command(self, command):
         error_code = subprocess.call(shlex.split('which {}'.format(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -334,13 +340,8 @@ class Clickable(object):
 
     def run_container_command(self, command, force_lxd=False, sudo=False, get_output=False, use_dir=True):
         wrapped_command = command
-        if self.config.chroot and not force_lxd:
-            chroot_command = 'run'
-            if sudo:
-                chroot_command = 'maint'
 
-            wrapped_command = 'click chroot -a {} -f {} {} {}'.format(self.build_arch, self.config.sdk, chroot_command, command)
-        else:
+        if force_lxd or (not self.config.chroot and not self.config.docker):
             self.check_lxd()
 
             target_command = 'exec'
@@ -351,6 +352,22 @@ class Clickable(object):
                 command = 'cd {}; {}'.format(self.config.dir, command)
 
             wrapped_command = '{} {} clickable-{} -- bash -c "{}"'.format(self.usdk_target, target_command, self.build_arch, command)
+        elif self.config.chroot:
+            chroot_command = 'run'
+            if sudo:
+                chroot_command = 'maint'
+
+            wrapped_command = 'click chroot -a {} -f {} {} {}'.format(self.build_arch, self.config.sdk, chroot_command, command)
+        else:  # Docker
+            wrapped_command = 'docker run -v {}:{} -w {} -u {} --rm -it clickable/ubuntu-sdk:{}-{} bash -c "{}"'.format(
+                self.cwd,
+                self.cwd,
+                self.config.dir,
+                os.getuid(),
+                self.config.sdk.replace('ubuntu-sdk-', ''),
+                self.build_arch,
+                command,
+            )
 
         kwargs = {}
         if use_dir:
@@ -440,6 +457,11 @@ class Clickable(object):
         return found
 
     def setup_lxd(self):
+        if self.config.chroot:
+            raise Exception('Cannot setup lxd while clickable is configured to use a chroot')
+        elif self.config.docker:
+            raise Exception('Cannot setup lxd while clickable is configured to use docker')
+
         name = 'clickable-{}'.format(self.build_arch)
         alias = '{}-{}-{}-dev'.format(self.config.sdk, self.host_arch, self.build_arch)
 
@@ -800,6 +822,12 @@ if __name__ == "__main__":
         action='store_true',
         help='Runs in debug mode'
     )
+    parser.add_argument(
+        '--docker',
+        action='store_true',
+        help='Run build commands in a docker container'
+    )
+
     args = parser.parse_args()
 
     skip_detection = False
@@ -809,7 +837,14 @@ if __name__ == "__main__":
         skip_detection = True
 
     try:
-        config = Config(ip=args.ip, arch=args.arch, template=args.template, skip_detection=skip_detection)
+        config = Config(
+            ip=args.ip,
+            arch=args.arch,
+            template=args.template,
+            skip_detection=skip_detection,
+            docker=args.docker,
+        )
+
         clickable = None
         if config.template == config.PURE_QML_QMAKE:
             clickable = PureQMLQMakeClickable(config, args.device_serial_number)
