@@ -17,9 +17,9 @@ import xml.etree.ElementTree as ElementTree
 # TODO add desktop arch
 # TODO check for a template based on CMake files, etc
 # TODO check if there are multiple devices attached
-
 # TODO include phablet-shell
 # TODO include phablet-config
+# TODO update to python3
 
 
 class Colors:

@@ -1,3 +1,9 @@
+clickable (1.1.0) unstable; urgency=medium
+
+  * Added option to use docker
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 06 Dec 2017 01:57:00 -0500
+
 clickable (1.0.2) unstable; urgency=medium
 
   * Initial release
