@@ -12,20 +12,23 @@ For a great tutorial on how to get started with clickable, check out the one in 
 * `adb` For installing and running commands on your device
 * `lxd` For building any binaries and the click package
     * After installing lxd make sure you run `lxd init`
+* `docker` For building any binaries and the click package (alternative to lxd)
+
+### Via PPA (Ubuntu)
+
+* Add the PPA to your system: `sudo add-apt-repository ppa:bhdouglass/clickable`
+* Update your package list: `sudo apt-get update`
+* Install clickable: `sudo apt-get install clickable`
 
 ### Via Snap
 
 * Download the latest version from the OpenStore: <https://open.uappexplorer.com/snap/clickable>
 * Install the snap: `sudo snap install --force-dangerous --classic <path/to/snap>`
 
-### Via Git
-
-* Clone this repo: `git clone https://github.com/bhdouglass/clickable.git`
-* Set the repo on your `PATH`
-
 ### Post Setup
 
-Run `clickable setup-lxd` to create a container to build clicks and binaries in.
+If you want to use lxd for compiling, run `clickable setup-lxd` to create a
+container to build clicks and binaries in.
 
 ## Usage
 
@@ -87,6 +90,12 @@ SDK IDE installed you may already have this command installed, but the version
 included in this repo is more up to date than the Ubuntu SDK IDE verion. If
 you are not running Ubuntu or do not already have the SDK IDE setup you will
 need to use the usdk-target binary included in this repo.
+
+## Docker Container Building
+
+Clickable supports building in a docker container. To use them you just need
+to have docker installed on your system and running and use the `--docker`
+argument when running clickable.
 
 ## Chroot Building
 
