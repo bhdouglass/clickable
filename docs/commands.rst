@@ -11,6 +11,10 @@ You can combine the commands together like ``clickable build click_build install
 
 Runs the default sub-commands specified in the "default" config
 
+``clickable shell``
+
+Opens a shell on the device via ssh. This is similar to the ``phablet-shell`` command.
+
 ``clickable kill``
 
 Kills a running process (specified by the config). Using this you can relaunch your app.
