@@ -113,7 +113,7 @@ class Config(object):
         'default': 'kill clean build click-build install launch',
         'log': None,
         'specificDependencies': False,  # TODO make this less confusing
-        'dependencies': [],  # TODO support this being a string
+        'dependencies': [],
         'ignore': [],
         'make_jobs': 0,
     }
@@ -168,6 +168,9 @@ class Config(object):
 
         if self.template not in self.templates:
             raise ValueError('"{}" is not a valid template ({})'.format(self.template, ', '.join(self.templates)))
+
+        if isinstance(self.dependencies, basestring):
+            self.dependencies = self.dependencies.split(' ')
 
     def __getattr__(self, name):
         return self.config[name]
