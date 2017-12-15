@@ -10,6 +10,7 @@ import json
 import shutil
 import platform
 import time
+import uuid
 import xml.etree.ElementTree as ElementTree
 
 # TODO generate clickable.json file
@@ -276,6 +277,12 @@ class Clickable(object):
                     raise Exception('The command "usdk-target" does not exist on this system, you can find it in the clickable repo')
         else:
             self.check_command('docker')
+            self.docker_image = 'clickable/ubuntu-sdk:{}-{}'.format(self.config.sdk.replace('ubuntu-sdk-', ''), self.build_arch)
+            self.base_docker_image = self.docker_image
+
+            if os.path.exists('.clickable/name.txt'):
+                with open('.clickable/name.txt', 'r') as f:
+                    self.docker_image = f.read().strip()
 
     def check_command(self, command):
         error_code = subprocess.call(shlex.split('which {}'.format(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -361,13 +368,12 @@ class Clickable(object):
         else:  # Docker
             self.check_docker()
 
-            wrapped_command = 'docker run -v {}:{} -w {} -u {} --rm -it clickable/ubuntu-sdk:{}-{} bash -c "{}"'.format(
+            wrapped_command = 'docker run -v {}:{} -w {} -u {} --rm -it {} bash -c "{}"'.format(
                 self.cwd,
                 self.cwd,
                 self.config.dir,
                 os.getuid(),
-                self.config.sdk.replace('ubuntu-sdk-', ''),
-                self.build_arch,
+                self.docker_image,
                 command,
             )
 
@@ -384,13 +390,7 @@ class Clickable(object):
         if len(self.config.dependencies) > 0:
             print_info('Checking dependencies')
 
-            if self.config.docker:
-                # TODO generate a docker file in ./.clickable/Dockerfile
-                # TODO if it already exists check if it has the same dependencies
-                # TODO if the file is new or changes build the image
-                # TODO use that docker image for running stuff
-                pass
-            else:
+            if self.config.lxd or self.config.chroot:
                 command = 'apt-get install -y --force-yes'
                 run = False
                 for dep in self.config.dependencies:
@@ -411,6 +411,49 @@ class Clickable(object):
                     self.run_container_command(command, sudo=True, use_dir=False)
                 else:
                     print_info('Dependencies already installed')
+            else:  # Docker
+                self.check_docker()
+
+                dependencies = ''
+                for dep in self.config.dependencies:
+                    if self.config.arch == 'armhf' and 'armhf' not in dep and not config.specificDependencies:
+                        dependencies = '{} {}:{}'.format(dependencies, dep, self.config.arch)
+                    else:
+                        dependencies += dep
+
+                dockerfile = '''
+FROM {}
+RUN echo set debconf/frontend Noninteractive | debconf-communicate && echo set debconf/priority critical | debconf-communicate
+RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} && apt-get clean
+                '''.format(
+                    self.base_docker_image,
+                    dependencies
+                ).strip()
+
+                build = False
+
+                if not os.path.exists('.clickable'):
+                    os.makedirs('.clickable')
+
+                if os.path.exists('.clickable/Dockerfile'):
+                    with open('.clickable/Dockerfile', 'r') as f:
+                        if dockerfile.strip() != f.read().strip():
+                            build = True
+                else:
+                    build = True
+
+                if build:
+                    with open('.clickable/Dockerfile', 'w') as f:
+                        f.write(dockerfile)
+
+                    self.docker_image = '{}-{}'.format(self.base_docker_image, uuid.uuid4())
+                    with open('.clickable/name.txt', 'w') as f:
+                        f.write(self.docker_image)
+
+                    print_info('Generating new docker image')
+                    subprocess.check_call(shlex.split('docker build -t {} .'.format(self.docker_image)), cwd='.clickable')
+                else:
+                    print_info('Dependencies already setup')
 
     def start_docker(self):
         started = False
