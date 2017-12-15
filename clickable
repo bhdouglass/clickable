@@ -108,7 +108,7 @@ class Config(object):
         'kill': None,
         'scripts': {},
         'chroot': False,
-        'docker': False,
+        'lxd': False,
         'default': 'kill clean build click-build install launch',
         'log': None,
         'specificDependencies': False,  # TODO make this less confusing
@@ -129,7 +129,7 @@ class Config(object):
     required = ['sdk', 'arch', 'dir']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON]
 
-    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, docker=False):
+    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False):
         self.cwd = os.getcwd()
         self.load_config()
 
@@ -142,8 +142,8 @@ class Config(object):
         if template:
             self.template = template
 
-        if docker:
-            self.docker = docker
+        if lxd:
+            self.lxd = lxd
 
         if skip_detection:
             if not template:
@@ -238,9 +238,9 @@ class Clickable(object):
     def __init__(self, config, device_serial_number=None):
         self.cwd = os.getcwd()
         self.config = config
-        self.temp = os.path.join(self.config.dir,'tmp')
+        self.temp = os.path.join(self.config.dir, 'tmp')
         self.device_serial_number = device_serial_number
-        if type(self.device_serial_number) == type([]) and len(self.device_serial_number) > 0:
+        if type(self.device_serial_number) == list and len(self.device_serial_number) > 0:
             self.device_serial_number = self.device_serial_number[0]
 
         self.host_arch = 'amd64' if platform.architecture()[0] == '64bit' else 'i386'
@@ -254,12 +254,6 @@ class Clickable(object):
         else:
             self.check_command('adb')
 
-        if self.config.chroot:
-            self.check_command('click')
-
-        if self.config.docker:
-            self.check_command('docker')
-
         if self.config.template == Config.CORDOVA:
             self.check_command('cordova')
 
@@ -267,7 +261,11 @@ class Clickable(object):
             # If running as a snap, trick usdk-target into thinking its not in a snap
             del os.environ['SNAP']
 
-        if not self.config.chroot and not self.config.docker:
+        if self.config.chroot:
+            print_warning('Use of chroots are depricated and will be removed in a future version')
+            self.check_command('click')
+        elif self.config.lxd:
+            print_warning('Use of lxd is depricated and will be removed in a future version')
             usdk_target_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'usdk-target')
             if os.path.isfile(usdk_target_path):
                 self.usdk_target = usdk_target_path
@@ -276,6 +274,8 @@ class Clickable(object):
                     self.check_command('usdk-target')
                 except Exception:
                     raise Exception('The command "usdk-target" does not exist on this system, you can find it in the clickable repo')
+        else:
+            self.check_command('docker')
 
     def check_command(self, command):
         error_code = subprocess.call(shlex.split('which {}'.format(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -341,7 +341,7 @@ class Clickable(object):
     def run_container_command(self, command, force_lxd=False, sudo=False, get_output=False, use_dir=True):
         wrapped_command = command
 
-        if force_lxd or (not self.config.chroot and not self.config.docker):
+        if force_lxd or self.config.lxd:
             self.check_lxd()
 
             target_command = 'exec'
@@ -359,6 +359,8 @@ class Clickable(object):
 
             wrapped_command = 'click chroot -a {} -f {} {} {}'.format(self.build_arch, self.config.sdk, chroot_command, command)
         else:  # Docker
+            self.check_docker()
+
             wrapped_command = 'docker run -v {}:{} -w {} -u {} --rm -it clickable/ubuntu-sdk:{}-{} bash -c "{}"'.format(
                 self.cwd,
                 self.cwd,
@@ -382,26 +384,54 @@ class Clickable(object):
         if len(self.config.dependencies) > 0:
             print_info('Checking dependencies')
 
-            command = 'apt-get install -y --force-yes'
-            run = False
-            for dep in self.config.dependencies:
-                if self.config.arch == 'armhf' and 'armhf' not in dep and not config.specificDependencies:
-                    dep = '{}:{}'.format(dep, self.config.arch)
-
-                exists = ''
-                try:
-                    exists = self.run_container_command('dpkg -s {} | grep Status'.format(dep), get_output=True, use_dir=False)
-                except subprocess.CalledProcessError:
-                    exists = ''
-
-                if exists.strip() != 'Status: install ok installed':
-                    run = True
-                    command = '{} {}'.format(command, dep)
-
-            if run:
-                self.run_container_command(command, sudo=True, use_dir=False)
+            if self.config.docker:
+                # TODO generate a docker file in ./.clickable/Dockerfile
+                # TODO if it already exists check if it has the same dependencies
+                # TODO if the file is new or changes build the image
+                # TODO use that docker image for running stuff
+                pass
             else:
-                print_info('Dependencies already installed')
+                command = 'apt-get install -y --force-yes'
+                run = False
+                for dep in self.config.dependencies:
+                    if self.config.arch == 'armhf' and 'armhf' not in dep and not config.specificDependencies:
+                        dep = '{}:{}'.format(dep, self.config.arch)
+
+                    exists = ''
+                    try:
+                        exists = self.run_container_command('dpkg -s {} | grep Status'.format(dep), get_output=True, use_dir=False)
+                    except subprocess.CalledProcessError:
+                        exists = ''
+
+                    if exists.strip() != 'Status: install ok installed':
+                        run = True
+                        command = '{} {}'.format(command, dep)
+
+                if run:
+                    self.run_container_command(command, sudo=True, use_dir=False)
+                else:
+                    print_info('Dependencies already installed')
+
+    def start_docker(self):
+        started = False
+        error_code = subprocess.call(shlex.split('which systemctl'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        if error_code == 0:
+            print_info('Asking for root to start docker')
+            error_code = subprocess.call(shlex.split('sudo systemctl start docker'))
+
+            started = (error_code == 0)
+
+        return started
+
+    def check_docker(self):
+        try:
+            status = subprocess.check_output(shlex.split('docker ps'), stderr=subprocess.STDOUT)
+        except subprocess.CalledProcessError as e:
+            self.start_docker()
+
+            time.sleep(3)  # Give it a sec to boot up
+            self.check_docker()
 
     def start_lxd(self):
         started = False
@@ -457,45 +487,7 @@ class Clickable(object):
         return found
 
     def setup_lxd(self):
-        if self.config.chroot:
-            raise Exception('Cannot setup lxd while clickable is configured to use a chroot')
-        elif self.config.docker:
-            raise Exception('Cannot setup lxd while clickable is configured to use docker')
-
-        name = 'clickable-{}'.format(self.build_arch)
-        alias = '{}-{}-{}-dev'.format(self.config.sdk, self.host_arch, self.build_arch)
-
-        if self.lxd_container_exists():
-            print_success('Container already exists, nothing to do')
-        else:
-            print_info('Going to setup the lxd container')
-
-            # Find the image we want
-            images = subprocess.check_output(shlex.split('{} images'.format(self.usdk_target)))
-            images = json.loads(images)
-
-            fingerprint = None
-            for image in images:
-                if image['alias'] == alias:
-                    fingerprint = image['fingerprint']
-
-            if not fingerprint:
-                raise Exception('The {} lxd image could not be found'.format(alias))
-
-            print_info('Asking for root to create the lxd container')
-
-            # If set, pass along the USDK_TEST_REMOTE env var (this allows user to use a different sdk image server)
-            env = ''
-            if 'USDK_TEST_REMOTE' in os.environ:
-                env = 'USDK_TEST_REMOTE={}'.format(os.environ['USDK_TEST_REMOTE'])
-
-            # Create a new container
-            subprocess.check_call(shlex.split('sudo {} {} create -n {} -p {}'.format(env, self.usdk_target, name, fingerprint)))
-
-            self.run_container_command('apt-get update', force_lxd=True, sudo=True, use_dir=False)
-            self.run_container_command('apt-get install -y --force-yes click', force_lxd=True, sudo=True, use_dir=False)
-
-            print_success('Finished setting up the lxd container')
+        print_error('Setting up lxd is no longer supported, use docker instead')
 
     def display_on(self):
         command = 'powerd-cli display on'
@@ -546,7 +538,7 @@ class Clickable(object):
         if self.config.kill:
             try:
                 self.run_device_command('pkill {}'.format(self.config.kill))
-            except:
+            except Exception:
                 pass  # Nothing to do, the process probably wasn't running
 
     def launch(self, app=None):
@@ -573,7 +565,7 @@ class Clickable(object):
     def clean(self):
         try:
             shutil.rmtree(self.config.dir)
-        except:
+        except Exception:
             type, value, traceback = sys.exc_info()
             if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
                 pass  # Nothing to do here, the directory didn't exist
@@ -582,7 +574,7 @@ class Clickable(object):
 
         try:
             shutil.rmtree(self.temp)
-        except:
+        except Exception:
             type, value, traceback = sys.exc_info()
             if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
                 pass  # Nothing to do here, the directory didn't exist
@@ -595,7 +587,7 @@ class Clickable(object):
     def build(self):
         try:
             os.makedirs(self.config.dir)
-        except:
+        except Exception:
             print_warning('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
 
         self.setup_dependencies()
@@ -638,7 +630,7 @@ class MakeClickable(Clickable):
 
         try:
             os.makedirs(self.temp)
-        except:
+        except Exception:
             print_warning('Failed to create temp dir ({}): {}'.format(self.temp, str(sys.exc_info()[0])))
 
         # The actual make command is implemented in the subclasses
@@ -751,14 +743,17 @@ class CordovaClickable(Clickable):
 
 if __name__ == "__main__":
     config = None
+    COMMAND_ALIASES = {
+        "click_build": "click-build",
+        "build_click": "click-build",
+        "build-click": "click-build",
+    }
+
     COMMAND_HANDLERS = {
         "kill": "kill",
         "clean": "clean",
         "build": "build",
-        "click_build": "click_build",
         "click-build": "click_build",
-        "build_click": "click_build",
-        "build-click": "click_build",
         "install": "install",
         "launch": "launch",
         "logs": "logs",
@@ -780,12 +775,19 @@ if __name__ == "__main__":
         return "\n".join(n)
 
     def print_valid_commands():
-            print(show_valid_commands())
+        print(show_valid_commands())
 
-    # TODO better help text & version
+    # TODO use proper subcommands with ArgumentParser
     parser = argparse.ArgumentParser(description='clickable')
+    parser.add_argument('--version', '-v', action='version', version='%(prog)s 2.0.0')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
-    parser.add_argument('--device', '-d', action="store_true", default=False)
+    parser.add_argument(
+        '--device',
+        '-d',
+        action='store_true',
+        help='Whether or not to run the custom command on the device',
+        default=False,
+    )
     parser.add_argument(
         '--device-serial-number',
         '-s',
@@ -820,12 +822,14 @@ if __name__ == "__main__":
     parser.add_argument(
         '--debug',
         action='store_true',
-        help='Runs in debug mode'
+        help='Runs in debug mode',
+        default=False,
     )
     parser.add_argument(
-        '--docker',
+        '--lxd',
         action='store_true',
-        help='Run build commands in a docker container'
+        help='Run build commands in a lxd container',
+        default=False,
     )
 
     args = parser.parse_args()
@@ -842,7 +846,7 @@ if __name__ == "__main__":
             arch=args.arch,
             template=args.template,
             skip_detection=skip_detection,
-            docker=args.docker,
+            lxd=args.lxd,
         )
 
         clickable = None
@@ -876,12 +880,14 @@ if __name__ == "__main__":
                 clickable.launch(args.app)
             elif command in COMMAND_HANDLERS:
                 getattr(clickable, COMMAND_HANDLERS[command])()
+            elif command in COMMAND_ALIASES:
+                getattr(clickable, COMMAND_ALIASES[command])()
             elif command == 'help':
                 parser.print_help()
             else:
                 print_error('There is no builtin or custom command named "{}"'.format(command))
                 print_valid_commands()
-    except:
+    except Exception:
         if args.debug:
             raise
         else:
