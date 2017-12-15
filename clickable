@@ -21,6 +21,7 @@ import xml.etree.ElementTree as ElementTree
 # TODO include phablet-shell
 # TODO include phablet-config
 # TODO update to python3
+# TODO add option to run inside a container
 
 
 class Colors:
@@ -171,6 +172,9 @@ class Config(object):
 
         if isinstance(self.dependencies, basestring):
             self.dependencies = self.dependencies.split(' ')
+
+        if type(self.default) == list:
+            self.default = ' '.join(self.default)
 
     def __getattr__(self, name):
         return self.config[name]

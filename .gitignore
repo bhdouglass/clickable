@@ -2,3 +2,4 @@ parts
 prime
 stage
 tmp
+_build
