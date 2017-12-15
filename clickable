@@ -424,14 +424,18 @@ class Clickable(object):
 
         return started
 
-    def check_docker(self):
+    def check_docker(self, retries=3):
         try:
             status = subprocess.check_output(shlex.split('docker ps'), stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
+            retries -= 1
+            if retries <= 0:
+                raise e
+
             self.start_docker()
 
             time.sleep(3)  # Give it a sec to boot up
-            self.check_docker()
+            self.check_docker(retries)
 
     def start_lxd(self):
         started = False
@@ -488,6 +492,18 @@ class Clickable(object):
 
     def setup_lxd(self):
         print_error('Setting up lxd is no longer supported, use docker instead')
+
+    def setup_docker(self):
+        self.check_command('docker')
+        self.start_docker()
+
+        print_info('Asking for root to create docker group')
+        subprocess.check_call(shlex.split('sudo groupadd docker'))
+
+        print_info('Asking for root to add the current user to the docker group')
+        subprocess.check_call(shlex.split('sudo usermod -aG docker $USER'))
+
+        print_info('Log out or restart to apply changes')
 
     def display_on(self):
         command = 'powerd-cli display on'
@@ -741,43 +757,43 @@ class CordovaClickable(Clickable):
         return root.attrib['version'] if 'version' in root.attrib else '1.0.0'
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     config = None
     COMMAND_ALIASES = {
-        "click_build": "click-build",
-        "build_click": "click-build",
-        "build-click": "click-build",
+        'click_build': 'click-build',
+        'build_click': 'click-build',
+        'build-click': 'click-build',
     }
 
     COMMAND_HANDLERS = {
-        "kill": "kill",
-        "clean": "clean",
-        "build": "build",
-        "click-build": "click_build",
-        "install": "install",
-        "launch": "launch",
-        "logs": "logs",
-        "setup-lxd": "setup_lxd",
+        'kill': 'kill',
+        'clean': 'clean',
+        'build': 'build',
+        'click-build': 'click_build',
+        'install': 'install',
+        'launch': 'launch',
+        'logs': 'logs',
+        'setup-lxd': 'setup_lxd',
         'display-on': 'display_on',
         'no-lock': 'no_lock',
+        'setup-docker': 'setup_docker',
     }
 
     def show_valid_commands():
         n = [
             'Valid commands:',
-            ", ".join(sorted(COMMAND_HANDLERS.keys()))
+            ', '.join(sorted(COMMAND_HANDLERS.keys()))
         ]
-        if config and hasattr(config, "scripts") and config.scripts:
+        if config and hasattr(config, 'scripts') and config.scripts:
             n += [
                 'Project-specific custom commands:',
-                ", ".join(sorted(config.scripts.keys()))
+                ', '.join(sorted(config.scripts.keys()))
             ]
-        return "\n".join(n)
+        return '\n'.join(n)
 
     def print_valid_commands():
         print(show_valid_commands())
 
-    # TODO use proper subcommands with ArgumentParser
     parser = argparse.ArgumentParser(description='clickable')
     parser.add_argument('--version', '-v', action='version', version='%(prog)s 2.0.0')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
