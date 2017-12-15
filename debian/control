@@ -11,8 +11,7 @@ Architecture: all
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          adb,
-         ubuntu-sdk-tools,
-         python,
-         lxd
+         docker.io,
+         python
 Suggests: docker
 Description: Compile, build, and deploy Ubuntu Touch click packages all from the command line.

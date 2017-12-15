@@ -1,3 +1,9 @@
+clickable (2.0.0-0ubuntu1~unstable) unstable; urgency=medium
+
+  * Full docker support
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Fri, 15 Dec 2017 00:38:00 -0500
+
 clickable (1.1.0-0ubuntu1~unstable) unstable; urgency=medium
 
   * Added option to use docker
