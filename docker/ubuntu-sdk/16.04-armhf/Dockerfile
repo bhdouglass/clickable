@@ -20,13 +20,24 @@ RUN add-apt-repository -y ppa:ci-train-ppa-service/stable-phone-overlay && \
     wget -qO - http://repo.ubports.com/keyring.gpg | apt-key add - && \
     apt-get update
 
-RUN echo "Package: *"  \
-            > /etc/apt/preferences.d/stable-phone-overlay.pref && \
-        echo \
-            "Pin: release o=LP-PPA-ci-train-ppa-service-stable-phone-overlay" \
-            >> /etc/apt/preferences.d/stable-phone-overlay.pref && \
-        echo "Pin-Priority: 1001" \
-            >> /etc/apt/preferences.d/stable-phone-overlay.pref
+RUN echo \
+        "Package: *"  \
+        > /etc/apt/preferences.d/stable-phone-overlay.pref && \
+    echo \
+        "Pin: release o=LP-PPA-ci-train-ppa-service-stable-phone-overlay" \
+        >> /etc/apt/preferences.d/stable-phone-overlay.pref && \
+    echo \
+        "Pin-Priority: 1001" \
+        >> /etc/apt/preferences.d/stable-phone-overlay.pref
+RUN echo \
+        "Package: *" \
+        > /etc/apt/preferences.d/ubports.pref && \
+    echo \
+        "Pin: origin repo.ubports.com" \
+        >> /etc/apt/preferences.d/ubports.pref && \
+    echo \
+        "Pin-Priority: 2000" \
+        >> /etc/apt/preferences.d/ubports.pref
 
 RUN apt-get -y --no-install-recommends dist-upgrade
 
