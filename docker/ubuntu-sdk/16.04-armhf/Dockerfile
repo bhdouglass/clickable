@@ -4,21 +4,32 @@ MAINTAINER Brian Douglass
 RUN echo set debconf/frontend Noninteractive | debconf-communicate && \
     echo set debconf/priority critical | debconf-communicate
 
-RUN echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu xenial main resticted universe multiverse" > /etc/apt/sources.list && \
-    echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu xenial-updates main resticted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports xenial main resticted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports xenial-updates main resticted universe multiverse" >> /etc/apt/sources.list
+RUN echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu xenial main resticted multiverse universe" > /etc/apt/sources.list && \
+    echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu xenial-updates main resticted multiverse universe" >> /etc/apt/sources.list && \
+    echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu xenial-security main resticted multiverse universe" >> /etc/apt/sources.list && \
+    echo "deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports xenial main resticted multiverse universe" >> /etc/apt/sources.list && \
+    echo "deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports xenial-updates main resticted multiverse universe" >> /etc/apt/sources.list && \
+    echo "deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports xenial-security main restricted multiverse universe" >> /etc/apt/sources.list
 
 RUN dpkg --add-architecture armhf && apt-get update
 
 RUN apt-get -y --no-install-recommends install gnupg ubuntu-keyring software-properties-common wget -f
 
-RUN echo "deb https://repo.ubports.com xenial main" >> /etc/apt/sources.list && \
-    echo "deb https://repo.ubports.com xenial_-_qt59 main" >> /etc/apt/sources.list && \
-    wget -qO - "https://repo.ubports.com/keyring.gpg" | apt-key add - && \
+RUN add-apt-repository -y ppa:ci-train-ppa-service/stable-phone-overlay && \
+    echo "deb http://repo.ubports.com xenial main" >> /etc/apt/sources.list && \
+    wget -qO - http://repo.ubports.com/keyring.gpg | apt-key add - && \
     apt-get update
 
+RUN echo "Package: *"  \
+            > /etc/apt/preferences.d/stable-phone-overlay.pref && \
+        echo \
+            "Pin: release o=LP-PPA-ci-train-ppa-service-stable-phone-overlay" \
+            >> /etc/apt/preferences.d/stable-phone-overlay.pref && \
+        echo "Pin-Priority: 1001" \
+            >> /etc/apt/preferences.d/stable-phone-overlay.pref
+
 RUN apt-get -y --no-install-recommends dist-upgrade
+
 RUN apt-get -y --no-install-recommends install \
     apt-utils \
     build-essential \
@@ -31,10 +42,6 @@ RUN apt-get -y --no-install-recommends install \
     ifupdown \
     g++-arm-linux-gnueabihf \
     pkg-config-arm-linux-gnueabihf \
-    qmlscene \
-    oxideqt-codecs-extra \
-    qt5-doc \
-    language-pack-en \
     libjsoncpp1:armhf \
     libnet-cpp2:armhf \
     libprocess-cpp3:armhf \
@@ -60,12 +67,14 @@ RUN apt-get -y --no-install-recommends install \
     qml-module-qtquick-xmllistmodel:armhf \
     qml-module-qtquick2:armhf \
     qml-module-qtsensors:armhf \
+    qml-module-qtsysteminfo:armhf \
     qml-module-ubuntu-onlineaccounts:armhf \
     qml-module-ubuntu-onlineaccounts-client:armhf \
+    qmlscene:armhf \
     qt5-image-formats-plugins:armhf \
+    qtchooser:armhf \
     qtdeclarative5-poppler1.0:armhf \
     qtdeclarative5-u1db1.0:armhf \
-    qtdeclarative5-ubuntu-content1:armhf \
     qtdeclarative5-ubuntu-download-manager0.1:armhf \
     qtdeclarative5-ubuntu-mediascanner0.1:armhf \
     qtdeclarative5-ubuntu-push-plugin:armhf \
@@ -73,10 +82,9 @@ RUN apt-get -y --no-install-recommends install \
     qtdeclarative5-ubuntu-telephony-phonenumber0.1:armhf \
     qtdeclarative5-ubuntu-ui-toolkit-plugin:armhf \
     qtdeclarative5-usermetrics0.1:armhf \
+    ubuntu-html5-theme:armhf \
     ubuntu-ui-toolkit-theme:armhf \
-    qtdeclarative5-ubuntu-ui-toolkit-plugin:armhf \
     google-mock:armhf \
-    libcontent-hub-dev:armhf \
     libjsoncpp-dev:armhf \
     libnet-cpp-dev:armhf \
     libprocess-cpp-dev:armhf \
@@ -90,6 +98,7 @@ RUN apt-get -y --no-install-recommends install \
     qt3d5-dev:armhf \
     qt5-default:armhf \
     qtbase5-dev:armhf \
+    qtconnectivity5-dev:armhf \
     qtdeclarative5-dev:armhf \
     qtdeclarative5-dev-tools:armhf \
     qtlocation5-dev:armhf \
@@ -97,7 +106,8 @@ RUN apt-get -y --no-install-recommends install \
     qtpim5-dev:armhf \
     qttools5-dev:armhf \
     ubuntu-sdk-qmake-extras:armhf \
-    ubuntu-ui-toolkit-doc:armhf \
+    intltool:armhf \
+    qttools5-dev-tools:armhf \
     oxideqt-codecs-extra \
     qt5-doc \
     language-pack-en \
