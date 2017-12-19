@@ -866,9 +866,9 @@ class CordovaClickable(Clickable):
 if __name__ == '__main__':
     config = None
     COMMAND_ALIASES = {
-        'click_build': 'click-build',
-        'build_click': 'click-build',
-        'build-click': 'click-build',
+        'click_build': 'click_build',
+        'build_click': 'click_build',
+        'build-click': 'click_build',
     }
 
     COMMAND_HANDLERS = {
