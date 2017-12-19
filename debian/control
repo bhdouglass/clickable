@@ -11,7 +11,7 @@ Architecture: all
 Depends: ${shlibs:Depends},
          ${misc:Depends},
          adb,
-         docker.io,
+         docker.io | docker-ce,
          python
 Suggests: docker
 Description: Compile, build, and deploy Ubuntu Touch click packages all from the command line.
