@@ -242,7 +242,6 @@ class Config(object):
 
 class Clickable(object):
     cwd = None
-    usdk_target = 'usdk-target'
 
     def __init__(self, config, device_serial_number=None):
         self.cwd = os.getcwd()
@@ -275,14 +274,7 @@ class Clickable(object):
             self.check_command('click')
         elif self.config.lxd:
             print_warning('Use of lxd is depricated and will be removed in a future version')
-            usdk_target_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'usdk-target')
-            if os.path.isfile(usdk_target_path):
-                self.usdk_target = usdk_target_path
-            else:
-                try:
-                    self.check_command('usdk-target')
-                except Exception:
-                    raise Exception('The command "usdk-target" does not exist on this system, you can find it in the clickable repo')
+            self.check_command('usdk-target')
         else:
             self.check_command('docker')
             self.docker_image = 'clickable/ubuntu-sdk:{}-{}'.format(self.config.sdk.replace('ubuntu-sdk-', ''), self.build_arch)
@@ -366,7 +358,7 @@ class Clickable(object):
             if use_dir:
                 command = 'cd {}; {}'.format(self.config.dir, command)
 
-            wrapped_command = '{} {} clickable-{} -- bash -c "{}"'.format(self.usdk_target, target_command, self.build_arch, command)
+            wrapped_command = 'usdk-target {} clickable-{} -- bash -c "{}"'.format(target_command, self.build_arch, command)
         elif self.config.chroot:
             chroot_command = 'run'
             if sudo:
@@ -505,7 +497,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
 
         status = ''
         try:
-            status = subprocess.check_output(shlex.split('{} status {}'.format(self.usdk_target, name)), stderr=subprocess.STDOUT)
+            status = subprocess.check_output(shlex.split('usdk-target status {}'.format(name)), stderr=subprocess.STDOUT)
             status = json.loads(status)['status']
         except subprocess.CalledProcessError as e:
             if e.output.strip() == 'error: Could not connect to the LXD server.' or 'Can\'t establish a working socket connection' in e.output.strip():
@@ -902,7 +894,7 @@ if __name__ == '__main__':
         print(show_valid_commands())
 
     parser = argparse.ArgumentParser(description='clickable')
-    parser.add_argument('--version', '-v', action='version', version='%(prog)s 2.0.0')
+    parser.add_argument('--version', '-v', action='version', version='%(prog)s 2.0.1')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument(
         '--device',

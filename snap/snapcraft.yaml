@@ -1,12 +1,11 @@
 name: clickable
-version: '2.0.0'
+version: '2.0.1'
 summary: Compile, build, and deploy click packages from the cli
 description: |
   Replace the Ubuntu IDE with clickable and streamline your
   click development process.
-  For more info, read the docs: https://github.com/bhdouglass/clickable
-  In order for clickable to work you must have lxd already setup
-  and have the usdk tools installed.
+  For more info, read the docs: http://clickable.bhdouglass.com/en/latest/
+  In order for clickable to work you must have docker already setup.
 
 grade: stable
 confinement: classic
@@ -14,8 +13,6 @@ confinement: classic
 apps:
   clickable:
     command: clickable
-  usdk-target:
-    command: usdk-target.wrapper
 
 parts:
   clickable:

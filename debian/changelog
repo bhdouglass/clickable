@@ -1,16 +1,23 @@
-clickable (2.0.0-0ubuntu1~unstable) unstable; urgency=medium
+clickable (2.0.1) unstable; urgency=medium
+
+  * Added support for the docker-ce package
+  * Bug fixes
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Tue, 19 Dec 2017 16:43:00 -0500
+
+clickable (2.0.0) unstable; urgency=medium
 
   * Full docker support
 
  -- Brian Douglass <bhdouglass@gmail.com>  Fri, 15 Dec 2017 00:38:00 -0500
 
-clickable (1.1.0-0ubuntu1~unstable) unstable; urgency=medium
+clickable (1.1.0) unstable; urgency=medium
 
   * Added option to use docker
 
  -- Brian Douglass <bhdouglass@gmail.com>  Wed, 06 Dec 2017 01:57:00 -0500
 
-clickable (1.0.2-0ubuntu1~unstable) unstable; urgency=medium
+clickable (1.0.2) unstable; urgency=medium
 
   * Initial release
 
