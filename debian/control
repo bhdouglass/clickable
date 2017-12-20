@@ -13,5 +13,6 @@ Depends: ${shlibs:Depends},
          adb,
          docker.io | docker-ce,
          python
-Suggests: docker
+Suggests: lxd,
+          ubuntu-sdk-tools
 Description: Compile, build, and deploy Ubuntu Touch click packages all from the command line.
