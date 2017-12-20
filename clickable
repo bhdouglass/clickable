@@ -894,7 +894,7 @@ if __name__ == '__main__':
         print(show_valid_commands())
 
     parser = argparse.ArgumentParser(description='clickable')
-    parser.add_argument('--version', '-v', action='version', version='%(prog)s 2.0.1')
+    parser.add_argument('--version', '-v', action='version', version='%(prog)s 2.0.2')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument(
         '--device',
