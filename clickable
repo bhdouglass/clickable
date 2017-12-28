@@ -377,7 +377,7 @@ class Clickable(object):
             else:  # Docker
                 self.check_docker()
 
-                wrapped_command = 'docker run -v {}:{} -w {} -u {} --rm -it {} bash -c "{}"'.format(
+                wrapped_command = 'docker run -v {}:{} -w {} -u {} --rm -i {} bash -c "{}"'.format(
                     self.cwd,
                     self.cwd,
                     self.config.dir,
