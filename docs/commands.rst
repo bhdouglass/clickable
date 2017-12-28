@@ -31,6 +31,11 @@ Builds the project using the specified template, build dir, and build commands.
 
 Takes the built files and compiles them into a click package (you can find it in the build dir).
 
+``clickable click-build --output=/path/to/some/diretory``
+
+Takes the built files and compiles them into a click package, outputting the
+compiled click to the directory specified by ``--output``.
+
 ``clickable install``
 
 Takes a built click package and installs it on a device.
@@ -67,6 +72,11 @@ Turns off the device's display timeout.
 
 Runs a custom command specified in the "scripts" config
 
-``clickable <custom command> - -device``
+``clickable <custom command> --device``
 
 Runs a custom command specified in the "scripts" config on the device.
+
+``clickable <any command> --container-mode``
+
+Runs all builds commands on the current machine and not in a container. This is
+useful from running clickable from within a container.

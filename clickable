@@ -130,8 +130,10 @@ class Config(object):
     required = ['sdk', 'arch', 'dir']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON]
 
-    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False):
+    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False):
         self.skip_detection = skip_detection
+        self.click_output = click_output
+        self.container_mode = container_mode
         self.cwd = os.getcwd()
         self.load_config()
 
@@ -243,7 +245,7 @@ class Config(object):
 class Clickable(object):
     cwd = None
 
-    def __init__(self, config, device_serial_number=None):
+    def __init__(self, config, device_serial_number=None, click_output=None):
         self.cwd = os.getcwd()
         self.config = config
         self.temp = os.path.join(self.config.dir, 'tmp')
@@ -256,11 +258,12 @@ class Clickable(object):
         if self.config.template == self.config.PURE_QML_QMAKE or self.config.template == self.config.PURE_QML_CMAKE or self.config.template == self.config.PURE:
             self.build_arch = 'armhf'
 
-        if self.config.ssh:
-            self.check_command('ssh')
-            self.check_command('scp')
-        else:
-            self.check_command('adb')
+        if not self.config.container_mode:
+            if self.config.ssh:
+                self.check_command('ssh')
+                self.check_command('scp')
+            else:
+                self.check_command('adb')
 
         if self.config.template == Config.CORDOVA:
             self.check_command('cordova')
@@ -269,20 +272,21 @@ class Clickable(object):
             # If running as a snap, trick usdk-target into thinking its not in a snap
             del os.environ['SNAP']
 
-        if self.config.chroot:
-            print_warning('Use of chroots are depricated and will be removed in a future version')
-            self.check_command('click')
-        elif self.config.lxd:
-            print_warning('Use of lxd is depricated and will be removed in a future version')
-            self.check_command('usdk-target')
-        else:
-            self.check_command('docker')
-            self.docker_image = 'clickable/ubuntu-sdk:{}-{}'.format(self.config.sdk.replace('ubuntu-sdk-', ''), self.build_arch)
-            self.base_docker_image = self.docker_image
+        if not self.config.container_mode:
+            if self.config.chroot:
+                print_warning('Use of chroots are depricated and will be removed in a future version')
+                self.check_command('click')
+            elif self.config.lxd:
+                print_warning('Use of lxd is depricated and will be removed in a future version')
+                self.check_command('usdk-target')
+            else:
+                self.check_command('docker')
+                self.docker_image = 'clickable/ubuntu-sdk:{}-{}'.format(self.config.sdk.replace('ubuntu-sdk-', ''), self.build_arch)
+                self.base_docker_image = self.docker_image
 
-            if os.path.exists('.clickable/name.txt'):
-                with open('.clickable/name.txt', 'r') as f:
-                    self.docker_image = f.read().strip()
+                if os.path.exists('.clickable/name.txt'):
+                    with open('.clickable/name.txt', 'r') as f:
+                        self.docker_image = f.read().strip()
 
     def check_command(self, command):
         error_code = subprocess.call(shlex.split('which {}'.format(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -331,6 +335,10 @@ class Clickable(object):
         return app
 
     def run_device_command(self, command, cwd=None):
+        if self.config.container_mode:
+            print_warning('Skipping device command, running in container mode')
+            return
+
         if not cwd:
             cwd = self.config.dir
 
@@ -348,34 +356,35 @@ class Clickable(object):
     def run_container_command(self, command, force_lxd=False, sudo=False, get_output=False, use_dir=True):
         wrapped_command = command
 
-        if force_lxd or self.config.lxd:
-            self.check_lxd()
+        if not self.config.container_mode:
+            if force_lxd or self.config.lxd:
+                self.check_lxd()
 
-            target_command = 'exec'
-            if sudo:
-                target_command = 'maint'
+                target_command = 'exec'
+                if sudo:
+                    target_command = 'maint'
 
-            if use_dir:
-                command = 'cd {}; {}'.format(self.config.dir, command)
+                if use_dir:
+                    command = 'cd {}; {}'.format(self.config.dir, command)
 
-            wrapped_command = 'usdk-target {} clickable-{} -- bash -c "{}"'.format(target_command, self.build_arch, command)
-        elif self.config.chroot:
-            chroot_command = 'run'
-            if sudo:
-                chroot_command = 'maint'
+                wrapped_command = 'usdk-target {} clickable-{} -- bash -c "{}"'.format(target_command, self.build_arch, command)
+            elif self.config.chroot:
+                chroot_command = 'run'
+                if sudo:
+                    chroot_command = 'maint'
 
-            wrapped_command = 'click chroot -a {} -f {} {} {}'.format(self.build_arch, self.config.sdk, chroot_command, command)
-        else:  # Docker
-            self.check_docker()
+                wrapped_command = 'click chroot -a {} -f {} {} {}'.format(self.build_arch, self.config.sdk, chroot_command, command)
+            else:  # Docker
+                self.check_docker()
 
-            wrapped_command = 'docker run -v {}:{} -w {} -u {} --rm -it {} bash -c "{}"'.format(
-                self.cwd,
-                self.cwd,
-                self.config.dir,
-                os.getuid(),
-                self.docker_image,
-                command,
-            )
+                wrapped_command = 'docker run -v {}:{} -w {} -u {} --rm -it {} bash -c "{}"'.format(
+                    self.cwd,
+                    self.cwd,
+                    self.config.dir,
+                    os.getuid(),
+                    self.docker_image,
+                    command,
+                )
 
         kwargs = {}
         if use_dir:
@@ -568,10 +577,25 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
 
         self.click_review()
 
+        if self.config.click_output:
+            click = '{}_{}_{}.click'.format(self.find_package_name(), self.find_version(), self.config.arch)
+            click_path = os.path.join(self.config.dir, click)
+            output_file = os.path.join(self.config.click_output, click)
+
+            if not os.path.exists(self.config.click_output):
+                os.makedirs(self.config.click_output)
+
+            print_info('Click outputted to {}'.format(output_file))
+            shutil.copyfile(click_path, output_file)
+
     def click_review(self):
         pass  # TODO implement this
 
     def install(self, click_path=None):
+        if self.config.container_mode:
+            print_warning('Skipping install, running in container mode')
+            return
+
         cwd = '.'
         if click_path:
             click = os.path.basename(click_path)
@@ -954,6 +978,16 @@ if __name__ == '__main__':
         help='Run build commands in a lxd container',
         default=False,
     )
+    parser.add_argument(
+        '--output',
+        help='Where to output the compiled click package',
+    )
+    parser.add_argument(
+        '--container-mode',
+        action='store_true',
+        help='Run all build commands on the current machine and not a container',
+        default=False,
+    )
 
     args = parser.parse_args()
 
@@ -970,6 +1004,8 @@ if __name__ == '__main__':
             template=args.template,
             skip_detection=skip_detection,
             lxd=args.lxd,
+            click_output=args.output,
+            container_mode=args.container_mode
         )
 
         clickable = None
