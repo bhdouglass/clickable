@@ -1,3 +1,9 @@
+clickable (2.1.1) unstable; urgency=medium
+
+  * Fixed error when running docker commands in a CI environment
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sat, 30 Dec 2017 01:12:00 -0500
+
 clickable (2.1.0) unstable; urgency=medium
 
   * Added new command flags
