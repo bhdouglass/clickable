@@ -30,7 +30,7 @@ Run `clickable setup-docker` to ensure that docker is configured for use with cl
 
 ## License
 
-Copyright (C) 2017 [Brian Douglass](http://bhdouglass.com/)
+Copyright (C) 2018 [Brian Douglass](http://bhdouglass.com/)
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License version 3, as published
 by the Free Software Foundation.

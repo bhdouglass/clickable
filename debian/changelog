@@ -1,3 +1,9 @@
+clickable (2.1.2) unstable; urgency=medium
+
+  * Added extra checks when setting up docker
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Mon, 01 Jan 2018 23:35:00 -0500
+
 clickable (2.1.1) unstable; urgency=medium
 
   * Fixed error when running docker commands in a CI environment
