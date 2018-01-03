@@ -68,6 +68,12 @@ Turns on the device's display and keeps it on until you hit CTRL+C.
 
 Turns off the device's display timeout.
 
+``clickable devices``
+
+Lists the serial numbers and model names for attached devices. Useful when
+multiple devices are attached and you need to know what to use for the ``-s``
+argument.
+
 ``clickable <custom command>``
 
 Runs a custom command specified in the "scripts" config

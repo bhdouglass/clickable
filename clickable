@@ -21,7 +21,6 @@ import getpass
 # TODO check if there are multiple devices attached
 # TODO include phablet-config
 # TODO update to python3
-# TODO add option to run inside a container
 
 
 class Colors:
@@ -350,6 +349,7 @@ class Clickable(object):
             if self.device_serial_number:
                 wrapped_command = 'adb -s {} shell "{}"'.format(self.device_serial_number, command)
             else:
+                self.check_multiple_devices()
                 wrapped_command = 'adb shell "{}"'.format(command)
 
         subprocess.check_call(wrapped_command, cwd=cwd, shell=True)
@@ -626,6 +626,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             if self.device_serial_number:
                 command = 'adb -s {} push {} /home/phablet/'.format(self.device_serial_number, click_path)
             else:
+                self.check_multiple_devices()
                 command = 'adb push {} /home/phablet/'.format(click_path)
             subprocess.check_call(command, cwd=cwd, shell=True)
 
@@ -722,9 +723,12 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         if self.config.ssh:
             subprocess.check_call(shlex.split('ssh phablet@{}'.format(self.config.ssh)))
         else:
+
             adb_args = ''
             if self.device_serial_number:
                 adb_args = '-s {}'.format(self.device_serial_number)
+            else:
+                self.check_multiple_devices()
 
             output = subprocess.check_output(shlex.split('adb {} shell pgrep sshd'.format(adb_args))).split()
             if not output:
@@ -766,6 +770,34 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
 
             subprocess.check_call(shlex.split('ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p {} phablet@localhost'.format(port)))
             self.toggle_ssh(on=False)
+
+    def detect_devices(self):
+        output = subprocess.check_output(shlex.split('adb devices -l')).strip()
+        devices = []
+        for line in output.split('\n'):
+            if 'device' in line and 'devices' not in line:
+                device = line.split(' ')[0]
+                for part in line.split(' '):
+                    if part.startswith('model:'):
+                        device = '{} - {}'.format(device, part.replace('model:', '').replace('_', ' ').strip())
+
+                devices.append(device)
+
+        return devices
+
+    def check_multiple_devices(self):
+        devices = self.detect_devices()
+        if len(devices) > 0 and not self.device_serial_number:
+            raise Exception('Multiple devices attached')
+
+    def devices(self):
+        devices = self.detect_devices()
+
+        if len(devices) == 0:
+            print_warning('No attached devices')
+        else:
+            for device in devices:
+                print_info(device)
 
 
 class MakeClickable(Clickable):
@@ -922,6 +954,7 @@ if __name__ == '__main__':
         'no-lock': 'no_lock',
         'setup-docker': 'setup_docker',
         'shell': 'shell',
+        'devices': 'devices',
     }
 
     def show_valid_commands():
@@ -1008,8 +1041,19 @@ if __name__ == '__main__':
     skip_detection = False
     if args.click:
         skip_detection = True
-    elif 'setup-lxd' in args.commands or 'setup-docker' in args.commands or 'shell' in args.commands or 'no-lock' in args.commands or 'display-on' in args.commands:
-        skip_detection = True
+
+    if len(args.commands) == 1:
+        skip_commands = [
+            'setup-lxd',
+            'setup-docker',
+            'shell',
+            'no-lock'
+            'display-on',
+            'devices',
+        ]
+
+        if args.commands[0] in skip_commands:
+            skip_detection = True
 
     try:
         config = Config(
