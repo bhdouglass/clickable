@@ -548,7 +548,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
 
     def setup_docker(self):
         self.check_command('docker')
-        self.check_docker()
+        self.start_docker()
 
         group_exists = False
         with open('/etc/group', 'r') as f:
@@ -973,7 +973,7 @@ if __name__ == '__main__':
         print(show_valid_commands())
 
     parser = argparse.ArgumentParser(description='clickable')
-    parser.add_argument('--version', '-v', action='version', version='%(prog)s 2.1.2')
+    parser.add_argument('--version', '-v', action='version', version='%(prog)s 2.1.3')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument(
         '--device',
