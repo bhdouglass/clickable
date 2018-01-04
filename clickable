@@ -1047,7 +1047,7 @@ if __name__ == '__main__':
             'setup-lxd',
             'setup-docker',
             'shell',
-            'no-lock'
+            'no-lock',
             'display-on',
             'devices',
         ]
