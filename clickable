@@ -18,7 +18,6 @@ import getpass
 # TODO add Golang template
 # TODO add desktop arch
 # TODO check for a template based on CMake files, etc
-# TODO check if there are multiple devices attached
 # TODO include phablet-config
 # TODO update to python3
 
@@ -787,7 +786,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
 
     def check_multiple_devices(self):
         devices = self.detect_devices()
-        if len(devices) > 0 and not self.device_serial_number:
+        if len(devices) > 1 and not self.device_serial_number:
             raise Exception('Multiple devices attached')
 
     def devices(self):
@@ -973,7 +972,7 @@ if __name__ == '__main__':
         print(show_valid_commands())
 
     parser = argparse.ArgumentParser(description='clickable')
-    parser.add_argument('--version', '-v', action='version', version='%(prog)s 2.1.3')
+    parser.add_argument('--version', '-v', action='version', version='%(prog)s 2.1.4')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument(
         '--device',
