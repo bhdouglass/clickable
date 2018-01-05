@@ -13,11 +13,10 @@ import time
 import uuid
 import xml.etree.ElementTree as ElementTree
 import getpass
+from cookiecutter.main import cookiecutter
 
-# TODO generate clickable.json file
 # TODO add Golang template
 # TODO add desktop arch
-# TODO check for a template based on CMake files, etc
 # TODO include phablet-config
 # TODO update to python3
 
@@ -798,6 +797,61 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             for device in devices:
                 print_info(device)
 
+    def init_app(self, name=None):
+        app_templates = [
+            {
+                'name': 'pure-qml-cmake',
+                'display': 'Pure QML App (built using CMake)',
+                'url': 'https://github.com/bhdouglass/ut-app-pure-qml-cmake-template',
+            }, {
+                'name': 'cmake',
+                'display': 'C++/QML App (built using CMake)',
+                'url': 'https://github.com/bhdouglass/ut-app-cmake-template',
+            }, {
+                'name': 'python-cmake',
+                'display': 'Python/QML App (built using CMake)',
+                'url': 'https://github.com/bhdouglass/ut-app-python-cmake-template',
+            }, {
+                'name': 'html',
+                'display': 'HTML App',
+                'url': 'https://github.com/bhdouglass/ut-app-html-template',
+            }, {
+                'name': 'webapp',
+                'display': 'Simple Webapp',
+                'url': 'https://github.com/bhdouglass/ut-app-webapp-template',
+            }
+        ]
+
+        app_template = None
+        if name:
+            for template in app_templates:
+                if template['name'] == name:
+                    app_template = template
+
+        if not app_template:
+            print_info('Available app templates:')
+            for (index, template) in enumerate(app_templates):
+                print('[{}] {} - {}'.format(index + 1, template['name'], template['display']))
+
+            choice = raw_input('Choose an app template [1]: ').strip()
+            if not choice:
+                choice = '1'
+
+            try:
+                choice = int(choice)
+            except ValueError:
+                raise Exception('Invalid choice')
+
+            if choice > len(app_templates) or choice < 1:
+                raise Exception('Invalid choice')
+
+            app_template = app_templates[choice - 1]
+
+        print_info('Generating new app from template: {}'.format(app_template['display']))
+        cookiecutter(app_template['url'])
+
+        print_info('Your new app has been generated, go to the apps\'s directory and run clickable to get started')
+
 
 class MakeClickable(Clickable):
     def pre_make(self):
@@ -954,6 +1008,7 @@ if __name__ == '__main__':
         'setup-docker': 'setup_docker',
         'shell': 'shell',
         'devices': 'devices',
+        'init': 'init_app',
     }
 
     def show_valid_commands():
@@ -972,7 +1027,7 @@ if __name__ == '__main__':
         print(show_valid_commands())
 
     parser = argparse.ArgumentParser(description='clickable')
-    parser.add_argument('--version', '-v', action='version', version='%(prog)s 2.1.4')
+    parser.add_argument('--version', '-v', action='version', version='%(prog)s 3.0.0')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument(
         '--device',
@@ -1034,6 +1089,11 @@ if __name__ == '__main__':
         help='Run all build commands on the current machine and not a container',
         default=False,
     )
+    parser.add_argument(
+        '--name',
+        '-n',
+        help='Specify an app template name to use when running "clickable init"'
+    )
 
     args = parser.parse_args()
 
@@ -1049,6 +1109,7 @@ if __name__ == '__main__':
             'no-lock',
             'display-on',
             'devices',
+            'init',
         ]
 
         if args.commands[0] in skip_commands:
@@ -1094,6 +1155,8 @@ if __name__ == '__main__':
                 clickable.install(args.click)
             elif command == 'launch':
                 clickable.launch(args.app)
+            elif command == 'init':
+                clickable.init_app(args.name)
             elif command in COMMAND_HANDLERS:
                 getattr(clickable, COMMAND_HANDLERS[command])()
             elif command in COMMAND_ALIASES:

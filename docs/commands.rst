@@ -11,6 +11,14 @@ You can combine the commands together like ``clickable build click_build install
 
 Runs the default sub-commands specified in the "default" config
 
+``clickable init``
+
+Generate a new app from a list of :ref:`app template options <app-templates>`.
+
+``clickable init -n <app template name>``
+
+Generate a new app from an :ref:`app template <app-templates>` by name.
+
 ``clickable shell``
 
 Opens a shell on the device via ssh. This is similar to the ``phablet-shell`` command.

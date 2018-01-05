@@ -10,9 +10,10 @@ Package: clickable
 Architecture: all
 Depends: ${shlibs:Depends},
          ${misc:Depends},
-         adb,
+         adb | android-tools-adb,
          docker.io | docker-ce,
-         python
+         python,
+         python-cookiecutter
 Suggests: lxd,
           ubuntu-sdk-tools
 Description: Compile, build, and deploy Ubuntu Touch click packages all from the command line.

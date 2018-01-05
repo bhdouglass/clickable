@@ -6,7 +6,7 @@ Install
 Install Via PPA (Ubuntu)
 ------------------------
 
-* Add the PPA to your system: ``sudo add-apt-repository ppa:bhdouglass/clickable``
+* Add the `PPA <https://launchpad.net/~bhdouglass/+archive/ubuntu/clickable>`__ to your system: ``sudo add-apt-repository ppa:bhdouglass/clickable``
 * Update your package list: ``sudo apt-get update``
 * Install clickable: ``sudo apt-get install clickable``
 
