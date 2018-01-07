@@ -858,7 +858,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         print_info('Generating new app from template: {}'.format(app_template['display']))
         cookiecutter(app_template['url'])
 
-        print_info('Your new app has been generated, go to the apps\'s directory and run clickable to get started')
+        print_info('Your new app has been generated, go to the app\'s directory and run clickable to get started')
 
 
 class MakeClickable(Clickable):
