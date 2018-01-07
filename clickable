@@ -13,7 +13,12 @@ import time
 import uuid
 import xml.etree.ElementTree as ElementTree
 import getpass
-from cookiecutter.main import cookiecutter
+
+cookiecutter_available = True
+try:
+    from cookiecutter.main import cookiecutter
+except ImportError:
+    cookiecutter_available = False
 
 # TODO add Golang template
 # TODO add desktop arch
@@ -798,6 +803,9 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
                 print_info(device)
 
     def init_app(self, name=None):
+        if not cookiecutter_available:
+            raise Exception('Cookiecutter is not available on your computer, more information can be found here: https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter')
+
         app_templates = [
             {
                 'name': 'pure-qml-cmake',
