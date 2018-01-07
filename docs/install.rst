@@ -13,7 +13,7 @@ Install Via PPA (Ubuntu)
 Install Via Snap
 ----------------
 
-* Make sure you have the dependencies ``adb`` and ``docker`` insalled
+* Make sure you have the dependencies ``adb`` and ``docker`` installed
 * Download the latest version from the `OpenStore <https://open.uappexplorer.com/snap/clickable>`__
 * Install the snap: ``sudo snap install --force-dangerous --classic <path/to/snap>``
 
