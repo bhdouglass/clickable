@@ -7,6 +7,20 @@ Getting Started
 * When the app has finished generating, enter the newly created directory containing your app.
 * Run ``clickable`` to compile your app and install it on your phone.
 
+Getting Logs
+------------
+
+To get logs from you app simply run `clickable logs`. This will give you output
+from C++ (``QDebug() << "message"``) or from QML (``console.log("message")``)
+in addition to any errors or warnings.
+
+Running on the Desktop
+----------------------
+
+Running the app on the desktop just requires you to run ``clickable --desktop``.
+This is not as complete as running the app on your phone, but it can help
+speed up development.
+
 Ubuntu Touch SDK Api Docs
 -------------------------
 

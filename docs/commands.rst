@@ -11,6 +11,10 @@ You can combine the commands together like ``clickable build click_build install
 
 Runs the default sub-commands specified in the "default" config
 
+``clickable --desktop``
+
+Compile and run the app onthe desktop.
+
 ``clickable init``
 
 Generate a new app from a list of :ref:`app template options <app-templates>`.
