@@ -21,9 +21,10 @@ except ImportError:
     cookiecutter_available = False
 
 # TODO add Golang template
-# TODO add desktop arch
 # TODO include phablet-config
 # TODO update to python3
+# TODO add a publish command to upload to the OpenStore
+# TODO create a flatpak
 
 
 class Colors:
@@ -133,17 +134,20 @@ class Config(object):
     required = ['sdk', 'arch', 'dir']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON]
 
-    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False):
+    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False):
         self.skip_detection = skip_detection
         self.click_output = click_output
         self.container_mode = container_mode
+        self.desktop = desktop
         self.cwd = os.getcwd()
         self.load_config()
 
         if ip:
             self.ssh = ip
 
-        if arch:
+        if self.desktop:
+            self.arch = 'amd64'
+        elif arch:
             self.arch = arch
 
         if template:
@@ -256,10 +260,11 @@ class Clickable(object):
         if type(self.device_serial_number) == list and len(self.device_serial_number) > 0:
             self.device_serial_number = self.device_serial_number[0]
 
-        self.host_arch = 'amd64' if platform.architecture()[0] == '64bit' else 'i386'
         self.build_arch = self.config.arch
         if self.config.template == self.config.PURE_QML_QMAKE or self.config.template == self.config.PURE_QML_CMAKE or self.config.template == self.config.PURE:
             self.build_arch = 'armhf'
+            if self.config.desktop:
+                self.build_arch = 'amd64'
 
         if not self.config.container_mode:
             if self.config.ssh:
@@ -403,7 +408,7 @@ class Clickable(object):
         if len(self.config.dependencies) > 0:
             print_info('Checking dependencies')
 
-            if self.config.lxd or self.config.chroot:
+            if self.config.lxd or self.config.chroot or self.config.container_mode:
                 command = 'apt-get install -y --force-yes'
                 run = False
                 for dep in self.config.dependencies:
@@ -432,7 +437,7 @@ class Clickable(object):
                     if self.config.arch == 'armhf' and 'armhf' not in dep and not config.specificDependencies:
                         dependencies = '{} {}:{}'.format(dependencies, dep, self.config.arch)
                     else:
-                        dependencies += dep
+                        dependencies = '{} {}'.format(dependencies, dep)
 
                 dockerfile = '''
 FROM {}
@@ -609,7 +614,10 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         pass  # TODO implement this
 
     def install(self, click_path=None):
-        if self.config.container_mode:
+        if self.config.desktop:
+            print_warning('Skipping install, running in desktop mode')
+            return
+        elif self.config.container_mode:
             print_warning('Skipping install, running in container mode')
             return
 
@@ -636,11 +644,86 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         self.run_device_command('pkcon install-local --allow-untrusted {}'.format(click), cwd=cwd)
 
     def kill(self):
+        if self.config.desktop:
+            print_warning('Skipping kill, running in desktop mode')
+            return
+        elif self.config.container_mode:
+            print_warning('Skipping kill, running in container mode')
+            return
+
         if self.config.kill:
             try:
                 self.run_device_command('pkill {}'.format(self.config.kill))
             except Exception:
                 pass  # Nothing to do, the process probably wasn't running
+
+    def desktop_launch(self):
+        if self.config.lxd:
+            raise Exception('Using lxd for desktop mode is not supported')
+
+        desktop_path = None
+        hooks = self.get_manifest().get('hooks', {})
+        if self.config.app:
+            if self.config.app in hooks and 'desktop' in hooks[app]:
+                desktop_path = hooks[self.config.app]['desktop']
+        else:
+            for key, value in hooks.items():
+                if 'desktop' in value:
+                    desktop_path = value['desktop']
+                    break
+
+        if not desktop_path:
+            raise Exception('Could not find desktop file for app "{}"'.format(self.config.app))
+
+        desktop_path = os.path.join(self.temp, desktop_path)
+        if not os.path.exists(desktop_path):
+            raise Exception('Could not desktop file does not exist: "{}"'.format(desktop_path))
+
+        execute = None
+        with open(desktop_path, 'r') as desktop_file:
+            lines = desktop_file.readlines()
+            for line in lines:
+                if line.startswith('Exec='):
+                    execute = line.replace('Exec=', '')
+                    break
+
+        # Inspired by https://stackoverflow.com/a/1160227
+        xauth = '/tmp/.docker.xauth'
+        with open(xauth, 'a'):
+            os.utime(xauth, None)
+
+        self.check_docker()
+
+        # TODO mount volume for app's cache/config/etc for persistence
+        volumes = '-v {}:{} -v /tmp/.X11-unix:/tmp/.X11-unix -v {}:{}'.format(
+            self.cwd,
+            self.cwd,
+            xauth,
+            xauth,
+        )
+
+        lib_path = os.path.join(self.temp, 'lib/x86_64-linux-gnu')
+        path = '/bin:/usr/bin:{}:{}:{}'.format(
+            os.path.join(self.temp, 'bin'),
+            os.path.join(self.temp, 'lib/x86_64-linux-gnu/bin'),
+            self.temp,
+        )
+        environment = '-e XAUTHORITY=/tmp/.docker.xauth -e DISPLAY={} -e QML2_IMPORT_PATH={} -e LD_LIBRARY_PATH={} -e PATH={}'.format(
+            os.environ['DISPLAY'],
+            lib_path,
+            lib_path,
+            path,
+        )
+
+        command = 'docker run {} {} -w {} -u {} --rm -i {} bash -c "{}"'.format(
+            volumes,
+            environment,
+            self.temp,
+            os.getuid(),
+            self.docker_image,
+            execute,
+        )
+        subprocess.check_call(shlex.split(command), cwd=self.temp)
 
     def launch(self, app=None):
         cwd = '.'
@@ -652,7 +735,10 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         if self.config.launch:
             launch = self.config.launch
 
-        self.run_device_command('sleep 1s && {}'.format(launch), cwd=cwd)
+        if self.config.desktop:
+            self.desktop_launch()
+        else:
+            self.run_device_command('sleep 1s && {}'.format(launch), cwd=cwd)
 
     def logs(self):
         log = '~/.cache/upstart/application-click-{}_{}_{}.log'.format(self.find_package_name(), self.find_app_name(), self.find_version())
@@ -914,10 +1000,16 @@ class QMakeClickable(MakeClickable):
         self.run_container_command('make INSTALL_ROOT={} install'.format(self.temp))
 
     def _build(self):
+        command = None
+
         if self.build_arch == 'armhf':
-            self.run_container_command('qt5-qmake-arm-linux-gnueabihf {}'.format(self.cwd))
+            command = 'qt5-qmake-arm-linux-gnueabihf'
+        elif self.build_arch == 'amd64':
+            command = 'qmake'
         else:
             raise Exception('{} is not supported by the qmake build yet'.format(self.build_arch))
+
+        self.run_container_command('{} {}'.format(command, self.cwd))
 
         super(QMakeClickable, self)._build()
 
@@ -1035,7 +1127,7 @@ if __name__ == '__main__':
         print(show_valid_commands())
 
     parser = argparse.ArgumentParser(description='clickable')
-    parser.add_argument('--version', '-v', action='version', version='%(prog)s 3.0.0')
+    parser.add_argument('--version', '-v', action='version', version='%(prog)s 3.1.0')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument(
         '--device',
@@ -1102,6 +1194,13 @@ if __name__ == '__main__':
         '-n',
         help='Specify an app template name to use when running "clickable init"'
     )
+    parser.add_argument(
+        '--desktop',
+        '-e',
+        action='store_true',
+        help='Run the app on the current machine for testing',
+        default=False,
+    )
 
     args = parser.parse_args()
 
@@ -1124,6 +1223,7 @@ if __name__ == '__main__':
             skip_detection = True
 
     try:
+        # TODO clean this up
         config = Config(
             ip=args.ip,
             arch=args.arch,
@@ -1131,7 +1231,8 @@ if __name__ == '__main__':
             skip_detection=skip_detection,
             lxd=args.lxd,
             click_output=args.output,
-            container_mode=args.container_mode
+            container_mode=args.container_mode,
+            desktop=args.desktop,
         )
 
         clickable = None
