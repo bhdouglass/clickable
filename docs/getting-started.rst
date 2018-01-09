@@ -1,3 +1,5 @@
+.. _getting-started:
+
 Getting Started
 ===============
 
@@ -20,6 +22,13 @@ Running on the Desktop
 Running the app on the desktop just requires you to run ``clickable --desktop``.
 This is not as complete as running the app on your phone, but it can help
 speed up development.
+
+Accessing Your Device
+---------------------
+
+If you need to access a terminal on your Ubuntu Touch device you can use
+``clickable shell`` to open up a terminal to your device from your computer.
+This is a replacement for the old ``phablet-shell`` command.
 
 Ubuntu Touch SDK Api Docs
 -------------------------

@@ -24,10 +24,11 @@ Run `clickable setup-docker` to ensure that docker is configured for use with cl
 
 ## Docs
 
+- [Getting Started](http://clickable.bhdouglass.com/en/latest/getting-started.html)
 - [Usage](http://clickable.bhdouglass.com/en/latest/usage.html)
-- [Install](http://clickable.bhdouglass.com/en/latest/install.html)
 - [Commands](http://clickable.bhdouglass.com/en/latest/commands.html)
 - [clickable.json Format](http://clickable.bhdouglass.com/en/latest/clickable-json.html)
+- [App Templates](http://clickable.bhdouglass.com/en/latest/app-templates.html)
 - [Build Templates](http://clickable.bhdouglass.com/en/latest/build-templates.html)
 
 ## License
