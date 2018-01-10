@@ -25,6 +25,7 @@ except ImportError:
 # TODO update to python3
 # TODO add a publish command to upload to the OpenStore
 # TODO create a flatpak
+# TODO split into multiple files
 
 
 class Colors:
@@ -51,6 +52,10 @@ def print_error(message):
     print(Colors.ERROR + message + Colors.CLEAR)
 
 
+class ManifestNotFoundException(Exception):
+    pass
+
+
 def find_manifest(cwd, temp_dir=None, build_dir=None):
     manifests = []
     searchpaths = []
@@ -65,7 +70,7 @@ def find_manifest(cwd, temp_dir=None, build_dir=None):
                 manifests.append(os.path.join(root, name))
 
     if not manifests:
-        raise Exception('Could not find manifest.json')
+        raise ManifestNotFoundException('Could not find manifest.json')
 
     # Favor the manifest in the install dir first, then fall back to the build dir and finally the source dir
     manifest = ''
@@ -222,6 +227,8 @@ class Config(object):
             try:
                 manifest = get_manifest(os.getcwd())
             except ValueError:
+                manifest = None
+            except ManifestNotFoundException:
                 manifest = None
 
             directory = os.listdir(os.getcwd())
