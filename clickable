@@ -372,35 +372,36 @@ class Clickable(object):
     def run_container_command(self, command, force_lxd=False, sudo=False, get_output=False, use_dir=True):
         wrapped_command = command
 
-        if not self.config.container_mode:
-            if force_lxd or self.config.lxd:
-                self.check_lxd()
+        if self.config.container_mode:
+            wrapped_command = 'bash -c "{}"'.format(command);
+        elif force_lxd or self.config.lxd:
+            self.check_lxd()
 
-                target_command = 'exec'
-                if sudo:
-                    target_command = 'maint'
+            target_command = 'exec'
+            if sudo:
+                target_command = 'maint'
 
-                if use_dir:
-                    command = 'cd {}; {}'.format(self.config.dir, command)
+            if use_dir:
+                command = 'cd {}; {}'.format(self.config.dir, command)
 
-                wrapped_command = 'usdk-target {} clickable-{} -- bash -c "{}"'.format(target_command, self.build_arch, command)
-            elif self.config.chroot:
-                chroot_command = 'run'
-                if sudo:
-                    chroot_command = 'maint'
+            wrapped_command = 'usdk-target {} clickable-{} -- bash -c "{}"'.format(target_command, self.build_arch, command)
+        elif self.config.chroot:
+            chroot_command = 'run'
+            if sudo:
+                chroot_command = 'maint'
 
-                wrapped_command = 'click chroot -a {} -f {} {} {}'.format(self.build_arch, self.config.sdk, chroot_command, command)
-            else:  # Docker
-                self.check_docker()
+            wrapped_command = 'click chroot -a {} -f {} {} bash -c "{}"'.format(self.build_arch, self.config.sdk, chroot_command, command)
+        else:  # Docker
+            self.check_docker()
 
-                wrapped_command = 'docker run -v {}:{} -w {} -u {} --rm -i {} bash -c "{}"'.format(
-                    self.cwd,
-                    self.cwd,
-                    self.config.dir,
-                    os.getuid(),
-                    self.docker_image,
-                    command,
-                )
+            wrapped_command = 'docker run -v {}:{} -w {} -u {} --rm -i {} bash -c "{}"'.format(
+                self.cwd,
+                self.cwd,
+                self.config.dir,
+                os.getuid(),
+                self.docker_image,
+                command,
+            )
 
         kwargs = {}
         if use_dir:
