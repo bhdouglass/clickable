@@ -1,3 +1,10 @@
+clickable (3.1.1) unstable; urgency=medium
+
+  * Fixed build template detection when the manifest cannot be found
+  * Fixed container mode dependencies, again
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 10 Jan 2018 10:16:00 -0500
+
 clickable (3.1.0) unstable; urgency=medium
 
   * Added option to run an app on the desktop
