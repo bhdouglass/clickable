@@ -33,5 +33,6 @@ RUN apt-get -y --force-yes --no-install-recommends install \
     oxideqt-codecs-extra \
     qt5-doc \
     language-pack-en \
-    click
+    click \
+    webapp-container
 RUN apt-get clean

@@ -1,3 +1,9 @@
+clickable (3.1.2) unstable; urgency=medium
+
+  * Fixed desktop mode for webapp-container
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 17 Jan 2018 09:08:00 -0500
+
 clickable (3.1.1) unstable; urgency=medium
 
   * Fixed build template detection when the manifest cannot be found

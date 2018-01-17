@@ -695,6 +695,11 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
                     execute = line.replace('Exec=', '')
                     break
 
+        if not execute:
+            raise Exception('No "Exec" line found in the desktop file')
+        else:
+            execute = execute.strip()
+
         # Inspired by https://stackoverflow.com/a/1160227
         xauth = '/tmp/.docker.xauth'
         with open(xauth, 'a'):
@@ -702,13 +707,31 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
 
         self.check_docker()
 
-        # TODO mount volume for app's cache/config/etc for persistence
-        volumes = '-v {}:{} -v /tmp/.X11-unix:/tmp/.X11-unix -v {}:{}'.format(
+        share = '/tmp/clickable/share'
+        if not os.path.isdir(share):
+            os.makedirs(share)
+
+        cache = '/tmp/clickable/cacge'
+        if not os.path.isdir(cache):
+            os.makedirs(cache)
+
+        config = '/tmp/clickable/config'
+        if not os.path.isdir(config):
+            os.makedirs(config)
+
+        volumes = '-v {}:{} -v /tmp/.X11-unix:/tmp/.X11-unix -v {}:{} -v {}:/tmp/.local/share -v {}:/tmp/.cache -v {}:/tmp/.config'.format(
             self.cwd,
             self.cwd,
             xauth,
             xauth,
+            share,
+            cache,
+            config,
         )
+
+        if execute.startswith('webapp-container'):
+            # This is needed for the webapp-container, so only do it for this case
+            volumes = '{} -v /etc/passwd:/etc/passwd'.format(volumes)
 
         lib_path = os.path.join(self.temp, 'lib/x86_64-linux-gnu')
         path = '/bin:/usr/bin:{}:{}:{}'.format(
@@ -716,7 +739,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             os.path.join(self.temp, 'lib/x86_64-linux-gnu/bin'),
             self.temp,
         )
-        environment = '-e XAUTHORITY=/tmp/.docker.xauth -e DISPLAY={} -e QML2_IMPORT_PATH={} -e LD_LIBRARY_PATH={} -e PATH={}'.format(
+        environment = '-e XAUTHORITY=/tmp/.docker.xauth -e DISPLAY={} -e QML2_IMPORT_PATH={} -e LD_LIBRARY_PATH={} -e PATH={} -e HOME=/tmp -e OXIDE_NO_SANDBOX=1'.format(
             os.environ['DISPLAY'],
             lib_path,
             lib_path,
@@ -1135,7 +1158,7 @@ if __name__ == '__main__':
         print(show_valid_commands())
 
     parser = argparse.ArgumentParser(description='clickable')
-    parser.add_argument('--version', '-v', action='version', version='%(prog)s 3.1.1')
+    parser.add_argument('--version', '-v', action='version', version='%(prog)s 3.1.2')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument(
         '--device',
