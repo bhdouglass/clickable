@@ -9,6 +9,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 * Add the PPA to your system: `sudo add-apt-repository ppa:bhdouglass/clickable`
 * Update your package list: `sudo apt-get update`
 * Install clickable: `sudo apt-get install clickable`
+* Configure docker for clickable: `clickable setup-docker`
 
 ### Via Git
 
@@ -16,11 +17,8 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 * Install [Cookiecutter](https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter)
 * Clone this repo: `git clone https://github.com/bhdouglass/clickable.git`
 * Add clickable to your PATH: `echo "export PATH=\$PATH:\$HOME/clickable" >> ~/.bashrc`
-* Read the new `.bashrc` file: Run `bash` or open a new terminal window
-
-### Post Setup
-
-Run `clickable setup-docker` to ensure that docker is configured for use with clickable.
+* Read the new `.bashrc` file: `source ~/.bashrc`
+* Configure docker for clickable: `clickable setup-docker`
 
 ## Docs
 
