@@ -30,6 +30,7 @@ Install Via PPA (Ubuntu)
 * Add the `PPA <https://launchpad.net/~bhdouglass/+archive/ubuntu/clickable>`__ to your system: ``sudo add-apt-repository ppa:bhdouglass/clickable``
 * Update your package list: ``sudo apt-get update``
 * Install clickable: ``sudo apt-get install clickable``
+* Configure docker for clickable: ``clickable setup-docker``
 
 Install Via Git
 ---------------
@@ -37,12 +38,8 @@ Install Via Git
 * Install `Docker <https://www.docker.com>`__
 * Install `Cookiecutter <https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter>`__
 * Add clickable to your PATH: ``echo "export PATH=\$PATH:\$HOME/clickable" >> ~/.bashrc``
-* Read the new ``.bashrc`` file: Run ``bash`` or open a new terminal window
-
-Post Install
-------------
-
-Run ``clickable setup-docker`` to ensure that docker is configured for use with clickable.
+* Read the new ``.bashrc`` file: ``source ~/.bashrc``
+* Configure docker for clickable: ``clickable setup-docker``
 
 Getting Started
 ---------------
