@@ -125,6 +125,7 @@ class Config(object):
         'dependencies': [],
         'ignore': [],
         'make_jobs': 0,
+        'gopath': None,
     }
 
     PURE_QML_QMAKE = 'pure-qml-qmake'
@@ -135,9 +136,10 @@ class Config(object):
     CORDOVA = 'cordova'
     PURE = 'pure'
     PYTHON = 'python'
+    GO= 'go'
 
     required = ['sdk', 'arch', 'dir']
-    templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON]
+    templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO]
 
     def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False):
         self.skip_detection = skip_detection
@@ -180,6 +182,10 @@ class Config(object):
 
         if self.template == self.CUSTOM and not self.build:
             raise ValueError('When using the "custom" template you must specify a "build" in the config')
+        if self.template == self.GO and not self.gopath:
+            raise ValueError('When using the "go" template you must specify a "gopath" in the config')
+        if self.template == self.GO and not self.app:
+            raise ValueError('When using the "go" template you must specify a "app" name in the config')
 
         if self.template not in self.templates:
             raise ValueError('"{}" is not a valid template ({})'.format(self.template, ', '.join(self.templates)))
@@ -1093,7 +1099,35 @@ class PythonClickable(PureClickable):
     # The only difference between this and the Pure template is that this doesn't force the "all" arch
     pass
 
+class GoClickable(Clickable):
+    def go_install(self):
+        get_output=True
+        if not os.path.exists(self.temp):
+            os.makedirs(self.temp)
+        gocommand = "/usr/local/go/bin/go build -i -o {}/{} .".format(self.temp,
+                                                                    self.config.app)
+        wrapped_command = 'docker run -v {}:{} -v {}:/home/developer/gopath -w {} -u {} --rm -i {} bash -c "{}"'.format(
+                self.cwd,
+                self.cwd,
+                self.config.gopath,
+                self.cwd,
+                0,
+                self.docker_image,
+                gocommand,
+            )
 
+        kwargs = {}
+        # if use_dir:
+        #     kwargs['cwd'] = self.config.dir
+
+        if get_output:
+            return subprocess.check_output(shlex.split(wrapped_command), **kwargs)
+        else:
+            subprocess.check_call(shlex.split(wrapped_command), **kwargs)
+
+    def _build(self):
+        self.go_install()
+    pass
 class CordovaClickable(Clickable):
     def _build(self):
         command = "cordova -d build ubuntu --device -- --framework={}".format(self.config.sdk)
@@ -1283,6 +1317,8 @@ if __name__ == '__main__':
             clickable = PureClickable(config, args.device_serial_number)
         elif config.template == config.PYTHON:
             clickable = PythonClickable(config, args.device_serial_number)
+        elif config.template == config.GO:
+            clickable = GoClickable(config, args.device_serial_number)
 
         commands = args.commands
         if len(args.commands) == 0:
