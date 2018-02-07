@@ -83,6 +83,3 @@ ENV CGO_ENABLED 1
 ENV PKG_CONFIG_LIBDIR /usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
 ENV CC arm-linux-gnueabihf-gcc
 ENV CXX arm-linux-gnueabihf-g++
-USER root
-ENV HOME /home/developer
-WORKDIR /home/developer
