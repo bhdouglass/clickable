@@ -273,6 +273,11 @@ class Clickable(object):
             if self.config.desktop:
                 self.build_arch = 'amd64'
 
+        if self.config.arch == 'all':
+            self.build_arch = 'armhf'
+            if self.config.desktop:
+                self.build_arch = 'amd64'
+
         if not self.config.container_mode:
             if self.config.ssh:
                 self.check_command('ssh')
@@ -1158,7 +1163,7 @@ if __name__ == '__main__':
         print(show_valid_commands())
 
     parser = argparse.ArgumentParser(description='clickable')
-    parser.add_argument('--version', '-v', action='version', version='%(prog)s 3.1.2')
+    parser.add_argument('--version', '-v', action='version', version='%(prog)s 3.1.3')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument(
         '--device',
