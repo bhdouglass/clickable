@@ -26,7 +26,7 @@ except ImportError:
 # TODO split into multiple files
 
 
-__version__ = "3.1.2"
+__version__ = "3.1.3"
 
 
 def run_subprocess_call(cmd, **args):
@@ -290,6 +290,11 @@ class Clickable(object):
 
         self.build_arch = self.config.arch
         if self.config.template == self.config.PURE_QML_QMAKE or self.config.template == self.config.PURE_QML_CMAKE or self.config.template == self.config.PURE:
+            self.build_arch = 'armhf'
+            if self.config.desktop:
+                self.build_arch = 'amd64'
+
+        if self.config.arch == 'all':
             self.build_arch = 'armhf'
             if self.config.desktop:
                 self.build_arch = 'amd64'

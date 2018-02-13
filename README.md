@@ -9,6 +9,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 * Add the PPA to your system: `sudo add-apt-repository ppa:bhdouglass/clickable`
 * Update your package list: `sudo apt-get update`
 * Install clickable: `sudo apt-get install clickable`
+* Configure docker for clickable: `clickable setup-docker`
 
 ### Via Pip && Git
 
@@ -19,6 +20,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 ### Post Setup
 
 Run `clickable setup-docker` to ensure that docker is configured for use with clickable.
+* Configure docker for clickable: `clickable setup-docker`
 
 ## Docs
 
