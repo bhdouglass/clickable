@@ -14,7 +14,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 
 * Install [Docker](https://www.docker.com)
 * Install: `sudo apt-get install python3-pip`
-* Run: `sudo pip3 install https://github.com/bhdouglass/clickable.git`
+* Run: `sudo pip3 install git+https://github.com/bhdouglass/clickable.git`
 
 ### Post Setup
 
