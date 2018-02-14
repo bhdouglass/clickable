@@ -990,7 +990,7 @@ class MakeClickable(Clickable):
 
     def post_make(self):
         if self.config.postmake:
-            subprocess.check_call(self.config.premake, cwd=self.config.dir, shell=True)
+            subprocess.check_call(self.config.postmake, cwd=self.config.dir, shell=True)
 
     def make(self):
         command = 'make -j'
