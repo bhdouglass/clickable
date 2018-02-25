@@ -116,13 +116,15 @@ RUN apt-get -y --no-install-recommends install \
     qtmultimedia5-dev:armhf \
     qtpim5-dev:armhf \
     qttools5-dev:armhf \
+    qt5-qmake-arm-linux-gnueabihf \
     ubuntu-sdk-qmake-extras:armhf \
     intltool:armhf \
     qttools5-dev-tools:armhf \
     oxideqt-codecs-extra \
-    qt5-doc \
     language-pack-en \
-    click
+    click \
+    qtquickcontrols2-5-dev:armhf
+
 RUN apt-get clean
 
 # Generated from `dpkg-architecture -a armhf`
