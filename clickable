@@ -139,7 +139,7 @@ class Config(object):
     required = ['sdk', 'arch', 'dir']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON]
 
-    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False):
+    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False, sdk=None):
         self.skip_detection = skip_detection
         self.click_output = click_output
         self.container_mode = container_mode
@@ -160,6 +160,9 @@ class Config(object):
 
         if lxd:
             self.lxd = lxd
+
+        if sdk:
+            self.sdk = sdk
 
         if skip_detection:
             if not template:
@@ -1170,7 +1173,7 @@ if __name__ == '__main__':
         print(show_valid_commands())
 
     parser = argparse.ArgumentParser(description='clickable')
-    parser.add_argument('--version', '-v', action='version', version='%(prog)s 3.1.5')
+    parser.add_argument('--version', '-v', action='version', version='%(prog)s 3.1.6')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument(
         '--device',
@@ -1244,6 +1247,11 @@ if __name__ == '__main__':
         help='Run the app on the current machine for testing',
         default=False,
     )
+    parser.add_argument(
+        '--sdk',
+        '-k',
+        help='Use a specific version of the ubuntu sdk to compile against',
+    )
 
     args = parser.parse_args()
 
@@ -1276,6 +1284,7 @@ if __name__ == '__main__':
             click_output=args.output,
             container_mode=args.container_mode,
             desktop=args.desktop,
+            sdk=args.sdk,
         )
 
         clickable = None

@@ -1,3 +1,9 @@
+clickable (3.1.6) unstable; urgency=medium
+
+  * Added argument to specify which sdk version to use
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Mon, 26 Feb 2018 11:34:00 -0500
+
 clickable (3.1.5) unstable; urgency=medium
 
   * Skip the logs command when not running against a real device
