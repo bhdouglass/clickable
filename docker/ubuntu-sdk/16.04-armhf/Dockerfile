@@ -119,7 +119,7 @@ RUN apt-get -y --no-install-recommends install \
     qt5-qmake-arm-linux-gnueabihf \
     ubuntu-sdk-qmake-extras:armhf \
     intltool:armhf \
-    qttools5-dev-tools:armhf \
+    qttools5-dev-tools:amd64 \
     oxideqt-codecs-extra \
     language-pack-en \
     click \
