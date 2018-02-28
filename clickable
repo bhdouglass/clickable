@@ -381,7 +381,7 @@ class Clickable(object):
         wrapped_command = command
 
         if self.config.container_mode:
-            wrapped_command = 'bash -c "{}"'.format(command);
+            wrapped_command = 'bash -c "{}"'.format(command)
         elif force_lxd or self.config.lxd:
             self.check_lxd()
 

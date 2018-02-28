@@ -12,29 +12,9 @@ RUN apt-get update
 
 RUN apt-get -y --no-install-recommends install gnupg ubuntu-keyring software-properties-common wget -f
 
-RUN add-apt-repository -y ppa:ci-train-ppa-service/stable-phone-overlay && \
-    echo "deb http://repo.ubports.com xenial main" >> /etc/apt/sources.list && \
+RUN echo "deb http://repo.ubports.com xenial main" >> /etc/apt/sources.list && \
     wget -qO - http://repo.ubports.com/keyring.gpg | apt-key add - && \
     apt-get update
-
-RUN echo \
-        "Package: *"  \
-        > /etc/apt/preferences.d/stable-phone-overlay.pref && \
-    echo \
-        "Pin: release o=LP-PPA-ci-train-ppa-service-stable-phone-overlay" \
-        >> /etc/apt/preferences.d/stable-phone-overlay.pref && \
-    echo \
-        "Pin-Priority: 1001" \
-        >> /etc/apt/preferences.d/stable-phone-overlay.pref
-RUN echo \
-        "Package: *" \
-        > /etc/apt/preferences.d/ubports.pref && \
-    echo \
-        "Pin: origin repo.ubports.com" \
-        >> /etc/apt/preferences.d/ubports.pref && \
-    echo \
-        "Pin-Priority: 2000" \
-        >> /etc/apt/preferences.d/ubports.pref
 
 RUN apt-get -y --no-install-recommends dist-upgrade
 
@@ -56,7 +36,6 @@ RUN apt-get -y --no-install-recommends install \
     libqt5keychain0 \
     libqt5multimedia5-plugins \
     libqt5sql5-sqlite \
-    libqt5systeminfo5 \
     qml-module-qt-labs-folderlistmodel \
     qml-module-qt-labs-settings \
     qml-module-qt-websockets \
@@ -79,7 +58,6 @@ RUN apt-get -y --no-install-recommends install \
     qml-module-qtsysteminfo \
     qml-module-ubuntu-onlineaccounts \
     qml-module-ubuntu-onlineaccounts-client \
-    qml-module-ubuntu-components \
     qmlscene \
     qt5-image-formats-plugins \
     qtchooser \
