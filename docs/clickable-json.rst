@@ -153,6 +153,15 @@ is set to `true`.
 +--------+
 
 Optional, a list of files to ignore when building a `pure` template
+Example:
+``
+"ignore":[
+    ".clickable",
+    ".git",
+    ".gitignore",
+    ".gitmodules"
+  ]
+``
 
 +-----------+
 | make_jobs |
@@ -160,3 +169,9 @@ Optional, a list of files to ignore when building a `pure` template
 
 Optional, the number of jobs to use when running make, equivalent to make's `-j`
 option. If left blank this defaults to the number of cpus your computer has.
+
++--------+
+| gopath |
++--------+
+Optional, but required when using the go app template.
+`"gopath": "/home/user/go"`
