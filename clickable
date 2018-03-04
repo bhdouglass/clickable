@@ -407,15 +407,25 @@ class Clickable(object):
             wrapped_command = 'click chroot -a {} -f {} {} bash -c "{}"'.format(self.build_arch, self.config.sdk, chroot_command, command)
         else:  # Docker
             self.check_docker()
-
-            wrapped_command = 'docker run -v {}:{} -w {} -u {} --rm -i {} bash -c "{}"'.format(
-                self.cwd,
-                self.cwd,
-                self.config.dir,
-                os.getuid(),
-                self.docker_image,
-                command,
-            )
+            if self.config.template == Config.GO:
+                wrapped_command = 'docker run -v {}:{} -v {}:/home/developer/gopath -w {} -u {} --rm -i {} bash -c "{}"'.format(
+                        self.cwd,
+                        self.cwd,
+                        self.config.gopath,
+                        self.cwd,
+                        0,
+                        self.docker_image,
+                        command,
+                    )
+            else:
+                wrapped_command = 'docker run -v {}:{} -w {} -u {} --rm -i {} bash -c "{}"'.format(
+                    self.cwd,
+                    self.cwd,
+                    self.config.dir,
+                    os.getuid(),
+                    self.docker_image,
+                    command,
+                )
 
         kwargs = {}
         if use_dir:
@@ -1115,33 +1125,22 @@ class PythonClickable(PureClickable):
     pass
 
 class GoClickable(Clickable):
-    def go_install(self):
-        get_output=True
-        if not os.path.exists(self.temp):
-            os.makedirs(self.temp)
-        gocommand = "/usr/local/go/bin/go build -i -o {}/{} .".format(self.temp,
-                                                                    self.config.app)
-        wrapped_command = 'docker run -v {}:{} -v {}:/home/developer/gopath -w {} -u {} --rm -i {} bash -c "{}"'.format(
-                self.cwd,
-                self.cwd,
-                self.config.gopath,
-                self.cwd,
-                0,
-                self.docker_image,
-                gocommand,
-            )
+    def _ignore(self, path, contents):
+        ignored = []
+        for content in contents:
+            cpath = os.path.abspath(os.path.join(path, content))
+            if cpath == os.path.abspath(self.temp) or cpath == os.path.abspath(self.config.dir) or content in self.config.ignore or content == 'clickable.json':
+                ignored.append(content)
 
-        kwargs = {}
-        # if use_dir:
-        #     kwargs['cwd'] = self.config.dir
-
-        if get_output:
-            return subprocess.check_output(shlex.split(wrapped_command), **kwargs)
-        else:
-            subprocess.check_call(shlex.split(wrapped_command), **kwargs)
+        return ignored
+    # def click_build(self):
 
     def _build(self):
-        self.go_install()
+        shutil.copytree(self.cwd, self.temp, ignore=self._ignore)
+        print_info('Copied files to temp directory for click building')
+        gocommand = "/usr/local/go/bin/go build -i -o {}/{} .".format(self.temp,
+                                                        self.config.app)
+        self.run_container_command(gocommand)
     pass
 class CordovaClickable(Clickable):
     def _build(self):

@@ -33,9 +33,7 @@ RUN apt-get -y --force-yes --no-install-recommends install \
     oxideqt-codecs-extra \
     qt5-doc \
     language-pack-en \
-    click
-# go dependencies
-RUN apt-get -y --force-yes --no-install-recommends install \
+    click \
     qtbase5-private-dev:armhf \
     qtdeclarative5-private-dev:armhf \
     libqt5opengl5-dev:armhf \
