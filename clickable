@@ -141,7 +141,7 @@ class Config(object):
     required = ['sdk', 'arch', 'dir']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO]
 
-    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False):
+    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False, sdk=None):
         self.skip_detection = skip_detection
         self.click_output = click_output
         self.container_mode = container_mode
@@ -162,6 +162,9 @@ class Config(object):
 
         if lxd:
             self.lxd = lxd
+
+        if sdk:
+            self.sdk = sdk
 
         if skip_detection:
             if not template:
@@ -279,6 +282,11 @@ class Clickable(object):
             if self.config.desktop:
                 self.build_arch = 'amd64'
 
+        if self.config.arch == 'all':
+            self.build_arch = 'armhf'
+            if self.config.desktop:
+                self.build_arch = 'amd64'
+
         if not self.config.container_mode:
             if self.config.ssh:
                 self.check_command('ssh')
@@ -379,7 +387,7 @@ class Clickable(object):
         wrapped_command = command
 
         if self.config.container_mode:
-            wrapped_command = 'bash -c "{}"'.format(command);
+            wrapped_command = 'bash -c "{}"'.format(command)
         elif force_lxd or self.config.lxd:
             self.check_lxd()
 
@@ -778,6 +786,13 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             self.run_device_command('sleep 1s && {}'.format(launch), cwd=cwd)
 
     def logs(self):
+        if self.config.desktop:
+            print_warning('Skipping logs, running in desktop mode')
+            return
+        elif self.config.container_mode:
+            print_warning('Skipping logs, running in container mode')
+            return
+
         log = '~/.cache/upstart/application-click-{}_{}_{}.log'.format(self.find_package_name(), self.find_app_name(), self.find_version())
 
         if self.config.log:
@@ -991,7 +1006,7 @@ class MakeClickable(Clickable):
 
     def post_make(self):
         if self.config.postmake:
-            subprocess.check_call(self.config.premake, cwd=self.config.dir, shell=True)
+            subprocess.check_call(self.config.postmake, cwd=self.config.dir, shell=True)
 
     def make(self):
         command = 'make -j'
@@ -1192,7 +1207,7 @@ if __name__ == '__main__':
         print(show_valid_commands())
 
     parser = argparse.ArgumentParser(description='clickable')
-    parser.add_argument('--version', '-v', action='version', version='%(prog)s 3.1.2')
+    parser.add_argument('--version', '-v', action='version', version='%(prog)s 3.1.6')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument(
         '--device',
@@ -1266,6 +1281,11 @@ if __name__ == '__main__':
         help='Run the app on the current machine for testing',
         default=False,
     )
+    parser.add_argument(
+        '--sdk',
+        '-k',
+        help='Use a specific version of the ubuntu sdk to compile against',
+    )
 
     args = parser.parse_args()
 
@@ -1298,6 +1318,7 @@ if __name__ == '__main__':
             click_output=args.output,
             container_mode=args.container_mode,
             desktop=args.desktop,
+            sdk=args.sdk,
         )
 
         clickable = None

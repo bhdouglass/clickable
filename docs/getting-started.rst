@@ -40,4 +40,4 @@ Submitting to the OpenStore
 ---------------------------
 
 When you are ready to publish your app, head to the
-`OpenStore's submission page <https://open.uappexplorer.com/submit>`__.
+`OpenStore's submission page <https://open-store.io/submit>`__.

@@ -47,6 +47,13 @@ Getting Started
 
 :ref:`Read the getting started guide to get started developing with clickable. <getting-started>`
 
+Code Editor Integrations
+------------------------
+
+Use clickable with the `Atom Editor <https://atom.io>`__ by installing
+`atom-build-clickable <https://atom.io/packages/atom-build-clickable>`__
+made by Stefano.
+
 Issues and Feature Requests
 ---------------------------
 

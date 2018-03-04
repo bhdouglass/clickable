@@ -29,6 +29,12 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 - [App Templates](http://clickable.bhdouglass.com/en/latest/app-templates.html)
 - [Build Templates](http://clickable.bhdouglass.com/en/latest/build-templates.html)
 
+## Code Editor Integrations
+
+Use clickable with the [Atom Editor](https://atom.io) by installing
+[atom-build-clickable](https://atom.io/packages/atom-build-clickable)
+made by Stefano.
+
 ## License
 
 Copyright (C) 2018 [Brian Douglass](http://bhdouglass.com/)
