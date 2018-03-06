@@ -173,5 +173,5 @@ option. If left blank this defaults to the number of cpus your computer has.
 +--------+
 | gopath |
 +--------+
-Optional, but required when using the go app template.
-`"gopath": "/home/user/go"`
+
+Optional, the gopath on the host machine. If left blank, the ``GOPATH`` env var will be used.

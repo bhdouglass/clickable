@@ -55,5 +55,4 @@ A project that uses python and does not need to be compiled.
 | go |
 +----+
 
-A project that uses go.
-This uses golang 1.6 and every optimized fork for go 1.6 from `gopkg.in/qml.v1` for example `github.com/nanu-c/qml-go`
+A project that uses go version 1.6.

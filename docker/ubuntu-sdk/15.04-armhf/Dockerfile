@@ -39,11 +39,14 @@ RUN apt-get -y --force-yes --no-install-recommends install \
     libqt5opengl5-dev:armhf \
     mercurial crossbuild-essential-armhf git
 RUN apt-get clean
+
 #Install go
-RUN wget https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz
-RUN tar -xvf go1.6.linux-amd64.tar.gz
-RUN mv go /usr/local
-RUN ln -s /usr/include/arm-linux-gnueabihf/qt5/QtCore/5.4.1/QtCore /usr/include/
+RUN wget https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz && \
+    tar -xvf go1.6.linux-amd64.tar.gz && \
+    mv go /usr/local && \
+    ln -s /usr/include/arm-linux-gnueabihf/qt5/QtCore/5.4.1/QtCore /usr/include/ && \
+    rm go1.6.linux-amd64.tar.gz
+
 # Generated from `dpkg-architecture -a armhf`
 ENV DEB_BUILD_ARCH=amd64
 ENV DEB_BUILD_ARCH_BITS=64
@@ -72,12 +75,12 @@ ENV DEB_TARGET_GNU_CPU=arm
 ENV DEB_TARGET_GNU_SYSTEM=linux-gnueabihf
 ENV DEB_TARGET_GNU_TYPE=arm-linux-gnueabihf
 ENV DEB_TARGET_MULTIARCH=arm-linux-gnueabihf
+
 # env's for go
-ENV GOOS linux
-ENV GOARCH arm
-ENV GOARM 7
-ENV GOPATH /home/developer/gopath
-ENV CGO_ENABLED 1
-ENV PKG_CONFIG_LIBDIR /usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
-ENV CC arm-linux-gnueabihf-gcc
-ENV CXX arm-linux-gnueabihf-g++
+ENV GOOS=linux
+ENV GOARCH=arm
+ENV GOARM=7
+ENV CGO_ENABLED=1
+ENV PKG_CONFIG_LIBDIR=/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
+ENV CC=arm-linux-gnueabihf-gcc
+ENV CXX=arm-linux-gnueabihf-g++

@@ -20,7 +20,6 @@ try:
 except ImportError:
     cookiecutter_available = False
 
-# TODO add Golang template
 # TODO include phablet-config
 # TODO update to python3
 # TODO add a publish command to upload to the OpenStore
@@ -136,7 +135,7 @@ class Config(object):
     CORDOVA = 'cordova'
     PURE = 'pure'
     PYTHON = 'python'
-    GO= 'go'
+    GO = 'go'
 
     required = ['sdk', 'arch', 'dir']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO]
@@ -166,6 +165,9 @@ class Config(object):
         if sdk:
             self.sdk = sdk
 
+        if not self.gopath and 'GOPATH' in os.environ and os.environ['GOPATH']:
+            self.gopath = os.environ['GOPATH']
+
         if skip_detection:
             if not template:
                 self.template = self.PURE
@@ -178,6 +180,7 @@ class Config(object):
             elif self.template == self.PURE_QML_CMAKE or self.template == self.PURE_QML_QMAKE or self.template == self.PURE:
                 self.kill = 'qmlscene'
             else:
+                # TODO grab app name from manifest
                 self.kill = self.app
 
         if self.template == self.PURE_QML_CMAKE or self.template == self.PURE_QML_QMAKE or self.template == self.PURE:
@@ -186,9 +189,7 @@ class Config(object):
         if self.template == self.CUSTOM and not self.build:
             raise ValueError('When using the "custom" template you must specify a "build" in the config')
         if self.template == self.GO and not self.gopath:
-            raise ValueError('When using the "go" template you must specify a "gopath" in the config')
-        if self.template == self.GO and not self.app:
-            raise ValueError('When using the "go" template you must specify a "app" name in the config')
+            raise ValueError('When using the "go" template you must specify a "gopath" in the config or use the "GOPATH" env variable')
 
         if self.template not in self.templates:
             raise ValueError('"{}" is not a valid template ({})'.format(self.template, ', '.join(self.templates)))
@@ -407,25 +408,20 @@ class Clickable(object):
             wrapped_command = 'click chroot -a {} -f {} {} bash -c "{}"'.format(self.build_arch, self.config.sdk, chroot_command, command)
         else:  # Docker
             self.check_docker()
-            if self.config.template == Config.GO:
-                wrapped_command = 'docker run -v {}:{} -v {}:/home/developer/gopath -w {} -u {} --rm -i {} bash -c "{}"'.format(
-                        self.cwd,
-                        self.cwd,
-                        self.config.gopath,
-                        self.cwd,
-                        0,
-                        self.docker_image,
-                        command,
-                    )
-            else:
-                wrapped_command = 'docker run -v {}:{} -w {} -u {} --rm -i {} bash -c "{}"'.format(
-                    self.cwd,
-                    self.cwd,
-                    self.config.dir,
-                    os.getuid(),
-                    self.docker_image,
-                    command,
-                )
+
+            go_config = ''
+            if self.config.gopath:
+                go_config = '-v {}:/gopath -e GOPATH=/gopath'.format(self.config.gopath)
+
+            wrapped_command = 'docker run -v {}:{} {} -w {} -u {} --rm -i {} bash -c "{}"'.format(
+                self.cwd,
+                self.cwd,
+                go_config,
+                self.config.dir,
+                os.getuid(),
+                self.docker_image,
+                command,
+            )
 
         kwargs = {}
         if use_dir:
@@ -1110,7 +1106,13 @@ class PureClickable(Clickable):
         ignored = []
         for content in contents:
             cpath = os.path.abspath(os.path.join(path, content))
-            if cpath == os.path.abspath(self.temp) or cpath == os.path.abspath(self.config.dir) or content in self.config.ignore or content == 'clickable.json':
+            # TODO ignore version control directories by default
+            if (
+                cpath == os.path.abspath(self.temp) or
+                cpath == os.path.abspath(self.config.dir) or
+                content in self.config.ignore or
+                content == 'clickable.json'
+            ):
                 ignored.append(content)
 
         return ignored
@@ -1124,24 +1126,36 @@ class PythonClickable(PureClickable):
     # The only difference between this and the Pure template is that this doesn't force the "all" arch
     pass
 
+
 class GoClickable(Clickable):
     def _ignore(self, path, contents):
         ignored = []
         for content in contents:
             cpath = os.path.abspath(os.path.join(path, content))
-            if cpath == os.path.abspath(self.temp) or cpath == os.path.abspath(self.config.dir) or content in self.config.ignore or content == 'clickable.json':
+            if (
+                cpath == os.path.abspath(self.temp) or
+                cpath == os.path.abspath(self.config.dir) or
+                content in self.config.ignore or
+                content == 'clickable.json' or
+
+                # Don't copy the go files, they will be compiled from the source directory
+                os.path.splitext(content)[1] == '.go'
+            ):
                 ignored.append(content)
 
         return ignored
-    # def click_build(self):
 
     def _build(self):
         shutil.copytree(self.cwd, self.temp, ignore=self._ignore)
-        print_info('Copied files to temp directory for click building')
-        gocommand = "/usr/local/go/bin/go build -i -o {}/{} .".format(self.temp,
-                                                        self.config.app)
+
+        gocommand = '/usr/local/go/bin/go build -pkgdir {}/.clickable/go -i -o {}/{} ..'.format(
+            self.cwd,
+            self.temp,
+            self.find_app_name(),
+        )
         self.run_container_command(gocommand)
-    pass
+
+
 class CordovaClickable(Clickable):
     def _build(self):
         command = "cordova -d build ubuntu --device -- --framework={}".format(self.config.sdk)
