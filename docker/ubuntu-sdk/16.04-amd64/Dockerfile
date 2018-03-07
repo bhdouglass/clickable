@@ -99,6 +99,20 @@ RUN apt-get -y --no-install-recommends install \
     oxideqt-codecs-extra \
     language-pack-en \
     click \
-    qtquickcontrols2-5-dev
+    qtquickcontrols2-5-dev \
+    qtbase5-private-dev \
+    qtdeclarative5-private-dev \
+    libqt5opengl5-dev \
+    mercurial \
+    git
 
 RUN apt-get clean
+
+# Install go
+RUN wget https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz && \
+    tar -xvf go1.6.linux-amd64.tar.gz && \
+    mv go /usr/local && \
+    ln -s /usr/include/arm-linux-gnueabihf/qt5/QtCore/5.4.1/QtCore /usr/include/ && \
+    rm go1.6.linux-amd64.tar.gz
+
+ENV CGO_ENABLED=1

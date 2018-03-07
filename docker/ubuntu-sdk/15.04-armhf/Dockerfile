@@ -37,10 +37,12 @@ RUN apt-get -y --force-yes --no-install-recommends install \
     qtbase5-private-dev:armhf \
     qtdeclarative5-private-dev:armhf \
     libqt5opengl5-dev:armhf \
-    mercurial crossbuild-essential-armhf git
+    mercurial \
+    crossbuild-essential-armhf \
+    git
 RUN apt-get clean
 
-#Install go
+# Install go
 RUN wget https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz && \
     tar -xvf go1.6.linux-amd64.tar.gz && \
     mv go /usr/local && \

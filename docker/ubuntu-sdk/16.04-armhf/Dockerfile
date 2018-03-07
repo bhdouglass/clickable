@@ -103,9 +103,22 @@ RUN apt-get -y --no-install-recommends install \
     oxideqt-codecs-extra \
     language-pack-en \
     click \
-    qtquickcontrols2-5-dev:armhf
+    qtquickcontrols2-5-dev:armhf \
+    qtbase5-private-dev:armhf \
+    qtdeclarative5-private-dev:armhf \
+    libqt5opengl5-dev:armhf \
+    mercurial \
+    crossbuild-essential-armhf \
+    git
 
 RUN apt-get clean
+
+# Install go
+RUN wget https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz && \
+    tar -xvf go1.6.linux-amd64.tar.gz && \
+    mv go /usr/local && \
+    ln -s /usr/include/arm-linux-gnueabihf/qt5/QtCore/5.4.1/QtCore /usr/include/ && \
+    rm go1.6.linux-amd64.tar.gz
 
 # Generated from `dpkg-architecture -a armhf`
 ENV DEB_BUILD_ARCH=amd64
@@ -135,3 +148,12 @@ ENV DEB_TARGET_GNU_CPU=arm
 ENV DEB_TARGET_GNU_SYSTEM=linux-gnueabihf
 ENV DEB_TARGET_GNU_TYPE=arm-linux-gnueabihf
 ENV DEB_TARGET_MULTIARCH=arm-linux-gnueabihf
+
+# env's for go
+ENV GOOS=linux
+ENV GOARCH=arm
+ENV GOARM=7
+ENV CGO_ENABLED=1
+ENV PKG_CONFIG_LIBDIR=/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
+ENV CC=arm-linux-gnueabihf-gcc
+ENV CXX=arm-linux-gnueabihf-g++
