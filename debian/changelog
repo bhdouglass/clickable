@@ -1,3 +1,10 @@
+clickable (3.2.0) unstable; urgency=medium
+
+  * Added go build template
+  * Added error exit status when an exception occurs
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 07 Mar 2018 00:56:00 -0500
+
 clickable (3.1.6) unstable; urgency=medium
 
   * Added argument to specify which sdk version to use

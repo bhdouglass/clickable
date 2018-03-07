@@ -766,8 +766,13 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             path,
         )
 
-        command = 'docker run {} {} -w {} -u {} --rm -i {} bash -c "{}"'.format(
+        go_config = ''
+        if self.config.gopath:
+            go_config = '-v {}:/gopath -e GOPATH=/gopath'.format(self.config.gopath)
+
+        command = 'docker run {} {} {} -w {} -u {} --rm -i {} bash -c "{}"'.format(
             volumes,
+            go_config,
             environment,
             self.temp,
             os.getuid(),
@@ -1220,7 +1225,7 @@ if __name__ == '__main__':
         print(show_valid_commands())
 
     parser = argparse.ArgumentParser(description='clickable')
-    parser.add_argument('--version', '-v', action='version', version='%(prog)s 3.1.6')
+    parser.add_argument('--version', '-v', action='version', version='%(prog)s 3.2.0')
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument(
         '--device',
