@@ -1,0 +1,9 @@
+include LICENSE
+include README.md
+
+recursive-include debian *
+recursive-include docker *
+recursive-include docs *
+recursive-include scripts *
+recursive-exclude * __pycache__
+recursive-exclude * *.py[co]
