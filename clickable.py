@@ -770,10 +770,6 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             config,
         )
 
-        if execute.startswith('webapp-container'):
-            # This is needed for the webapp-container, so only do it for this case
-            volumes = '{} -v /etc/passwd:/etc/passwd'.format(volumes)
-
         lib_path = os.path.join(self.temp, 'lib/x86_64-linux-gnu')
         path = '/bin:/usr/bin:{}:{}:{}'.format(
             os.path.join(self.temp, 'bin'),
@@ -786,6 +782,11 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             lib_path,
             path,
         )
+
+        if execute.startswith('webapp-container'):
+            # This is needed for the webapp-container, so only do it for this case
+            volumes = '{} -v /etc/passwd:/etc/passwd'.format(volumes)
+            environment = '{} -e APP_ID={}'.format(environment, self.find_package_name())
 
         go_config = ''
         if self.config.gopath:
