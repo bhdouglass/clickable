@@ -976,6 +976,10 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
                 'name': 'webapp',
                 'display': 'Simple Webapp',
                 'url': 'https://github.com/bhdouglass/ut-app-webapp-template',
+            }, {
+                'name': 'go',
+                'display': 'Go/QML App',
+                'url': 'https://github.com/bhdouglass/ut-app-go-template',
             }
         ]
 
