@@ -9,8 +9,8 @@ RUN apt-get update && \
         debhelper \
         help2man \
         dpkg-dev \
-        python \
-        python-cookiecutter \
+        python3 \
+        python3-cookiecutter \
         fakeroot \
         build-essential \
         && \
