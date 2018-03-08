@@ -833,23 +833,25 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         self.run_device_command('tail -f {}'.format(log))
 
     def clean(self):
-        try:
-            shutil.rmtree(self.config.dir)
-        except Exception:
-            type, value, traceback = sys.exc_info()
-            if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
-                pass  # Nothing to do here, the directory didn't exist
-            else:
-                print_warning('Failed to clean the build directory: {}: {}'.format(type, value))
+        if os.path.exists(self.config.dir):
+            try:
+                shutil.rmtree(self.config.dir)
+            except Exception:
+                type, value, traceback = sys.exc_info()
+                if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
+                    pass  # Nothing to do here, the directory didn't exist
+                else:
+                    print_warning('Failed to clean the build directory: {}: {}'.format(type, value))
 
-        try:
-            shutil.rmtree(self.temp)
-        except Exception:
-            type, value, traceback = sys.exc_info()
-            if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
-                pass  # Nothing to do here, the directory didn't exist
-            else:
-                print_warning('Failed to clean the temp directory: {}: {}'.format(type, value))
+        if os.path.exists(self.temp):
+            try:
+                shutil.rmtree(self.temp)
+            except Exception:
+                type, value, traceback = sys.exc_info()
+                if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
+                    pass  # Nothing to do here, the directory didn't exist
+                else:
+                    print_warning('Failed to clean the temp directory: {}: {}'.format(type, value))
 
     def _build(self):
         raise NotImplementedError()
