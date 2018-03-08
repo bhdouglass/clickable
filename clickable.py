@@ -19,7 +19,6 @@ try:
 except ImportError:
     cookiecutter_available = False
 
-# TODO add Golang template
 # TODO include phablet-config
 # TODO add a publish command to upload to the OpenStore
 # TODO create a flatpak
@@ -1412,8 +1411,8 @@ def main():
         if args.debug:
             raise
         else:
-            print_error(str(sys.exc_info()[1])
-            sys.exit(1))
+            print_error(str(sys.exc_info()[1]))
+            sys.exit(1)
 
 
 if __name__ == '__main__':
