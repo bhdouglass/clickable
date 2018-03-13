@@ -20,7 +20,6 @@ RUN echo "deb http://repo.ubports.com xenial main" >> /etc/apt/sources.list && \
     apt-get update
 
 RUN apt-get -y --no-install-recommends dist-upgrade
-
 RUN apt-get -y --no-install-recommends install \
     apt-utils \
     build-essential \
@@ -33,73 +32,9 @@ RUN apt-get -y --no-install-recommends install \
     ifupdown \
     g++-arm-linux-gnueabihf \
     pkg-config-arm-linux-gnueabihf \
-    libjsoncpp1:armhf \
-    libnet-cpp2:armhf \
-    libprocess-cpp3:armhf \
-    libqt5keychain0:armhf \
-    libqt5multimedia5-plugins:armhf \
-    libqt5sql5-sqlite:armhf \
-    qml-module-qt-labs-folderlistmodel:armhf \
-    qml-module-qt-labs-settings:armhf \
-    qml-module-qt-websockets:armhf \
-    qml-module-qtbluetooth:armhf \
-    qml-module-qtgraphicaleffects:armhf \
-    qml-module-qtlocation:armhf \
-    qml-module-qtmultimedia:armhf \
-    qml-module-qtorganizer:armhf \
-    qml-module-qtpositioning:armhf \
-    qml-module-qtpurchasing:armhf \
-    qml-module-qtqml-models2:armhf \
-    qml-module-qtqml-statemachine:armhf \
-    qml-module-qtquick-layouts:armhf \
-    qml-module-qtquick-localstorage:armhf \
-    qml-module-qtquick-particles2:armhf \
-    qml-module-qtquick-window2:armhf \
-    qml-module-qtquick-xmllistmodel:armhf \
-    qml-module-qtquick2:armhf \
-    qml-module-qtsensors:armhf \
-    qml-module-qtsysteminfo:armhf \
-    qml-module-ubuntu-onlineaccounts:armhf \
-    qml-module-ubuntu-onlineaccounts-client:armhf \
-    qmlscene:armhf \
-    qt5-image-formats-plugins:armhf \
-    qtchooser:armhf \
-    qtdeclarative5-poppler1.0:armhf \
-    qtdeclarative5-u1db1.0:armhf \
-    qtdeclarative5-ubuntu-download-manager0.1:armhf \
-    qtdeclarative5-ubuntu-mediascanner0.1:armhf \
-    qtdeclarative5-ubuntu-push-plugin:armhf \
-    qtdeclarative5-ubuntu-syncmonitor0.1:armhf \
-    qtdeclarative5-ubuntu-telephony-phonenumber0.1:armhf \
-    qtdeclarative5-ubuntu-ui-toolkit-plugin:armhf \
-    qtdeclarative5-usermetrics0.1:armhf \
-    ubuntu-html5-theme:armhf \
-    ubuntu-ui-toolkit-theme:armhf \
-    google-mock:armhf \
-    libjsoncpp-dev:armhf \
-    libnet-cpp-dev:armhf \
-    libprocess-cpp-dev:armhf \
-    libproperties-cpp-dev:armhf \
-    libqt5sensors5-dev:armhf \
-    libqt5svg5-dev:armhf \
-    libqt5websockets5-dev:armhf \
-    libqt5xmlpatterns5-dev:armhf \
-    libssl-dev:armhf \
-    libunity-scopes-dev:armhf \
-    qt3d5-dev:armhf \
-    qt5-default:armhf \
-    qtbase5-dev:armhf \
-    qtconnectivity5-dev:armhf \
-    qtdeclarative5-dev:armhf \
-    qtdeclarative5-dev-tools:armhf \
-    qtlocation5-dev:armhf \
-    qtmultimedia5-dev:armhf \
-    qtpim5-dev:armhf \
-    qttools5-dev:armhf \
-    qt5-qmake-arm-linux-gnueabihf \
-    ubuntu-sdk-qmake-extras:armhf \
-    intltool:armhf \
-    qttools5-dev-tools:amd64 \
+    ubuntu-sdk-libs:armhf \
+    ubuntu-sdk-libs-dev:armhf \
+    ubuntu-sdk-libs-tools \
     oxideqt-codecs-extra \
     language-pack-en \
     click \
@@ -110,7 +45,6 @@ RUN apt-get -y --no-install-recommends install \
     mercurial \
     crossbuild-essential-armhf \
     git
-
 RUN apt-get clean
 
 # Install go
