@@ -15,10 +15,10 @@ RUN dpkg --add-architecture armhf && apt-get update
 
 RUN apt-get -y --no-install-recommends install gnupg ubuntu-keyring software-properties-common wget -f
 
-RUN echo "deb http://repo.ubports.com xenial main" >> /etc/apt/sources.list && \
-    wget -qO - http://repo.ubports.com/keyring.gpg | apt-key add - && \
-    apt-get update
+RUN echo "deb http://repo.ubports.com xenial main" >> /etc/apt/sources.list
+RUN wget -qO - http://repo.ubports.com/keyring.gpg | apt-key add -
 
+RUN apt-get update
 RUN apt-get -y --no-install-recommends dist-upgrade
 RUN apt-get -y --no-install-recommends install \
     apt-utils \
