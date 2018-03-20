@@ -3,56 +3,47 @@
 Build Templates
 ===============
 
-+----------------+
-| pure-qml-qmake |
-+----------------+
+pure-qml-qmake
+--------------
 
 A purely qml qmake project.
 
-+-------+
-| qmake |
-+-------+
+qmake
+-----
 
 A project that builds using qmake (has more than just QML).
 
-+----------------+
-| pure-qml-cmake |
-+----------------+
+pure-qml-cmake
+--------------
 
 A purely qml cmake project
 
-+-------+
-| cmake |
-+-------+
+cmake
+-----
 
 A project that builds using cmake (has more than just QML)
 
-+--------+
-| custom |
-+--------+
+custom
+------
 
 A custom build command will be used.
 
-+---------+
-| cordova |
-+---------+
+cordova
+-------
 
 A project that builds using cordova
 
-+------+
-| pure |
-+------+
+pure
+----
 
 A project that does not need to be compiled. All files in the project root will be copied into the click.
 
-+--------+
-| python |
-+--------+
+python
+------
 
 A project that uses python and does not need to be compiled.
 
-+----+
-| go |
-+----+
+go
+--
 
 A project that uses go version 1.6.
