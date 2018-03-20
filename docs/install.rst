@@ -11,6 +11,12 @@ Install Via PPA (Ubuntu)
 * Install clickable: ``sudo apt-get install clickable``
 * Configure docker for clickable: ``clickable setup-docker``
 
+Install Via AUR (Arch Linux)
+----------------------------
+
+* Using your favorite AUR helper, install the `clickable package <https://aur.archlinux.org/packages/clickable/>`__
+* Example: ``pacaur -S clickable``
+
 Install Via Git
 ---------------
 
@@ -18,5 +24,5 @@ Install Via Git
 * Install `Cookiecutter <https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter>`__
 * Clone this repo: ``git clone https://github.com/bhdouglass/clickable.git``
 * Add clickable to your PATH: ``echo "export PATH=\$PATH:\$HOME/clickable" >> ~/.bashrc``
-* Read the new ``.bashrc`` file: ``source ~/.bashrc`` 
+* Read the new ``.bashrc`` file: ``source ~/.bashrc``
 * Configure docker for clickable: ``clickable setup-docker``

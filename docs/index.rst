@@ -32,6 +32,13 @@ Install Via PPA (Ubuntu)
 * Install clickable: ``sudo apt-get install clickable``
 * Configure docker for clickable: ``clickable setup-docker``
 
+
+Install Via AUR (Arch Linux)
+----------------------------
+
+* Using your favorite AUR helper, install the `clickable package <https://aur.archlinux.org/packages/clickable/>`__
+* Example: ``pacaur -S clickable``
+
 Install Via Git
 ---------------
 
