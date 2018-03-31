@@ -739,6 +739,8 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         if not os.path.isdir(config):
             os.makedirs(config)
 
+        # needed an audio recording device, but thats not very universal
+        # perhaps its possible to create a possibility to serve some extra arguments, when running clickable from the commandline
         volumes = '-v /dev/snd/pcmC2D0c:/dev/snd/pcmC2D0c -v /dev/snd/controlC2:/dev/snd/controlC2 --device /dev/snd -v {}:{} -v /tmp/.X11-unix:/tmp/.X11-unix -v {}:{} -v {}:/tmp/.local/share -v {}:/tmp/.cache -v {}:/tmp/.config'.format(
             self.cwd,
             self.cwd,
@@ -754,7 +756,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             volumes = '{} -v /etc/passwd:/etc/passwd'.format(volumes)
             execute = '{} --app-id=dummy'.format(execute)
 
-        lib_path = os.path.join(self.temp, 'lib/x86_64-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64')
+        lib_path = os.path.join(self.temp, 'lib/x86_64-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64')
         path = '/usr/local/nvidia/bin:/bin:/usr/bin:{}:{}:{}'.format(
             os.path.join(self.temp, 'bin'),
             os.path.join(self.temp, 'lib/x86_64-linux-gnu/bin'),
