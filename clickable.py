@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 
 import argparse
 import itertools
@@ -8,7 +8,6 @@ import os
 import sys
 import json
 import shutil
-import platform
 import time
 import uuid
 import xml.etree.ElementTree as ElementTree
@@ -21,10 +20,32 @@ except ImportError:
     cookiecutter_available = False
 
 # TODO include phablet-config
-# TODO update to python3
 # TODO add a publish command to upload to the OpenStore
 # TODO create a flatpak
 # TODO split into multiple files
+
+
+__version__ = "4.0.0"
+
+
+def run_subprocess_call(cmd, **args):
+    if isinstance(cmd, str):
+        cmd = cmd.encode()
+    elif isinstance(cmd, (list, tuple)):
+        for idx, x in enumerate(cmd):
+            if isinstance(x, str):
+                cmd[idx] = x.encode()
+    return subprocess.call(cmd, **args)
+
+
+def run_subprocess_check_output(cmd, **args):
+    if isinstance(cmd, str):
+        cmd = cmd.encode()
+    elif isinstance(cmd, (list, tuple)):
+        for idx, x in enumerate(cmd):
+            if isinstance(x, str):
+                cmd[idx] = x.encode()
+    return subprocess.check_output(cmd, **args).decode()
 
 
 class Colors:
@@ -194,7 +215,7 @@ class Config(object):
         if self.template not in self.templates:
             raise ValueError('"{}" is not a valid template ({})'.format(self.template, ', '.join(self.templates)))
 
-        if isinstance(self.dependencies, basestring):
+        if isinstance(self.dependencies, (str, bytes)):
             self.dependencies = self.dependencies.split(' ')
 
         if type(self.default) == list:
@@ -319,7 +340,7 @@ class Clickable(object):
                         self.docker_image = f.read().strip()
 
     def check_command(self, command):
-        error_code = subprocess.call(shlex.split('which {}'.format(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        error_code = run_subprocess_call(shlex.split('which {}'.format(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         if error_code != 0:
             raise Exception('The command "{}" does not exist on this system, please install it for clickable to work properly"'.format(command))
@@ -388,7 +409,7 @@ class Clickable(object):
         wrapped_command = command
 
         if self.config.container_mode:
-            wrapped_command = 'bash -c "{}"'.format(command)
+            wrapped_command = 'bash -c "{}"'.format(command);
         elif force_lxd or self.config.lxd:
             self.check_lxd()
 
@@ -428,7 +449,7 @@ class Clickable(object):
             kwargs['cwd'] = self.config.dir
 
         if get_output:
-            return subprocess.check_output(shlex.split(wrapped_command), **kwargs)
+            return run_subprocess_check_output(shlex.split(wrapped_command), **kwargs)
         else:
             subprocess.check_call(shlex.split(wrapped_command), **kwargs)
 
@@ -503,11 +524,11 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
 
     def start_docker(self):
         started = False
-        error_code = subprocess.call(shlex.split('which systemctl'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        error_code = run_subprocess_call(shlex.split('which systemctl'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         if error_code == 0:
             print_info('Asking for root to start docker')
-            error_code = subprocess.call(shlex.split('sudo systemctl start docker'))
+            error_code = run_subprocess_call(shlex.split('sudo systemctl start docker'))
 
             started = (error_code == 0)
 
@@ -515,7 +536,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
 
     def check_docker(self, retries=3):
         try:
-            status = subprocess.check_output(shlex.split('docker ps'), stderr=subprocess.STDOUT)
+            run_subprocess_check_output(shlex.split('docker ps'), stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
             retries -= 1
             if retries <= 0:
@@ -528,11 +549,11 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
 
     def start_lxd(self):
         started = False
-        error_code = subprocess.call(shlex.split('which systemctl'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        error_code = run_subprocess_call(shlex.split('which systemctl'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         if error_code == 0:
             print_info('Asking for root to start lxd')
-            error_code = subprocess.call(shlex.split('sudo systemctl start lxd'))
+            error_code = run_subprocess_call(shlex.split('sudo systemctl start lxd'))
 
             started = (error_code == 0)
 
@@ -543,7 +564,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
 
         status = ''
         try:
-            status = subprocess.check_output(shlex.split('usdk-target status {}'.format(name)), stderr=subprocess.STDOUT)
+            status = run_subprocess_check_output(shlex.split('usdk-target status {}'.format(name)), stderr=subprocess.STDOUT)
             status = json.loads(status)['status']
         except subprocess.CalledProcessError as e:
             if e.output.strip() == 'error: Could not connect to the LXD server.' or 'Can\'t establish a working socket connection' in e.output.strip():
@@ -569,7 +590,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         name = 'clickable-{}'.format(self.build_arch)
 
         # Check for existing container
-        existing = subprocess.check_output(shlex.split('{} list'.format(self.usdk_target)))
+        existing = run_subprocess_check_output(shlex.split('{} list'.format(self.usdk_target)))
         existing = json.loads(existing)
 
         found = False
@@ -597,7 +618,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             print_info('Asking for root to create docker group')
             subprocess.check_call(shlex.split('sudo groupadd docker'))
 
-        output = subprocess.check_output(shlex.split('groups {}'.format(getpass.getuser()))).strip()
+        output = run_subprocess_check_output(shlex.split('groups {}'.format(getpass.getuser()))).strip()
         # Test for exactly docker in the group list
         if ' docker ' in output or output.endswith(' docker') or output.startswith('docker ') or output == 'docker':
             print_info('Setup has already been completed')
@@ -749,10 +770,6 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             config,
         )
 
-        if execute.startswith('webapp-container'):
-            # This is needed for the webapp-container, so only do it for this case
-            volumes = '{} -v /etc/passwd:/etc/passwd'.format(volumes)
-
         lib_path = os.path.join(self.temp, 'lib/x86_64-linux-gnu')
         path = '/bin:/usr/bin:{}:{}:{}'.format(
             os.path.join(self.temp, 'bin'),
@@ -765,6 +782,11 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             lib_path,
             path,
         )
+
+        if execute.startswith('webapp-container'):
+            # This is needed for the webapp-container, so only do it for this case
+            volumes = '{} -v /etc/passwd:/etc/passwd'.format(volumes)
+            environment = '{} -e APP_ID={}'.format(environment, self.find_package_name())
 
         go_config = ''
         if self.config.gopath:
@@ -812,23 +834,25 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         self.run_device_command('tail -f {}'.format(log))
 
     def clean(self):
-        try:
-            shutil.rmtree(self.config.dir)
-        except Exception:
-            type, value, traceback = sys.exc_info()
-            if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
-                pass  # Nothing to do here, the directory didn't exist
-            else:
-                print_warning('Failed to clean the build directory: {}: {}'.format(type, value))
+        if os.path.exists(self.config.dir):
+            try:
+                shutil.rmtree(self.config.dir)
+            except Exception:
+                type, value, traceback = sys.exc_info()
+                if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
+                    pass  # Nothing to do here, the directory didn't exist
+                else:
+                    print_warning('Failed to clean the build directory: {}: {}'.format(type, value))
 
-        try:
-            shutil.rmtree(self.temp)
-        except Exception:
-            type, value, traceback = sys.exc_info()
-            if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
-                pass  # Nothing to do here, the directory didn't exist
-            else:
-                print_warning('Failed to clean the temp directory: {}: {}'.format(type, value))
+        if os.path.exists(self.temp):
+            try:
+                shutil.rmtree(self.temp)
+            except Exception:
+                type, value, traceback = sys.exc_info()
+                if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
+                    pass  # Nothing to do here, the directory didn't exist
+                else:
+                    print_warning('Failed to clean the temp directory: {}: {}'.format(type, value))
 
     def _build(self):
         raise NotImplementedError()
@@ -865,7 +889,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         if self.device_serial_number:
             adb_args = '-s {}'.format(self.device_serial_number)
 
-        subprocess.call(shlex.split('adb {} shell "{}"'.format(adb_args, command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        run_subprocess_call(shlex.split('adb {} shell "{}"'.format(adb_args, command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def shell(self):
         '''
@@ -882,14 +906,14 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             else:
                 self.check_multiple_devices()
 
-            output = subprocess.check_output(shlex.split('adb {} shell pgrep sshd'.format(adb_args))).split()
+            output = run_subprocess_check_output(shlex.split('adb {} shell pgrep sshd'.format(adb_args))).split()
             if not output:
                 self.toggle_ssh(on=True)
 
             # Use the usb cable rather than worrying about going over wifi
             port = 0
             for p in range(2222, 2299):
-                error_code = subprocess.call(shlex.split('adb {} forward tcp:{} tcp:22'.format(adb_args, p)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                error_code = run_subprocess_call(shlex.split('adb {} forward tcp:{} tcp:22'.format(adb_args, p)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 if error_code == 0:
                     port = p
                     break
@@ -913,7 +937,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             self.run_device_command('[ -d ~/.ssh ] || mkdir ~/.ssh', cwd=self.cwd)
             self.run_device_command('touch  ~/.ssh/authorized_keys', cwd=self.cwd)
 
-            output = subprocess.check_output('adb {} shell "grep \\"{}\\" ~/.ssh/authorized_keys"'.format(adb_args, public_key), shell=True).strip()
+            output = run_subprocess_check_output('adb {} shell "grep \\"{}\\" ~/.ssh/authorized_keys"'.format(adb_args, public_key), shell=True).strip()
             if not output or 'No such file or directory' in output:
                 print_info('Inserting ssh public key on the connected device')
                 self.run_device_command('echo \"{}\" >>~/.ssh/authorized_keys'.format(public_key), cwd=self.cwd)
@@ -924,7 +948,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             self.toggle_ssh(on=False)
 
     def detect_devices(self):
-        output = subprocess.check_output(shlex.split('adb devices -l')).strip()
+        output = run_subprocess_check_output(shlex.split('adb devices -l')).strip()
         devices = []
         for line in output.split('\n'):
             if 'device' in line and 'devices' not in line:
@@ -994,7 +1018,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             for (index, template) in enumerate(app_templates):
                 print('[{}] {} - {}'.format(index + 1, template['name'], template['display']))
 
-            choice = raw_input('Choose an app template [1]: ').strip()
+            choice = input('Choose an app template [1]: ').strip()
             if not choice:
                 choice = '1'
 
@@ -1188,7 +1212,7 @@ class CordovaClickable(Clickable):
         return root.attrib['version'] if 'version' in root.attrib else '1.0.0'
 
 
-if __name__ == '__main__':
+def main():
     config = None
     COMMAND_ALIASES = {
         'click_build': 'click_build',
@@ -1229,7 +1253,8 @@ if __name__ == '__main__':
         print(show_valid_commands())
 
     parser = argparse.ArgumentParser(description='clickable')
-    parser.add_argument('--version', '-v', action='version', version='%(prog)s 3.2.0')
+    parser.add_argument('--version', '-v', action='version',
+                        version='%(prog)s ' + __version__)
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument(
         '--device',
@@ -1391,3 +1416,7 @@ if __name__ == '__main__':
         else:
             print_error(str(sys.exc_info()[1]))
             sys.exit(1)
+
+
+if __name__ == '__main__':
+    main()
