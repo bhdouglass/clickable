@@ -1,4 +1,4 @@
-FROM ubuntu:artful
+FROM ubuntu:bionic
 MAINTAINER Brian Douglass
 
 RUN echo set debconf/frontend Noninteractive | debconf-communicate && \
@@ -15,5 +15,6 @@ RUN apt-get update && \
         python3-ipdb \
         fakeroot \
         build-essential \
+        devscripts \
         && \
     apt-get clean
