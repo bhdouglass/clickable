@@ -25,7 +25,7 @@ except ImportError:
 # TODO split into multiple files
 
 
-__version__ = "4.0.0"
+__version__ = '4.0.1'
 
 
 def run_subprocess_call(cmd, **args):
@@ -461,7 +461,7 @@ class Clickable(object):
                 command = 'apt-get install -y --force-yes'
                 run = False
                 for dep in self.config.dependencies:
-                    if self.config.arch == 'armhf' and 'armhf' not in dep and not config.specificDependencies:
+                    if self.config.arch == 'armhf' and 'armhf' not in dep and not self.config.specificDependencies:
                         dep = '{}:{}'.format(dep, self.config.arch)
 
                     exists = ''
@@ -483,7 +483,7 @@ class Clickable(object):
 
                 dependencies = ''
                 for dep in self.config.dependencies:
-                    if self.config.arch == 'armhf' and 'armhf' not in dep and not config.specificDependencies:
+                    if self.config.arch == 'armhf' and 'armhf' not in dep and not self.config.specificDependencies:
                         dependencies = '{} {}:{}'.format(dependencies, dep, self.config.arch)
                     else:
                         dependencies = '{} {}'.format(dependencies, dep)
