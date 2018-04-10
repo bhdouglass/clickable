@@ -6,4 +6,4 @@ docker run \
     -u `id -u` \
     --rm \
     -it clickable/build-deb:python3 \
-    dpkg-buildpackage
+    bash -c "dpkg-buildpackage && dh_clean"

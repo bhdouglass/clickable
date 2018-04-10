@@ -7,6 +7,7 @@ function docker_run {
         -w `pwd` \
         -u `id -u` \
         -e HOME=$HOME \
+        -e USER=$USER \
         --rm \
         -it clickable/build-deb:python3 $1
 }
