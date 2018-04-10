@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   height="512"
+   width="512"
+   viewBox="0 0 135.5 135.5"
+   version="1.1"
+   id="svg889"
+   sodipodi:docname="clickable.svg"
+   inkscape:export-filename="/home/brian/dev/ubuntu/clickable/clickable/logo/clickable128.png"
+   inkscape:export-xdpi="24"
+   inkscape:export-ydpi="24"
+   inkscape:version="0.92.2 2405546, 2018-03-11">
+  <metadata
+     id="metadata895">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs893" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     id="namedview891"
+     showgrid="false"
+     inkscape:zoom="1.6054688"
+     inkscape:cx="256"
+     inkscape:cy="256"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg889" />
+  <rect
+     height="135.5"
+     width="135.5"
+     y="0"
+     x="0"
+     fill="#eee"
+     id="rect883" />
+  <path
+     d="m-4.938e-8 50.63v84.87h135.5v-12.38z"
+     style="opacity:.5;fill:#808080"
+     id="path885" />
+  <path
+     d="m121 0-108.6 57.2-0.03 34.45 55.4 29.95v-34.69l67.73-35.57v-51.34z"
+     fill="#0e8cba"
+     id="path887" />
+</svg>
