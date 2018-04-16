@@ -409,7 +409,7 @@ class Clickable(object):
         wrapped_command = command
 
         if self.config.container_mode:
-            wrapped_command = 'bash -c "{}"'.format(command);
+            wrapped_command = 'bash -c "{}"'.format(command)
         elif force_lxd or self.config.lxd:
             self.check_lxd()
 
@@ -438,7 +438,7 @@ class Clickable(object):
                 self.cwd,
                 self.cwd,
                 go_config,
-                self.config.dir,
+                self.config.dir if use_dir else self.cwd,
                 os.getuid(),
                 self.docker_image,
                 command,
@@ -1037,6 +1037,10 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
 
         print_info('Your new app has been generated, go to the app\'s directory and run clickable to get started')
 
+    def run(self, command):
+        self.setup_dependencies()
+        self.run_container_command(command, use_dir=False)
+
 
 class MakeClickable(Clickable):
     def pre_make(self):
@@ -1235,6 +1239,7 @@ def main():
         'shell': 'shell',
         'devices': 'devices',
         'init': 'init_app',
+        'run': 'run',
     }
 
     def show_valid_commands():
@@ -1284,11 +1289,15 @@ def main():
         '-t',
         help='Use the specified template when building (ignores the setting in clickable.json)'
     )
+
+    # TODO depricate
     parser.add_argument(
         '--click',
         '-c',
         help='Installs the specified click (use with the "install" command)'
     )
+
+    # TODO depricate
     parser.add_argument(
         '--app',
         '-p',
@@ -1368,6 +1377,8 @@ def main():
             sdk=args.sdk,
         )
 
+        VALID_COMMANDS = list(COMMAND_HANDLERS.keys()) + list(config.scripts.keys())
+
         clickable = None
         if config.template == config.PURE_QML_QMAKE:
             clickable = PureQMLQMakeClickable(config, args.device_serial_number)
@@ -1392,15 +1403,34 @@ def main():
         if len(args.commands) == 0:
             commands = config.default.split(' ')
 
+        '''
+        Detect senarios when an argument is passed to a command. For example:
+        `clickable install /path/to/click`. Since clickable allows commands
+        to be strung together it makes detecting this harder. This check has
+        been limited to just the case when we have 2 values in args.commands as
+        stringing together multiple commands and a command with an argument is
+        unlikely to occur.
+        TODO determine if there is a better way to do this.
+        '''
+        command_arg = ''
+        if len(commands) == 2 and commands[1] not in VALID_COMMANDS:
+            command_arg = commands[1]
+            commands = commands[:1]
+
         for command in commands:
             if command in config.scripts:
                 clickable.script(command, args.device)
             elif command == 'install':
-                clickable.install(args.click)
+                clickable.install(args.click if args.click else command_arg)
             elif command == 'launch':
-                clickable.launch(args.app)
+                clickable.launch(args.app if args.app else command_arg)
             elif command == 'init':
                 clickable.init_app(args.name)
+            elif command == 'run':
+                if not command_arg:
+                    raise ValueError('No command supplied for `clickable run`')
+
+                clickable.run(command_arg)
             elif command in COMMAND_HANDLERS:
                 getattr(clickable, COMMAND_HANDLERS[command])()
             elif command in COMMAND_ALIASES:
