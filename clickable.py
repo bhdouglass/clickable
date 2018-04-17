@@ -25,7 +25,7 @@ except ImportError:
 # TODO split into multiple files
 
 
-__version__ = '4.0.1'
+__version__ = '4.0.2'
 
 
 def run_subprocess_call(cmd, **args):
@@ -161,11 +161,12 @@ class Config(object):
     required = ['sdk', 'arch', 'dir']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO]
 
-    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False, sdk=None):
+    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False, sdk=None, use_nvidia=False):
         self.skip_detection = skip_detection
         self.click_output = click_output
         self.container_mode = container_mode
         self.desktop = desktop
+        self.use_nvidia = use_nvidia
         self.cwd = os.getcwd()
         self.load_config()
 
@@ -333,6 +334,9 @@ class Clickable(object):
             else:
                 self.check_command('docker')
                 self.docker_image = 'clickable/ubuntu-sdk:{}-{}'.format(self.config.sdk.replace('ubuntu-sdk-', ''), self.build_arch)
+                if self.config.use_nvidia:
+                    self.docker_image += '-nvidia'
+
                 self.base_docker_image = self.docker_image
 
                 if os.path.exists('.clickable/name.txt'):
@@ -770,8 +774,11 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             config,
         )
 
-        lib_path = os.path.join(self.temp, 'lib/x86_64-linux-gnu')
-        path = '/bin:/usr/bin:{}:{}:{}'.format(
+        if self.config.use_nvidia:
+            volumes += ' -v /dev/snd/pcmC2D0c:/dev/snd/pcmC2D0c -v /dev/snd/controlC2:/dev/snd/controlC2 --device /dev/snd'
+
+        lib_path = os.path.join(self.temp, 'lib/x86_64-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64')
+        path = '/usr/local/nvidia/bin:/bin:/usr/bin:{}:{}:{}'.format(
             os.path.join(self.temp, 'bin'),
             os.path.join(self.temp, 'lib/x86_64-linux-gnu/bin'),
             self.temp,
@@ -792,7 +799,8 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         if self.config.gopath:
             go_config = '-v {}:/gopath -e GOPATH=/gopath'.format(self.config.gopath)
 
-        command = 'docker run {} {} {} -w {} -u {} --rm -i {} bash -c "{}"'.format(
+        command = '{} run {} {} {} -w {} -u {} --rm -i {} bash -c "{}"'.format(
+            'nvidia-docker' if self.config.use_nvidia else 'docker',
             volumes,
             go_config,
             environment,
@@ -1342,6 +1350,12 @@ def main():
         '-k',
         help='Use a specific version of the ubuntu sdk to compile against',
     )
+    parser.add_argument(
+        '--nvidia',
+        action='store_true',
+        help='Use nvidia-docker rather than docker',
+        default=False,
+    )
 
     args = parser.parse_args()
 
@@ -1375,6 +1389,7 @@ def main():
             container_mode=args.container_mode,
             desktop=args.desktop,
             sdk=args.sdk,
+            use_nvidia=args.nvidia,
         )
 
         VALID_COMMANDS = list(COMMAND_HANDLERS.keys()) + list(config.scripts.keys())
