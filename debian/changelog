@@ -1,7 +1,8 @@
-clickable (4.0.2) unstable; urgency=medium
+clickable (4.1.0) unstable; urgency=medium
 
   * Added "run" command
   * Added option to run with nvidia-docker
+  * Run xhost if it's installed
 
  -- Brian Douglass <bhdouglass@gmail.com>  Tue, 17 Apr 2018 01:51:00 -0500
 

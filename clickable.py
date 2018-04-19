@@ -25,7 +25,7 @@ except ImportError:
 # TODO split into multiple files
 
 
-__version__ = '4.0.2'
+__version__ = '4.1.0'
 
 
 def run_subprocess_call(cmd, **args):

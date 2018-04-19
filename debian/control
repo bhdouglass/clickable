@@ -21,5 +21,6 @@ Depends: ${python3:Depends},
          adb | android-tools-adb,
          docker.io | docker-ce,
 Suggests: lxd,
-          ubuntu-sdk-tools
+          ubuntu-sdk-tools,
+          x11-xserver-utils
 Description: Compile, build, and deploy Ubuntu Touch click packages all from the command line.
