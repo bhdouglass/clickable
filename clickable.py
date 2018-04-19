@@ -799,6 +799,17 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         if self.config.gopath:
             go_config = '-v {}:/gopath -e GOPATH=/gopath'.format(self.config.gopath)
 
+        run_xhost = False
+        try:
+            self.check_command('xhost')
+            run_xhost = True
+        except Exception:  # TODO catch a specific Exception
+            print_warning('xhost not installed, desktop mode may fail')
+            run_xhost = False
+
+        if run_xhost:
+            subprocess.check_call(shlex.split('xhost +local:docker'))
+
         command = '{} run {} {} {} -w {} -u {} --rm -i {} bash -c "{}"'.format(
             'nvidia-docker' if self.config.use_nvidia else 'docker',
             volumes,
@@ -809,6 +820,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             self.docker_image,
             execute,
         )
+
         subprocess.check_call(shlex.split(command), cwd=self.temp)
 
     def launch(self, app=None):
