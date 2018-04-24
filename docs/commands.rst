@@ -79,6 +79,11 @@ Launches the specified app on a device.
 
 Follow the apps log file on the device.
 
+``clickable run "some command"``
+------------------
+
+Runs an arbitrary command in the clickable container.
+
 ``clickable setup-docker``
 --------------------------
 
