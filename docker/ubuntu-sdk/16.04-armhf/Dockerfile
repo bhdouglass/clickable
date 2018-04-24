@@ -54,40 +54,43 @@ RUN wget https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz && \
     ln -s /usr/include/arm-linux-gnueabihf/qt5/QtCore/5.4.1/QtCore /usr/include/ && \
     rm go1.6.linux-amd64.tar.gz
 
+# TODO see if there is a better location for this
+ADD qt.conf /usr/bin/qt.conf
+
 # Generated from `dpkg-architecture -a armhf`
-ENV DEB_BUILD_ARCH=amd64
-ENV DEB_BUILD_ARCH_BITS=64
-ENV DEB_BUILD_ARCH_CPU=amd64
-ENV DEB_BUILD_ARCH_ENDIAN=little
-ENV DEB_BUILD_ARCH_OS=linux
-ENV DEB_BUILD_GNU_CPU=x86_64
-ENV DEB_BUILD_GNU_SYSTEM=linux-gnu
-ENV DEB_BUILD_GNU_TYPE=x86_64-linux-gnu
-ENV DEB_BUILD_MULTIARCH=x86_64-linux-gnu
-ENV DEB_HOST_ARCH=armhf
-ENV DEB_HOST_ARCH_BITS=32
-ENV DEB_HOST_ARCH_CPU=arm
-ENV DEB_HOST_ARCH_ENDIAN=little
-ENV DEB_HOST_ARCH_OS=linux
-ENV DEB_HOST_GNU_CPU=arm
-ENV DEB_HOST_GNU_SYSTEM=linux-gnueabihf
-ENV DEB_HOST_GNU_TYPE=arm-linux-gnueabihf
-ENV DEB_HOST_MULTIARCH=arm-linux-gnueabihf
-ENV DEB_TARGET_ARCH=armhf
-ENV DEB_TARGET_ARCH_BITS=32
-ENV DEB_TARGET_ARCH_CPU=arm
-ENV DEB_TARGET_ARCH_ENDIAN=little
-ENV DEB_TARGET_ARCH_OS=linux
-ENV DEB_TARGET_GNU_CPU=arm
-ENV DEB_TARGET_GNU_SYSTEM=linux-gnueabihf
-ENV DEB_TARGET_GNU_TYPE=arm-linux-gnueabihf
-ENV DEB_TARGET_MULTIARCH=arm-linux-gnueabihf
+ENV DEB_BUILD_ARCH=amd64 \
+    DEB_BUILD_ARCH_BITS=64 \
+    DEB_BUILD_ARCH_CPU=amd64 \
+    DEB_BUILD_ARCH_ENDIAN=little \
+    DEB_BUILD_ARCH_OS=linux \
+    DEB_BUILD_GNU_CPU=x86_64 \
+    DEB_BUILD_GNU_SYSTEM=linux-gnu \
+    DEB_BUILD_GNU_TYPE=x86_64-linux-gnu \
+    DEB_BUILD_MULTIARCH=x86_64-linux-gnu \
+    DEB_HOST_ARCH=armhf \
+    DEB_HOST_ARCH_BITS=32 \
+    DEB_HOST_ARCH_CPU=arm \
+    DEB_HOST_ARCH_ENDIAN=little \
+    DEB_HOST_ARCH_OS=linux \
+    DEB_HOST_GNU_CPU=arm \
+    DEB_HOST_GNU_SYSTEM=linux-gnueabihf \
+    DEB_HOST_GNU_TYPE=arm-linux-gnueabihf \
+    DEB_HOST_MULTIARCH=arm-linux-gnueabihf \
+    DEB_TARGET_ARCH=armhf \
+    DEB_TARGET_ARCH_BITS=32 \
+    DEB_TARGET_ARCH_CPU=arm \
+    DEB_TARGET_ARCH_ENDIAN=little \
+    DEB_TARGET_ARCH_OS=linux \
+    DEB_TARGET_GNU_CPU=arm \
+    DEB_TARGET_GNU_SYSTEM=linux-gnueabihf \
+    DEB_TARGET_GNU_TYPE=arm-linux-gnueabihf \
+    DEB_TARGET_MULTIARCH=arm-linux-gnueabihf
 
 # env's for go
-ENV GOOS=linux
-ENV GOARCH=arm
-ENV GOARM=7
-ENV CGO_ENABLED=1
-ENV PKG_CONFIG_LIBDIR=/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig
-ENV CC=arm-linux-gnueabihf-gcc
-ENV CXX=arm-linux-gnueabihf-g++
+ENV GOOS=linux \
+    GOARCH=arm \
+    GOARM=7 \
+    CGO_ENABLED=1 \
+    PKG_CONFIG_LIBDIR=/usr/lib/arm-linux-gnueabihf/pkgconfig:/usr/lib/pkgconfig:/usr/share/pkgconfig \
+    CC=arm-linux-gnueabihf-gcc \
+    CXX=arm-linux-gnueabihf-g++

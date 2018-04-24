@@ -336,6 +336,7 @@ class Clickable(object):
                 self.docker_image = 'clickable/ubuntu-sdk:{}-{}'.format(self.config.sdk.replace('ubuntu-sdk-', ''), self.build_arch)
                 if self.config.use_nvidia:
                     self.docker_image += '-nvidia'
+                    self.check_command('nvidia-docker')
 
                 self.base_docker_image = self.docker_image
 
@@ -1444,6 +1445,8 @@ def main():
             command_arg = commands[1]
             commands = commands[:1]
 
+        # TODO consider removing the ability to string together multiple commands
+        # This should help clean up the arguments & new command_arg
         for command in commands:
             if command in config.scripts:
                 clickable.script(command, args.device)
