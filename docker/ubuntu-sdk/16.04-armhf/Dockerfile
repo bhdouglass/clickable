@@ -57,6 +57,9 @@ RUN wget https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz && \
 # TODO see if there is a better location for this
 ADD qt.conf /usr/bin/qt.conf
 
+# TODO this probably needs to be fixed upstream
+ADD ubuntu-click-tools.prf /usr/lib/arm-linux-gnueabihf/qt5/mkspecs/features/ubuntu-click-tools.prf
+
 # Generated from `dpkg-architecture -a armhf`
 ENV DEB_BUILD_ARCH=amd64 \
     DEB_BUILD_ARCH_BITS=64 \
