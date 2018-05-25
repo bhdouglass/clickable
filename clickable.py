@@ -1214,17 +1214,25 @@ class GoClickable(Clickable):
         self.run_container_command(gocommand)
 
 
-class CordovaClickable(Clickable):
+class CordovaClickable(CMakeClickable):
+    # build dir  = platforms/ubuntu/<framework>-<arch>/build
+    # prefix dir = platforms/ubuntu/<framework>-<arch>/prefix
+    # make dir   = platforms/ubuntu/build
+    def __init__(self, *args, **kwargs):
+        super(CMakeClickable, self).__init__(*args, **kwargs)
+
+        # TODO: change self.temp to point to build dir so compiled stuff goes
+        # there
+
     def _build(self):
-        command = "cordova -d build ubuntu --device -- --framework={}".format(self.config.sdk)
-        subprocess.check_call(shlex.split(command), cwd=self.cwd)
+        # TODO: go into make directory
+        super(CMakeClickable, self)._build()
 
     def click_build(self):
-        click = '{}_{}_{}.click'.format(self.find_package_name(), self.find_version(), self.config.arch)
-        src = '{}/platforms/ubuntu/{}/{}/prefix/{}'.format(self.cwd, self.config.sdk, self.config.arch, click)
-        dest = '{}/{}'.format(self.config.dir, click)
+        # TODO: go into prefix directory
+        # TODO: change manifest file (framework + architecture)
 
-        shutil.copyfile(src, dest)
+        super(CMakeClickable, self).click_build()
 
     def find_package_name(self):
         tree = ElementTree.parse('config.xml')
