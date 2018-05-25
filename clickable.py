@@ -1215,24 +1215,54 @@ class GoClickable(Clickable):
 
 
 class CordovaClickable(CMakeClickable):
-    # build dir  = platforms/ubuntu/<framework>-<arch>/build
-    # prefix dir = platforms/ubuntu/<framework>-<arch>/prefix
-    # make dir   = platforms/ubuntu/build
     def __init__(self, *args, **kwargs):
         super(CMakeClickable, self).__init__(*args, **kwargs)
 
-        # TODO: change self.temp to point to build dir so compiled stuff goes
-        # there
+        platform_dir = os.path.join(self.cwd, 'platforms/ubuntu/')
+
+        self._dirs = {
+                'build'  : '{}/{}/{}/build/' .format(platform_dir, self.config.sdk, self.build_arch),
+                'prefix' : '{}/{}/{}/prefix/'.format(platform_dir, self.config.sdk, self.build_arch),
+                'make'   : '{}/build'.format(platform_dir)
+        }
+
+        self.config.specificDependencies = True
+        self.config.dependencies = [ # Got this list from check_reqs or somewhere
+                "cmake",
+                "libicu-dev:armhf",
+                "pkg-config",
+                "qtbase5-dev:armhf",
+                "qtchooser",
+                "qtdeclarative5-dev:armhf",
+                "qtfeedback5-dev:armhf",
+                "qtlocation5-dev:armhf",
+                "qtmultimedia5-dev:armhf",
+                "qtpim5-dev:armhf",
+                "libqt5sensors5-dev:armhf",
+                "qtsystems5-dev:armhf"
+        ]
 
     def _build(self):
-        # TODO: go into make directory
+        # TODO: also spool up a cordova container to regenerate plugins and
+        # platforms:
+        # `docker run --rm -v $PWD:$PWD -w $PWD beevelop/cordova:v7.0.0 bash -c 'cordova platform add ubuntu; cordova platform build; chown -R 1000:1000 platforms plugins'`
+        self.config.dir = self._dirs['prefix']
+        #         var cmakeCmd = 'cmake ' + campoDir + ' -DCMAKE_INSTALL_PREFIX="' + prefixDir + '"' + ' -DCMAKE_BUILD_TYPE=' + buildType; # from build.js
+        self.run_container_command('cmake {} -DCMAKE_INSTALL_PREFIX={}'.format(self._dirs['make'], self._dirs['build']))
         super(CMakeClickable, self)._build()
 
-    def click_build(self):
-        # TODO: go into prefix directory
-        # TODO: change manifest file (framework + architecture)
+    def post_make(self):
+        super(CordovaClickable, self).post_make()
 
-        super(CMakeClickable, self).click_build()
+        # TODO: change manifest file (framework + architecture)
+        # TODO: copy www, qml, config.xml
+        # use subprocess.check_call
+        # https://stackoverflow.com/a/31039095/6381767
+
+    def click_build(self):
+        self.config.dir = self._dirs['prefix']
+
+        super(CordovaClickable, self).click_build()
 
     def find_package_name(self):
         tree = ElementTree.parse('config.xml')
