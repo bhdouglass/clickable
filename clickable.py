@@ -317,9 +317,6 @@ class Clickable(object):
             else:
                 self.check_command('adb')
 
-        if self.config.template == Config.CORDOVA:
-            self.check_command('cordova')
-
         if 'SNAP' in os.environ and os.environ['SNAP']:
             # If running as a snap, trick usdk-target into thinking its not in a snap
             del os.environ['SNAP']
