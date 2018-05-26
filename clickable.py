@@ -1212,6 +1212,8 @@ class GoClickable(Clickable):
 
 
 class CordovaClickable(CMakeClickable):
+    # Lots of this code was based off of this:
+    # https://github.com/apache/cordova-ubuntu/blob/28cd3c1b53c1558baed4c66cb2deba597f05b3c6/bin/templates/project/cordova/lib/build.js#L59-L131
     def __init__(self, *args, **kwargs):
         super(CMakeClickable, self).__init__(*args, **kwargs)
 
