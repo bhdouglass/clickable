@@ -1266,7 +1266,6 @@ class CordovaClickable(CMakeClickable):
     def post_make(self):
         super(CordovaClickable, self).post_make()
 
-        # TODO: change manifest file (framework + architecture)
         copies = ['www', 'config.xml', 'cordova.desktop', 'manifest.json', 'apparmor.json']
 
         # Is this overengineerd?
@@ -1280,6 +1279,32 @@ class CordovaClickable(CMakeClickable):
             else:
                 shutil.copy(full_source_path, full_dest_path)
 
+        # Modify default files with updated settings
+        # taken straing from cordova build.js
+        with open(self.find_manifest(), 'r') as manifest_reader:
+            manifest = json.load(manifest_reader)
+            manifest['architecture'] = self.build_arch
+            manifest['framework'] = self.config.sdk
+            with open(self.find_manifest(), 'w') as manifest_writer:
+                json.dump(manifest, manifest_writer, indent=4)
+
+        apparmor_file = os.path.join(self._dirs['build'], 'apparmor.json')
+        with open(apparmor_file, 'r') as apparmor_reader:
+            apparmor = json.load(apparmor_reader)
+            if self.config.sdk == "ubuntu-sdk-14.10":
+                apparmor["policy_version"] = 1.2
+            else:
+                apparmor["policy_version"] = 1.3
+
+            apparmor["policy_groups"].append("webview")
+
+            with open(apparmor_file, 'w') as apparmor_writer:
+                json.dump(apparmor, apparmor_writer, indent=4)
+
+
+
+
+
 
     def make_install(self):
         self.run_container_command('make install') # This is beause I don't want a DESTDIR
@@ -1288,6 +1313,12 @@ class CordovaClickable(CMakeClickable):
         self.config.dir = self._dirs['prefix']
 
         super(CordovaClickable, self).click_build()
+
+    def find_manifest(self):
+        return find_manifest(self._dirs['build'])
+
+    def get_manifest(self):
+        return get_manifest(self._dirs['build'])
 
     def find_package_name(self):
         tree = ElementTree.parse('config.xml')
