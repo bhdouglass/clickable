@@ -1316,7 +1316,8 @@ class CordovaClickable(CMakeClickable):
             else:
                 apparmor["policy_version"] = 1.3
 
-            apparmor["policy_groups"].append("webview")
+            if 'webview' not in apparmor["policy_groups"]:
+                apparmor["policy_groups"].append("webview")
 
             with open(apparmor_file, 'w') as apparmor_writer:
                 json.dump(apparmor, apparmor_writer, indent=4)
