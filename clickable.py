@@ -1249,7 +1249,16 @@ class CordovaClickable(CMakeClickable):
         # platforms:
         # `docker run --rm -v $PWD:$PWD -w $PWD beevelop/cordova:v7.0.0 bash -c 'cordova platform add ubuntu; cordova platform build; chown -R 1000:1000 platforms plugins'`
         self.config.dir = self._dirs['prefix']
-        #         var cmakeCmd = 'cmake ' + campoDir + ' -DCMAKE_INSTALL_PREFIX="' + prefixDir + '"' + ' -DCMAKE_BUILD_TYPE=' + buildType; # from build.js
+        # Clear out prefix directory
+        # IK this is against DRY, but I copied this code from MakeClickable.make_install
+        if os.path.exists(self.config.dir) and os.path.isdir(self.temp):
+            shutil.rmtree(self.config.dir)
+
+        try:
+            os.makedirs(self.config.dir)
+        except Exception:
+            print_warning('Failed to create temp dir ({}): {}'.format(self.temp, str(sys.exc_info()[0])))
+
         self.run_container_command('cmake {} -DCMAKE_INSTALL_PREFIX={}'.format(self._dirs['make'], self._dirs['build']))
         super(CMakeClickable, self)._build()
 
