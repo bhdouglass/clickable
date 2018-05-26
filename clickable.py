@@ -1242,8 +1242,6 @@ class CordovaClickable(CMakeClickable):
                 "qtsystems5-dev:armhf"
         ]
 
-    def _build(self):
-
         if not os.path.isdir(self.platform_dir):
             # fail when not using docker, need it anyways
             if self.config.container_mode or self.config.lxd or self.config.chroot:
@@ -1262,6 +1260,9 @@ class CordovaClickable(CMakeClickable):
             subprocess.check_call(shlex.split(wrapped_command))
 
         self.config.dir = self._dirs['prefix']
+
+    def _build(self):
+
         # Clear out prefix directory
         # IK this is against DRY, but I copied this code from MakeClickable.make_install
         if os.path.exists(self.config.dir) and os.path.isdir(self.temp):
@@ -1323,11 +1324,6 @@ class CordovaClickable(CMakeClickable):
     def make_install(self):
         # This is beause I don't want a DESTDIR
         self.run_container_command('make install')
-
-    def click_build(self):
-        self.config.dir = self._dirs['prefix']
-
-        super(CordovaClickable, self).click_build()
 
     def find_manifest(self):
         return find_manifest(self._dirs['build'])
