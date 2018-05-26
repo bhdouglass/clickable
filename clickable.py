@@ -13,6 +13,8 @@ import uuid
 import xml.etree.ElementTree as ElementTree
 import getpass
 
+from distutils.dir_util import copy_tree
+
 cookiecutter_available = True
 try:
     from cookiecutter.main import cookiecutter
@@ -1294,7 +1296,6 @@ class CordovaClickable(CMakeClickable):
             full_dest_path = os.path.join(self._dirs['build'], file_to_copy)
             if os.path.isdir(full_source_path):
                 # https://stackoverflow.com/a/31039095/6381767
-                from distutils.dir_util import copy_tree
                 copy_tree(full_source_path, full_dest_path)
             else:
                 shutil.copy(full_source_path, full_dest_path)
