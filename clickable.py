@@ -1245,9 +1245,21 @@ class CordovaClickable(CMakeClickable):
         ]
 
     def _build(self):
-        # TODO: also spool up a cordova container to regenerate plugins and
-        # platforms:
-        # `docker run --rm -v $PWD:$PWD -w $PWD beevelop/cordova:v7.0.0 bash -c 'cordova platform add ubuntu; cordova platform build; chown -R 1000:1000 platforms plugins'`
+
+        if not os.path.isdir(self.platform_dir):
+            # fail when not using docker, need it anyways
+            assert not (self.config.container_mode or self.config.lxd or self.config.chroot), "Need docker"
+
+            cordova_docker_image = "beevelop/cordova:v7.0.0"
+            command = "cordova platform add ubuntu; chown -R {uid}:{uid} platforms plugins node_modules".format(uid=os.getuid())
+
+            # Can't use self.run_container_command because need root
+            wrapped_command = 'docker run -v {cwd}:{cwd} -w {cwd} --rm -i {img} bash -c "{cmd}"'.format(
+                    cwd=self.cwd,
+                    img=cordova_docker_image,
+                    cmd=command)
+
+            subprocess.check_call(shlex.split(wrapped_command))
 
         self.config.dir = self._dirs['prefix']
         # Clear out prefix directory
