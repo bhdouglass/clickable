@@ -1229,7 +1229,6 @@ class CordovaClickable(CMakeClickable):
 
         self.config.specificDependencies = True
         self.config.dependencies = [ # Got this list from check_reqs or somewhere
-                "cmake",
                 "libicu-dev:armhf",
                 "pkg-config",
                 "qtbase5-dev:armhf",
