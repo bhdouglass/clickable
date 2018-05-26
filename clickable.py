@@ -1248,6 +1248,7 @@ class CordovaClickable(CMakeClickable):
         # TODO: also spool up a cordova container to regenerate plugins and
         # platforms:
         # `docker run --rm -v $PWD:$PWD -w $PWD beevelop/cordova:v7.0.0 bash -c 'cordova platform add ubuntu; cordova platform build; chown -R 1000:1000 platforms plugins'`
+
         self.config.dir = self._dirs['prefix']
         # Clear out prefix directory
         # IK this is against DRY, but I copied this code from MakeClickable.make_install
@@ -1266,7 +1267,13 @@ class CordovaClickable(CMakeClickable):
     def post_make(self):
         super(CordovaClickable, self).post_make()
 
-        copies = ['www', 'config.xml', 'cordova.desktop', 'manifest.json', 'apparmor.json']
+        copies = [
+            'www',
+            'config.xml',
+            'cordova.desktop',
+            'manifest.json',
+            'apparmor.json'
+        ]
 
         # Is this overengineerd?
         for file_to_copy in copies:
@@ -1301,13 +1308,9 @@ class CordovaClickable(CMakeClickable):
             with open(apparmor_file, 'w') as apparmor_writer:
                 json.dump(apparmor, apparmor_writer, indent=4)
 
-
-
-
-
-
     def make_install(self):
-        self.run_container_command('make install') # This is beause I don't want a DESTDIR
+        # This is beause I don't want a DESTDIR
+        self.run_container_command('make install')
 
     def click_build(self):
         self.config.dir = self._dirs['prefix']
