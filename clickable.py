@@ -1260,15 +1260,29 @@ class CordovaClickable(CMakeClickable):
             print_warning('Failed to create temp dir ({}): {}'.format(self.temp, str(sys.exc_info()[0])))
 
         self.run_container_command('cmake {} -DCMAKE_INSTALL_PREFIX={}'.format(self._dirs['make'], self._dirs['build']))
+
         super(CMakeClickable, self)._build()
 
     def post_make(self):
         super(CordovaClickable, self).post_make()
 
         # TODO: change manifest file (framework + architecture)
-        # TODO: copy www, qml, config.xml
-        # use subprocess.check_call
-        # https://stackoverflow.com/a/31039095/6381767
+        copies = ['www', 'config.xml', 'cordova.desktop', 'manifest.json', 'apparmor.json']
+
+        # Is this overengineerd?
+        for file_to_copy in copies:
+            full_source_path = os.path.join(self.platform_dir, file_to_copy)
+            full_dest_path = os.path.join(self._dirs['build'], file_to_copy)
+            if os.path.isdir(full_source_path):
+                # https://stackoverflow.com/a/31039095/6381767
+                from distutils.dir_util import copy_tree
+                copy_tree(full_source_path, full_dest_path)
+            else:
+                shutil.copy(full_source_path, full_dest_path)
+
+
+    def make_install(self):
+        self.run_container_command('make install') # This is beause I don't want a DESTDIR
 
     def click_build(self):
         self.config.dir = self._dirs['prefix']
