@@ -1218,13 +1218,15 @@ class CordovaClickable(CMakeClickable):
     def __init__(self, *args, **kwargs):
         super(CMakeClickable, self).__init__(*args, **kwargs)
 
-        platform_dir = os.path.join(self.cwd, 'platforms/ubuntu/')
+        self.platform_dir = os.path.join(self.cwd, 'platforms/ubuntu/')
 
         self._dirs = {
-                'build'  : '{}/{}/{}/build/' .format(platform_dir, self.config.sdk, self.build_arch),
-                'prefix' : '{}/{}/{}/prefix/'.format(platform_dir, self.config.sdk, self.build_arch),
-                'make'   : '{}/build'.format(platform_dir)
+                'build'  : '{}/{}/{}/build/' .format(self.platform_dir, self.config.sdk, self.build_arch),
+                'prefix' : '{}/{}/{}/prefix/'.format(self.platform_dir, self.config.sdk, self.build_arch),
+                'make'   : '{}/build'.format(self.platform_dir)
         }
+
+        self.temp = self._dirs['build']
 
         self.config.specificDependencies = True
         self.config.dependencies = [ # Got this list from check_reqs or somewhere
