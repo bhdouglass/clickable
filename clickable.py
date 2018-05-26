@@ -1243,11 +1243,12 @@ class CordovaClickable(CMakeClickable):
                 sys.exit(1)
 
             cordova_docker_image = "beevelop/cordova:v7.0.0"
-            command = "cordova platform add ubuntu; chown -R {uid}:{uid} platforms plugins node_modules".format(uid=os.getuid())
+            command = "cordova platform add ubuntu"
 
-            # Can't use self.run_container_command because need root
-            wrapped_command = 'docker run -v {cwd}:{cwd} -w {cwd} --rm -i {img} bash -c "{cmd}"'.format(
+            # Can't use self.run_container_command because need to set -e HOME=/tmp
+            wrapped_command = 'docker run -v {cwd}:{cwd} -w {cwd} -u {uid}:{uid} -e HOME=/tmp --rm -i {img} {cmd}'.format(
                     cwd=self.cwd,
+                    uid=os.getuid(),
                     img=cordova_docker_image,
                     cmd=command)
 
