@@ -1,3 +1,9 @@
+clickable (4.2.0) unstable; urgency=medium
+
+  * Made cordova build template not dependent on cordova command on host machine
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sun, 27 May 2018 11:13:00 -0500
+
 clickable (4.1.0) unstable; urgency=medium
 
   * Added "run" command

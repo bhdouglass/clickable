@@ -27,7 +27,7 @@ except ImportError:
 # TODO split into multiple files
 
 
-__version__ = '4.1.0'
+__version__ = '4.2.0'
 
 
 def run_subprocess_call(cmd, **args):
@@ -1084,6 +1084,8 @@ class MakeClickable(Clickable):
 
         try:
             os.makedirs(self.temp)
+        except FileExistsError:
+            print_warning('Failed to create temp dir, already exists')
         except Exception:
             print_warning('Failed to create temp dir ({}): {}'.format(self.temp, str(sys.exc_info()[0])))
 
@@ -1265,6 +1267,8 @@ class CordovaClickable(CMakeClickable):
 
         try:
             os.makedirs(self.config.dir)
+        except FileExistsError:
+            print_warning('Failed to create temp dir, already exists')
         except Exception:
             print_warning('Failed to create temp dir ({}): {}'.format(self.temp, str(sys.exc_info()[0])))
 
