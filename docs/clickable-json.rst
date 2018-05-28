@@ -135,14 +135,16 @@ ignore
 
 Optional, a list of files to ignore when building a `pure` template
 Example:
-``
-"ignore":[
-    ".clickable",
-    ".git",
-    ".gitignore",
-    ".gitmodules"
-  ]
-``
+
+.. code-block:: javascript
+
+    "ignore": [
+        ".clickable",
+        ".git",
+        ".gitignore",
+        ".gitmodules"
+    ]
+
 
 make_jobs
 ---------
