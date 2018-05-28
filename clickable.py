@@ -717,7 +717,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         desktop_path = None
         hooks = self.get_manifest().get('hooks', {})
         if self.config.app:
-            if self.config.app in hooks and 'desktop' in hooks[app]:
+            if self.config.app in hooks and 'desktop' in hooks[self.config.app]:
                 desktop_path = hooks[self.config.app]['desktop']
         else:
             for key, value in hooks.items():
@@ -1224,19 +1224,14 @@ class CordovaClickable(CMakeClickable):
         self.platform_dir = os.path.join(self.cwd, 'platforms/ubuntu/')
 
         self._dirs = {
-                'build'  : '{}/{}/{}/build/' .format(self.platform_dir, self.config.sdk, self.build_arch),
-                'prefix' : '{}/{}/{}/prefix/'.format(self.platform_dir, self.config.sdk, self.build_arch),
-                'make'   : '{}/build'.format(self.platform_dir)
+            'build': '{}/{}/{}/build/' .format(self.platform_dir, self.config.sdk, self.build_arch),
+            'prefix': '{}/{}/{}/prefix/'.format(self.platform_dir, self.config.sdk, self.build_arch),
+            'make': '{}/build'.format(self.platform_dir)
         }
 
         self.temp = self._dirs['build']
 
         self.config.specificDependencies = True
-        self.config.dependencies = [ # Got this list from check_reqs or somewhere
-                "libicu-dev:armhf",
-                "qtfeedback5-dev:armhf",
-                "qtsystems5-dev:armhf"
-        ]
 
         if not os.path.isdir(self.platform_dir):
             # fail when not using docker, need it anyways
@@ -1249,10 +1244,11 @@ class CordovaClickable(CMakeClickable):
 
             # Can't use self.run_container_command because need to set -e HOME=/tmp
             wrapped_command = 'docker run -v {cwd}:{cwd} -w {cwd} -u {uid}:{uid} -e HOME=/tmp --rm -i {img} {cmd}'.format(
-                    cwd=self.cwd,
-                    uid=os.getuid(),
-                    img=cordova_docker_image,
-                    cmd=command)
+                cwd=self.cwd,
+                uid=os.getuid(),
+                img=cordova_docker_image,
+                cmd=command
+            )
 
             subprocess.check_call(shlex.split(wrapped_command))
 

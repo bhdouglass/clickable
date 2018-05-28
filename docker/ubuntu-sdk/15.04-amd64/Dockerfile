@@ -39,7 +39,10 @@ RUN apt-get -y --force-yes --no-install-recommends install \
     qtdeclarative5-private-dev \
     libqt5opengl5-dev \
     mercurial \
-    git
+    git \
+    libicu-dev \
+    qtfeedback5-dev \
+    qtsystems5-dev
 RUN apt-get clean
 
 # Install go

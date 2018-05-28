@@ -39,7 +39,10 @@ RUN apt-get -y --force-yes --no-install-recommends install \
     libqt5opengl5-dev:armhf \
     mercurial \
     crossbuild-essential-armhf \
-    git
+    git \
+    libicu-dev:armhf \
+    qtfeedback5-dev:armhf \
+    qtsystems5-dev:armhf
 RUN apt-get clean
 
 # Install go
