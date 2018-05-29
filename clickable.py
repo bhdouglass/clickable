@@ -1273,6 +1273,10 @@ class CordovaClickable(CMakeClickable):
     def post_make(self):
         super(CordovaClickable, self).post_make()
 
+        www_dir = os.path.join(self.platform_dir, "www")
+        shutil.rmtree(www_dir)
+        shutil.copytree(os.path.join(self.cwd, "www"), www_dir)
+
         copies = {
                 "www": None,
                 "platform_www": "www",
