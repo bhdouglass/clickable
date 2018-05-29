@@ -1273,18 +1273,25 @@ class CordovaClickable(CMakeClickable):
     def post_make(self):
         super(CordovaClickable, self).post_make()
 
-        copies = [
-            'www',
-            'config.xml',
-            'cordova.desktop',
-            'manifest.json',
-            'apparmor.json'
-        ]
+        copies = {
+                "www": None,
+                "platform_www": "www",
+                "config.xml": None,
+                "cordova.desktop": None,
+                "manifest.json": None,
+                "apparmor.json": None,
+                }
+
+        # If value is none, set to key
+        copies = {key: key if value is None else value
+                  for key, value in copies.items()}
 
         # Is this overengineerd?
-        for file_to_copy in copies:
-            full_source_path = os.path.join(self.platform_dir, file_to_copy)
-            full_dest_path = os.path.join(self._dirs['build'], file_to_copy)
+        for file_to_copy_source, file_to_copy_dest in copies.items():
+            full_source_path = os.path.join(self.platform_dir,
+                                            file_to_copy_source)
+            full_dest_path = os.path.join(self._dirs['build'],
+                                          file_to_copy_dest)
             if os.path.isdir(full_source_path):
                 # https://stackoverflow.com/a/31039095/6381767
                 copy_tree(full_source_path, full_dest_path)
