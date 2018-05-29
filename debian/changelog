@@ -1,3 +1,9 @@
+clickable (4.2.1) unstable; urgency=medium
+
+  * Removed dependency override for cordova template
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Tue, 29 May 2018 10:36:00 -0500
+
 clickable (4.2.0) unstable; urgency=medium
 
   * Made cordova build template not dependent on cordova command on host machine

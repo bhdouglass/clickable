@@ -1231,8 +1231,6 @@ class CordovaClickable(CMakeClickable):
 
         self.temp = self._dirs['build']
 
-        self.config.specificDependencies = True
-
         if not os.path.isdir(self.platform_dir):
             # fail when not using docker, need it anyways
             if self.config.container_mode or self.config.lxd or self.config.chroot:
