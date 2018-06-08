@@ -15,7 +15,7 @@ Runs the default sub-commands specified in the "default" config
 ``clickable --desktop``
 -----------------------
 
-Compile and run the app onthe desktop.
+Compile and run the app on the desktop.
 
 ``clickable init``
 ------------------
@@ -80,7 +80,7 @@ Launches the specified app on a device.
 Follow the apps log file on the device.
 
 ``clickable run "some command"``
-------------------
+--------------------------------
 
 Runs an arbitrary command in the clickable container.
 
@@ -112,10 +112,19 @@ argument.
 Runs a custom command specified in the "scripts" config
 
 ``clickable <custom command> --device``
+---------------------------------------
 
 Runs a custom command specified in the "scripts" config on the device.
 
 ``clickable <any command> --container-mode``
+--------------------------------------------
 
 Runs all builds commands on the current machine and not in a container. This is
 useful from running clickable from within a container.
+
+``clickable --desktop --nvidia``
+--------------------------------
+
+Use clickable's desktop mode with proprietary Nvidia drivers. This requires
+nvidia-docker to be installed and setup. Please note, only version 1 of
+nvidia-docker is supported at this time (version 2 does not support OpenGL).
