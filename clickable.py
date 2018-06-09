@@ -1276,7 +1276,7 @@ class CordovaClickable(CMakeClickable):
         www_dir = os.path.join(self.platform_dir, "www")
         shutil.rmtree(www_dir)
         shutil.copytree(os.path.join(self.cwd, "www"), www_dir)
-        shutil.copyfile(os.path.join(self.cwd, "config.xml"), www_dir)
+        shutil.copyfile(os.path.join(self.cwd, "config.xml"), os.path.join(www_dir, 'config.xml'))
 
         copies = {
                 "www": None,
