@@ -636,6 +636,11 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
 
             print_info('Log out or restart to apply changes')
 
+    def update_docker(self):
+        self.check_docker()
+
+        subprocess.check_call(shlex.split('docker pull {}'.format(self.base_docker_image)))
+
     def display_on(self):
         command = 'powerd-cli display on'
         self.run_device_command(command, cwd=self.cwd)
@@ -1373,6 +1378,7 @@ def main():
         'display-on': 'display_on',
         'no-lock': 'no_lock',
         'setup-docker': 'setup_docker',
+        'update-docker': 'update_docker',
         'shell': 'shell',
         'devices': 'devices',
         'init': 'init_app',
