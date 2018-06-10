@@ -14,36 +14,47 @@ RUN add-apt-repository -y ppa:ci-train-ppa-service/stable-phone-overlay && \
     wget -qO - http://repo.ubports.com/keyring.gpg | apt-key add - && \
     apt-get update
 
-RUN apt-get -y --force-yes --no-install-recommends dist-upgrade
-RUN apt-get -y --force-yes --no-install-recommends install \
-    apt-utils \
-    build-essential \
-    cmake \
-    dpkg-cross \
-    fakeroot \
-    libc-dev:armhf \
-    isc-dhcp-client \
-    net-tools \
-    ifupdown \
-    g++-arm-linux-gnueabihf \
-    pkg-config-arm-linux-gnueabihf \
-    ubuntu-sdk-libs:armhf \
-    ubuntu-sdk-libs-dev:armhf \
-    ubuntu-sdk-libs-tools \
-    oxideqt-codecs-extra \
-    qt5-doc \
-    language-pack-en \
-    click \
-    qtbase5-private-dev:armhf \
-    qtdeclarative5-private-dev:armhf \
-    libqt5opengl5-dev:armhf \
-    mercurial \
-    crossbuild-essential-armhf \
-    git \
-    libicu-dev:armhf \
-    qtfeedback5-dev:armhf \
-    qtsystems5-dev:armhf
-RUN apt-get clean
+RUN apt-get -y --force-yes --no-install-recommends dist-upgrade &&\
+    apt-get -y --force-yes --no-install-recommends install \
+        apt-utils \
+        build-essential \
+        cmake \
+        dpkg-cross \
+        fakeroot \
+        libc-dev:armhf \
+        isc-dhcp-client \
+        net-tools \
+        ifupdown \
+        g++-arm-linux-gnueabihf \
+        pkg-config-arm-linux-gnueabihf \
+        ubuntu-sdk-libs:armhf \
+        ubuntu-sdk-libs-dev:armhf \
+        ubuntu-sdk-libs-tools \
+        oxideqt-codecs-extra \
+        qt5-doc \
+        language-pack-en \
+        click \
+        qtbase5-private-dev:armhf \
+        qtdeclarative5-private-dev:armhf \
+        libqt5opengl5-dev:armhf \
+        mercurial \
+        crossbuild-essential-armhf \
+        git \
+        libicu-dev:armhf \
+        qtfeedback5-dev:armhf \
+        qtsystems5-dev:armhf \
+        python3-apt \
+        python3-debian \
+        python3-lxml \
+        python3-magic \
+        python3-simplejson \
+        python3-xdg \
+        python3-yaml \
+        squashfs-tools && \
+    apt-get clean
+RUN wget https://launchpad.net/~bhdouglass/+archive/ubuntu/clickable/+files/click-reviewers-tools_0.50_all.deb && \
+    dpkg -i click-reviewers-tools_0.50_all.deb && \
+    rm click-reviewers-tools_0.50_all.deb
 
 # Install go
 RUN wget https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz && \

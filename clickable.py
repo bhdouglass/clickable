@@ -27,7 +27,7 @@ except ImportError:
 # TODO split into multiple files
 
 
-__version__ = '4.2.0'
+__version__ = '4.2.2'
 
 
 def run_subprocess_call(cmd, **args):
@@ -166,11 +166,14 @@ class Config(object):
     def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False, sdk=None, use_nvidia=False):
         self.skip_detection = skip_detection
         self.click_output = click_output
-        self.container_mode = container_mode
         self.desktop = desktop
         self.use_nvidia = use_nvidia
         self.cwd = os.getcwd()
         self.load_config()
+
+        self.container_mode = container_mode
+        if 'CLICKABLE_CONTAINER_MODE' in os.environ and os.environ['CLICKABLE_CONTAINER_MODE']:
+            self.container_mode = True
 
         if ip:
             self.ssh = ip
@@ -409,8 +412,9 @@ class Clickable(object):
 
         subprocess.check_call(wrapped_command, cwd=cwd, shell=True)
 
-    def run_container_command(self, command, force_lxd=False, sudo=False, get_output=False, use_dir=True):
+    def run_container_command(self, command, force_lxd=False, sudo=False, get_output=False, use_dir=True, cwd=None):
         wrapped_command = command
+        cwd = cwd if cwd else self.cwd
 
         if self.config.container_mode:
             wrapped_command = 'bash -c "{}"'.format(command)
@@ -438,11 +442,11 @@ class Clickable(object):
             if self.config.gopath:
                 go_config = '-v {}:/gopath -e GOPATH=/gopath'.format(self.config.gopath)
 
-            wrapped_command = 'docker run -v {}:{} {} -w {} -u {} --rm -i {} bash -c "{}"'.format(
-                self.cwd,
-                self.cwd,
+            wrapped_command = 'docker run -v {}:{} {} -w {} -u {} -e HOME=/tmp --rm -i {} bash -c "{}"'.format(
+                cwd,
+                cwd,
                 go_config,
-                self.config.dir if use_dir else self.cwd,
+                self.config.dir if use_dir else cwd,
                 os.getuid(),
                 self.docker_image,
                 command,
@@ -650,8 +654,6 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             # Run this in the container so the host doesn't need to have click installed
             self.run_container_command(command)
 
-        self.click_review()
-
         if self.config.click_output:
             click = '{}_{}_{}.click'.format(self.find_package_name(), self.find_version(), self.config.arch)
             click_path = os.path.join(self.config.dir, click)
@@ -663,8 +665,15 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             print_info('Click outputted to {}'.format(output_file))
             shutil.copyfile(click_path, output_file)
 
-    def click_review(self):
-        pass  # TODO implement this
+    def click_review(self, click_path=None):
+        if click_path:
+            click = os.path.basename(click_path)
+        else:
+            click = '{}_{}_{}.click'.format(self.find_package_name(), self.find_version(), self.config.arch)
+            click_path = os.path.join(self.config.dir, click)
+
+        cwd = os.path.dirname(os.path.realpath(click_path))
+        self.run_container_command('click-review {}'.format(click_path), use_dir=False, cwd=cwd)
 
     def install(self, click_path=None):
         if self.config.desktop:
@@ -1368,6 +1377,7 @@ def main():
         'devices': 'devices',
         'init': 'init_app',
         'run': 'run',
+        'review': 'click_review',
     }
 
     def show_valid_commands():
@@ -1559,6 +1569,8 @@ def main():
                 clickable.script(command, args.device)
             elif command == 'install':
                 clickable.install(args.click if args.click else command_arg)
+            elif command == 'review':
+                clickable.click_review(args.click if args.click else command_arg)
             elif command == 'launch':
                 clickable.launch(args.app if args.app else command_arg)
             elif command == 'init':

@@ -17,6 +17,7 @@ RUN apt-get -y --no-install-recommends install gnupg ubuntu-keyring software-pro
 
 RUN echo "deb http://repo.ubports.com xenial main" >> /etc/apt/sources.list && \
     wget -qO - http://repo.ubports.com/keyring.gpg | apt-key add - && \
+    add-apt-repository ppa:bhdouglass/clickable && \
     apt-get update
 
 RUN apt-get -y --no-install-recommends dist-upgrade
@@ -44,7 +45,11 @@ RUN apt-get -y --no-install-recommends install \
     libqt5opengl5-dev:armhf \
     mercurial \
     crossbuild-essential-armhf \
-    git
+    git \
+    libicu-dev:armhf \
+    qtfeedback5-dev:armhf \
+    qtsystems5-dev:armhf \
+    click-reviewers-tools
 RUN apt-get clean
 
 # Install go

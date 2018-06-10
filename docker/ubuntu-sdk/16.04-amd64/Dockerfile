@@ -38,7 +38,10 @@ RUN apt-get -y --no-install-recommends dist-upgrade && \
     qtdeclarative5-private-dev \
     libqt5opengl5-dev \
     mercurial \
-    git
+    git \
+    libicu-dev \
+    qtfeedback5-dev \
+    qtsystems5-dev
 
 RUN apt-get clean
 

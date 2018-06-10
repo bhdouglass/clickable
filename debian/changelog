@@ -1,3 +1,10 @@
+clickable (4.2.2) unstable; urgency=medium
+
+  * Fixes & improvements for the cordova template
+  * Added new review command
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sat, 09 Jun 2018 12:43:00 -0500
+
 clickable (4.2.1) unstable; urgency=medium
 
   * Removed dependency override for cordova template
