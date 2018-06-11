@@ -1,7 +1,9 @@
 FROM ubuntu:xenial
 MAINTAINER Brian Douglass
 
-RUN echo set debconf/frontend Noninteractive | debconf-communicate && \
+# Disable problematic lzma compression - https://blog.packagecloud.io/eng/2016/03/21/apt-hash-sum-mismatch/
+RUN echo 'Acquire::CompressionTypes::Order:: "gz";' > /etc/apt/apt.conf.d/99compression-workaround && \
+    echo set debconf/frontend Noninteractive | debconf-communicate && \
     echo set debconf/priority critical | debconf-communicate
 
 RUN echo "deb [arch=amd64] http://archive.ubuntu.com/ubuntu xenial main resticted multiverse universe" > /etc/apt/sources.list && \
@@ -18,39 +20,44 @@ RUN apt-get -y --no-install-recommends install gnupg ubuntu-keyring software-pro
 RUN echo "deb http://repo.ubports.com xenial main" >> /etc/apt/sources.list && \
     wget -qO - http://repo.ubports.com/keyring.gpg | apt-key add - && \
     add-apt-repository ppa:bhdouglass/clickable && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
     apt-get update
 
-RUN apt-get -y --no-install-recommends dist-upgrade
-RUN apt-get -y --no-install-recommends install \
-    apt-utils \
-    build-essential \
-    cmake \
-    dpkg-cross \
-    fakeroot \
-    libc-dev:armhf \
-    isc-dhcp-client \
-    net-tools \
-    ifupdown \
-    g++-arm-linux-gnueabihf \
-    pkg-config-arm-linux-gnueabihf \
-    ubuntu-sdk-libs:armhf \
-    ubuntu-sdk-libs-dev:armhf \
-    ubuntu-sdk-libs-tools \
-    oxideqt-codecs-extra \
-    language-pack-en \
-    click \
-    qtquickcontrols2-5-dev:armhf \
-    qtbase5-private-dev:armhf \
-    qtdeclarative5-private-dev:armhf \
-    libqt5opengl5-dev:armhf \
-    mercurial \
-    crossbuild-essential-armhf \
-    git \
-    libicu-dev:armhf \
-    qtfeedback5-dev:armhf \
-    qtsystems5-dev:armhf \
-    click-reviewers-tools
-RUN apt-get clean
+RUN apt-get -y --no-install-recommends dist-upgrade && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    apt-get update && \
+    apt-get -y --no-install-recommends install \
+        apt-utils \
+        build-essential \
+        cmake \
+        dpkg-cross \
+        fakeroot \
+        libc-dev:armhf \
+        isc-dhcp-client \
+        net-tools \
+        ifupdown \
+        g++-arm-linux-gnueabihf \
+        pkg-config-arm-linux-gnueabihf \
+        ubuntu-sdk-libs:armhf \
+        ubuntu-sdk-libs-dev:armhf \
+        ubuntu-sdk-libs-tools \
+        oxideqt-codecs-extra \
+        language-pack-en \
+        click \
+        qtquickcontrols2-5-dev:armhf \
+        qtbase5-private-dev:armhf \
+        qtdeclarative5-private-dev:armhf \
+        libqt5opengl5-dev:armhf \
+        mercurial \
+        crossbuild-essential-armhf \
+        git \
+        libicu-dev:armhf \
+        qtfeedback5-dev:armhf \
+        qtsystems5-dev:armhf \
+        click-reviewers-tools && \
+    apt-get clean
 
 # Install go
 RUN wget https://storage.googleapis.com/golang/go1.6.linux-amd64.tar.gz && \
