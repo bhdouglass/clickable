@@ -56,6 +56,12 @@ Takes the built files and compiles them into a click package (you can find it in
 Takes the built files and compiles them into a click package, outputting the
 compiled click to the directory specified by ``--output``.
 
+``clickable review``
+--------------------
+
+Takes the built click package and runs click-review against it. This allows you
+to review your click without installing click-review on you computer.
+
 ``clickable install``
 ---------------------
 
@@ -88,6 +94,11 @@ Runs an arbitrary command in the clickable container.
 --------------------------
 
 Configure docker for use with clickable.
+
+``clickable update-docker``
+---------------------------
+
+Update the docker container for use with clickable.
 
 ``clickable display-on``
 ------------------------
