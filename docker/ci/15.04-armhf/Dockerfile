@@ -13,3 +13,5 @@ RUN apt-get update && \
 RUN wget https://launchpad.net/~bhdouglass/+archive/ubuntu/clickable/+files/clickable_4.2.2_all.deb && \
     dpkg -i clickable_4.2.2_all.deb && \
     rm clickable_4.2.2_all.deb
+
+ENV CLICKABLE_CONTAINER_MODE=1
