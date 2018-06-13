@@ -18,6 +18,7 @@ Package: clickable
 Architecture: all
 Depends: ${python3:Depends},
          ${misc:Depends},
+         python3-distutils,
          adb | android-tools-adb,
          docker.io | docker-ce,
 Suggests: lxd,
