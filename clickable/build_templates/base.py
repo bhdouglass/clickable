@@ -137,6 +137,8 @@ class Clickable(object):
         if self.config.ssh:
             wrapped_command = 'echo "{}" | ssh phablet@{}'.format(command, self.config.ssh)
         else:
+            self.check_any_devices()
+
             if self.device_serial_number:
                 wrapped_command = 'adb -s {} shell "{}"'.format(self.device_serial_number, command)
             else:
@@ -434,6 +436,8 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             subprocess.check_call(command, cwd=cwd, shell=True)
 
         else:
+            self.check_any_devices()
+
             if self.device_serial_number:
                 command = 'adb -s {} push {} /home/phablet/'.format(self.device_serial_number, click_path)
             else:
@@ -666,6 +670,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         if self.config.ssh:
             subprocess.check_call(shlex.split('ssh phablet@{}'.format(self.config.ssh)))
         else:
+            self.check_any_devices()
 
             adb_args = ''
             if self.device_serial_number:
@@ -728,10 +733,15 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
 
         return devices
 
+    def check_any_devices(self):
+        devices = self.detect_devices()
+        if len(devices) == 0:
+            raise Exception('No devices available via adb')
+
     def check_multiple_devices(self):
         devices = self.detect_devices()
         if len(devices) > 1 and not self.device_serial_number:
-            raise Exception('Multiple devices attached')
+            raise Exception('Multiple devices detected via adb')
 
     def devices(self):
         devices = self.detect_devices()
@@ -807,3 +817,8 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
     def run(self, command):
         self.setup_dependencies()
         self.run_container_command(command, use_dir=False)
+
+    def writable_image(self):
+        command = 'dbus-send --system --print-reply --dest=com.canonical.PropertyService /com/canonical/PropertyService com.canonical.PropertyService.SetProperty string:writable boolean:true'
+        self.run_device_command(command, cwd=self.cwd)
+        print_info('Rebooting for writable image')

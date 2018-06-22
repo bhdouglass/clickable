@@ -31,6 +31,7 @@ def main():
         'click_build': 'click_build',
         'build_click': 'click_build',
         'build-click': 'click_build',
+        'writeable-image': 'writable_image',
     }
 
     COMMAND_HANDLERS = {
@@ -51,6 +52,7 @@ def main():
         'init': 'init_app',
         'run': 'run',
         'review': 'click_review',
+        'writable-image': 'writable_image',
     }
 
     def show_valid_commands():
