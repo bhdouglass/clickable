@@ -53,6 +53,7 @@ def main():
         'run': 'run',
         'review': 'click_review',
         'writable-image': 'writable_image',
+        'publish': 'publish',
     }
 
     def show_valid_commands():
@@ -161,6 +162,16 @@ def main():
         help='Use nvidia-docker rather than docker',
         default=False,
     )
+    parser.add_argument(
+        '--apikey',
+        help='Api key for the OpenStore',
+    )
+    parser.add_argument(
+        '--xenial',
+        action='store_true',
+        help='Shortcut for --sdk=16.04',
+        default=False,
+    )
 
     args = parser.parse_args()
 
@@ -193,8 +204,9 @@ def main():
             click_output=args.output,
             container_mode=args.container_mode,
             desktop=args.desktop,
-            sdk=args.sdk,
+            sdk='16.04' if args.xenial else args.sdk,
             use_nvidia=args.nvidia,
+            apikey=args.apikey,
         )
 
         VALID_COMMANDS = list(COMMAND_HANDLERS.keys()) + list(config.scripts.keys())

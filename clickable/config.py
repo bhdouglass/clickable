@@ -50,13 +50,17 @@ class Config(object):
     required = ['sdk', 'arch', 'dir']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO]
 
-    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False, sdk=None, use_nvidia=False):
+    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False, sdk=None, use_nvidia=False, apikey=None):
         self.skip_detection = skip_detection
         self.click_output = click_output
         self.desktop = desktop
         self.use_nvidia = use_nvidia
         self.cwd = os.getcwd()
         self.load_config()
+
+        self.apikey = apikey
+        if not self.apikey and 'OPENSTORE_API_KEY' in os.environ and os.environ['OPENSTORE_API_KEY']:
+            self.apikey = os.environ['OPENSTORE_API_KEY']
 
         self.container_mode = container_mode
         if 'CLICKABLE_CONTAINER_MODE' in os.environ and os.environ['CLICKABLE_CONTAINER_MODE']:
@@ -78,6 +82,8 @@ class Config(object):
 
         if sdk:
             self.sdk = sdk
+
+        self.isXenial = ('16.04' in self.sdk)
 
         if not self.gopath and 'GOPATH' in os.environ and os.environ['GOPATH']:
             self.gopath = os.environ['GOPATH']
