@@ -452,7 +452,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
                 command = 'adb push {} /home/phablet/'.format(click_path)
             subprocess.check_call(command, cwd=cwd, shell=True)
 
-        self.run_device_command('pkcon install-local --allow-untrusted {}'.format(click), cwd=cwd)
+        self.run_device_command('pkcon install-local --allow-untrusted /home/phablet/{}'.format(click), cwd=cwd)
 
     def kill(self):
         if self.config.desktop:
