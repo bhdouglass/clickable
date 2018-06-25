@@ -4,24 +4,22 @@ Priority: optional
 Maintainer: JBBgameich <jbb.mail@gmx.de>
 Build-Depends: debhelper (>= 9),
                dh-python,
-               help2man,
                dpkg-dev,
+               help2man,
                python3 (>= 3.3),
                python3-cookiecutter,
                python3-ipdb,
-               python3-stdeb,
-Standards-Version: 4.1.1
+               python3-stdeb
+Standards-Version: 4.1.4
 Homepage: https://github.com/bhdouglass/clickable
 X-Python3-Version: >= 3.3
 
 Package: clickable
 Architecture: all
-Depends: ${python3:Depends},
-         ${misc:Depends},
-         python3-distutils,
-         adb | android-tools-adb,
+Depends: adb | android-tools-adb,
          docker.io | docker-ce,
-Suggests: lxd,
-          ubuntu-sdk-tools,
-          x11-xserver-utils
+         python3-distutils,
+         ${misc:Depends},
+         ${python3:Depends}
+Suggests: lxd, ubuntu-sdk-tools, x11-xserver-utils
 Description: Compile, build, and deploy Ubuntu Touch click packages all from the command line.
