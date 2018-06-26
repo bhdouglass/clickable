@@ -17,12 +17,8 @@ from clickable.build_templates.qmake import QMakeClickable
 from clickable.config import Config
 from clickable.utils import print_error
 
-# TODO include phablet-config
-# TODO add a publish command to upload to the OpenStore
-# TODO create a flatpak
 
-
-__version__ = '4.2.2'
+__version__ = '4.3.0'
 
 
 def main():

@@ -1,5 +1,13 @@
 clickable (4.2.2) unstable; urgency=medium
 
+  * Added new publish command
+  * Added --xenial shortcut argument
+  * Added new writable-image command (to replace phablet-config)
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Mon, 25 Jun 2018 01:07:00 -0500
+
+clickable (4.2.2) unstable; urgency=medium
+
   * Fixes & improvements for the cordova template
   * Added new review command
   * Added new update-docker command
