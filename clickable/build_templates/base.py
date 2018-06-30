@@ -831,6 +831,8 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         print_info('Rebooting for writable image')
 
     def publish(self):
+        # TODO allow publishing app for the first time
+
         if not self.config.apikey:
             print_error('No api key specified, use OPENSTORE_API_KEY or --apikey')
             return

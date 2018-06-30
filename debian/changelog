@@ -1,10 +1,10 @@
-clickable (4.2.2) unstable; urgency=medium
+clickable (4.3.0) unstable; urgency=medium
 
   * Added new publish command
   * Added --xenial shortcut argument
   * Added new writable-image command (to replace phablet-config)
 
- -- Brian Douglass <bhdouglass@gmail.com>  Mon, 25 Jun 2018 01:07:00 -0500
+ -- Brian Douglass <bhdouglass@gmail.com>  Fri, 29 Jun 2018 23:09:00 -0500
 
 clickable (4.2.2) unstable; urgency=medium
 

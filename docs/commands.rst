@@ -85,6 +85,12 @@ Launches the specified app on a device.
 
 Follow the apps log file on the device.
 
+``clickable publish``
+---------------------
+
+Publish your click app to the OpenStore. Check the
+:ref:`Getting started doc <getting-started>` for more info.
+
 ``clickable run "some command"``
 --------------------------------
 
@@ -109,6 +115,12 @@ Turns on the device's display and keeps it on until you hit CTRL+C.
 ---------------------
 
 Turns off the device's display timeout.
+
+``clickable writable-image``
+----------------------------
+
+Make your Ubuntu Touch device's rootfs writable. This replaces to old
+``phablet-config writable-image`` command.
 
 ``clickable devices``
 ---------------------

@@ -8,6 +8,7 @@ Getting Started
 * Provide all the needed information about your new app.
 * When the app has finished generating, enter the newly created directory containing your app.
 * Run ``clickable`` to compile your app and install it on your phone.
+* Run ``clickable --xenial`` to compile your app for Xenial (Ubuntu Touch 16.04) and install it on your phone.
 
 Getting Logs
 ------------
@@ -36,8 +37,32 @@ Ubuntu Touch SDK Api Docs
 For more information about the Ubuntu Touch QML or HTML SDK check out the
 `docs over at UBports <https://api-docs.ubports.com>`__.
 
-Submitting to the OpenStore
+Run Automatic Review
+--------------------
+
+Apps submitted to the OpenStore will undergo automatic review, to test your
+app before submitting it, run ``clickable review`` after you've compiled a click.
+This runs the ``click-review`` command against your click within the clickable
+container (no need to install it on your computer).
+
+Publishing to the OpenStore
 ---------------------------
 
-When you are ready to publish your app, head to the
-`OpenStore's submission page <https://open-store.io/submit>`__.
+If this is your first time publishing to the OpenStore, you need to
+`signup for an account <https://open-store.io/login>`__. You can signup with
+your GitHub, GitLab, or Ubuntu account.
+
+If your app is new to the OpenStore you must first manually upload your new app
+on the `OpenStore's submission page <https://open-store.io/submit>`__.
+
+If your app already exists you can use the ``clickable publish`` command to
+upload your compiled click file to the OpenStore. In order to publish to the
+OpenStore you need to grab your
+`api key from the OpenStore <https://open-store.io/manage>`__. After you have
+your api key you need to let Clickable know about it. You can either pass it
+as an argument every time: ``clickable publish --apikey XYZ`` Or you can set it
+as an environment variable: ``export OPENSTORE_API_KEY=XYZ`` (you can add this
+to your ``~/.bashrc`` to keep it set).
+
+Publishing for Xenial is just as easy, just run ``clickable publish --xenial``
+with your api key setup like above.
