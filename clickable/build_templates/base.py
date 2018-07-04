@@ -68,10 +68,10 @@ class Clickable(object):
 
         if not self.config.container_mode:
             if self.config.chroot:
-                print_warning('Use of chroots are depricated and will be removed in a future version')
+                print_warning('Use of chroots are deprecated and will be removed in a future version')
                 self.check_command('click')
             elif self.config.lxd:
-                print_warning('Use of lxd is depricated and will be removed in a future version')
+                print_warning('Use of lxd is deprecated and will be removed in a future version')
                 self.check_command('usdk-target')
             else:
                 self.check_command('docker')
