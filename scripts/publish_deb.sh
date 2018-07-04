@@ -13,10 +13,10 @@ function docker_run {
 }
 
 # Prepare for upload and build source package
-sed -i 's/unstable/artful/g' debian/changelog
+sed -i 's/unstable/bionic/g' debian/changelog
 docker_run "debuild -S"
 docker_run "dput ppa:bhdouglass/clickable ../clickable_*_source.changes"
 
 # Clean up
 docker_run "dh_clean"
-sed -i 's/artful/unstable/g' debian/changelog
+sed -i 's/bionic/unstable/g' debian/changelog
