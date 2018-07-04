@@ -18,7 +18,8 @@ with open('clickable/__init__.py', 'rb') as f:
         f.read().decode('utf-8')).group(1)))
 
 requirements = [
-    "cookiecutter",
+    'cookiecutter',
+    'requests',
 ]
 
 test_requirements = [
