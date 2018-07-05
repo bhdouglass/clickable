@@ -1,3 +1,9 @@
+clickable (4.3.3) unstable; urgency=medium
+
+  * Fixed packaging issues
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 04 Jul 2018 08:39:00 -0500
+
 clickable (4.3.1) unstable; urgency=medium
 
   * Fixed dependency issues
