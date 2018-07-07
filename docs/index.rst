@@ -47,7 +47,7 @@ Install Via Git
 * Clone this repo: ``git clone https://github.com/bhdouglass/clickable.git``
 * Add clickable to your PATH: ``echo "export PATH=\$PATH:\$HOME/clickable" >> ~/.bashrc``
 * Read the new ``.bashrc`` file: ``source ~/.bashrc``
-* Configure docker for clickable: ``clickable setup-docker``
+* Configure docker for clickable: ``clickable-dev setup-docker``
 
 Getting Started
 ---------------
