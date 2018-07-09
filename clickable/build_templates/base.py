@@ -268,7 +268,11 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
                         f.write(self.docker_image)
 
                     print_info('Generating new docker image')
-                    subprocess.check_call(shlex.split('docker build -t {} .'.format(self.docker_image)), cwd='.clickable')
+                    try:
+                        subprocess.check_call(shlex.split('docker build -t {} .'.format(self.docker_image)), cwd='.clickable')
+                    except subprocess.CalledProcessError:
+                        self.clean_clickable()
+                        raise
                 else:
                     print_info('Dependencies already setup')
 
@@ -610,6 +614,18 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             log = self.config.log
 
         self.run_device_command('tail -f {}'.format(log))
+
+    def clean_clickable(self):
+        path = os.path.join(self.cwd, '.clickable')
+        if os.path.exists(path):
+            try:
+                shutil.rmtree(path)
+            except Exception:
+                type, value, traceback = sys.exc_info()
+                if type == OSError and 'No such file or directory' in value:  # TODO see if there is a proper way to do this
+                    pass  # Nothing to do here, the directory didn't exist
+                else:
+                    raise
 
     def clean(self):
         if os.path.exists(self.config.dir):
