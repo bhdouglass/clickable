@@ -49,6 +49,7 @@ RUN apt-get -y --no-install-recommends dist-upgrade && \
         qtquickcontrols2-5-dev:armhf \
         qtbase5-private-dev:armhf \
         qtdeclarative5-private-dev:armhf \
+        qtpositioning5-dev:armhf \
         libqt5opengl5-dev:armhf \
         mercurial \
         crossbuild-essential-armhf \
