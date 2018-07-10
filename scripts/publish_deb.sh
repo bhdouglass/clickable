@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -x
+set -e
+
 function docker_run {
     docker run \
         -v `pwd`/../:`pwd`/../ \
@@ -12,16 +15,22 @@ function docker_run {
         -it clickable/build-deb:python3 $1
 }
 
-rm ../clickable_*_source.changes
+function publish {
+    rm -f ../clickable_*
 
-# Prepare for upload and build source package
-sed -i 's/unstable/artful/g' debian/changelog
-docker_run "debuild -S"
-docker_run "dput ppa:bhdouglass/clickable ../clickable_*_source.changes"
+    # Prepare for upload and build source package
+    sed -i "s/) unstable/~$1) $1/g" debian/changelog
+    docker_run "debuild -S"
+    docker_run "dput ppa:bhdouglass/clickable ../clickable_*_source.changes"
 
-# Clean up
-docker_run "dh_clean"
-sed -i 's/artful/unstable/g' debian/changelog
+    # Clean up
+    docker_run "dh_clean"
+    sed -i "s/~$1) $1/) unstable/g" debian/changelog
+}
 
-
-# TODO run this for each release & append RELEASE_NAME1 to each version number
+publish precise
+publish trusty
+publish xenial
+publish artful
+publish bionic
+publish cosmic
