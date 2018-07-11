@@ -43,6 +43,7 @@ RUN apt-get -y --no-install-recommends dist-upgrade && \
         qtquickcontrols2-5-dev \
         qtbase5-private-dev \
         qtdeclarative5-private-dev \
+        qtpositioning5-dev \
         libqt5opengl5-dev \
         mercurial \
         git \
