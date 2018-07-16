@@ -11,7 +11,10 @@ class QMakeClickable(MakeClickable):
         command = None
 
         if self.build_arch == 'armhf':
-            command = 'qt5-qmake-arm-linux-gnueabihf'
+            if self.config.container_mode and self.config.is_arm:
+                command = 'qmake'
+            else:
+                command = 'qt5-qmake-arm-linux-gnueabihf'
         elif self.build_arch == 'amd64':
             command = 'qmake'
         else:

@@ -861,7 +861,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
             url = os.environ['OPENSTORE_API']
 
         url = url + OPENSTORE_API_PATH.format(self.find_package_name())
-        channel = 'xenial' if self.config.isXenial else 'vivid'
+        channel = 'xenial' if self.config.is_xenial else 'vivid'
         files = {'file': open(click_path, 'rb')}
         data = {'channel': channel}
         params = {'apikey': self.config.apikey}

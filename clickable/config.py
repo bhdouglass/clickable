@@ -1,5 +1,6 @@
 import os
 import json
+import platform
 
 from clickable.utils import (
     print_info,
@@ -74,6 +75,9 @@ class Config(object):
         elif arch:
             self.arch = arch
 
+        self.host_arch = platform.machine()
+        self.is_arm = self.host_arch.startswith('arm')
+
         if template:
             self.template = template
 
@@ -83,7 +87,7 @@ class Config(object):
         if sdk:
             self.sdk = sdk
 
-        self.isXenial = ('16.04' in self.sdk)
+        self.is_xenial = ('16.04' in self.sdk)
 
         if not self.gopath and 'GOPATH' in os.environ and os.environ['GOPATH']:
             self.gopath = os.environ['GOPATH']
