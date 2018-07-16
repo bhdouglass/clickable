@@ -18,7 +18,7 @@ from clickable.config import Config
 from clickable.utils import print_error
 
 
-__version__ = '4.3.4'
+__version__ = '4.3.5'
 
 
 def main():

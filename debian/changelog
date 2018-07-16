@@ -1,3 +1,9 @@
+clickable (4.3.5) unstable; urgency=medium
+
+  * Fixed packaging issues
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sun, 15 Jul 2018 20:45:00 -0500
+
 clickable (4.3.4) unstable; urgency=medium
 
   * Clean out the .clickable directory if the docker container fails to build
