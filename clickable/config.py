@@ -36,6 +36,7 @@ class Config(object):
         'ignore': [],
         'make_jobs': 0,
         'gopath': None,
+        'docker_image': None,
     }
 
     PURE_QML_QMAKE = 'pure-qml-qmake'

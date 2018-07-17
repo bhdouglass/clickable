@@ -75,16 +75,23 @@ class Clickable(object):
                 self.check_command('usdk-target')
             else:
                 self.check_command('docker')
-                self.docker_image = 'clickable/ubuntu-sdk:{}-{}'.format(self.config.sdk.replace('ubuntu-sdk-', ''), self.build_arch)
-                if self.config.use_nvidia:
-                    self.docker_image += '-nvidia'
-                    self.check_command('nvidia-docker')
 
-                self.base_docker_image = self.docker_image
+                if self.config.docker_image:
+                    self.docker_image = self.config.docker_image
+                    self.base_docker_image = self.docker_image
+                else:
+                    self.docker_image = 'clickable/ubuntu-sdk:{}-{}'.format(self.config.sdk.replace('ubuntu-sdk-', ''), self.build_arch)
+                    if self.config.use_nvidia:
+                        self.docker_image += '-nvidia'
+                        self.check_command('nvidia-docker')
 
-                if os.path.exists('.clickable/name.txt'):
-                    with open('.clickable/name.txt', 'r') as f:
-                        self.docker_image = f.read().strip()
+                    self.base_docker_image = self.docker_image
+
+                    if os.path.exists('.clickable/name.txt'):
+                        with open('.clickable/name.txt', 'r') as f:
+                            self.docker_image = f.read().strip()
+
+                print_info('Using docker container "{}"'.format(self.base_docker_image))
 
     def check_command(self, command):
         error_code = run_subprocess_call(shlex.split('which {}'.format(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -231,50 +238,53 @@ class Clickable(object):
             else:  # Docker
                 self.check_docker()
 
-                dependencies = ''
-                for dep in self.config.dependencies:
-                    if self.config.arch == 'armhf' and 'armhf' not in dep and not self.config.specificDependencies:
-                        dependencies = '{} {}:{}'.format(dependencies, dep, self.config.arch)
-                    else:
-                        dependencies = '{} {}'.format(dependencies, dep)
+                if self.config.docker_image:
+                    print_info('Skipping dependency check, using a custom docker image')
+                else:
+                    dependencies = ''
+                    for dep in self.config.dependencies:
+                        if self.config.arch == 'armhf' and 'armhf' not in dep and not self.config.specificDependencies:
+                            dependencies = '{} {}:{}'.format(dependencies, dep, self.config.arch)
+                        else:
+                            dependencies = '{} {}'.format(dependencies, dep)
 
-                dockerfile = '''
+                    dockerfile = '''
 FROM {}
 RUN echo set debconf/frontend Noninteractive | debconf-communicate && echo set debconf/priority critical | debconf-communicate
 RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} && apt-get clean
-                '''.format(
-                    self.base_docker_image,
-                    dependencies
-                ).strip()
+                    '''.format(
+                        self.base_docker_image,
+                        dependencies
+                    ).strip()
 
-                build = False
+                    build = False
 
-                if not os.path.exists('.clickable'):
-                    os.makedirs('.clickable')
+                    if not os.path.exists('.clickable'):
+                        os.makedirs('.clickable')
 
-                if os.path.exists('.clickable/Dockerfile'):
-                    with open('.clickable/Dockerfile', 'r') as f:
-                        if dockerfile.strip() != f.read().strip():
-                            build = True
-                else:
-                    build = True
+                    if os.path.exists('.clickable/Dockerfile'):
+                        with open('.clickable/Dockerfile', 'r') as f:
+                            if dockerfile.strip() != f.read().strip():
+                                build = True
+                    else:
+                        build = True
 
-                if build:
-                    with open('.clickable/Dockerfile', 'w') as f:
-                        f.write(dockerfile)
+                    if build:
+                        with open('.clickable/Dockerfile', 'w') as f:
+                            f.write(dockerfile)
 
-                    self.docker_image = '{}-{}'.format(self.base_docker_image, uuid.uuid4())
-                    with open('.clickable/name.txt', 'w') as f:
-                        f.write(self.docker_image)
+                        self.docker_image = '{}-{}'.format(self.base_docker_image, uuid.uuid4())
+                        with open('.clickable/name.txt', 'w') as f:
+                            f.write(self.docker_image)
 
-                    print_info('Generating new docker image')
-                    try:
-                        subprocess.check_call(shlex.split('docker build -t {} .'.format(self.docker_image)), cwd='.clickable')
-                    except subprocess.CalledProcessError:
-                        self.clean_clickable()
-                        raise
-                else:
-                    print_info('Dependencies already setup')
+                        print_info('Generating new docker image')
+                        try:
+                            subprocess.check_call(shlex.split('docker build -t {} .'.format(self.docker_image)), cwd='.clickable')
+                        except subprocess.CalledProcessError:
+                            self.clean_clickable()
+                            raise
+                    else:
+                        print_info('Dependencies already setup')
 
     def start_docker(self):
         started = False

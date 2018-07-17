@@ -1,3 +1,10 @@
+clickable (4.4.0) unstable; urgency=medium
+
+  * Added configuration option for using a custom docker image
+  * Detect when using container mode on an arm device and use the correct qmake command
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Tue, 17 Jul 2018 12:15:00 -0500
+
 clickable (4.3.5) unstable; urgency=medium
 
   * Fixed packaging issues
