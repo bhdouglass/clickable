@@ -23,6 +23,7 @@ Using Clickable
     clickable-json
     app-templates
     build-templates
+    continuous-integration
 
 Install Via PPA (Ubuntu)
 ------------------------
