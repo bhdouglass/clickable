@@ -32,7 +32,6 @@ function publish {
 # TODO get the launchpad build working for precise/trusty/xenial
 #publish precise
 #publish trusty
-#publish xenial
-publish artful
+publish xenial
 #publish bionic
 #publish cosmic
