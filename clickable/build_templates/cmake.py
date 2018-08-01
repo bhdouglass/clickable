@@ -8,6 +8,11 @@ class CMakeClickable(MakeClickable):
         self.run_container_command('make DESTDIR={} install'.format(self.temp))
 
     def _build(self):
-        self.run_container_command('cmake {}'.format(self.cwd))
+        command = 'cmake'
+
+        if self.config.conf_opts:
+            command = '{} {}'.format(command, self.config.conf_opts)
+
+        self.run_container_command('{} {}'.format(command, self.cwd))
 
         super(CMakeClickable, self)._build()
