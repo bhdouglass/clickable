@@ -35,6 +35,7 @@ OPENSTORE_API_PATH = '/api/v3/manage/{}/revision'
 
 class Clickable(object):
     cwd = None
+    first_docker_info = True
 
     def __init__(self, config, device_serial_number=None, click_output=None):
         self.cwd = os.getcwd()
@@ -90,8 +91,6 @@ class Clickable(object):
                     if os.path.exists('.clickable/name.txt'):
                         with open('.clickable/name.txt', 'r') as f:
                             self.docker_image = f.read().strip()
-
-                print_info('Using docker container "{}"'.format(self.base_docker_image))
 
     def check_command(self, command):
         error_code = run_subprocess_call(shlex.split('which {}'.format(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -186,6 +185,10 @@ class Clickable(object):
             wrapped_command = 'click chroot -a {} -f {} {} bash -c "{}"'.format(self.build_arch, self.config.sdk, chroot_command, command)
         else:  # Docker
             self.check_docker()
+
+            if self.first_docker_info:
+                print_info('Using docker container "{}"'.format(self.base_docker_image))
+                self.first_docker_info = False
 
             go_config = ''
             if self.config.gopath:
