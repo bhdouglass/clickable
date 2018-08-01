@@ -20,8 +20,8 @@ class QMakeClickable(MakeClickable):
         else:
             raise Exception('{} is not supported by the qmake build yet'.format(self.build_arch))
 
-        if self.config.conf_opts:
-            command = '{} {}'.format(command, self.config.conf_opts)
+        if self.config.build_args:
+            command = '{} {}'.format(command, self.config.build_args)
 
         self.run_container_command('{} {}'.format(command, self.cwd))
 

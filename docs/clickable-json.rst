@@ -163,3 +163,8 @@ gopath
 ------
 
 Optional, the gopath on the host machine. If left blank, the ``GOPATH`` env var will be used.
+
+build_args
+----------
+
+Optional, arguments to pass to qmake or cmake. Ex: ``CONFIG+=ubuntu``
