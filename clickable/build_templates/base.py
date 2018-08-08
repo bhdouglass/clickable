@@ -552,7 +552,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
         if self.config.use_nvidia:
             volumes += ' -v /dev/snd/pcmC2D0c:/dev/snd/pcmC2D0c -v /dev/snd/controlC2:/dev/snd/controlC2 --device /dev/snd'
 
-        lib_path = os.path.join(self.temp, 'lib/x86_64-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64')
+        lib_path = os.path.join(self.temp, 'lib:lib/x86_64-linux-gnu:/usr/local/nvidia/lib:/usr/local/nvidia/lib64')
         path = '/usr/local/nvidia/bin:/bin:/usr/bin:{}:{}:{}'.format(
             os.path.join(self.temp, 'bin'),
             os.path.join(self.temp, 'lib/x86_64-linux-gnu/bin'),
