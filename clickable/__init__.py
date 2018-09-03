@@ -163,9 +163,9 @@ def main():
         help='Api key for the OpenStore',
     )
     parser.add_argument(
-        '--xenial',
+        '--vivid',
         action='store_true',
-        help='Shortcut for --sdk=16.04',
+        help='Shortcut for --sdk=15.04',
         default=False,
     )
 
@@ -200,7 +200,7 @@ def main():
             click_output=args.output,
             container_mode=args.container_mode,
             desktop=args.desktop,
-            sdk='16.04' if args.xenial else args.sdk,
+            sdk='15.04' if args.vivid else args.sdk,
             use_nvidia=args.nvidia,
             apikey=args.apikey,
         )

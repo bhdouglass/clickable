@@ -14,7 +14,7 @@ class Config(object):
     config = {
         'package': None,
         'app': None,
-        'sdk': 'ubuntu-sdk-15.04',
+        'sdk': 'ubuntu-sdk-16.04',
         'arch': 'armhf',
         'template': None,
         'premake': None,

@@ -8,7 +8,6 @@ Getting Started
 * Provide all the needed information about your new app.
 * When the app has finished generating, enter the newly created directory containing your app.
 * Run ``clickable`` to compile your app and install it on your phone.
-* Run ``clickable --xenial`` to compile your app for Xenial (Ubuntu Touch 16.04) and install it on your phone.
 
 Getting Logs
 ------------
@@ -63,6 +62,3 @@ your api key you need to let Clickable know about it. You can either pass it
 as an argument every time: ``clickable publish --apikey XYZ`` Or you can set it
 as an environment variable: ``export OPENSTORE_API_KEY=XYZ`` (you can add this
 to your ``~/.bashrc`` to keep it set).
-
-Publishing for Xenial is just as easy, just run ``clickable publish --xenial``
-with your api key setup like above.

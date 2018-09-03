@@ -26,12 +26,12 @@ To implement this in your own repository, create a ``.gitlab-ci.yml``:
     build_vivid:
       image: clickable/ci-15.04-armhf
       script:
-      - clickable clean build click-build review publish
+      - clickable --vivid clean build click-build review publish
 
     build_xenial:
       image: clickable/ci-16.04-armhf
       script:
-      - clickable --xenial clean build click-build review publish
+      - clickable clean build click-build review publish
 
 After that's setup, the last step is to add the environment variable
 ``OPENSTORE_API_KEY`` to your GitLab project (You can find your OpenStore
