@@ -103,13 +103,6 @@ Optional, an object detailing custom commands to run. For example:
 
 To run the command on the device use the ``--device`` argument ( ex: ``clickable test --device`` ).
 
-chroot
-------
-
-Optional, whether or not to use a chroot to build the app. Default is to use
-docker to build the app. Chroots are deprecated and their support will be removed
-in a future version of clickable.
-
 lxd
 ---
 

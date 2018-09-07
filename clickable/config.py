@@ -27,7 +27,6 @@ class Config(object):
         'ssh': False,
         'kill': None,
         'scripts': {},
-        'chroot': False,
         'lxd': False,
         'default': 'kill clean build click-build install launch',
         'log': None,
@@ -51,6 +50,7 @@ class Config(object):
     GO = 'go'
 
     required = ['sdk', 'arch', 'dir']
+    depricated = ['chroot']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO]
 
     def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False, sdk=None, use_nvidia=False, apikey=None):
@@ -140,6 +140,10 @@ class Config(object):
                     config_json = json.load(f)
                 except ValueError:
                     raise ValueError('Failed reading "{}", it is not valid json'.format(file))
+
+                for key in self.depricated:
+                    if key in config_json:
+                        raise ValueError('"{}" is a no longer a valid configuration option'.format(key))
 
                 for key in self.config:
                     value = config_json.get(key, None)

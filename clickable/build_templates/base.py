@@ -68,10 +68,7 @@ class Clickable(object):
             del os.environ['SNAP']
 
         if not self.config.container_mode:
-            if self.config.chroot:
-                print_warning('Use of chroots are deprecated and will be removed in a future version')
-                self.check_command('click')
-            elif self.config.lxd:
+            if self.config.lxd:
                 print_warning('Use of lxd is deprecated and will be removed in a future version')
                 self.check_command('usdk-target')
             else:
@@ -177,12 +174,6 @@ class Clickable(object):
                 command = 'cd {}; {}'.format(self.config.dir, command)
 
             wrapped_command = 'usdk-target {} clickable-{} -- bash -c "{}"'.format(target_command, self.build_arch, command)
-        elif self.config.chroot:
-            chroot_command = 'run'
-            if sudo:
-                chroot_command = 'maint'
-
-            wrapped_command = 'click chroot -a {} -f {} {} bash -c "{}"'.format(self.build_arch, self.config.sdk, chroot_command, command)
         else:  # Docker
             self.check_docker()
 
@@ -220,7 +211,7 @@ class Clickable(object):
         if len(self.config.dependencies) > 0:
             print_info('Checking dependencies')
 
-            if self.config.lxd or self.config.chroot or self.config.container_mode:
+            if self.config.lxd or self.config.container_mode:
                 command = 'apt-get install -y --force-yes'
                 run = False
                 for dep in self.config.dependencies:
@@ -415,11 +406,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
     def click_build(self):
         command = 'click build {} --no-validate'.format(os.path.dirname(self.find_manifest()))
 
-        if self.config.chroot:
-            subprocess.check_call(shlex.split(command), cwd=self.config.dir)
-        else:
-            # Run this in the container so the host doesn't need to have click installed
-            self.run_container_command(command)
+        self.run_container_command(command)
 
         if self.config.click_output:
             click = '{}_{}_{}.click'.format(self.find_package_name(), self.find_version(), self.config.arch)
