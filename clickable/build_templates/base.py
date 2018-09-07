@@ -186,6 +186,9 @@ class Clickable(object):
         else:  # Docker
             self.check_docker()
 
+            if ' ' in cwd or ' ' in self.config.dir:
+                raise Exception('There are spaces in the current path, this will cause errors in the build process')
+
             if self.first_docker_info:
                 print_info('Using docker container "{}"'.format(self.base_docker_image))
                 self.first_docker_info = False
