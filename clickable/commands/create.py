@@ -38,9 +38,9 @@ APP_TEMPLATES = [
 ]
 
 
-class InitCommand(Command):
-    aliases = []
-    name = 'init'
+class CreateCommand(Command):
+    aliases = ['init']
+    name = 'create'
     help = 'Generate a new app from a list of app template options'
 
     def run(self, path_arg=None):

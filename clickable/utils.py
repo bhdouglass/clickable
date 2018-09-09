@@ -5,6 +5,8 @@ import os
 import shlex
 
 
+# TODO use these subprocess functions everywhere
+
 def run_subprocess_call(cmd, **args):
     if isinstance(cmd, str):
         cmd = cmd.encode()
