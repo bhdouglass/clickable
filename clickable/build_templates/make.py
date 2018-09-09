@@ -3,11 +3,12 @@ import shutil
 import sys
 import os
 
-from .base import Clickable
+from .base import Builder
 from clickable.utils import print_warning
+from clickable.config import Config
 
 
-class MakeClickable(Clickable):
+class MakeBuilder(Builder):
     def pre_make(self):
         if self.config.premake:
             subprocess.check_call(self.config.premake, cwd=self.config.dir, shell=True)
@@ -21,22 +22,22 @@ class MakeClickable(Clickable):
         if self.config.make_jobs:
             command = '{}{}'.format(command, self.config.make_jobs)
 
-        self.run_container_command(command)
+        self.container.run_command(command)
 
     def make_install(self):
-        if os.path.exists(self.temp) and os.path.isdir(self.temp):
-            shutil.rmtree(self.temp)
+        if os.path.exists(self.config.temp) and os.path.isdir(self.config.temp):
+            shutil.rmtree(self.config.temp)
 
         try:
-            os.makedirs(self.temp)
+            os.makedirs(self.config.temp)
         except FileExistsError:
             print_warning('Failed to create temp dir, already exists')
         except Exception:
-            print_warning('Failed to create temp dir ({}): {}'.format(self.temp, str(sys.exc_info()[0])))
+            print_warning('Failed to create temp dir ({}): {}'.format(self.config.temp, str(sys.exc_info()[0])))
 
         # The actual make command is implemented in the subclasses
 
-    def _build(self):
+    def build(self):
         self.pre_make()
         self.make()
         self.post_make()

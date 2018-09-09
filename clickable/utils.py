@@ -2,6 +2,10 @@ import itertools
 import subprocess
 import json
 import os
+import shlex
+
+
+# TODO make this into different classes, Print, Subprocess, Device, etc
 
 
 def run_subprocess_call(cmd, **args):
@@ -94,3 +98,60 @@ def get_manifest(cwd, temp_dir=None, build_dir=None):
             raise ValueError('Failed reading "manifest.json", it is not valid json')
 
     return manifest
+
+
+def detect_devices():
+    output = run_subprocess_check_output(shlex.split('adb devices -l')).strip()
+    devices = []
+    for line in output.split('\n'):
+        if 'device' in line and 'devices' not in line:
+            device = line.split(' ')[0]
+            for part in line.split(' '):
+                if part.startswith('model:'):
+                    device = '{} - {}'.format(device, part.replace('model:', '').replace('_', ' ').strip())
+
+            devices.append(device)
+
+    return devices
+
+
+def check_any_devices():
+    devices = detect_devices()
+    if len(devices) == 0:
+        raise Exception('No devices available via adb')
+
+
+def check_multiple_devices(device_serial_number):
+    devices = detect_devices()
+    if len(devices) > 1 and not device_serial_number:
+        raise Exception('Multiple devices detected via adb')
+
+
+def run_device_command(command, config, cwd=None):
+    if config.container_mode:
+        print_warning('Skipping device command, running in container mode')
+        return
+
+    if not cwd:
+        cwd = config.dir
+
+    wrapped_command = ''
+    if config.ssh:
+        wrapped_command = 'echo "{}" | ssh phablet@{}'.format(command, config.ssh)
+    else:
+        check_any_devices()
+
+        if config.device_serial_number:
+            wrapped_command = 'adb -s {} shell "{}"'.format(config.device_serial_number, command)
+        else:
+            check_multiple_devices(config.device_serial_number)
+            wrapped_command = 'adb shell "{}"'.format(command)
+
+    subprocess.check_call(wrapped_command, cwd=cwd, shell=True)
+
+
+def check_command(command):
+    error_code = run_subprocess_call(shlex.split('which {}'.format(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    if error_code != 0:
+        raise Exception('The command "{}" does not exist on this system, please install it for clickable to work properly"'.format(command))

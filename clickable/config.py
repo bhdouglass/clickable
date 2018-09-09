@@ -6,7 +6,8 @@ from clickable.utils import (
     print_info,
     print_warning,
     ManifestNotFoundException,
-    get_manifest
+    find_manifest,
+    get_manifest,
 )
 
 
@@ -28,7 +29,7 @@ class Config(object):
         'kill': None,
         'scripts': {},
         'lxd': False,
-        'default': 'kill clean build click-build install launch',
+        'default': 'clean build click-build install launch',
         'log': None,
         'specificDependencies': False,  # TODO make this less confusing
         'dependencies': [],
@@ -53,11 +54,18 @@ class Config(object):
     depricated = ['chroot']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO]
 
-    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False, sdk=None, use_nvidia=False, apikey=None):
+    first_docker_info = True
+
+    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False, sdk=None, use_nvidia=False, apikey=None, device_serial_number=None):
         self.skip_detection = skip_detection
         self.click_output = click_output
         self.desktop = desktop
         self.use_nvidia = use_nvidia
+
+        self.device_serial_number = device_serial_number
+        if type(self.device_serial_number) == list and len(self.device_serial_number) > 0:
+            self.device_serial_number = self.device_serial_number[0]
+
         self.cwd = os.getcwd()
         self.load_config()
 
@@ -126,11 +134,16 @@ class Config(object):
         if type(self.default) == list:
             self.default = ' '.join(self.default)
 
+        self.temp = os.path.join(self.config['dir'], 'tmp')
+
     def __getattr__(self, name):
         return self.config[name]
 
     def __setattr__(self, name, value):
-        self.config[name] = value
+        if name in self.config:
+            self.config[name] = value
+        else:
+            super().__setattr__(name, value)
 
     def load_config(self, file='clickable.json'):
         if os.path.isfile(os.path.join(self.cwd, file)):
@@ -194,3 +207,43 @@ class Config(object):
 
             self.template = template
             print_info('Auto detected template to be "{}"'.format(template))
+
+    def find_manifest(self):
+        return find_manifest(self.cwd, self.temp, self.config['dir'])
+
+    def get_manifest(self):
+        return get_manifest(self.cwd, self.temp, self.config['dir'])
+
+    def find_version(self):
+        return self.get_manifest().get('version', '1.0')
+
+    def find_package_name(self):
+        package = self.config['package']
+
+        if not package:
+            package = self.get_manifest().get('name', None)
+
+        if not package:
+            raise ValueError('No package name specified in manifest.json or clickable.json')
+
+        return package
+
+    def find_app_name(self):
+        app = self.config['app']
+
+        if not app:
+            hooks = self.get_manifest().get('hooks', {})
+            for key, value in hooks.items():
+                if 'desktop' in value:
+                    app = key
+                    break
+
+            if not app:  # If we don't find an app with a desktop file just find the first one
+                apps = list(hooks.keys())
+                if len(apps) > 0:
+                    app = apps[0]
+
+        if not app:
+            raise ValueError('No app name specified in manifest.json or clickable.json')
+
+        return app

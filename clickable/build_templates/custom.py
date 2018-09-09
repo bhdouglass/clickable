@@ -1,6 +1,9 @@
-from .base import Clickable
+from .base import Builder
+from clickable.config import Config
 
 
-class CustomClickable(Clickable):
-    def _build(self):
-        self.run_container_command(self.config.build)
+class CustomBuilder(Builder):
+    name = Config.CUSTOM
+
+    def build(self):
+        self.container.run_command(self.config.build)

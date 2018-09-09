@@ -1,13 +1,16 @@
-from .make import MakeClickable
+from .make import MakeBuilder
+from clickable.config import Config
 
 
-class QMakeClickable(MakeClickable):
+class QMakeBuilder(MakeBuilder):
+    name = Config.QMAKE
+
     def make_install(self):
-        super(QMakeClickable, self).make_install()
+        super().make_install()
 
-        self.run_container_command('make INSTALL_ROOT={} install'.format(self.temp))
+        self.container.run_command('make INSTALL_ROOT={} install'.format(self.config.temp))
 
-    def _build(self):
+    def build(self):
         command = None
 
         if self.build_arch == 'armhf':
@@ -23,6 +26,6 @@ class QMakeClickable(MakeClickable):
         if self.config.build_args:
             command = '{} {}'.format(command, self.config.build_args)
 
-        self.run_container_command('{} {}'.format(command, self.cwd))
+        self.container.run_command('{} {}'.format(command, self.config.cwd))
 
-        super(QMakeClickable, self)._build()
+        super().build()

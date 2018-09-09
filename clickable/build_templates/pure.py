@@ -2,18 +2,19 @@ import json
 import shutil
 import os
 
-from .base import Clickable
-from .make import MakeClickable
-from .cmake import CMakeClickable
-from .qmake import QMakeClickable
+from .base import Builder
+from .make import MakeBuilder
+from .cmake import CMakeBuilder
+from .qmake import QMakeBuilder
 from clickable.utils import print_info, find_manifest
+from clickable.config import Config
 
 
-class PureQMLMakeClickable(MakeClickable):
+class PureQMLMakeBuilder(MakeBuilder):
     def post_make(self):
-        super(PureQMLMakeClickable, self).post_make()
+        super().post_make()
 
-        with open(self.find_manifest(), 'r') as f:
+        with open(self.config.find_manifest(), 'r') as f:
             manifest = {}
             try:
                 manifest = json.load(f)
@@ -21,39 +22,41 @@ class PureQMLMakeClickable(MakeClickable):
                 raise ValueError('Failed reading "manifest.json", it is not valid json')
 
             manifest['architecture'] = 'all'
-            with open(self.find_manifest(), 'w') as writer:
+            with open(self.config.find_manifest(), 'w') as writer:
                 json.dump(manifest, writer, indent=4)
 
 
-class PureQMLQMakeClickable(PureQMLMakeClickable, QMakeClickable):
-    pass
+class PureQMLQMakeBuilder(PureQMLMakeBuilder, QMakeBuilder):
+    name = Config.PURE_QML_QMAKE
 
 
-class PureQMLCMakeClickable(PureQMLMakeClickable, CMakeClickable):
-    pass
+class PureQMLCMakeBuilder(PureQMLMakeBuilder, CMakeBuilder):
+    name = Config.PURE_QML_CMAKE
 
 
-class PureClickable(Clickable):
+class PureBuilder(Builder):
+    name = Config.PURE
+
     def _ignore(self, path, contents):
         ignored = []
         for content in contents:
             cpath = os.path.abspath(os.path.join(path, content))
             # TODO ignore version control directories by default
             if (
-                cpath == os.path.abspath(self.temp) or
+                cpath == os.path.abspath(self.config.temp) or
                 cpath == os.path.abspath(self.config.dir) or
                 content in self.config.ignore or
-                content == 'clickable.json'
+                content == 'Builder.json'
             ):
                 ignored.append(content)
 
         return ignored
 
-    def _build(self):
-        shutil.copytree(self.cwd, self.temp, ignore=self._ignore)
+    def build(self):
+        shutil.copytree(self.config.cwd, self.config.temp, ignore=self._ignore)
         print_info('Copied files to temp directory for click building')
 
 
-class PythonClickable(PureClickable):
+class PythonBuilder(PureBuilder):
     # The only difference between this and the Pure template is that this doesn't force the "all" arch
-    pass
+    name = Config.PYTHON
