@@ -2,30 +2,19 @@ import os
 import json
 import platform
 
-from clickable.utils import (
-    print_info,
-    print_warning,
-    ManifestNotFoundException,
-    find_manifest,
-    get_manifest,
-)
+from .utils import find_manifest, get_manifest, env
 
 
 class Config(object):
     config = {
-        'package': None,
-        'app': None,
-        'sdk': 'ubuntu-sdk-16.04',
         'arch': 'armhf',
         'template': None,
-        'premake': None,
         'postmake': None,
         'prebuild': None,
         'build': None,
         'postbuild': None,
         'launch': None,
         'dir': './build/',
-        'ssh': False,
         'kill': None,
         'scripts': {},
         'lxd': False,
@@ -40,6 +29,18 @@ class Config(object):
         'build_args': None,
     }
 
+    ENV_MAP = {
+        'CLICKABLE_ARCH': 'arch',
+        'CLICKABLE_TEMPLATE': 'template',
+        'CLICKABLE_DIR': 'dir',
+        'CLICKABLE_LXD': 'lxd',
+        'CLICKABLE_DEFAULT': 'default',
+        'CLICKABLE_MAKE_JOBS': 'make_jobs',
+        'GOPATH': 'gopath',
+        'CLICKABLE_DOCKER_IMAGE': 'docker_image',
+        'CLICKABLE_BUILD_ARGS': 'build_args',
+    }
+
     PURE_QML_QMAKE = 'pure-qml-qmake'
     QMAKE = 'qmake'
     PURE_QML_CMAKE = 'pure-qml-cmake'
@@ -50,91 +51,63 @@ class Config(object):
     PYTHON = 'python'
     GO = 'go'
 
-    required = ['sdk', 'arch', 'dir']
-    depricated = ['chroot']
+    required = ['arch', 'dir', 'docker_image']
+    depricated = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO]
 
     first_docker_info = True
+    device_serial_number = None
+    ssh = None
+    click_output = None
+    container_mode = False
+    use_nvidia = False
+    apikey = None
+    is_xenial = True
 
-    def __init__(self, ip=None, arch=None, template=None, skip_detection=False, lxd=False, click_output=None, container_mode=False, desktop=False, sdk=None, use_nvidia=False, apikey=None, device_serial_number=None):
+    def __init__(self, args, desktop=False, skip_detection=False):
         self.skip_detection = skip_detection
-        self.click_output = click_output
         self.desktop = desktop
-        self.use_nvidia = use_nvidia
-
-        self.device_serial_number = device_serial_number
-        if type(self.device_serial_number) == list and len(self.device_serial_number) > 0:
-            self.device_serial_number = self.device_serial_number[0]
 
         self.cwd = os.getcwd()
-        self.load_config()
 
-        self.apikey = apikey
-        if not self.apikey and 'OPENSTORE_API_KEY' in os.environ and os.environ['OPENSTORE_API_KEY']:
-            self.apikey = os.environ['OPENSTORE_API_KEY']
+        json_config = self.load_json_config()
+        self.config.update(json_config)
+        env_config = self.load_env_config()
+        self.config.update(env_config)
+        arg_config = self.load_arg_config(args)
+        self.config.update(arg_config)
 
-        self.container_mode = container_mode
-        if 'CLICKABLE_CONTAINER_MODE' in os.environ and os.environ['CLICKABLE_CONTAINER_MODE']:
-            self.container_mode = True
-
-        if ip:
-            self.ssh = ip
-
-        if self.desktop:
-            self.arch = 'amd64'
-        elif arch:
-            self.arch = arch
+        self.cleanup_config()
 
         self.host_arch = platform.machine()
         self.is_arm = self.host_arch.startswith('arm')
 
-        if template:
-            self.template = template
-
-        if lxd:
-            self.lxd = lxd
-
-        if sdk:
-            self.sdk = sdk
-
-        self.is_xenial = ('16.04' in self.sdk)
-
-        if not self.gopath and 'GOPATH' in os.environ and os.environ['GOPATH']:
-            self.gopath = os.environ['GOPATH']
-
         if skip_detection:
             if not template:
-                self.template = self.PURE
+                self.config['template'] = self.PURE
         else:
             self.detect_template()
 
-        if not self.kill:
-            if self.template == self.CORDOVA:
-                self.kill = 'cordova-ubuntu'
-            elif self.template == self.PURE_QML_CMAKE or self.template == self.PURE_QML_QMAKE or self.template == self.PURE:
-                self.kill = 'qmlscene'
-            else:
-                # TODO grab app name from manifest
-                self.kill = self.app
-
-        if self.template == self.PURE_QML_CMAKE or self.template == self.PURE_QML_QMAKE or self.template == self.PURE:
-            self.arch = 'all'
-
-        if self.template == self.CUSTOM and not self.build:
-            raise ValueError('When using the "custom" template you must specify a "build" in the config')
-        if self.template == self.GO and not self.gopath:
-            raise ValueError('When using the "go" template you must specify a "gopath" in the config or use the "GOPATH" env variable')
-
-        if self.template not in self.templates:
-            raise ValueError('"{}" is not a valid template ({})'.format(self.template, ', '.join(self.templates)))
-
-        if isinstance(self.dependencies, (str, bytes)):
-            self.dependencies = self.dependencies.split(' ')
-
-        if type(self.default) == list:
-            self.default = ' '.join(self.default)
-
         self.temp = os.path.join(self.config['dir'], 'tmp')
+
+        self.build_arch = self.config['arch']
+        if self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE:
+            self.build_arch = 'armhf'
+
+        if self.config['arch'] == 'all':
+            self.build_arch = 'armhf'
+
+        if self.desktop:
+            self.build_arch = 'amd64'
+
+        if not self.config['docker_image']:
+            if self.is_xenial:
+                self.config['docker_image'] = 'clickable/ubuntu-sdk:16.04-{}'.format(self.build_arch)
+            else:
+                self.config['docker_image'] = 'clickable/ubuntu-sdk:15.04-{}'.format(self.config['arch'])
+
+        self.check_config_errors()
+
 
     def __getattr__(self, name):
         return self.config[name]
@@ -145,14 +118,15 @@ class Config(object):
         else:
             super().__setattr__(name, value)
 
-    def load_config(self, file='clickable.json'):
-        if os.path.isfile(os.path.join(self.cwd, file)):
-            with open(os.path.join(self.cwd, file), 'r') as f:
+    def load_json_config(self):
+        config = {}
+        if os.path.isfile(os.path.join(self.cwd, 'clickable.json')):
+            with open(os.path.join(self.cwd, 'clickable.json'), 'r') as f:
                 config_json = {}
                 try:
                     config_json = json.load(f)
                 except ValueError:
-                    raise ValueError('Failed reading "{}", it is not valid json'.format(file))
+                    raise ValueError('Failed reading "clickable.json", it is not valid json')
 
                 for key in self.depricated:
                     if key in config_json:
@@ -162,19 +136,95 @@ class Config(object):
                     value = config_json.get(key, None)
 
                     if value:
-                        self.config[key] = value
+                        config[key] = value
         else:
             if not self.skip_detection:
                 print_warning('No clickable.json was found, using defaults and cli args')
 
+        return config
+
+    def load_env_config(self):
+        if env('OPENSTORE_API_KEY'):
+            self.apikey = env('OPENSTORE_API_KEY')
+
+        if env('CLICKABLE_CONTAINER_MODE'):
+            self.container_mode = True
+
+        if env('CLICKABLE_SERIAL_NUMBER'):
+            self.device_serial_number = env('CLICKABLE_SERIAL_NUMBER')
+
+        if env('CLICKABLE_SSH'):
+            self.ssh = env('CLICKABLE_SSH')
+
+        if env('CLICKABLE_OUTPUT'):
+            self.click_output = env('CLICKABLE_OUTPUT')
+
+        if env('CLICKABLE_NVIDIA'):
+            self.use_nvidia = True
+
+        if env('CLICKABLE_VIVID'):
+            self.is_xenial = False
+
+        config = {}
+        for var, name in self.ENV_MAP.items():
+            if env(var):
+                config[name] = env(var)
+
+        return config
+
+    def load_arg_config(self, args):
+        self.device_serial_number = args.serial_number
+        self.ssh = args.ssh
+        self.click_output = args.output
+        self.container_mode = args.container_mode
+        self.use_nvidia = args.nvidia
+        self.apikey = args.apikey
+        self.is_xenial = not args.vivid
+
+        config = {}
+        if args.arch:
+            config['arch'] = args.arch
+
+        if args.lxd:
+            config['lxd'] = args.lxd
+
+        return config
+
+    def cleanup_config(self):
+        if self.desktop:
+            self.config['arch'] = 'amd64'
+        elif self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE:
+            self.arch = 'all'
+
+        self.config['dir'] = os.path.abspath(self.config['dir'])
+
+        if not self.config['kill']:
+            if self.config['template'] == self.CORDOVA:
+                self.config['kill'] = 'cordova-ubuntu'
+            elif self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE:
+                self.config['kill'] = 'qmlscene'
+
+        if isinstance(self.config['dependencies'], (str, bytes)):
+            self.config['dependencies'] = self.config['dependencies'].split(' ')
+
+        if type(self.config['default']) == list:
+            self.config['default'] = ' '.join(self.config['default'])
+
+    def check_config_errors(self):
+        if self.config['template'] == self.CUSTOM and not self.config['build']:
+            raise ValueError('When using the "custom" template you must specify a "build" in the config')
+        if self.config['template'] == self.GO and not self.config['gopath']:
+            raise ValueError('When using the "go" template you must specify a "gopath" in the config or use the "GOPATH" env variable')
+
+        if self.config['template'] not in self.templates:
+            raise ValueError('"{}" is not a valid template ({})'.format(self.config['template'], ', '.join(self.templates)))
+
         for key in self.required:
-            if not getattr(self, key):
+            if key not in self.config:
                 raise ValueError('"{}" is empty in the config file'.format(key))
 
-        self.dir = os.path.abspath(self.dir)
-
     def detect_template(self):
-        if not self.template:
+        if not self.config['template']:
             template = None
 
             try:
@@ -205,7 +255,7 @@ class Config(object):
             if not template:
                 template = Config.PURE
 
-            self.template = template
+            self.config['template'] = template
             print_info('Auto detected template to be "{}"'.format(template))
 
     def find_manifest(self):
@@ -218,30 +268,24 @@ class Config(object):
         return self.get_manifest().get('version', '1.0')
 
     def find_package_name(self):
-        package = self.config['package']
-
-        if not package:
-            package = self.get_manifest().get('name', None)
-
+        package = self.get_manifest().get('name', None)
         if not package:
             raise ValueError('No package name specified in manifest.json or clickable.json')
 
         return package
 
     def find_app_name(self):
-        app = self.config['app']
+        app = None
+        hooks = self.get_manifest().get('hooks', {})
+        for key, value in hooks.items():
+            if 'desktop' in value:
+                app = key
+                break
 
-        if not app:
-            hooks = self.get_manifest().get('hooks', {})
-            for key, value in hooks.items():
-                if 'desktop' in value:
-                    app = key
-                    break
-
-            if not app:  # If we don't find an app with a desktop file just find the first one
-                apps = list(hooks.keys())
-                if len(apps) > 0:
-                    app = apps[0]
+        if not app:  # If we don't find an app with a desktop file just find the first one
+            apps = list(hooks.keys())
+            if len(apps) > 0:
+                app = apps[0]
 
         if not app:
             raise ValueError('No app name specified in manifest.json or clickable.json')

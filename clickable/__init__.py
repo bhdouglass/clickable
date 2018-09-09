@@ -63,25 +63,20 @@ def main():
                         version='%(prog)s ' + __version__)
     parser.add_argument('commands', nargs='*', help=show_valid_commands())
     parser.add_argument(
-        '--device-serial-number',
+        '--serial-number',
         '-s',
         help='Directs command to the device or emulator with the given serial number or qualifier (using adb)',
         default=None
     )
     parser.add_argument(
-        '--ip',
-        '-i',
-        help='Directs command to the device with the given IP address (using ssh)'
+        '--ssh',
+        help='Directs command to the device with the given IP address (using ssh)',
+        default=None
     )
     parser.add_argument(
         '--arch',
         '-a',
         help='Use the specified arch when building (ignores the setting in clickable.json)'
-    )
-    parser.add_argument(
-        '--template',
-        '-t',
-        help='Use the specified template when building (ignores the setting in clickable.json)'
     )
     parser.add_argument(
         '--debug',
@@ -106,11 +101,6 @@ def main():
         default=False,
     )
     parser.add_argument(
-        '--sdk',
-        '-k',
-        help='Use a specific version of the ubuntu sdk to compile against',
-    )
-    parser.add_argument(
         '--nvidia',
         action='store_true',
         help='Use nvidia-docker rather than docker',
@@ -123,7 +113,7 @@ def main():
     parser.add_argument(
         '--vivid',
         action='store_true',
-        help='Shortcut for --sdk=15.04',
+        help='Use the old vivid build container',
         default=False,
     )
 
@@ -135,20 +125,10 @@ def main():
             skip_detection = True
 
     try:
-        # TODO clean this up
         config = Config(
-            ip=args.ip,
-            arch=args.arch,
-            template=args.template,
+            args=args,
+            desktop=('desktop' in args.commands),
             skip_detection=skip_detection,
-            lxd=args.lxd,
-            click_output=args.output,
-            container_mode=args.container_mode,
-            desktop=('desktop' in args.commands),  # TODO clean
-            sdk='15.04' if args.vivid else args.sdk,
-            use_nvidia=args.nvidia,
-            apikey=args.apikey,
-            device_serial_number=args.device_serial_number,
         )
 
         VALID_COMMANDS = command_names + list(config.scripts.keys())

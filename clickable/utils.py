@@ -104,3 +104,11 @@ def check_command(command):
 
     if error_code != 0:
         raise Exception('The command "{}" does not exist on this system, please install it for clickable to work properly"'.format(command))
+
+
+def env(name):
+    value = None
+    if name in os.environ and os.environ[name]:
+        value = os.environ[name]
+
+    return value

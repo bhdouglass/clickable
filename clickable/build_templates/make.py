@@ -9,10 +9,6 @@ from clickable.config import Config
 
 
 class MakeBuilder(Builder):
-    def pre_make(self):
-        if self.config.premake:
-            subprocess.check_call(self.config.premake, cwd=self.config.dir, shell=True)
-
     def post_make(self):
         if self.config.postmake:
             subprocess.check_call(self.config.postmake, cwd=self.config.dir, shell=True)
@@ -38,7 +34,6 @@ class MakeBuilder(Builder):
         # The actual make command is implemented in the subclasses
 
     def build(self):
-        self.pre_make()
         self.make()
         self.post_make()
         self.make_install()

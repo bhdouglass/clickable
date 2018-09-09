@@ -17,17 +17,6 @@ class Container(object):
     def __init__(self, config):
         self.config = config
 
-        self.build_arch = self.config.arch
-        if self.config.template == self.config.PURE_QML_QMAKE or self.config.template == self.config.PURE_QML_CMAKE or self.config.template == self.config.PURE:
-            self.build_arch = 'armhf'
-            if self.config.desktop:
-                self.build_arch = 'amd64'
-
-        if self.config.arch == 'all':
-            self.build_arch = 'armhf'
-            if self.config.desktop:
-                self.build_arch = 'amd64'
-
         if not self.config.container_mode:
             if self.config.lxd:
                 print_warning('Use of lxd is deprecated and will be removed in a future version')
@@ -35,11 +24,10 @@ class Container(object):
             else:
                 check_command('docker')
 
-                if self.config.docker_image:
-                    self.docker_image = self.config.docker_image
-                    self.base_docker_image = self.docker_image
-                else:
-                    self.docker_image = 'clickable/ubuntu-sdk:{}-{}'.format(self.config.sdk.replace('ubuntu-sdk-', ''), self.build_arch)
+                self.docker_image = self.config.docker_image
+                self.base_docker_image = self.docker_image
+
+                if 'clickable/ubuntu-sdk' in self.docker_image:
                     if self.config.use_nvidia:
                         self.docker_image += '-nvidia'
                         check_command('nvidia-docker')
@@ -88,7 +76,7 @@ class Container(object):
         return started
 
     def check_lxd(self):
-        name = 'clickable-{}'.format(self.build_arch)
+        name = 'clickable-{}'.format(self.config.build_arch)
 
         status = ''
         try:
@@ -115,7 +103,7 @@ class Container(object):
             subprocess.check_call(shlex.split('lxc start {}'.format(name)))
 
     def lxd_container_exists(self):
-        name = 'clickable-{}'.format(self.build_arch)
+        name = 'clickable-{}'.format(self.config.build_arch)
 
         # Check for existing container
         existing = run_subprocess_check_output(shlex.split('{} list'.format(self.usdk_target)))
@@ -174,7 +162,7 @@ class Container(object):
             if use_dir:
                 command = 'cd {}; {}'.format(self.config.dir, command)
 
-            wrapped_command = 'usdk-target {} clickable-{} -- bash -c "{}"'.format(target_command, self.build_arch, command)
+            wrapped_command = 'usdk-target {} clickable-{} -- bash -c "{}"'.format(target_command, self.config.build_arch, command)
         else:  # Docker
             self.check_docker()
 
