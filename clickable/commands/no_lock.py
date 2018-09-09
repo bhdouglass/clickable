@@ -6,6 +6,7 @@ class NoLockCommand(Command):
     aliases = ['no_lock']
     name = 'no-lock'
     help = 'Turns off the device’s display timeout'
+    skip_auto_detect = True
 
     def run(self, path_arg=None):
         print_info('Turning off device activity timeout')

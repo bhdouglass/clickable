@@ -42,6 +42,7 @@ class CreateCommand(Command):
     aliases = ['init']
     name = 'create'
     help = 'Generate a new app from a list of app template options'
+    skip_auto_detect = True
 
     def run(self, path_arg=None):
         if not cookiecutter_available:

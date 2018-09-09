@@ -21,6 +21,7 @@ def main():
     command_names = []
     command_aliases = {}
     command_help = {}
+    command_skip_auto_detect = []
 
     command_dir = dirname(__file__)
     modules = glob.glob(join(command_dir, 'commands/*.py'))
@@ -29,7 +30,7 @@ def main():
     for name in command_modules:
         command_submodule = __import__('clickable.commands.{}'.format(name), globals(), locals(), [name])
         for name, cls in inspect.getmembers(command_submodule):
-            if inspect.isclass(cls) and issubclass(cls, Command) and cls != Command:
+            if inspect.isclass(cls) and issubclass(cls, Command) and cls != Command and cls.name not in command_classes:
                 command_classes[cls.name] = cls
                 command_names.append(cls.name)
                 if cls.help:
@@ -37,6 +38,9 @@ def main():
 
                 for alias in cls.aliases:
                     command_aliases[alias] = cls.name
+
+                if cls.skip_auto_detect:
+                    command_skip_auto_detect.append(cls.name)
 
     # TODO show the help text
     def show_valid_commands():
@@ -127,18 +131,7 @@ def main():
 
     skip_detection = False
     if len(args.commands) == 1:
-        # TODO make the a property on the command class
-        skip_commands = [
-            'setup-lxd',
-            'setup-docker',
-            'shell',
-            'no-lock',
-            'display-on',
-            'devices',
-            'init',
-        ]
-
-        if args.commands[0] in skip_commands:
+        if args.commands[0] in command_skip_auto_detect:
             skip_detection = True
 
     try:
@@ -151,7 +144,7 @@ def main():
             lxd=args.lxd,
             click_output=args.output,
             container_mode=args.container_mode,
-            desktop=('desktop' in args.commands), # TODO clean
+            desktop=('desktop' in args.commands),  # TODO clean
             sdk='15.04' if args.vivid else args.sdk,
             use_nvidia=args.nvidia,
             apikey=args.apikey,

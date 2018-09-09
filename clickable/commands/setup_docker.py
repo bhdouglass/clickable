@@ -10,6 +10,7 @@ class SetupDockerCommand(Command):
     aliases = ['setup_docker']
     name = 'setup-docker'
     help = 'Configure docker for use with clickable'
+    skip_auto_detect = True
 
     def run(self, path_arg=None):
         self.container.start_docker()

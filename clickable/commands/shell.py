@@ -10,6 +10,7 @@ class ShellCommand(Command):
     aliases = []
     name = 'shell'
     help = 'Opens a shell on the device via ssh'
+    skip_auto_detect = True
 
     def toggle_ssh(self, on=False):
         command = 'sudo -u phablet bash -c \'/usr/bin/gdbus call -y -d com.canonical.PropertyService -o /com/canonical/PropertyService -m com.canonical.PropertyService.SetProperty ssh {}\''.format(
