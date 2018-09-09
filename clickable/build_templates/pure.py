@@ -37,16 +37,19 @@ class PureQMLCMakeBuilder(PureQMLMakeBuilder, CMakeBuilder):
 class PureBuilder(Builder):
     name = Config.PURE
 
+    default_ignore = ['.git', '.bzr']
+
     def _ignore(self, path, contents):
         ignored = []
         for content in contents:
             cpath = os.path.abspath(os.path.join(path, content))
-            # TODO ignore version control directories by default
+
             if (
                 cpath == os.path.abspath(self.config.temp) or
                 cpath == os.path.abspath(self.config.dir) or
                 content in self.config.ignore or
-                content == 'Builder.json'
+                content == 'clickable.json' or
+                content in self.default_ignore
             ):
                 ignored.append(content)
 
