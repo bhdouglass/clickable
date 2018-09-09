@@ -1,8 +1,5 @@
 from .base import Command
-from clickable.utils import (
-    print_warning,
-    run_device_command,
-)
+from clickable.utils import print_warning
 
 
 class LaunchCommand(Command):
@@ -20,7 +17,7 @@ class LaunchCommand(Command):
 
         if self.config.kill:
             try:
-                run_device_command('pkill {}'.format(self.config.kill), self.config)
+                self.device.run_command('pkill {}'.format(self.config.kill))
             except Exception:
                 pass  # Nothing to do, the process probably wasn't running
 
@@ -38,4 +35,4 @@ class LaunchCommand(Command):
         if self.config.launch:
             launch = self.config.launch
 
-        run_device_command('sleep 1s && {}'.format(launch), self.config, cwd=cwd)
+        self.device.run_command('sleep 1s && {}'.format(launch), cwd=cwd)

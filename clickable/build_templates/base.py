@@ -4,17 +4,10 @@ from clickable.utils import check_command
 class Builder(object):
     name = None
 
-    def __init__(self, config, container):
+    def __init__(self, config, container, device):
         self.config = config
         self.container = container
-
-        # TODO move
-        if not self.config.container_mode:
-            if self.config.ssh:
-                check_command('ssh')
-                check_command('scp')
-            else:
-                check_command('adb')
+        self.device = device
 
     def build(self):
         raise NotImplementedError()

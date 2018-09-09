@@ -1,5 +1,5 @@
 from .base import Command
-from clickable.utils import print_info, run_device_command
+from clickable.utils import print_info
 
 
 class NoLockCommand(Command):
@@ -10,4 +10,4 @@ class NoLockCommand(Command):
     def run(self, path_arg=None):
         print_info('Turning off device activity timeout')
         command = 'gsettings set com.ubuntu.touch.system activity-timeout 0'
-        run_device_command(command, self.config, cwd=self.config.cwd)
+        self.device.run_command(command, cwd=self.config.cwd)

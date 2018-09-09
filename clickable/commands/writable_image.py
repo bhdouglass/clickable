@@ -1,5 +1,5 @@
 from .base import Command
-from clickable.utils import print_info, run_device_command
+from clickable.utils import print_info
 
 
 class WritableImageCommand(Command):
@@ -9,5 +9,5 @@ class WritableImageCommand(Command):
 
     def run(self, path_arg=None):
         command = 'dbus-send --system --print-reply --dest=com.canonical.PropertyService /com/canonical/PropertyService com.canonical.PropertyService.SetProperty string:writable boolean:true'
-        run_device_command(command, self.config, cwd=self.config.cwd)
+        self.device.run_command(commandw, cwd=self.config.cwd)
         print_info('Rebooting for writable image')

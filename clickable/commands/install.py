@@ -2,12 +2,7 @@ import os
 import subprocess
 
 from .base import Command
-from clickable.utils import (
-    check_any_devices,
-    run_device_command,
-    print_warning,
-    check_multiple_devices,
-)
+from clickable.utils import print_warning
 
 
 class InstallCommand(Command):
@@ -37,13 +32,13 @@ class InstallCommand(Command):
             subprocess.check_call(command, cwd=cwd, shell=True)
 
         else:
-            check_any_devices()
+            self.device.check_any_attached()
 
             if self.config.device_serial_number:
                 command = 'adb -s {} push {} /home/phablet/'.format(self.config.device_serial_number, click_path)
             else:
-                check_multiple_devices(self.config.device_serial_number)
+                self.device.check_multiple_attached()
                 command = 'adb push {} /home/phablet/'.format(click_path)
             subprocess.check_call(command, cwd=cwd, shell=True)
 
-        run_device_command('pkcon install-local --allow-untrusted /home/phablet/{}'.format(click), self.config, cwd=cwd)
+        self.device.run_command('pkcon install-local --allow-untrusted /home/phablet/{}'.format(click), cwd=cwd)

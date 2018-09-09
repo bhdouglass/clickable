@@ -43,5 +43,5 @@ class BuildCommand(Command):
                 if inspect.isclass(cls) and issubclass(cls, Builder) and cls.name:
                     builder_classes[cls.name] = cls
 
-        builder = builder_classes[self.config.template](self.config, self.container)
+        builder = builder_classes[self.config.template](self.config, self.container, self.device)
         builder.build()

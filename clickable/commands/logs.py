@@ -1,5 +1,5 @@
 from .base import Command
-from clickable.utils import print_warning, run_device_command
+from clickable.utils import print_warning
 
 
 class LogsCommand(Command):
@@ -24,4 +24,4 @@ class LogsCommand(Command):
         if self.config.log:
             log = self.config.log
 
-        run_device_command('tail -f {}'.format(log), self.config)
+        self.device.run_command('tail -f {}'.format(log))
