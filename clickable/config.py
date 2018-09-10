@@ -3,7 +3,14 @@ import json
 import platform
 import xml.etree.ElementTree as ElementTree
 
-from .utils import find_manifest, get_manifest, env, print_warning, print_info
+from .utils import (
+    find_manifest,
+    get_manifest,
+    env,
+    print_warning,
+    print_info,
+    ManifestNotFoundException,
+)
 
 
 class Config(object):
@@ -179,6 +186,9 @@ class Config(object):
         if args.lxd:
             config['lxd'] = args.lxd
 
+        if args.docker_image:
+            config['docker_image'] = args.docker_image
+
         return config
 
     def cleanup_config(self):
@@ -207,7 +217,7 @@ class Config(object):
         if self.config['template'] == self.GO and not self.config['gopath']:
             raise ValueError('When using the "go" template you must specify a "gopath" in the config or use the "GOPATH" env variable')
 
-        if self.config['template'] not in self.templates:
+        if self.config['template'] and self.config['template'] not in self.templates:
             raise ValueError('"{}" is not a valid template ({})'.format(self.config['template'], ', '.join(self.templates)))
 
         for key in self.required:

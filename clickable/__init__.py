@@ -112,6 +112,10 @@ def main():
         help='Use the old vivid build container',
         default=False,
     )
+    parser.add_argument(
+        '--docker-image',
+        help='Use a specific docker image to build with'
+    )
 
     args = parser.parse_args()
 
