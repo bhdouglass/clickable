@@ -21,7 +21,6 @@ def main():
     command_names = []
     command_aliases = {}
     command_help = {}
-    command_skip_auto_detect = []
 
     command_dir = dirname(__file__)
     modules = glob.glob(join(command_dir, 'commands/*.py'))
@@ -38,9 +37,6 @@ def main():
 
                 for alias in cls.aliases:
                     command_aliases[alias] = cls.name
-
-                if cls.skip_auto_detect:
-                    command_skip_auto_detect.append(cls.name)
 
     # TODO show the help text
     def show_valid_commands():
@@ -119,16 +115,10 @@ def main():
 
     args = parser.parse_args()
 
-    skip_detection = False
-    if len(args.commands) == 1:
-        if args.commands[0] in command_skip_auto_detect:
-            skip_detection = True
-
     try:
         config = Config(
             args=args,
             desktop=('desktop' in args.commands),
-            skip_detection=skip_detection,
         )
 
         VALID_COMMANDS = command_names + list(config.scripts.keys())

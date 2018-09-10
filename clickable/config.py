@@ -65,8 +65,7 @@ class Config(object):
     apikey = None
     is_xenial = True
 
-    def __init__(self, args, desktop=False, skip_detection=False):
-        self.skip_detection = skip_detection
+    def __init__(self, args, desktop=False):
         self.desktop = desktop
 
         self.cwd = os.getcwd()
@@ -82,13 +81,6 @@ class Config(object):
 
         self.host_arch = platform.machine()
         self.is_arm = self.host_arch.startswith('arm')
-
-        if skip_detection:
-            if not template:
-                self.config['template'] = self.PURE
-        else:
-            self.detect_template()
-
         self.temp = os.path.join(self.config['dir'], 'tmp')
 
         self.build_arch = self.config['arch']
@@ -138,8 +130,7 @@ class Config(object):
                     if value:
                         config[key] = value
         else:
-            if not self.skip_detection:
-                print_warning('No clickable.json was found, using defaults and cli args')
+            print_warning('No clickable.json was found, using defaults and cli args')
 
         return config
 
@@ -223,7 +214,7 @@ class Config(object):
             if key not in self.config:
                 raise ValueError('"{}" is empty in the config file'.format(key))
 
-    def detect_template(self):
+    def get_template(self):
         if not self.config['template']:
             template = None
             directory = os.listdir(os.getcwd())
@@ -258,6 +249,8 @@ class Config(object):
 
             self.config['template'] = template
             print_info('Auto detected template to be "{}"'.format(template))
+
+        return self.config['template']
 
     def find_manifest(self):
         if self.config['template'] == Config.CORDOVA:

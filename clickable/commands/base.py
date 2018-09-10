@@ -6,7 +6,6 @@ class Command(object):
     aliases = []
     name = None
     help = ''
-    skip_auto_detect = False
 
     def __init__(self, config):
         self.config = config

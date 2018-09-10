@@ -4,6 +4,7 @@ import shlex
 import json
 import os
 import shutil
+import getpass
 
 from clickable.utils import (
     run_subprocess_call,
@@ -51,6 +52,9 @@ class Container(object):
         return started
 
     def check_docker(self, retries=3):
+        if self.needs_setup():
+            self.setup_docker()
+
         try:
             run_subprocess_check_output(shlex.split('docker ps'), stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as e:
@@ -116,10 +120,7 @@ class Container(object):
 
         return found
 
-    def setup_docker(self):
-        check_command('docker')
-        self.start_docker()
-
+    def docker_group_exists(self):
         group_exists = False
         with open('/etc/group', 'r') as f:
             lines = f.readlines()
@@ -127,19 +128,34 @@ class Container(object):
                 if line.startswith('docker:'):
                     group_exists = True
 
-        if not group_exists:
+        return group_exists
+
+    def user_part_of_docker_group(self):
+        output = run_subprocess_check_output(shlex.split('groups {}'.format(getpass.getuser()))).strip()
+
+        # Test for exactly docker in the group list
+        return (' docker ' in output or output.endswith(' docker') or output.startswith('docker ') or output == 'docker')
+
+    def needs_setup(self):
+        return (not self.docker_group_exists() or not self.user_part_of_docker_group())
+
+    def setup_docker(self):
+        print_info('Setting up docker')
+
+        check_command('docker')
+        self.start_docker()
+
+        if not self.docker_group_exists():
             print_info('Asking for root to create docker group')
             subprocess.check_call(shlex.split('sudo groupadd docker'))
 
-        output = run_subprocess_check_output(shlex.split('groups {}'.format(getpass.getuser()))).strip()
-        # Test for exactly docker in the group list
-        if ' docker ' in output or output.endswith(' docker') or output.startswith('docker ') or output == 'docker':
+        if self.user_part_of_docker_group():
             print_info('Setup has already been completed')
         else:
             print_info('Asking for root to add the current user to the docker group')
             subprocess.check_call(shlex.split('sudo usermod -aG docker {}'.format(getpass.getuser())))
 
-            print_info('Log out or restart to apply changes')
+            raise Exception('Log out or restart to apply changes')
 
     def update_docker(self):
         self.check_docker()
