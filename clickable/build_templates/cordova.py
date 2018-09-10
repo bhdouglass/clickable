@@ -4,16 +4,14 @@ import json
 import shutil
 import sys
 import os
-import xml.etree.ElementTree as ElementTree
 from distutils.dir_util import copy_tree
 
-from .cmake import CMakeBuilder
-from clickable.utils import print_error, print_warning, find_manifest, get_manifest
+from .make import MakeBuilder
+from clickable.utils import print_error, print_warning
 from clickable.config import Config
 
 
-# TODO update for 5.0.0
-class CordovaBuilder(CMakeBuilder):
+class CordovaBuilder(MakeBuilder):
     name = Config.CORDOVA
 
     # Lots of this code was based off of this:
@@ -22,14 +20,16 @@ class CordovaBuilder(CMakeBuilder):
         super().__init__(*args, **kwargs)
 
         self.platform_dir = os.path.join(self.config.cwd, 'platforms/ubuntu/')
+        self.sdk = 'ubuntu-sdk-16.04' if self.config.is_xenial else 'ubuntu-sdk-15.04'
 
         self._dirs = {
-            'build': '{}/{}/{}/build/' .format(self.platform_dir, self.config.sdk, self.build_arch),
-            'prefix': '{}/{}/{}/prefix/'.format(self.platform_dir, self.config.sdk, self.build_arch),
+            'build': '{}/{}/{}/build/' .format(self.platform_dir, self.sdk, self.config.build_arch),
+            'prefix': '{}/{}/{}/prefix/'.format(self.platform_dir, self.sdk, self.config.build_arch),
             'make': '{}/build'.format(self.platform_dir)
         }
 
         self.config.temp = self._dirs['build']
+        self.config.dir = self._dirs['prefix']
 
         if not os.path.isdir(self.platform_dir):
             # fail when not using docker, need it anyways
@@ -50,29 +50,25 @@ class CordovaBuilder(CMakeBuilder):
 
             subprocess.check_call(shlex.split(wrapped_command))
 
-        self.config.dir = self._dirs['prefix']
-
-    def _build(self):
-
-        # Clear out prefix directory
-        # IK this is against DRY, but I copied this code from MakeClickable.make_install
-        if os.path.exists(self.config.dir) and os.path.isdir(self.config.temp):
-            shutil.rmtree(self.config.dir)
+    def clean_dir(self, path):
+        if os.path.exists(path) and os.path.isdir(path):
+            shutil.rmtree(path)
 
         try:
-            os.makedirs(self.config.dir)
+            os.makedirs(path)
         except FileExistsError:
-            print_warning('Failed to create temp dir, already exists')
+            print_warning('Failed to create dir, already exists ({})'.format(path))
         except Exception:
-            print_warning('Failed to create temp dir ({}): {}'.format(self.config.temp, str(sys.exc_info()[0])))
+            print_warning('Failed to create dir ({}): {}'.format(path, str(sys.exc_info()[0])))
 
+    def build(self):
+        self.clean_dir(self._dirs['build'])
+        self.clean_dir(self._dirs['prefix'])
         self.container.run_command('cmake {} -DCMAKE_INSTALL_PREFIX={}'.format(self._dirs['make'], self._dirs['build']))
 
-        super()._build()
+        super().build()
 
     def post_make(self):
-        super().post_make()
-
         www_dir = os.path.join(self.platform_dir, "www")
         shutil.rmtree(www_dir)
         shutil.copytree(os.path.join(self.config.cwd, "www"), www_dir)
@@ -105,12 +101,11 @@ class CordovaBuilder(CMakeBuilder):
 
         # Modify default files with updated settings
         # taken straing from cordova build.js
-        with open(self.config.find_manifest(), 'r') as manifest_reader:
-            manifest = json.load(manifest_reader)
-            manifest['architecture'] = self.build_arch
-            manifest['framework'] = self.config.sdk
-            with open(self.config.find_manifest(), 'w') as manifest_writer:
-                json.dump(manifest, manifest_writer, indent=4)
+        manifest = self.config.get_manifest()
+        manifest['architecture'] = self.config.build_arch
+        manifest['framework'] = self.sdk
+        with open(self.config.find_manifest(), 'w') as manifest_writer:
+            json.dump(manifest, manifest_writer, indent=4)
 
         apparmor_file = os.path.join(self._dirs['build'], 'apparmor.json')
         with open(apparmor_file, 'r') as apparmor_reader:
@@ -123,22 +118,8 @@ class CordovaBuilder(CMakeBuilder):
             with open(apparmor_file, 'w') as apparmor_writer:
                 json.dump(apparmor, apparmor_writer, indent=4)
 
+        super().post_make()
+
     def make_install(self):
-        # This is beause I don't want a DESTDIR
+        # No DESTDIR needed
         self.container.run_command('make install')
-
-    def find_manifest(self):
-        return find_manifest(self._dirs['build'])
-
-    def get_manifest(self):
-        return get_manifest(self._dirs['build'])
-
-    def find_package_name(self):
-        tree = ElementTree.parse('config.xml')
-        root = tree.getroot()
-        return root.attrib['id'] if 'id' in root.attrib else '1.0.0'
-
-    def find_version(self):
-        tree = ElementTree.parse('config.xml')
-        root = tree.getroot()
-        return root.attrib['version'] if 'version' in root.attrib else '1.0.0'

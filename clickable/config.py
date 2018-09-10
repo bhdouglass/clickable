@@ -1,8 +1,9 @@
 import os
 import json
 import platform
+import xml.etree.ElementTree as ElementTree
 
-from .utils import find_manifest, get_manifest, env
+from .utils import find_manifest, get_manifest, env, print_warning, print_info
 
 
 class Config(object):
@@ -107,7 +108,6 @@ class Config(object):
                 self.config['docker_image'] = 'clickable/ubuntu-sdk:15.04-{}'.format(self.config['arch'])
 
         self.check_config_errors()
-
 
     def __getattr__(self, name):
         return self.config[name]
@@ -226,15 +226,19 @@ class Config(object):
     def detect_template(self):
         if not self.config['template']:
             template = None
-
-            try:
-                manifest = get_manifest(os.getcwd())
-            except ValueError:
-                manifest = None
-            except ManifestNotFoundException:
-                manifest = None
-
             directory = os.listdir(os.getcwd())
+
+            if 'config.xml' in directory:
+                template = Config.CORDOVA
+
+            if not template:
+                try:
+                    manifest = get_manifest(os.getcwd())
+                except ValueError:
+                    manifest = None
+                except ManifestNotFoundException:
+                    manifest = None
+
             if not template and 'CMakeLists.txt' in directory:
                 template = Config.CMAKE
 
@@ -249,9 +253,6 @@ class Config(object):
                 if manifest and manifest.get('architecture', None) == 'all':
                     template = Config.PURE_QML_QMAKE
 
-            if not template and 'config.xml' in directory:
-                template = Config.CORDOVA
-
             if not template:
                 template = Config.PURE
 
@@ -259,18 +260,45 @@ class Config(object):
             print_info('Auto detected template to be "{}"'.format(template))
 
     def find_manifest(self):
-        return find_manifest(self.cwd, self.temp, self.config['dir'])
+        if self.config['template'] == Config.CORDOVA:
+            manifest = find_manifest(self.temp)
+        else:
+            manifest = find_manifest(self.cwd, self.temp, self.config['dir'])
+
+        return manifest
 
     def get_manifest(self):
-        return get_manifest(self.cwd, self.temp, self.config['dir'])
+        if self.config['template'] == Config.CORDOVA:
+            manifest = get_manifest(self.temp)
+        else:
+            manifest = get_manifest(self.cwd, self.temp, self.config['dir'])
+
+        return manifest
 
     def find_version(self):
-        return self.get_manifest().get('version', '1.0')
+        if self.config['template'] == Config.CORDOVA:
+            tree = ElementTree.parse('config.xml')
+            root = tree.getroot()
+            version = root.attrib['id'] if 'id' in root.attrib else '1.0.0'
+        else:
+            version = self.get_manifest().get('version', '1.0')
+
+        return version
 
     def find_package_name(self):
-        package = self.get_manifest().get('name', None)
-        if not package:
-            raise ValueError('No package name specified in manifest.json or clickable.json')
+        if self.config['template'] == Config.CORDOVA:
+            tree = ElementTree.parse('config.xml')
+            root = tree.getroot()
+            package = root.attrib['id'] if 'id' in root.attrib else None
+
+            if not package:
+                raise ValueError('No package name specified in config.xml')
+
+        else:
+            package = self.get_manifest().get('name', None)
+
+            if not package:
+                raise ValueError('No package name specified in manifest.json or clickable.json')
 
         return package
 
