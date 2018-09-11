@@ -12,17 +12,17 @@ You can combine the commands together like ``clickable build click_build install
 
 Runs the default sub-commands specified in the "default" config
 
-``clickable --desktop``
------------------------
+``clickable desktop``
+---------------------
 
 Compile and run the app on the desktop.
 
-``clickable init``
+``clickable create``
 ------------------
 
 Generate a new app from a list of :ref:`app template options <app-templates>`.
 
-``clickable init -n <app template name>``
+``clickable create <app template name>``
 
 Generate a new app from an :ref:`app template <app-templates>` by name.
 
@@ -30,11 +30,6 @@ Generate a new app from an :ref:`app template <app-templates>` by name.
 -------------------
 
 Opens a shell on the device via ssh. This is similar to the ``phablet-shell`` command.
-
-``clickable kill``
-------------------
-
-Kills a running process (specified by the config). Using this you can relaunch your app.
 
 ``clickable clean``
 -------------------
@@ -76,7 +71,7 @@ Installs the specified click package on the device
 
 Launches the app on a device.
 
-``clickable launch --app <app name>``
+``clickable launch <app name>``
 
 Launches the specified app on a device.
 
@@ -84,6 +79,11 @@ Launches the specified app on a device.
 ------------------
 
 Follow the apps log file on the device.
+
+``clickable log``
+------------------
+
+Dumps the apps log file on the device.
 
 ``clickable publish``
 ---------------------
@@ -96,20 +96,10 @@ Publish your click app to the OpenStore. Check the
 
 Runs an arbitrary command in the clickable container.
 
-``clickable setup-docker``
---------------------------
-
-Configure docker for use with clickable.
-
-``clickable update-docker``
+``clickable update``
 ---------------------------
 
 Update the docker container for use with clickable.
-
-``clickable display-on``
-------------------------
-
-Turns on the device's display and keeps it on until you hit CTRL+C.
 
 ``clickable no-lock``
 ---------------------
@@ -134,10 +124,7 @@ argument.
 
 Runs a custom command specified in the "scripts" config
 
-``clickable <custom command> --device``
----------------------------------------
-
-Runs a custom command specified in the "scripts" config on the device.
+.. _container-mode:
 
 ``clickable <any command> --container-mode``
 --------------------------------------------
@@ -145,8 +132,10 @@ Runs a custom command specified in the "scripts" config on the device.
 Runs all builds commands on the current machine and not in a container. This is
 useful from running clickable from within a container.
 
-``clickable --desktop --nvidia``
---------------------------------
+.. _nvidia:
+
+``clickable desktop --nvidia``
+------------------------------
 
 Use clickable's desktop mode with proprietary Nvidia drivers. This requires
 nvidia-docker to be installed and setup. Please note, only version 1 of

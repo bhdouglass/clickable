@@ -3,7 +3,7 @@
 Getting Started
 ===============
 
-* Run ``clickable init`` to get started with a new app.
+* Run ``clickable create`` to get started with a new app.
 * Choose from the list of :ref:`app templates <app-templates>`.
 * Provide all the needed information about your new app.
 * When the app has finished generating, enter the newly created directory containing your app.
@@ -19,7 +19,7 @@ in addition to any errors or warnings.
 Running on the Desktop
 ----------------------
 
-Running the app on the desktop just requires you to run ``clickable --desktop``.
+Running the app on the desktop just requires you to run ``clickable desktop``.
 This is not as complete as running the app on your phone, but it can help
 speed up development.
 
@@ -44,6 +44,8 @@ app before submitting it, run ``clickable review`` after you've compiled a click
 This runs the ``click-review`` command against your click within the clickable
 container (no need to install it on your computer).
 
+.. _publishing:
+
 Publishing to the OpenStore
 ---------------------------
 
@@ -51,7 +53,8 @@ If this is your first time publishing to the OpenStore, you need to
 `signup for an account <https://open-store.io/login>`__. You can signup with
 your GitHub, GitLab, or Ubuntu account.
 
-If your app is new to the OpenStore you must first manually upload your new app
+If your app is new to the OpenStore you must first create your app by entering
+the name from your manifest.json and the app's title
 on the `OpenStore's submission page <https://open-store.io/submit>`__.
 
 If your app already exists you can use the ``clickable publish`` command to

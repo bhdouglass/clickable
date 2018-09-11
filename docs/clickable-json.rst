@@ -18,22 +18,7 @@ Example:
     }
 
 
-package
--------
-
-The full package name (appname.developer). This is optional and will be read
-from manifest.json if left blank.
-
-app
----
-
-The app name (appname.developer). This is optional and will be read
-from manifest.json if left blank.
-
-sdk
----
-
-Optional, Defaults to `ubuntu-sdk-15.04`
+.. _clickable-json-arch:
 
 arch
 ----
@@ -46,16 +31,13 @@ prebuild
 
 Optional, a custom command to run before a build.
 
+.. _clickable-json-template:
+
 template
 --------
 
 Optional, see :ref:`build template <build-templates>` for the full list of options.
 If left blank the template will be auto detected.
-
-premake
--------
-
-Optional, a custom command to execute before make is run.
 
 build
 -----
@@ -73,10 +55,7 @@ launch
 
 Optional, a custom command to launch the app.
 
-ssh
----
-
-Optional, the IP of the device you wish to install and launch the app on.
+.. _clickable-json-dir:
 
 dir
 ---
@@ -101,7 +80,7 @@ Optional, an object detailing custom commands to run. For example:
         "echo": "echo Hello World"
     }
 
-To run the command on the device use the ``--device`` argument ( ex: ``clickable test --device`` ).
+.. _clickable-json-lxd:
 
 lxd
 ---
@@ -110,11 +89,13 @@ Optional, whether or not to use a lxd container to build the app. Default is to 
 docker to build the app. LXD is deprecated and its support will be removed
 in a future version of clickable.
 
+.. _clickable-json-default:
+
 default
 -------
 
 Optional, a list of space separated sub-commands to run when no sub-commands are
-specified. Defaults to ``kill clean build click-build install launch``.
+specified. Defaults to ``clean build click-build install launch``.
 
 dependencies
 ------------
@@ -122,6 +103,8 @@ dependencies
 Optional, a list of dependencies that will be installed in the build container.
 These will be assumed to be `dependencie:arch` unless `specificDependencies`
 is set to `true`.
+
+.. _clickable-json-docker-image:
 
 docker_image
 ------------
@@ -145,6 +128,7 @@ Example:
         ".gitmodules"
     ]
 
+.. _clickable-json-make-jobs:
 
 make_jobs
 ---------
@@ -152,10 +136,14 @@ make_jobs
 Optional, the number of jobs to use when running make, equivalent to make's `-j`
 option. If left blank this defaults to the number of cpus your computer has.
 
+.. _clickable-json-gopath:
+
 gopath
 ------
 
 Optional, the gopath on the host machine. If left blank, the ``GOPATH`` env var will be used.
+
+.. _clickable-json-build-args:
 
 build_args
 ----------
