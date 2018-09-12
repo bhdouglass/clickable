@@ -11,6 +11,7 @@ from clickable.utils import (
     print_info,
     print_warning,
     print_error,
+    print_success,
 )
 
 

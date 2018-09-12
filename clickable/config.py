@@ -171,13 +171,26 @@ class Config(object):
         return config
 
     def load_arg_config(self, args):
-        self.device_serial_number = args.serial_number
-        self.ssh = args.ssh
-        self.click_output = args.output
-        self.container_mode = args.container_mode
-        self.use_nvidia = args.nvidia
-        self.apikey = args.apikey
-        self.is_xenial = not args.vivid
+        if args.serial_number:
+            self.device_serial_number = args.serial_number
+
+        if args.ssh:
+            self.ssh = args.ssh
+
+        if args.output:
+            self.click_output = args.output
+
+        if args.container_mode:
+            self.container_mode = args.container_mode
+
+        if args.nvidia:
+            self.use_nvidia = args.nvidia
+
+        if args.apikey:
+            self.apikey = args.apikey
+
+        if args.vivid:
+            self.is_xenial = not args.vivid
 
         config = {}
         if args.arch:
