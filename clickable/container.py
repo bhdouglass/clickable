@@ -5,6 +5,7 @@ import json
 import os
 import shutil
 import getpass
+import uuid
 
 from clickable.utils import (
     run_subprocess_call,
@@ -242,7 +243,7 @@ class Container(object):
 
                 # TODO make the path to the dockerfile arch dependent
 
-                if self.config.docker_image:
+                if self.config.custom_docker_image:
                     print_info('Skipping dependency check, using a custom docker image')
                 else:
                     dependencies = ''

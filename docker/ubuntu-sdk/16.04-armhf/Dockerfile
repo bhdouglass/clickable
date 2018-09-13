@@ -57,7 +57,8 @@ RUN apt-get -y --no-install-recommends dist-upgrade && \
         qtfeedback5-dev:armhf \
         qtsystems5-dev:armhf \
         click-reviewers-tools \
-        qtpositioning5-dev:armhf && \
+        qtpositioning5-dev:armhf \
+        qtwebengine5-dev:armhf && \
     apt-get clean
 
 # Install go

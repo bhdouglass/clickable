@@ -71,6 +71,7 @@ class Config(object):
     use_nvidia = False
     apikey = None
     is_xenial = True
+    custom_docker_image = True
 
     def __init__(self, args, desktop=False):
         self.desktop = desktop
@@ -101,6 +102,7 @@ class Config(object):
             self.build_arch = 'amd64'
 
         if not self.config['docker_image']:
+            self.custom_docker_image = False
             if self.is_xenial:
                 self.config['docker_image'] = 'clickable/ubuntu-sdk:16.04-{}'.format(self.build_arch)
             else:
