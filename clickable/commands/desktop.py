@@ -27,9 +27,10 @@ class DesktopCommand(Command):
 
         desktop_path = None
         hooks = self.config.get_manifest().get('hooks', {})
-        if self.config.app:
-            if self.config.app in hooks and 'desktop' in hooks[self.config.app]:
-                desktop_path = hooks[self.config.app]['desktop']
+        app = self.config.find_app_name()
+        if app:
+            if app in hooks and 'desktop' in hooks[app]:
+                desktop_path = hooks[app]['desktop']
         else:
             for key, value in hooks.items():
                 if 'desktop' in value:
@@ -37,7 +38,7 @@ class DesktopCommand(Command):
                     break
 
         if not desktop_path:
-            raise Exception('Could not find desktop file for app "{}"'.format(self.config.app))
+            raise Exception('Could not find desktop file for app "{}"'.format(app))
 
         desktop_path = os.path.join(self.config.temp, desktop_path)
         if not os.path.exists(desktop_path):
