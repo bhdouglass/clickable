@@ -106,7 +106,7 @@ class Config(object):
             if self.is_xenial:
                 self.config['docker_image'] = 'clickable/ubuntu-sdk:16.04-{}'.format(self.build_arch)
             else:
-                self.config['docker_image'] = 'clickable/ubuntu-sdk:15.04-{}'.format(self.config['arch'])
+                self.config['docker_image'] = 'clickable/ubuntu-sdk:15.04-{}'.format(self.build_arch)
 
         self.check_config_errors()
 
