@@ -2,6 +2,7 @@ import subprocess
 import shlex
 
 from .base import Command
+from clickable.utils import run_subprocess_check_call
 
 
 class UpdateCommand(Command):
@@ -11,4 +12,6 @@ class UpdateCommand(Command):
 
     def run(self, path_arg=None):
         self.container.check_docker()
-        subprocess.check_call(shlex.split('docker pull {}'.format(self.container.base_docker_image)))
+
+        command = 'docker pull {}'.format(self.container.base_docker_image)
+        run_subprocess_check_call(command)

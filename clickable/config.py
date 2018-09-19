@@ -14,28 +14,7 @@ from .utils import (
 
 
 class Config(object):
-    config = {
-        'arch': 'armhf',
-        'template': None,
-        'postmake': None,
-        'prebuild': None,
-        'build': None,
-        'postbuild': None,
-        'launch': None,
-        'dir': './build/',
-        'kill': None,
-        'scripts': {},
-        'lxd': False,
-        'default': 'clean build click-build install launch',
-        'log': None,
-        'specificDependencies': False,  # TODO make this less confusing
-        'dependencies': [],
-        'ignore': [],
-        'make_jobs': 0,
-        'gopath': None,
-        'docker_image': None,
-        'build_args': None,
-    }
+    config = {}
 
     ENV_MAP = {
         'CLICKABLE_ARCH': 'arch',
@@ -75,8 +54,30 @@ class Config(object):
 
     def __init__(self, args, desktop=False):
         self.desktop = desktop
-
         self.cwd = os.getcwd()
+
+        self.config = {
+            'arch': 'armhf',
+            'template': None,
+            'postmake': None,
+            'prebuild': None,
+            'build': None,
+            'postbuild': None,
+            'launch': None,
+            'dir': './build/',
+            'kill': None,
+            'scripts': {},
+            'lxd': False,
+            'default': 'clean build click-build install launch',
+            'log': None,
+            'specificDependencies': False,  # TODO make this less confusing
+            'dependencies': [],
+            'ignore': [],
+            'make_jobs': 0,
+            'gopath': None,
+            'docker_image': None,
+            'build_args': None,
+        }
 
         json_config = self.load_json_config()
         self.config.update(json_config)

@@ -2,7 +2,7 @@ import os
 import subprocess
 
 from .base import Command
-from clickable.utils import print_warning
+from clickable.utils import print_warning, run_subprocess_check_call
 
 
 class InstallCommand(Command):
@@ -29,7 +29,7 @@ class InstallCommand(Command):
 
         if self.config.ssh:
             command = 'scp {} phablet@{}:/home/phablet/'.format(click_path, self.config.ssh)
-            subprocess.check_call(command, cwd=cwd, shell=True)
+            run_subprocess_check_call(command, cwd=cwd, shell=True)
 
         else:
             self.device.check_any_attached()
@@ -39,6 +39,7 @@ class InstallCommand(Command):
             else:
                 self.device.check_multiple_attached()
                 command = 'adb push {} /home/phablet/'.format(click_path)
-            subprocess.check_call(command, cwd=cwd, shell=True)
+
+            run_subprocess_check_call(command, cwd=cwd, shell=True)
 
         self.device.run_command('pkcon install-local --allow-untrusted /home/phablet/{}'.format(click), cwd=cwd)

@@ -7,24 +7,31 @@ import shlex
 
 # TODO use these subprocess functions everywhere
 
-def run_subprocess_call(cmd, **args):
+def prepare_command(cmd, shell=False):
     if isinstance(cmd, str):
-        cmd = cmd.encode()
-    elif isinstance(cmd, (list, tuple)):
+        if shell:
+            cmd = cmd.encode()
+        else:
+            cmd = shlex.split(cmd)
+
+    if isinstance(cmd, (list, tuple)):
         for idx, x in enumerate(cmd):
             if isinstance(x, str):
                 cmd[idx] = x.encode()
-    return subprocess.call(cmd, **args)
+
+    return cmd
 
 
-def run_subprocess_check_output(cmd, **args):
-    if isinstance(cmd, str):
-        cmd = cmd.encode()
-    elif isinstance(cmd, (list, tuple)):
-        for idx, x in enumerate(cmd):
-            if isinstance(x, str):
-                cmd[idx] = x.encode()
-    return subprocess.check_output(cmd, **args).decode()
+def run_subprocess_call(cmd, shell=False, **args):
+    return subprocess.call(prepare_command(cmd, shell), shell=shell, **args)
+
+
+def run_subprocess_check_call(cmd, shell=False, **args):
+    return subprocess.check_call(prepare_command(cmd, shell), shell=shell, **args)
+
+
+def run_subprocess_check_output(cmd, shell=False, **args):
+    return subprocess.check_output(prepare_command(cmd, shell), shell=shell, **args).decode()
 
 
 class Colors:
