@@ -139,8 +139,6 @@ class Config(object):
 
                     if value:
                         config[key] = value
-        else:
-            print_warning('No clickable.json was found, using defaults and cli args')
 
         return config
 

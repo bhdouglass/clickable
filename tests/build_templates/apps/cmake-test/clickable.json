@@ -1,0 +1,6 @@
+{
+  "template": "cmake",
+  "kill": "qmlscene",
+  "default": "clean build click-build",
+  "build_args": "-DUBUNTU=ON"
+}
