@@ -1,17 +1,21 @@
 from unittest import TestCase, mock
+import os
+import hashlib
 
-from clickable.build_templates.qmake import QMakeBuilder
-from clickable.container import Container
-from clickable.device import Device
-from ..mocks import ConfigMock
+from clickable import main
 
 
 class TestQMakeBuilder(TestCase):
     def setUp(self):
-        self.config = ConfigMock({})
-        self.container = Container(self.config)
-        self.device = Device(self.config)
-        self.command = QMakeBuilder(self.config, self.container, self.command)
+        self.original_path = os.getcwd()
+        self.path = os.path.join(os.path.dirname(__file__), 'apps/qmake-test/')
+        os.chdir(self.path)
 
+    def tearDown(self):
+        os.chdir(self.original_path)
 
-# TODO implement this
+    def test_qmake(self):
+        main()
+
+        click = os.path.join(self.path, 'build/qmake-test.clickable_1.0.0_armhf.click')
+        self.assertTrue(os.path.exists(click))

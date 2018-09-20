@@ -3,7 +3,6 @@ import os
 import hashlib
 
 from clickable import main
-from clickable.utils import run_subprocess_check_output
 
 
 class TestCMakeBuilder(TestCase):
