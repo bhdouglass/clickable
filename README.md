@@ -42,6 +42,14 @@ Use clickable with the [Atom Editor](https://atom.io) by installing
 [atom-build-clickable](https://atom.io/packages/atom-build-clickable)
 made by Stefano.
 
+## Development
+
+### Run the tests
+
+Install nose and the coverage modules: `pip3 install nose coverage`
+
+Run nose to complete the tests: `nosetests`
+
 ## License
 
 Copyright (C) 2018 [Brian Douglass](http://bhdouglass.com/)
