@@ -4,7 +4,7 @@ Changes in v5.0.0
 =================
 
 - New features
-    - Xenial by default (use ``--vivid`` to combile for 15.04)
+    - Xenial by default (use ``--vivid`` to compile for 15.04)
     - Major code refactor
     - More environment variables
         - ``CLICKABLE_ARCH`` - Overrides the clickable.json's ``arch``

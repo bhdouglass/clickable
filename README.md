@@ -4,6 +4,11 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 
 ## Install
 
+### Via Pip (Recommended)
+
+* Install docker, adb, and pip3
+* Run (may need sudo): `pip3 install git+https://github.com/bhdouglass/clickable.git`
+
 ### Via PPA (Ubuntu)
 
 * Add the PPA to your system: `sudo add-apt-repository ppa:bhdouglass/clickable`
@@ -15,17 +20,6 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 
 * Using your favorite AUR helper, install the [clickable package](https://aur.archlinux.org/packages/clickable/)
 * Example: `pacaur -S clickable`
-
-### Via Pip && Git
-
-* Install [Docker](https://www.docker.com)
-* Install: `sudo apt-get install python3-pip`
-* Run: `sudo pip3 install git+https://github.com/bhdouglass/clickable.git`
-
-### Post Setup
-
-Run `clickable setup-docker` to ensure that docker is configured for use with clickable.
-* Configure docker for clickable: `clickable setup-docker`
 
 ## Docs
 

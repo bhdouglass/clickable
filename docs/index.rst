@@ -27,6 +27,12 @@ Using Clickable
     continuous-integration
     changelog
 
+Install Via Pip (Recommended)
+-----------------------------
+
+* Install docker, adb, and pip3
+* Run (may need sudo): ``pip3 install git+https://github.com/bhdouglass/clickable.git``
+
 Install Via PPA (Ubuntu)
 ------------------------
 
@@ -40,15 +46,6 @@ Install Via AUR (Arch Linux)
 
 * Using your favorite AUR helper, install the `clickable package <https://aur.archlinux.org/packages/clickable/>`__
 * Example: ``pacaur -S clickable``
-
-Install Via Git
----------------
-
-* Install `Docker <https://www.docker.com>`__
-* Install `Cookiecutter <https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter>`__
-* Clone this repo: ``git clone https://github.com/bhdouglass/clickable.git``
-* Add clickable to your PATH: ``echo "export PATH=\$PATH:\$HOME/clickable" >> ~/.bashrc``
-* Read the new ``.bashrc`` file: ``source ~/.bashrc``
 
 Getting Started
 ---------------
