@@ -1,39 +1,37 @@
+from .base import Command
+from clickable.utils import print_info
+
 cookiecutter_available = True
 try:
     from cookiecutter.main import cookiecutter
 except ImportError:
     cookiecutter_available = False
 
-
-from .base import Command
-from clickable.utils import print_info
-
-
 APP_TEMPLATES = [
     {
         'name': 'pure-qml-cmake',
         'display': 'Pure QML App (built using CMake)',
-        'url': 'https://github.com/bhdouglass/ut-app-pure-qml-cmake-template',
+        'url': 'https://gitlab.com/clickable/ut-app-pure-qml-cmake-template',
     }, {
         'name': 'cmake',
         'display': 'C++/QML App (built using CMake)',
-        'url': 'https://github.com/bhdouglass/ut-app-cmake-template',
+        'url': 'https://gitlab.com/clickable/ut-app-cmake-template',
     }, {
         'name': 'python-cmake',
         'display': 'Python/QML App (built using CMake)',
-        'url': 'https://github.com/bhdouglass/ut-app-python-cmake-template',
+        'url': 'https://gitlab.com/clickable/ut-app-python-cmake-template',
     }, {
         'name': 'html',
         'display': 'HTML App',
-        'url': 'https://github.com/bhdouglass/ut-app-html-template',
+        'url': 'https://gitlab.com/clickable/ut-app-html-template',
     }, {
         'name': 'webapp',
         'display': 'Simple Webapp',
-        'url': 'https://github.com/bhdouglass/ut-app-webapp-template',
+        'url': 'https://gitlab.com/clickable/ut-app-webapp-template',
     }, {
         'name': 'go',
         'display': 'Go/QML App',
-        'url': 'https://github.com/bhdouglass/ut-app-go-template',
+        'url': 'https://gitlab.com/clickable/ut-app-go-template',
     }
 ]
 
