@@ -40,7 +40,7 @@ Changes in v5.0.0
         - ``init`` - Changed to ``create`` (``init`` will still work)
         - ``update-docker`` - Changed to ``update``
     - Removed
-        - ``kill`` - Changed to be part of the
+        - ``kill`` - Changed to be part of the ``launch`` command
         - ``setup-docker`` - Automatically detected and run when using docker
         - ``display-on`` - Not very useful
 - Command line arguments
