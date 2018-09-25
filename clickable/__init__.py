@@ -145,12 +145,16 @@ def main():
             command_arg = commands[1]
             commands = commands[:1]
 
-        # TODO consider removing the ability to string together multiple commands
-        # This should help clean up the arguments & new command_arg
-        for command in commands:
-            if command in command_aliases:
-                command = command_aliases[command]
+        commands = [command_aliases[command] if command in command_aliases else command for command in commands]
 
+        for command in commands:
+            if command in command_names:
+                cmd = command_classes[command](config)
+                cmd.preprocess(command_arg)
+
+        # TODO consider removing the ability to string together multiple commands
+        # This should help clean up the arguments & command_arg
+        for command in commands:
             if command in config.scripts:
                 subprocess.check_call(config.scripts[command], cwd=config.cwd, shell=True)
             elif command in command_names:

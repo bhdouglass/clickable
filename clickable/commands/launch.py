@@ -21,13 +21,15 @@ class LaunchCommand(Command):
             except Exception:
                 pass  # Nothing to do, the process probably wasn't running
 
+    def preprocess(self, path_arg=None):
+        if not path_arg:
+            self.kill()
+
     def run(self, path_arg=None):
         cwd = '.'
         if path_arg:
             app = path_arg
         else:
-            self.kill()
-
             app = '{}_{}_{}'.format(self.config.find_package_name(), self.config.find_app_name(), self.config.find_version())
             cwd = self.config.dir
 
