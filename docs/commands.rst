@@ -17,6 +17,9 @@ Runs the default sub-commands specified in the "default" config
 
 Compile and run the app on the desktop.
 
+Note: ArchLinux user might need to run ``xhost +local:clickable`` before using
+desktop mode.
+
 ``clickable create``
 ------------------
 

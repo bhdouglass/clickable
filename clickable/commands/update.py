@@ -2,7 +2,10 @@ import subprocess
 import shlex
 
 from .base import Command
-from clickable.utils import run_subprocess_check_call
+from clickable.utils import (
+    run_subprocess_check_call,
+    run_subprocess_check_output,
+)
 
 
 class UpdateCommand(Command):
@@ -15,3 +18,12 @@ class UpdateCommand(Command):
 
         command = 'docker pull {}'.format(self.container.base_docker_image)
         run_subprocess_check_call(command)
+
+        if 'armhf' in self.container.base_docker_image:
+            image = self.container.base_docker_image.replace('armhf', 'amd64')
+            command = 'docker images -q {}'.format(image)
+            image_exists = run_subprocess_check_output(command).strip()
+
+            if image_exists:
+                command = 'docker pull {}'.format(image)
+                run_subprocess_check_call(command)
