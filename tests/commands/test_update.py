@@ -15,4 +15,4 @@ class TestUpdateCommand(TestCase):
         self.command.run()
 
         mock_check_docker.assert_called_once()
-        mock_run_subprocess_check_call.assert_called_once()
+        mock_run_subprocess_check_call.assert_called()

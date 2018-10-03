@@ -44,6 +44,11 @@ Install nose and the coverage modules: `pip3 install nose coverage`
 
 Run nose to complete the tests: `nosetests`
 
+## Donate
+
+If you like Clickable, consider giving a small donation over at my
+[Liberapay page](https://liberapay.com/bhdouglass).
+
 ## License
 
 Copyright (C) 2018 [Brian Douglass](http://bhdouglass.com/)

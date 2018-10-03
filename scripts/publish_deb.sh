@@ -11,6 +11,7 @@ function docker_run {
         -u `id -u` \
         -e HOME=$HOME \
         -e USER=$USER \
+        -e DEB_BUILD_OPTIONS=nocheck \
         --rm \
         -it clickable/build-deb:python3 $1
 }
