@@ -1,7 +1,10 @@
 .. _changelog:
 
+Changelog
+=========
+
 Changes in v5.0.0
-=================
+-----------------
 
 - New features
     - Xenial by default (use ``--vivid`` to compile for 15.04)
@@ -54,7 +57,7 @@ Changes in v5.0.0
         - ``--desktop`` - Use the new ``desktop`` command
         - ``--xenial`` - Xenial is now the default
         - ``--sdk`` - Use ``--vivid`` or ``--docker-image``
-        - ``--device`` - Use ``--shell``
+        - ``--device`` - Use ``shell``
         - ``--template`` - Use the ``CLICKABLE_TEMPLATE`` env var
         - ``--click`` - Specify the path to the click after the ``install`` command: ``clickable install /path/to/click``
         - ``--app`` - Specify the app name after the ``launch`` command: ``clickable launch app.name``

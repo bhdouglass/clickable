@@ -4,7 +4,7 @@ clickable (5.0.0) unstable; urgency=medium
   * New environment variables
   * Removed chroot support
   * Replaced --desktop with a desktop subcommand
-  * And more!
+  * And more: http://clickable.bhdouglass.com/en/latest/changelog.html
 
  -- Brian Douglass <bhdouglass@gmail.com>  Thu, 20 Sep 2018 08:22:00 -0500
 
