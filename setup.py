@@ -33,7 +33,7 @@ setup(
                 'from the command line.',
     long_description=readme,
     author='Brian Douglass',
-    url='https://github.com/bhdouglass/clickable',
+    url='https://gitlab.com/clickable/clickable',
     packages=['clickable'],
     include_package_data=True,
     install_requires=requirements,

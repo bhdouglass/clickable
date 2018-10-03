@@ -7,7 +7,7 @@ Install Via Pip (Recommended)
 -----------------------------
 
 * Install docker, adb, and pip3
-* Run (may need sudo): ``pip3 install git+https://github.com/bhdouglass/clickable.git``
+* Run (may need sudo): ``pip3 install git+https://gitlab.com/clickable/clickable.git``
 
 Install Via PPA (Ubuntu)
 ------------------------

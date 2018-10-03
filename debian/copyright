@@ -1,6 +1,6 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: clickable
-Source: https://github.com/bhdouglass/clickable
+Source: https://gitlab.com/clickable/clickable
 
 Files: *
 Copyright: 2016-2017 Brian Douglass

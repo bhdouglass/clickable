@@ -11,7 +11,7 @@ Build-Depends: debhelper (>= 9),
                python3-ipdb,
                python3-stdeb
 Standards-Version: 4.1.4
-Homepage: https://github.com/bhdouglass/clickable
+Homepage: https://gitlab.com/clickable/clickable
 X-Python3-Version: >= 3.3
 
 Package: clickable
