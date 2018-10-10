@@ -187,7 +187,7 @@ class Container(object):
                 raise Exception('There are spaces in the current path, this will cause errors in the build process')
 
             if self.config.first_docker_info:
-                print_info('Using docker container "{}"'.format(self.base_docker_image))
+                print_info('Using docker container "{}"'.format(self.docker_image))
                 self.config.first_docker_info = False
 
             go_config = ''
@@ -273,6 +273,11 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
                                 build = True
                     else:
                         build = True
+
+                    if not build:
+                        command = 'docker images -q {}'.format(self.docker_image)
+                        image_exists = run_subprocess_check_output(command).strip()
+                        build = not image_exists
 
                     if build:
                         with open('.clickable/Dockerfile', 'w') as f:
