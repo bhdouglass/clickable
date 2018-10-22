@@ -296,7 +296,7 @@ class Config(object):
         if self.config['template'] == Config.CORDOVA:
             tree = ElementTree.parse('config.xml')
             root = tree.getroot()
-            version = root.attrib['id'] if 'id' in root.attrib else '1.0.0'
+            version = root.attrib['version'] if 'version' in root.attrib else '1.0.0'
         else:
             version = self.get_manifest().get('version', '1.0')
 
