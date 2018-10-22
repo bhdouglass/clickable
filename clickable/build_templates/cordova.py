@@ -37,7 +37,7 @@ class CordovaBuilder(MakeBuilder):
                 print_error('Docker is required to intialize cordova directories. Enable docker or run "cordova platform add ubuntu" manually to remove this message')
                 sys.exit(1)
 
-            command = "cordova platform add ubuntu"
+            command = 'cordova platform add ubuntu'
 
             # Can't use self.container.run_command because need to set -e HOME=/tmp
             wrapped_command = 'docker run -v {cwd}:{cwd} -w {cwd} -u {uid}:{uid} -e HOME=/tmp --rm -i {img} {cmd}'.format(
@@ -68,18 +68,18 @@ class CordovaBuilder(MakeBuilder):
         super().build()
 
     def post_make(self):
-        www_dir = os.path.join(self.platform_dir, "www")
+        www_dir = os.path.join(self.platform_dir, 'www')
         shutil.rmtree(www_dir)
-        shutil.copytree(os.path.join(self.config.cwd, "www"), www_dir)
-        shutil.copyfile(os.path.join(self.config.cwd, "config.xml"), os.path.join(www_dir, 'config.xml'))
+        shutil.copytree(os.path.join(self.config.cwd, 'www'), www_dir)
+        shutil.copyfile(os.path.join(self.config.cwd, 'config.xml'), os.path.join(www_dir, 'config.xml'))
 
         copies = {
-            "www": None,
-            "platform_www": "www",
-            "config.xml": None,
-            "cordova.desktop": None,
-            "manifest.json": None,
-            "apparmor.json": None,
+            'www': None,
+            'platform_www': 'www',
+            'config.xml': None,
+            'cordova.desktop': None,
+            'manifest.json': None,
+            'apparmor.json': None,
         }
 
         # If value is none, set to key
@@ -109,10 +109,10 @@ class CordovaBuilder(MakeBuilder):
         apparmor_file = os.path.join(self._dirs['build'], 'apparmor.json')
         with open(apparmor_file, 'r') as apparmor_reader:
             apparmor = json.load(apparmor_reader)
-            apparmor["policy_version"] = 16.04 if self.config.is_xenial else 1.3
+            apparmor['policy_version'] = 16.04 if self.config.is_xenial else 1.3
 
-            if 'webview' not in apparmor["policy_groups"]:
-                apparmor["policy_groups"].append("webview")
+            if 'webview' not in apparmor['policy_groups']:
+                apparmor['policy_groups'].append('webview')
 
             with open(apparmor_file, 'w') as apparmor_writer:
                 json.dump(apparmor, apparmor_writer, indent=4)
