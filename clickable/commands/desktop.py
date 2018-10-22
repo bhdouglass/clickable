@@ -68,7 +68,7 @@ class DesktopCommand(Command):
         if not os.path.isdir(share):
             os.makedirs(share)
 
-        cache = '/tmp/clickable/cacge'
+        cache = '/tmp/clickable/cache'
         if not os.path.isdir(cache):
             os.makedirs(cache)
 
