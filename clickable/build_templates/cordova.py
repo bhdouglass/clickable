@@ -37,14 +37,13 @@ class CordovaBuilder(MakeBuilder):
                 print_error('Docker is required to intialize cordova directories. Enable docker or run "cordova platform add ubuntu" manually to remove this message')
                 sys.exit(1)
 
-            cordova_docker_image = "beevelop/cordova:v7.0.0"  # TODO add cordova to the clickable image
             command = "cordova platform add ubuntu"
 
             # Can't use self.container.run_command because need to set -e HOME=/tmp
             wrapped_command = 'docker run -v {cwd}:{cwd} -w {cwd} -u {uid}:{uid} -e HOME=/tmp --rm -i {img} {cmd}'.format(
                 cwd=self.config.cwd,
                 uid=os.getuid(),
-                img=cordova_docker_image,
+                img=self.base_docker_image,
                 cmd=command
             )
 
@@ -57,7 +56,7 @@ class CordovaBuilder(MakeBuilder):
         try:
             os.makedirs(path)
         except FileExistsError:
-            print_warning('Failed to create dir, already exists ({})'.format(path))
+            pass
         except Exception:
             print_warning('Failed to create dir ({}): {}'.format(path, str(sys.exc_info()[0])))
 

@@ -18,6 +18,8 @@ class BuildCommand(Command):
     def run(self, path_arg=None):
         try:
             os.makedirs(self.config.dir)
+        except FileExistsError:
+            pass
         except Exception:
             print_warning('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
 
