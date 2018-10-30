@@ -5,7 +5,7 @@ Commands
 
 From the root directory of your project you have the following sub-commands available:
 
-You can combine the commands together like ``clickable build click_build install launch``
+You can combine the commands together like ``clickable build click-build install launch``
 
 ``clickable``
 -------------
