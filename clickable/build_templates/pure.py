@@ -14,7 +14,8 @@ class PureQMLMakeBuilder(MakeBuilder):
     def post_make(self):
         super().post_make()
 
-        with open(self.config.find_manifest(), 'r') as f:
+        manifest_file = self.config.find_manifest(ignore_dir=self.config.temp)
+        with open(manifest_file, 'r') as f:
             manifest = {}
             try:
                 manifest = json.load(f)
@@ -22,7 +23,7 @@ class PureQMLMakeBuilder(MakeBuilder):
                 raise ValueError('Failed reading "manifest.json", it is not valid json')
 
             manifest['architecture'] = 'all'
-            with open(self.config.find_manifest(), 'w') as writer:
+            with open(manifest_file, 'w') as writer:
                 json.dump(manifest, writer, indent=4)
 
 

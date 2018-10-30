@@ -276,11 +276,11 @@ class Config(object):
 
         return self.config['template']
 
-    def find_manifest(self):
+    def find_manifest(self, ignore_dir=None):
         if self.config['template'] == Config.CORDOVA:
-            manifest = find_manifest(self.temp)
+            manifest = find_manifest(self.temp, ignore_dir=ignore_dir)
         else:
-            manifest = find_manifest(self.cwd, self.temp, self.config['dir'])
+            manifest = find_manifest(self.cwd, self.temp, self.config['dir'], ignore_dir)
 
         return manifest
 

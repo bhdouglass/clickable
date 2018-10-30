@@ -62,7 +62,7 @@ class ManifestNotFoundException(Exception):
     pass
 
 
-def find_manifest(cwd, temp_dir=None, build_dir=None):
+def find_manifest(cwd, temp_dir=None, build_dir=None, ignore_dir=None):
     manifests = []
     searchpaths = []
     searchpaths.append(cwd)
@@ -73,6 +73,9 @@ def find_manifest(cwd, temp_dir=None, build_dir=None):
     for (root, dirs, files) in itertools.chain.from_iterable(os.walk(path, topdown=True) for path in searchpaths):
         for name in files:
             if name == 'manifest.json':
+                if ignore_dir is not None and root.startswith(ignore_dir):
+                    continue
+
                 manifests.append(os.path.join(root, name))
 
     if not manifests:
