@@ -5,7 +5,7 @@ Commands
 
 From the root directory of your project you have the following sub-commands available:
 
-You can combine the commands together like ``clickable build click_build install launch``
+You can combine the commands together like ``clickable build click-build install launch``
 
 ``clickable``
 -------------
@@ -58,7 +58,7 @@ compiled click to the directory specified by ``--output``.
 --------------------
 
 Takes the built click package and runs click-review against it. This allows you
-to review your click without installing click-review on you computer.
+to review your click without installing click-review on your computer.
 
 ``clickable install``
 ---------------------
