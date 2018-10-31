@@ -29,8 +29,7 @@ class PublishCommand(Command):
             raise Exception('Unable to publish app, python requests module is not installed')
 
         if not self.config.apikey:
-            print_error('No api key specified, use OPENSTORE_API_KEY or --apikey')
-            return
+            raise Exception('No api key specified, use OPENSTORE_API_KEY or --apikey')
 
         click = '{}_{}_{}.click'.format(self.config.find_package_name(), self.config.find_version(), self.config.arch)
         click_path = os.path.join(self.config.dir, click)
@@ -51,6 +50,6 @@ class PublishCommand(Command):
             print_success('Upload successful')
         else:
             if response.text == 'Unauthorized':
-                print_error('Failed to upload click: Unauthorized')
+                raise Exception('Failed to upload click: Unauthorized')
             else:
-                print_error('Failed to upload click: {}'.format(response.json()['message']))
+                raise Exception('Failed to upload click: {}'.format(response.json()['message']))

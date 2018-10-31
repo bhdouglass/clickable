@@ -3,6 +3,17 @@
 Changelog
 =========
 
+Changes in v5.0.2
+-----------------
+
+- Fixed publish command not exiting with an error code when there is an error
+
+Changes in v5.0.1
+-----------------
+
+- Fixed typo in cache path
+- Improved Cordova support
+
 Changes in v5.0.0
 -----------------
 
