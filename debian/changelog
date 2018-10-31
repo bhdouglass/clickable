@@ -1,3 +1,10 @@
+clickable (5.0.1) unstable; urgency=medium
+
+  * Fixed typo in cache path
+  * Updated cordova support
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 31 Oct 2018 00:35:00 -0500
+
 clickable (5.0.0b) unstable; urgency=medium
 
   * Xenial by default (use --vivid to compile for 15.04)
