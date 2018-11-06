@@ -32,6 +32,10 @@ APP_TEMPLATES = [
         'name': 'go',
         'display': 'Go/QML App',
         'url': 'https://gitlab.com/clickable/ut-app-go-template',
+    }, {
+        'name': 'main-cpp',
+        'display': 'C++/QML App (built using CMake with a main.cpp)',
+        'url': 'https://gitlab.com/clickable/ut-app-binary-cmake-template',
     }
 ]
 

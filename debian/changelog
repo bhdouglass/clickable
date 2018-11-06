@@ -1,3 +1,9 @@
+clickable (5.1.0) unstable; urgency=medium
+
+  * Added app template for QML/C++ with a main.cpp
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Tue, 06 Nov 2018 11:19:00 -0500
+
 clickable (5.0.2) unstable; urgency=medium
 
   * Fixed publish command not exiting with an error code when there is an error

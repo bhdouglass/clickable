@@ -47,3 +47,12 @@ Go/QML App
 An app template that is setup for a QML app with a Go backend.
 
 Check it out on `GitLab <https://gitlab.com/clickable/ut-app-go-template>`__.
+
+C++/QML App (built using CMake with a main.cpp)
+-----------------------------------------------
+
+An app template that is setup for a QML app with a C++ plugin. It includes a CMake
+setup to allow for easy translation. It also includes a main.cpp to build a custom
+binary rather than relying on qmlscene.
+
+Check it out on `GitLab <https://gitlab.com/clickable/ut-app-binary-cmake-template>`__.
