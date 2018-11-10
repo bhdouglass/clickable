@@ -3,7 +3,11 @@ import os
 import shlex
 
 from .base import Command
-from clickable.utils import run_subprocess_call, run_subprocess_check_output
+from clickable.utils import (
+    run_subprocess_call,
+    run_subprocess_check_output,
+    print_info,
+)
 
 
 class ShellCommand(Command):

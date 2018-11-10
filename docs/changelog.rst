@@ -6,6 +6,11 @@ Changelog
 Changes in v5.1.0
 -----------------
 
+- Fixed bug in "shell" command
+
+Changes in v5.1.0
+-----------------
+
 - Added app template for QML/C++ with a main.cpp
 
 Changes in v5.0.2
