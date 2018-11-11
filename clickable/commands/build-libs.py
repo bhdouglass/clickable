@@ -20,14 +20,15 @@ class LibBuildCommand(Command):
         if not self.config.lib_configs:
             print_warning('No libraries defined.')
 
-        self.container.setup_dependencies()
-
         for lib in self.config.lib_configs:
             dir_tmp = lib.dir
             for arch in lib.architectures:
                 if arch in lib.arch_triplets:
                     if not lib.custom_docker_image:
-                        lib.docker_image = 'clickable/ubuntu-sdk:16.04-{}'.format(arch)
+                        if self.config.is_xenial:
+                            lib.docker_image = 'clickable/ubuntu-sdk:16.04-{}'.format(arch)
+                        else:
+                            lib.docker_image = 'clickable/ubuntu-sdk:15.04-{}'.format(arch)
                     lib.dir = os.path.join(dir_tmp, lib.arch_triplets[arch])
                     lib.arch = arch
                     
@@ -41,12 +42,15 @@ class LibBuildCommand(Command):
                     if lib.prebuild:
                         subprocess.check_call(lib.prebuild, cwd=self.config.cwd, shell=True)
 
-                    self.build(lib, Container(lib))
+                    self.build(lib)
 
                     if lib.postbuild:
                         subprocess.check_call(lib.postbuild, cwd=lib.dir, shell=True)
 
-    def build(self, lib, container):
+    def build(self, lib):
+        container = Container(lib)
+        container.setup_dependencies()
+
         builder_classes = {}
         builder_dir = join(dirname(__file__), '..')
         modules = glob.glob(join(builder_dir, 'build_templates/*.py'))
