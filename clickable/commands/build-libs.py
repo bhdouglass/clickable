@@ -1,9 +1,8 @@
 import os
 import sys
-import subprocess
 
 from .base import Command
-from clickable.utils import print_warning, get_builders
+from clickable.utils import print_warning, get_builders, run_subprocess_check_call
 from clickable.container import Container
 
 class LibBuildCommand(Command):
@@ -35,12 +34,12 @@ class LibBuildCommand(Command):
                         print_warning('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
 
                     if lib.prebuild:
-                        subprocess.check_call(lib.prebuild, cwd=self.config.cwd, shell=True)
+                        run_subprocess_check_call(lib.prebuild, cwd=self.config.cwd, shell=True)
 
                     self.build(lib)
 
                     if lib.postbuild:
-                        subprocess.check_call(lib.postbuild, cwd=lib.dir, shell=True)
+                        run_subprocess_check_call(lib.postbuild, cwd=lib.dir, shell=True)
 
     def build(self, lib):
         container = Container(lib)
