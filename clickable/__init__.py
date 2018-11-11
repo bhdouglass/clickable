@@ -116,6 +116,12 @@ def main():
         '--docker-image',
         help='Use a specific docker image to build with'
     )
+    parser.add_argument(
+        '--dirty',
+        action='store_true',
+        help='Do not clean build directory',
+        default=False,
+    )
 
     args = parser.parse_args()
 

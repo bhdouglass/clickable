@@ -77,6 +77,7 @@ class Config(object):
             'gopath': None,
             'docker_image': None,
             'build_args': None,
+            'dirty': False,
         }
 
         json_config = self.load_json_config()
@@ -91,6 +92,11 @@ class Config(object):
         self.host_arch = platform.machine()
         self.is_arm = self.host_arch.startswith('arm')
         self.temp = os.path.join(self.config['dir'], 'tmp')
+
+        if self.config['dirty']:
+            commands = self.config['default'].split()
+            commands.remove('clean')
+            self.config['default'] = ' '.join(commands)
 
         self.build_arch = self.config['arch']
         if self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE:
@@ -202,6 +208,9 @@ class Config(object):
 
         if args.docker_image:
             config['docker_image'] = args.docker_image
+
+        if args.dirty:
+            config['dirty'] = True
 
         return config
 
