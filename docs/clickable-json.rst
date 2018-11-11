@@ -149,3 +149,11 @@ build_args
 ----------
 
 Optional, arguments to pass to qmake or cmake. Ex: ``CONFIG+=ubuntu``
+
+.. _clickable-json-dirty:
+
+dirty
+----------
+
+Optional, whether or not do a dirty build, avoiding to clean the build directory
+before building. The default is ``False``.
