@@ -1,6 +1,3 @@
-from clickable.utils import check_command
-
-
 class Builder(object):
     name = None
 
