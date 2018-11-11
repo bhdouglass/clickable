@@ -1,9 +1,8 @@
 import os
 import sys
-import subprocess
 
 from .base import Command
-from clickable.utils import print_warning, get_builders
+from clickable.utils import print_warning, get_builders, run_subprocess_check_call
 
 
 class BuildCommand(Command):
@@ -22,12 +21,12 @@ class BuildCommand(Command):
         self.container.setup_dependencies()
 
         if self.config.prebuild:
-            subprocess.check_call(self.config.prebuild, cwd=self.config.cwd, shell=True)
+            run_subprocess_check_call(self.config.prebuild, cwd=self.config.cwd, shell=True)
 
         self.build()
 
         if self.config.postbuild:
-            subprocess.check_call(self.config.postbuild, cwd=self.config.dir, shell=True)
+            run_subprocess_check_call(self.config.postbuild, cwd=self.config.dir, shell=True)
 
     def build(self):
         template = self.config.get_template()

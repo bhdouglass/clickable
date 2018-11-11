@@ -30,8 +30,8 @@ def run_subprocess_call(cmd, shell=False, **args):
     return subprocess.call(prepare_command(cmd, shell), shell=shell, **args)
 
 
-def run_subprocess_check_call(cmd, shell=False, **args):
-    return subprocess.check_call(prepare_command(cmd, shell), shell=shell, **args)
+def run_subprocess_check_call(cmd, shell=False, cwd=os.getcwd(), **args):
+    return subprocess.check_call(prepare_command(cmd, shell), shell=shell, cwd=cwd, **args)
 
 
 def run_subprocess_check_output(cmd, shell=False, **args):
