@@ -29,6 +29,7 @@ class LibConfig(object):
         self.config = {
             'architectures': ['armhf'],
             'template': None,
+            'postmake': None,
             'prebuild': None,
             'build': None,
             'postbuild': None,
