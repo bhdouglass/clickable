@@ -17,8 +17,10 @@ class LibConfig(object):
 
     first_docker_info = True
     container_mode = False
+    lxd = False
     use_nvidia = False
     custom_docker_image = False
+    gopath = None
 
     install = False
 
@@ -33,6 +35,8 @@ class LibConfig(object):
             'name': None,
             'dir': None,
             'src_dir': None,
+            'specificDependencies': False,  # TODO make this less confusing
+            'dependencies': [],
             'make_jobs': 0,
             'docker_image': None,
             'build_args': None,
@@ -61,6 +65,9 @@ class LibConfig(object):
         self.temp = self.config['dir']
 
     def check_config_errors(self):
+        if self.lxd:
+            raise ValueError('Building libraries is only supported with docker')
+
         if not self.config['name'] and not (self.config['dir'] and self.config['src_dir']):
             raise ValueError('Either "name" must be specified or "dir" and "src_dir" in each lib config')
 
