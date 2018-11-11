@@ -11,6 +11,7 @@ from clickable.utils import (
     run_subprocess_call,
     run_subprocess_check_output,
     print_info,
+    print_warning,
     check_command
 )
 
