@@ -34,6 +34,16 @@ Generate a new app from an :ref:`app template <app-templates>` by name.
 
 Opens a shell on the device via ssh. This is similar to the ``phablet-shell`` command.
 
+``clickable clean-libs``
+------------------------
+
+Cleans out all library build dirs.
+
+``clickable build-libs``
+------------------------
+
+Builds the dependency libraries specified in the clickable.json.
+
 ``clickable clean``
 -------------------
 
