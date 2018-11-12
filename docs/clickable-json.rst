@@ -115,7 +115,7 @@ on ``Docker Hub <https://hub.docker.com/r/clickable/ubuntu-sdk/tags/>``__.
 
 ignore
 ------
-
+https://github.com/Lukasa/language-restructuredtext/releases
 Optional, a list of files to ignore when building a ``pure`` template
 Example:
 
@@ -131,7 +131,7 @@ Example:
 .. _clickable-json-make-jobs:
 
 make_jobs
----------
+---------https://github.com/https://github.com/Lukasa/language-restructuredtext/releasesLukasa/language-restructuredtext/releases
 
 Optional, the number of jobs to use when running make, equivalent to make's ``-j``
 option. If left blank this defaults to the number of cpus your computer has.
@@ -156,6 +156,8 @@ libraries
 ---------
 Optional, libraries to be build in the docker container by calling ``clickable build-libs``. It is a list with entries that basically looks like clickable.json itself. Example:
 
+.. code-block:: javascript
+ 
     "libraries": [
         {
             "template": "cmake",
@@ -180,8 +182,8 @@ Optional, name of the library, which is used to set source dir (**src_dir**) and
 
 src_dir
 ^^^^^^^
-Optional, library source directory. Has to be relative to the project root. If not specified it defaults to ``libs/<name>`` 
+Optional, library source directory. Must be relative to the project root. If not specified it defaults to ``libs/<name>`` 
 
 dir
 ^^^
-Optional, library build directory. Has to be relative to the project root. If not specified it defaults to ``build/<name>``. The architecture triplet is appended in each case, so that both can exist in parallel (``arm-linux-gnueabihf`` for ``armhf`` and ``x86_64-linux-gnu`` for ``amd64``).
+Optional, library build directory. Must be relative to the project root. If not specified it defaults to ``build/<name>``. The architecture triplet is appended in each case, so that both can exist in parallel (``arm-linux-gnueabihf`` for ``armhf`` and ``x86_64-linux-gnu`` for ``amd64``).
