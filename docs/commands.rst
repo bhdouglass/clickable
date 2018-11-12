@@ -10,7 +10,9 @@ You can combine the commands together like ``clickable build click-build install
 ``clickable``
 -------------
 
-Runs the default sub-commands specified in the "default" config
+Runs the default sub-commands specified in the "default" config. A dirty build
+without cleaning the build dir can be achieved by running 
+``clickable --dirty``.
 
 ``clickable desktop``
 ---------------------
