@@ -26,6 +26,7 @@ class Config(object):
         'GOPATH': 'gopath',
         'CLICKABLE_DOCKER_IMAGE': 'docker_image',
         'CLICKABLE_BUILD_ARGS': 'build_args',
+        'CLICKABLE_DIRTY': 'dirty',
     }
 
     PURE_QML_QMAKE = 'pure-qml-qmake'
