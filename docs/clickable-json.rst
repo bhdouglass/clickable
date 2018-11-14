@@ -183,7 +183,8 @@ Optional, libraries to be build in the docker container by calling ``clickable b
     ]
   
 The keywords ``prebuild``, ``build``, ``postbuild``, ``postmake``, ``make_jobs``, 
-``docker_image`` and ``build_args`` can be used the same way as described above.
+``docker_image``, ``build_args``, ``dependencies`` and ``specificDependencies`` 
+can be used for a library the same way as described above for the app.
 
 template
 ^^^^^^^^
@@ -200,3 +201,12 @@ Optional, library source directory. Must be relative to the project root. If not
 dir
 ^^^
 Optional, library build directory. Must be relative to the project root. If not specified it defaults to ``build/<name>``. The architecture triplet is appended in each case, so that both can exist in parallel (``arm-linux-gnueabihf`` for ``armhf`` and ``x86_64-linux-gnu`` for ``amd64``).
+
+architectures
+^^^^^^^^^^^^^
+Optional, architectures to compile the library for. The default is just armhf.
+Example:
+
+.. code-block:: javascript
+ 
+    "architectures": ["armhf", "amd64"]
