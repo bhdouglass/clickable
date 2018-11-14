@@ -356,3 +356,9 @@ class Config(object):
             raise ValueError('No app name specified in manifest.json or clickable.json')
 
         return app
+        
+    def get_click_filename(self):
+        self.get_template()
+
+        return '{}_{}_{}.click'.format(self.find_package_name(), self.find_version(), self.config['arch'])
+
