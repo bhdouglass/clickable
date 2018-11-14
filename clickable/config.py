@@ -105,7 +105,6 @@ class Config(object):
             commands = self.config['default'].split()
             commands.remove('clean')
             self.config['default'] = ' '.join(commands)
-            print("Dirty")
 
         self.build_arch = self.config['arch']
         if self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE:
@@ -356,9 +355,8 @@ class Config(object):
             raise ValueError('No app name specified in manifest.json or clickable.json')
 
         return app
-        
+
     def get_click_filename(self):
         self.get_template()
 
         return '{}_{}_{}.click'.format(self.find_package_name(), self.find_version(), self.config['arch'])
-

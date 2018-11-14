@@ -115,13 +115,8 @@ on `Docker Hub <https://hub.docker.com/r/clickable/ubuntu-sdk/tags/>`__.
 
 ignore
 ------
-<<<<<<< HEAD
 
 Optional, a list of files to ignore when building a `pure` template
-=======
-https://github.com/Lukasa/language-restructuredtext/releases
-Optional, a list of files to ignore when building a ``pure`` template
->>>>>>> Fix clickable.json libraries part
 Example:
 
 .. code-block:: javascript
@@ -136,7 +131,7 @@ Example:
 .. _clickable-json-make-jobs:
 
 make_jobs
----------https://github.com/https://github.com/Lukasa/language-restructuredtext/releasesLukasa/language-restructuredtext/releases
+---------
 
 Optional, the number of jobs to use when running make, equivalent to make's `-j`
 option. If left blank this defaults to the number of cpus your computer has.
