@@ -20,8 +20,9 @@ class DesktopCommand(Command):
         if self.config.lxd:
             raise Exception('Using lxd for desktop mode is not supported')
 
-        clean = CleanCommand(self.config)
-        clean.run()
+        if not self.config.dirty:
+            clean = CleanCommand(self.config)
+            clean.run()
         build = BuildCommand(self.config)
         build.run()
 

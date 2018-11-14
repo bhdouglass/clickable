@@ -85,3 +85,8 @@ Same as :ref:`--nvidia <nvidia>`.
 -------------------
 
 Same as ``--vivid``
+
+``CLICKABLE_DIRTY``
+-----------------
+
+Overrides the clickable.json's :ref:`dirty <clickable-json-dirty>`.
