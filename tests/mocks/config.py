@@ -30,3 +30,6 @@ class ConfigMock(Config):
                 },
             },
         }
+
+    def get_template(self):
+        return self.PURE

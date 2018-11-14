@@ -31,7 +31,7 @@ class PublishCommand(Command):
         if not self.config.apikey:
             raise Exception('No api key specified, use OPENSTORE_API_KEY or --apikey')
 
-        click = '{}_{}_{}.click'.format(self.config.find_package_name(), self.config.find_version(), self.config.arch)
+        click = self.config.get_click_filename()
         click_path = os.path.join(self.config.dir, click)
 
         url = OPENSTORE_API

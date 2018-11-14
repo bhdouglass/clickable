@@ -3,7 +3,13 @@
 Changelog
 =========
 
-Changes in v5.1.0
+Changes in v5.2.0
+-----------------
+
+- Fixed bug in build template auto detection
+- Added new dirty build option
+
+Changes in v5.1.1
 -----------------
 
 - Fixed bug in "shell" command

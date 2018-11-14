@@ -16,7 +16,7 @@ class ClickBuildCommand(Command):
         self.container.run_command(command)
 
         if self.config.click_output:
-            click = '{}_{}_{}.click'.format(self.config.find_package_name(), self.config.find_version(), self.config.arch)
+            click = self.config.get_click_filename()
             click_path = os.path.join(self.config.dir, click)
             output_file = os.path.join(self.config.click_output, click)
 

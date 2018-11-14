@@ -219,7 +219,7 @@ class Config(object):
         if self.desktop:
             self.config['arch'] = 'amd64'
         elif self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE:
-            self.arch = 'all'
+            self.config['arch'] = 'all'
 
         self.config['dir'] = os.path.abspath(self.config['dir'])
 
@@ -282,6 +282,8 @@ class Config(object):
                 template = Config.PURE
 
             self.config['template'] = template
+            self.cleanup_config()
+
             print_info('Auto detected template to be "{}"'.format(template))
 
         return self.config['template']
@@ -346,3 +348,8 @@ class Config(object):
             raise ValueError('No app name specified in manifest.json or clickable.json')
 
         return app
+
+    def get_click_filename(self):
+        self.get_template()
+
+        return '{}_{}_{}.click'.format(self.find_package_name(), self.find_version(), self.config['arch'])

@@ -1,3 +1,10 @@
+clickable (5.2.0) unstable; urgency=medium
+
+  * Fixed bug in build template auto detection
+  * Added new dirty build option
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 14 Nov 2018 00:46:00 -0500
+
 clickable (5.1.1) unstable; urgency=medium
 
   * Fixed bug in "shell" command
