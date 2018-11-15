@@ -6,7 +6,7 @@ from .base import Command
 from clickable.utils import print_warning
 
 
-class CleanCommand(Command):
+class CleanLibsCommand(Command):
     aliases = []
     name = 'clean-libs'
     help = 'Clean the library build directories'
