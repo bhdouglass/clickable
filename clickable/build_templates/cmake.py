@@ -16,6 +16,6 @@ class CMakeBuilder(MakeBuilder):
         if self.config.build_args:
             command = '{} {}'.format(command, self.config.build_args)
 
-        self.container.run_command('{} {}'.format(command, self.config.cwd))
+        self.container.run_command('{} {}'.format(command, self.config.src_dir))
 
         super().build()

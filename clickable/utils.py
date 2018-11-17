@@ -3,7 +3,11 @@ import subprocess
 import json
 import os
 import shlex
+import glob
+import inspect
+from os.path import dirname, basename, isfile, join
 
+from clickable.build_templates.base import Builder
 
 # TODO use these subprocess functions everywhere
 
@@ -26,8 +30,8 @@ def run_subprocess_call(cmd, shell=False, **args):
     return subprocess.call(prepare_command(cmd, shell), shell=shell, **args)
 
 
-def run_subprocess_check_call(cmd, shell=False, **args):
-    return subprocess.check_call(prepare_command(cmd, shell), shell=shell, **args)
+def run_subprocess_check_call(cmd, shell=False, cwd=None, **args):
+    return subprocess.check_call(prepare_command(cmd, shell), shell=shell, cwd=cwd, **args)
 
 
 def run_subprocess_check_output(cmd, shell=False, **args):
@@ -122,3 +126,17 @@ def env(name):
         value = os.environ[name]
 
     return value
+
+def get_builders():
+    builder_classes = {}
+    builder_dir = join(dirname(__file__), 'build_templates')
+    modules = glob.glob(join(builder_dir, '*.py'))
+    builder_modules = [basename(f)[:-3] for f in modules if isfile(f) and not f.endswith('__init__.py')]
+
+    for name in builder_modules:
+        builder_submodule = __import__('clickable.build_templates.{}'.format(name), globals(), locals(), [name])
+        for name, cls in inspect.getmembers(builder_submodule):
+            if inspect.isclass(cls) and issubclass(cls, Builder) and cls.name:
+                builder_classes[cls.name] = cls
+
+    return builder_classes

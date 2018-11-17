@@ -3,6 +3,8 @@ import json
 import platform
 import xml.etree.ElementTree as ElementTree
 
+from .libconfig import LibConfig
+
 from .utils import (
     find_manifest,
     get_manifest,
@@ -52,6 +54,7 @@ class Config(object):
     apikey = None
     is_xenial = True
     custom_docker_image = True
+    install = True
 
     def __init__(self, args, desktop=False):
         self.desktop = desktop
@@ -66,6 +69,7 @@ class Config(object):
             'postbuild': None,
             'launch': None,
             'dir': './build/',
+            'src_dir': self.cwd,
             'kill': None,
             'scripts': {},
             'lxd': False,
@@ -79,6 +83,7 @@ class Config(object):
             'docker_image': None,
             'build_args': None,
             'dirty': False,
+            'libraries': [],
         }
 
         json_config = self.load_json_config()
@@ -87,6 +92,8 @@ class Config(object):
         self.config.update(env_config)
         arg_config = self.load_arg_config(args)
         self.config.update(arg_config)
+
+        self.lib_configs = [LibConfig(lib) for lib in self.config['libraries']]
 
         self.cleanup_config()
 
