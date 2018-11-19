@@ -1,3 +1,9 @@
+clickable (5.3.0) unstable; urgency=medium
+
+  * Added options for compiling libraries
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sun, 18 Nov 2018 23:41:00 -0500
+
 clickable (5.2.0) unstable; urgency=medium
 
   * Fixed bug in build template auto detection

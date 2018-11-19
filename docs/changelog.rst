@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v5.3.0
+-----------------
+
+- :ref:`Added options for compiling libraries <clickable-json-libraries>`
+
 Changes in v5.2.0
 -----------------
 
