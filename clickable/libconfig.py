@@ -61,8 +61,8 @@ class LibConfig(object):
             super().__setattr__(name, value)
 
     def set_dirs(self):
-        self.config['dir'] = self.config['dir'] if self.config['dir'] else os.path.join(self.cwd, 'build', self.config['name'])
-        self.config['src_dir'] = self.config['src_dir'] if self.config['src_dir'] else os.path.join(self.cwd, 'libs', self.config['name'])
+        self.config['dir'] = os.path.join(self.cwd, self.config['dir']) if self.config['dir'] else os.path.join(self.cwd, 'build', self.config['name'])
+        self.config['src_dir'] = os.path.join(self.cwd, self.config['src_dir']) if self.config['src_dir'] else os.path.join(self.cwd, 'libs', self.config['name'])
         self.temp = self.config['dir']
 
     def check_config_errors(self):
