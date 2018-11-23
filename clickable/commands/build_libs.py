@@ -33,18 +33,18 @@ class LibBuildCommand(Command):
                     except Exception:
                         print_warning('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
 
+                    container = Container(lib)
+                    container.setup_dependencies()
+
                     if lib.prebuild:
                         run_subprocess_check_call(lib.prebuild, cwd=self.config.cwd, shell=True)
 
-                    self.build(lib)
+                    self.build(lib, container)
 
                     if lib.postbuild:
                         run_subprocess_check_call(lib.postbuild, cwd=lib.dir, shell=True)
 
-    def build(self, lib):
-        container = Container(lib)
-        container.setup_dependencies()
-
+    def build(self, lib, container):
         builder_classes = get_builders()
         builder = builder_classes[lib.template](lib, container, None)
         builder.build()
