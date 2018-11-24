@@ -1,3 +1,9 @@
+clickable (5.3.1) unstable; urgency=medium
+
+  * Fixed dependencies in library prebuild
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sat, 24 Nov 2018 00:01:00 -0500
+
 clickable (5.3.0) unstable; urgency=medium
 
   * Added options for compiling libraries

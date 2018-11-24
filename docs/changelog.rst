@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v5.3.1
+-----------------
+
+- Fixed dependencies in library prebuild
+
 Changes in v5.3.0
 -----------------
 
