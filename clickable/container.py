@@ -19,6 +19,9 @@ from clickable.utils import (
 class Container(object):
     def __init__(self, config):
         self.config = config
+        self.clickableDir = '.clickable/{}'.format(self.config.build_arch)
+        self.dockerNameFile = '{}/name.txt'.format(self.clickableDir)
+        self.dockerFile = '{}/Dockerfile'.format(self.clickableDir)
 
         if not self.config.container_mode:
             if self.config.lxd:
@@ -37,8 +40,8 @@ class Container(object):
 
                     self.base_docker_image = self.docker_image
 
-                    if os.path.exists('.clickable/name.txt'):
-                        with open('.clickable/name.txt', 'r') as f:
+                    if os.path.exists(self.dockerNameFile):
+                        with open(self.dockerNameFile, 'r') as f:
                             self.docker_image = f.read().strip()
 
     def start_docker(self):
@@ -265,11 +268,11 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
 
                     build = False
 
-                    if not os.path.exists('.clickable'):
-                        os.makedirs('.clickable')
+                    if not os.path.exists(self.clickableDir):
+                        os.makedirs(self.clickableDir)
 
-                    if os.path.exists('.clickable/Dockerfile'):
-                        with open('.clickable/Dockerfile', 'r') as f:
+                    if os.path.exists(self.dockerFile):
+                        with open(self.dockerFile, 'r') as f:
                             if dockerfile.strip() != f.read().strip():
                                 build = True
                     else:
@@ -281,16 +284,16 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
                         build = not image_exists
 
                     if build:
-                        with open('.clickable/Dockerfile', 'w') as f:
+                        with open(self.dockerFile, 'w') as f:
                             f.write(dockerfile)
 
                         self.docker_image = '{}-{}'.format(self.base_docker_image, uuid.uuid4())
-                        with open('.clickable/name.txt', 'w') as f:
+                        with open(self.dockerNameFile, 'w') as f:
                             f.write(self.docker_image)
 
                         print_info('Generating new docker image')
                         try:
-                            subprocess.check_call(shlex.split('docker build -t {} .'.format(self.docker_image)), cwd='.clickable')
+                            subprocess.check_call(shlex.split('docker build -t {} .'.format(self.docker_image)), cwd=self.clickableDir)
                         except subprocess.CalledProcessError:
                             self.clean_clickable()
                             raise
@@ -298,7 +301,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
                         print_info('Dependencies already setup')
 
     def clean_clickable(self):
-        path = os.path.join(self.config.cwd, '.clickable')
+        path = os.path.join(self.config.cwd, self.clickableDir)
         if os.path.exists(path):
             try:
                 shutil.rmtree(path)
