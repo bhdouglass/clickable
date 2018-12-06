@@ -25,6 +25,7 @@ class LibBuildCommand(Command):
                             lib.docker_image = 'clickable/ubuntu-sdk:15.04-{}'.format(arch)
                     lib.dir = os.path.join(dir_tmp, lib.arch_triplets[arch])
                     lib.arch = arch
+                    lib.build_arch = arch
                     
                     try:
                         os.makedirs(lib.dir)
