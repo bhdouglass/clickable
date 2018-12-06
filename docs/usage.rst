@@ -32,7 +32,7 @@ Connecting to a device over ssh
 
 By default the device is connected to via adb.
 If you want to access a device over ssh you need to either specify the device
-IP address on the command line (ex: ``clickable logs --ssh 192.168.1.10`` ) or you
+IP address or hostname on the command line (ex: ``clickable logs --ssh 192.168.1.10`` ) or you
 can use the ``CLICKABLE_SSH`` env var.
 
 .. _multiple-devices:
