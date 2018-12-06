@@ -103,8 +103,10 @@ class Config(object):
 
         if self.config['dirty']:
             commands = self.config['default'].split()
-            commands.remove('clean')
-            self.config['default'] = ' '.join(commands)
+
+            if 'clean' in commands:
+                commands.remove('clean')
+                self.config['default'] = ' '.join(commands)
 
         self.build_arch = self.config['arch']
         if self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE:
