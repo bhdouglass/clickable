@@ -1,3 +1,11 @@
+clickable (5.3.2) unstable; urgency=medium
+
+  * Fixed issue building libraries
+  * Create arch specific directories in .clickable
+  * Fixed --dirty breaking when using a custom default set of commands
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Thu, 6 Dec 2018 00:20:00 -0500
+
 clickable (5.3.1) unstable; urgency=medium
 
   * Fixed dependencies in library prebuild

@@ -3,6 +3,13 @@
 Changelog
 =========
 
+Changes in v5.3.2
+-----------------
+
+- Fixed issue building libraries
+- Create arch specific directories in .clickable
+- Fixed --dirty breaking when using a custom default set of commands
+
 Changes in v5.3.1
 -----------------
 
