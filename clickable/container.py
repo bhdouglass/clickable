@@ -222,6 +222,8 @@ class Container(object):
             print_info('Checking dependencies')
 
             if self.config.lxd or self.config.container_mode:
+                self.run_command('apt-get update', sudo=True, use_dir=False)
+
                 command = 'apt-get install -y --force-yes'
                 run = False
                 for dep in self.config.dependencies:
@@ -244,8 +246,6 @@ class Container(object):
                     print_info('Dependencies already installed')
             else:  # Docker
                 self.check_docker()
-
-                # TODO make the path to the dockerfile arch dependent
 
                 if self.config.custom_docker_image:
                     print_info('Skipping dependency check, using a custom docker image')
