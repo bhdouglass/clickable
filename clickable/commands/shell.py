@@ -11,7 +11,7 @@ from clickable.utils import (
 
 
 class ShellCommand(Command):
-    aliases = []
+    aliases = ['ssh']
     name = 'shell'
     help = 'Opens a shell on the device via ssh'
 

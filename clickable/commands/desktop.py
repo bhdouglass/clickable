@@ -77,7 +77,7 @@ class DesktopCommand(Command):
         if not os.path.isdir(config):
             os.makedirs(config)
 
-        volumes = '-v {}:{} -v /tmp/.X11-unix:/tmp/.X11-unix -v {}:{} -v {}:/tmp/.local/share -v {}:/tmp/.cache -v {}:/tmp/.config'.format(
+        volumes = '-v {}:{} -v /tmp/.X11-unix:/tmp/.X11-unix -v {}:{} -v {}:/home/phablet/.local/share -v {}:/home/phablet/.cache -v {}:/home/phablet/.config'.format(
             self.config.cwd,
             self.config.cwd,
             xauth,
@@ -105,7 +105,7 @@ class DesktopCommand(Command):
             os.path.join(self.config.temp, 'lib/x86_64-linux-gnu/bin'),
             self.config.temp,
         ])
-        environment = '-e XAUTHORITY=/tmp/.docker.xauth -e DISPLAY={} -e QML2_IMPORT_PATH={} -e LD_LIBRARY_PATH={} -e PATH={} -e HOME=/tmp -e OXIDE_NO_SANDBOX=1'.format(
+        environment = '-e XAUTHORITY=/tmp/.docker.xauth -e DISPLAY={} -e QML2_IMPORT_PATH={} -e LD_LIBRARY_PATH={} -e PATH={} -e HOME=/home/phablet -e OXIDE_NO_SANDBOX=1'.format(
             os.environ['DISPLAY'],
             lib_path,
             lib_path,
