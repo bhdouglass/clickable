@@ -5,6 +5,7 @@ from .base import Command
 from clickable.utils import print_warning, get_builders, run_subprocess_check_call
 from clickable.container import Container
 
+
 class LibBuildCommand(Command):
     aliases = []
     name = 'build-libs'
@@ -23,10 +24,12 @@ class LibBuildCommand(Command):
                             lib.docker_image = 'clickable/ubuntu-sdk:16.04-{}'.format(arch)
                         else:
                             lib.docker_image = 'clickable/ubuntu-sdk:15.04-{}'.format(arch)
+
                     lib.dir = os.path.join(dir_tmp, lib.arch_triplets[arch])
                     lib.arch = arch
                     lib.build_arch = arch
-                    
+                    lib.container_mode = self.config.container_mode
+
                     try:
                         os.makedirs(lib.dir)
                     except FileExistsError:
