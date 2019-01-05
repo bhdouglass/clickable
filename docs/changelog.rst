@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v5.3.3
+-----------------
+
+- More fixes for building libraries
+- Set the home directory to /home/phablet in desktop mode
+
 Changes in v5.3.2
 -----------------
 

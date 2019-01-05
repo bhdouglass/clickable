@@ -1,3 +1,10 @@
+clickable (5.3.3) unstable; urgency=medium
+
+  * More fixes for building libraries
+  * Set the home directory to /home/phablet in desktop mode
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sat, 5 Jan 2019 09:48:00 -0500
+
 clickable (5.3.2) unstable; urgency=medium
 
   * Fixed issue building libraries
