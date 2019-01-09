@@ -11,7 +11,7 @@ You can combine the commands together like ``clickable build click-build install
 -------------
 
 Runs the default sub-commands specified in the "default" config. A dirty build
-without cleaning the build dir can be achieved by running 
+without cleaning the build dir can be achieved by running
 ``clickable --dirty``.
 
 ``clickable desktop``
@@ -77,7 +77,7 @@ to review your click without installing click-review on your computer.
 
 Takes a built click package and installs it on a device.
 
-``clickable install --click ./path/to/click/app.click``
+``clickable install ./path/to/click/app.click``
 
 Installs the specified click package on the device
 
