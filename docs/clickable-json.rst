@@ -143,6 +143,14 @@ gopath
 
 Optional, the gopath on the host machine. If left blank, the ``GOPATH`` env var will be used.
 
+.. _clickable-json-cargo_home:
+
+cargo_home
+------
+
+Optional, the Cargo home path (usually `~/.cargo`) on the host machine.
+If left blank, the ``CARGO_HOME`` env var will be used.
+
 .. _clickable-json-build-args:
 
 build_args

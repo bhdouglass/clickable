@@ -9,6 +9,7 @@ from clickable.utils import (
     check_command,
     print_warning,
 )
+from clickable.config import Config
 
 
 class DesktopCommand(Command):
@@ -121,6 +122,14 @@ class DesktopCommand(Command):
         if self.config.gopath:
             go_config = '-v {}:/gopath -e GOPATH=/gopath'.format(self.config.gopath)
 
+        rust_config = ''
+
+        if self.config.config['template'] == Config.RUST and self.config.cargo_home:
+            rust_config = '-v {}:/opt/rust/cargo/registry -v {}:/opt/rust/cargo/git'.format(
+                os.path.join(self.config.cargo_home, 'registry'),
+                os.path.join(self.config.cargo_home, 'git'),
+            )
+
         run_xhost = False
         try:
             check_command('xhost')
@@ -132,10 +141,11 @@ class DesktopCommand(Command):
         if run_xhost:
             subprocess.check_call(shlex.split('xhost +local:docker'))
 
-        command = '{} run {} {} {} -w {} -u {} --rm -i {} bash -c "{}"'.format(
+        command = '{} run {} {} {} {} -w {} -u {} --rm -i {} bash -c "{}"'.format(
             'nvidia-docker' if self.config.use_nvidia else 'docker',
             volumes,
             go_config,
+            rust_config,
             environment,
             self.config.temp,
             os.getuid(),

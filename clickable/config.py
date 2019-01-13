@@ -26,6 +26,7 @@ class Config(object):
         'CLICKABLE_DEFAULT': 'default',
         'CLICKABLE_MAKE_JOBS': 'make_jobs',
         'GOPATH': 'gopath',
+        'CARGO_HOME': 'cargo_home',
         'CLICKABLE_DOCKER_IMAGE': 'docker_image',
         'CLICKABLE_BUILD_ARGS': 'build_args',
         'CLICKABLE_DIRTY': 'dirty',
@@ -40,10 +41,11 @@ class Config(object):
     PURE = 'pure'
     PYTHON = 'python'
     GO = 'go'
+    RUST = 'rust'
 
     required = ['arch', 'dir', 'docker_image']
     depricated = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh']
-    templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO]
+    templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO, RUST]
 
     first_docker_info = True
     device_serial_number = None
@@ -55,6 +57,7 @@ class Config(object):
     is_xenial = True
     custom_docker_image = True
     install = True
+    debug_build = False
 
     def __init__(self, args, desktop=False):
         self.desktop = desktop
@@ -80,6 +83,7 @@ class Config(object):
             'ignore': [],
             'make_jobs': 0,
             'gopath': None,
+            'cargo_home': None,
             'docker_image': None,
             'build_args': None,
             'dirty': False,
@@ -180,6 +184,9 @@ class Config(object):
         if env('CLICKABLE_VIVID'):
             self.is_xenial = False
 
+        if env('CLICKABLE_DEBUG_BUILD'):
+            self.debug_build = True
+
         config = {}
         for var, name in self.ENV_MAP.items():
             if env(var):
@@ -208,6 +215,9 @@ class Config(object):
 
         if args.vivid:
             self.is_xenial = not args.vivid
+
+        if args.debug_build:
+            self.debug_build = True
 
         config = {}
         if args.arch:
@@ -248,7 +258,11 @@ class Config(object):
         if self.config['template'] == self.CUSTOM and not self.config['build']:
             raise ValueError('When using the "custom" template you must specify a "build" in the config')
         if self.config['template'] == self.GO and not self.config['gopath']:
-            raise ValueError('When using the "go" template you must specify a "gopath" in the config or use the "GOPATH" env variable')
+            raise ValueError('When using the "go" template you must specify a "gopath" in the config or use the '
+                             '"GOPATH"env variable')
+        if self.config['template'] == self.RUST and not self.config['cargo_home']:
+            raise ValueError('When using the "rust" template you must specify a "cargo_home" in the config or use the '
+                             '"CARGO_HOME" env variable')
 
         if self.config['template'] and self.config['template'] not in self.templates:
             raise ValueError('"{}" is not a valid template ({})'.format(self.config['template'], ', '.join(self.templates)))
