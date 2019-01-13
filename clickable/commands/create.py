@@ -39,7 +39,7 @@ APP_TEMPLATES = [
     }, {
         'name': 'rust',
         'display': 'Rust/QML App',
-        'url': 'https://github.com/timsueberkrueb/ut-app-rust-template',
+        'url': 'https://gitlab.com/clickable/ut-app-rust-template',
     }
 ]
 
