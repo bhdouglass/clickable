@@ -41,6 +41,11 @@ Overrides the clickable.json's :ref:`make_jobs <clickable-json-make-jobs>`.
 
 Overrides the clickable.json's :ref:`gopath <clickable-json-gopath>`.
 
+``CARGO_HOME``
+--------------
+
+Overrides the clickable.json's :ref:`cargo_home <clickable-json-cargo_home>`.
+
 ``CLICKABLE_DOCKER_IMAGE``
 --------------------------
 

@@ -36,6 +36,10 @@ APP_TEMPLATES = [
         'name': 'main-cpp',
         'display': 'C++/QML App (built using CMake with a main.cpp)',
         'url': 'https://gitlab.com/clickable/ut-app-binary-cmake-template',
+    }, {
+        'name': 'rust',
+        'display': 'Rust/QML App',
+        'url': 'https://github.com/timsueberkrueb/ut-app-rust-template',
     }
 ]
 

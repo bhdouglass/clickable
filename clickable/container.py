@@ -14,6 +14,7 @@ from clickable.utils import (
     print_warning,
     check_command
 )
+from clickable.config import Config
 
 
 class Container(object):
@@ -198,10 +199,19 @@ class Container(object):
             if self.config.gopath:
                 go_config = '-v {}:/gopath -e GOPATH=/gopath'.format(self.config.gopath)
 
-            wrapped_command = 'docker run -v {}:{} {} -w {} -u {} -e HOME=/tmp --rm -i {} bash -c "{}"'.format(
+            rust_config = ''
+
+            if self.config.config['template'] == Config.RUST and self.config.cargo_home:
+                rust_config = '-v {}:/opt/rust/cargo/registry -v {}:/opt/rust/cargo/git'.format(
+                    os.path.join(self.config.cargo_home, 'registry'),
+                    os.path.join(self.config.cargo_home, 'git'),
+                )
+
+            wrapped_command = 'docker run -v {}:{} {} {} -w {} -u {} -e HOME=/tmp --rm -i {} bash -c "{}"'.format(
                 cwd,
                 cwd,
                 go_config,
+                rust_config,
                 self.config.dir if use_dir else cwd,
                 os.getuid(),
                 self.docker_image,

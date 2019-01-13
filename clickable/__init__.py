@@ -122,6 +122,12 @@ def main():
         help='Do not clean build directory',
         default=False,
     )
+    parser.add_argument(
+        '--debug-build',
+        action='store_true',
+        help='Perform a debug build (experimental, not supported for all plugins, yet)',
+        default=False,
+    )
 
     args = parser.parse_args()
 
