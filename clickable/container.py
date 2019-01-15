@@ -202,9 +202,15 @@ class Container(object):
             rust_config = ''
 
             if self.config.config['template'] == Config.RUST and self.config.cargo_home:
+                cargo_registry = os.path.join(self.config.cargo_home, 'registry')
+                cargo_git = os.path.join(self.config.cargo_home, 'git')
+
+                os.makedirs(cargo_registry, exist_ok=True)
+                os.makedirs(cargo_git, exist_ok=True)
+
                 rust_config = '-v {}:/opt/rust/cargo/registry -v {}:/opt/rust/cargo/git'.format(
-                    os.path.join(self.config.cargo_home, 'registry'),
-                    os.path.join(self.config.cargo_home, 'git'),
+                    cargo_registry,
+                    cargo_git,
                 )
 
             wrapped_command = 'docker run -v {}:{} {} {} -w {} -u {} -e HOME=/tmp --rm -i {} bash -c "{}"'.format(
