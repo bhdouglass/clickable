@@ -78,7 +78,7 @@ class DesktopCommand(Command):
         if not os.path.isdir(config):
             os.makedirs(config)
 
-        volumes = '-v {}:{} -v /tmp/.X11-unix:/tmp/.X11-unix -v {}:{} -v {}:/home/phablet/.local/share -v {}:/home/phablet/.cache -v {}:/home/phablet/.config'.format(
+        volumes = '-v {}:{}:Z -v /tmp/.X11-unix:/tmp/.X11-unix:Z -v {}:{}:Z -v {}:/home/phablet/.local/share:Z -v {}:/home/phablet/.cache:Z -v {}:/home/phablet/.config:Z'.format(
             self.config.cwd,
             self.config.cwd,
             xauth,
@@ -89,7 +89,7 @@ class DesktopCommand(Command):
         )
 
         if self.config.use_nvidia:
-            volumes += ' -v /dev/snd/pcmC2D0c:/dev/snd/pcmC2D0c -v /dev/snd/controlC2:/dev/snd/controlC2 --device /dev/snd'
+            volumes += ' -v /dev/snd/pcmC2D0c:/dev/snd/pcmC2D0c:Z -v /dev/snd/controlC2:/dev/snd/controlC2:Z --device /dev/snd'
 
         lib_path = ':'.join([
             os.path.join(self.config.temp, 'lib/x86_64-linux-gnu'),
@@ -115,12 +115,12 @@ class DesktopCommand(Command):
 
         if execute.startswith('webapp-container'):
             # This is needed for the webapp-container, so only do it for this case
-            volumes = '{} -v /etc/passwd:/etc/passwd'.format(volumes)
+            volumes = '{} -v /etc/passwd:/etc/passwd:Z'.format(volumes)
             environment = '{} -e APP_ID={}'.format(environment, self.config.find_package_name())
 
         go_config = ''
         if self.config.gopath:
-            go_config = '-v {}:/gopath -e GOPATH=/gopath'.format(self.config.gopath)
+            go_config = '-v {}:/gopath:Z -e GOPATH=/gopath'.format(self.config.gopath)
 
         rust_config = ''
 
@@ -131,7 +131,7 @@ class DesktopCommand(Command):
             os.makedirs(cargo_registry, exist_ok=True)
             os.makedirs(cargo_git, exist_ok=True)
 
-            rust_config = '-v {}:/opt/rust/cargo/registry -v {}:/opt/rust/cargo/git'.format(
+            rust_config = '-v {}:/opt/rust/cargo/registry:Z -v {}:/opt/rust/cargo/git:Z'.format(
                 cargo_registry,
                 cargo_git,
             )

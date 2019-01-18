@@ -197,7 +197,7 @@ class Container(object):
 
             go_config = ''
             if self.config.gopath:
-                go_config = '-v {}:/gopath -e GOPATH=/gopath'.format(self.config.gopath)
+                go_config = '-v {}:/gopath:Z -e GOPATH=/gopath'.format(self.config.gopath)
 
             rust_config = ''
 
@@ -208,12 +208,12 @@ class Container(object):
                 os.makedirs(cargo_registry, exist_ok=True)
                 os.makedirs(cargo_git, exist_ok=True)
 
-                rust_config = '-v {}:/opt/rust/cargo/registry -v {}:/opt/rust/cargo/git'.format(
+                rust_config = '-v {}:/opt/rust/cargo/registry:Z -v {}:/opt/rust/cargo/git:Z'.format(
                     cargo_registry,
                     cargo_git,
                 )
 
-            wrapped_command = 'docker run -v {}:{} {} {} -w {} -u {} -e HOME=/tmp --rm -i {} bash -c "{}"'.format(
+            wrapped_command = 'docker run -v {}:{}:Z {} {} -w {} -u {} -e HOME=/tmp --rm -i {} bash -c "{}"'.format(
                 cwd,
                 cwd,
                 go_config,
