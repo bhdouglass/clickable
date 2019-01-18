@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v5.4.0
+-----------------
+
+- Added support for Rust apps (Thanks to Tim Süberkrüb!)
+- Added support for distros using SELinux
+
 Changes in v5.3.3
 -----------------
 

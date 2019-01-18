@@ -1,3 +1,10 @@
+clickable (5.4.0) unstable; urgency=medium
+
+  * Added support for Rust apps
+  * Added support for distros using SELinux
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Fri, 18 Jan 2019 00:27:00 -0500
+
 clickable (5.3.3) unstable; urgency=medium
 
   * More fixes for building libraries

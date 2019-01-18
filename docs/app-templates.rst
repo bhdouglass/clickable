@@ -56,3 +56,10 @@ setup to allow for easy translation. It also includes a main.cpp to build a cust
 binary rather than relying on qmlscene.
 
 Check it out on `GitLab <https://gitlab.com/clickable/ut-app-binary-cmake-template>`__.
+
+Rust/QML App
+----------
+
+An app template that is setup for a QML app with a Rust backend.
+
+Check it out on `GitLab <https://gitlab.com/clickable/ut-app-rust-template>`__.
