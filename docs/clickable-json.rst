@@ -170,24 +170,25 @@ before building. The default is ``False``.
 
 libraries
 ---------
-Optional, libraries to be build in the docker container by calling ``clickable build-libs``. It is a list with entries that basically looks like clickable.json itself. Example:
+Optional, libraries to be build in the docker container by calling ``clickable build-libs``.
+It's a list of dictionaries basically looking like the clickable.json itself. Example:
 
 .. code-block:: javascript
  
     "libraries": [
         {
-            "template": "cmake",
             "name": "opencv",
+            "template": "cmake",
             "make_jobs": "4",
-            "architectures": ["armhf", "amd64"],
             "build_args": "-DCMAKE_BUILD_TYPE=Release -DBUILD_LIST=core,imgproc,highgui,imgcodecs -DBUILD_SHARED_LIBS=OFF",
             "prebuild": "git submodule update --init --recursive"
         }
     ]
   
-The keywords ``prebuild``, ``build``, ``postbuild``, ``postmake``, ``make_jobs``, 
-``docker_image``, ``build_args``, ``dependencies`` and ``specificDependencies`` 
-can be used for a library the same way as described above for the app.
+The keywords ``prebuild``, ``build``, ``postbuild``, ``postmake``, ``make_jobs``,
+``docker_image``, ``build_args``, ``dependencies`` and ``specificDependencies``
+can be used for a library the same way as described above for the app. The
+libraries are compiled for the same architecture as specified for the app itself.
 
 template
 ^^^^^^^^
@@ -195,7 +196,9 @@ Required, but only ``cmake``, ``qmake`` and ``custom`` are allowed.
 
 name
 ^^^^
-Optional, name of the library, which is used to set source dir (**src_dir**) and build dir (**dir**), if not specified explicitly.
+Required, name of the library, which is used to set source dir (**src_dir**) and build dir (**dir**), if not specified explicitly.
+A single library can be build by specifying its name as ``clickable build-libs lib1``
+to build the library with the name ``lib1``.
 
 src_dir
 ^^^^^^^
@@ -203,13 +206,5 @@ Optional, library source directory. Must be relative to the project root. If not
 
 dir
 ^^^
-Optional, library build directory. Must be relative to the project root. If not specified it defaults to ``build/<name>``. The architecture triplet is appended in each case, so that both can exist in parallel (``arm-linux-gnueabihf`` for ``armhf`` and ``x86_64-linux-gnu`` for ``amd64``).
-
-architectures
-^^^^^^^^^^^^^
-Optional, architectures to compile the library for. The default is just armhf.
-Example:
-
-.. code-block:: javascript
- 
-    "architectures": ["armhf", "amd64"]
+Optional, library build directory. Must be relative to the project root. If not specified it defaults to ``build/<name>``. The architecture triplet is appended, so that builds for different architectures can
+exist in parallel (``arm-linux-gnueabihf`` for ``armhf`` and ``x86_64-linux-gnu`` for ``amd64``).
