@@ -1,6 +1,8 @@
-#TODO check imports
 import os
 
+from clickable.utils import (
+    print_warning
+)
 
 class LibConfig(object):
     cwd = os.getcwd()
@@ -10,9 +12,9 @@ class LibConfig(object):
     CMAKE = 'cmake'
     CUSTOM = 'custom'
 
-    required = ['template']
+    required = ['template','name']
     templates = [QMAKE, CMAKE, CUSTOM]
-    arch_triplets = { 'armhf': 'arm-linux-gnueabihf', 
+    arch_triplets = { 'armhf': 'arm-linux-gnueabihf',
                       'amd64': 'x86_64-linux-gnu'}
 
     first_docker_info = True
@@ -25,15 +27,11 @@ class LibConfig(object):
     install = False
 
     def __init__(self, json_config):
-        # TODO Check which configs are used in the builders 
         self.config = {
-            'architectures': ['armhf'],
-            'template': None,
             'postmake': None,
             'prebuild': None,
             'build': None,
             'postbuild': None,
-            'name': None,
             'dir': None,
             'src_dir': None,
             'specificDependencies': False,  # TODO make this less confusing
@@ -66,11 +64,13 @@ class LibConfig(object):
         self.temp = self.config['dir']
 
     def check_config_errors(self):
+
+        # TODO Warning may be removed in a future version
+        if 'architectures' in self.config:
+            print_warning('architectures key in libraries section ignored. Specify the architecture in app section instead.')
+
         if self.lxd:
             raise ValueError('Building libraries is only supported with docker')
-
-        if not self.config['name'] and not (self.config['dir'] and self.config['src_dir']):
-            raise ValueError('Either "name" must be specified or "dir" and "src_dir" in each lib config')
 
         if self.config['template'] == self.CUSTOM and not self.config['build']:
             raise ValueError('When using the "custom" template you must specify a "build" in one the lib configs')
@@ -81,7 +81,4 @@ class LibConfig(object):
         for key in self.required:
             if key not in self.config:
                 raise ValueError('"{}" is empty in one of the library configs'.format(key))
-
-        if self.custom_docker_image and len(architectures) > 1:
-            raise ValueError('There can only be one architecture specified when providing a custom docker_image in the library config'.format(key))
 
