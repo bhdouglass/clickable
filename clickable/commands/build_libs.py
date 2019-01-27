@@ -29,13 +29,12 @@ class LibBuildCommand(Command):
                 print_info("Building {}".format(lib.name))
                 found = True
 
-                dir_tmp = lib.dir
                 lib.arch = self.config.arch
                 lib.build_arch = self.config.build_arch
-		lib.container_mode = self.config.container_mode
-                
-		if lib.arch in lib.arch_triplets:
-                    lib.dir = os.path.join(dir_tmp, lib.arch_triplets[lib.arch])
+                lib.container_mode = self.config.container_mode
+
+                if lib.arch in lib.arch_triplets:
+                    lib.dir = os.path.join(lib.dir, lib.arch_triplets[lib.arch])
                     if not lib.custom_docker_image:
                         if self.config.is_xenial:
                             lib.docker_image = 'clickable/ubuntu-sdk:16.04-{}'.format(lib.arch)
@@ -63,7 +62,7 @@ class LibBuildCommand(Command):
                     run_subprocess_check_call(lib.postbuild, cwd=lib.dir, shell=True)
 
         if single_lib and not found:
-            raise ValueError('Unknown library {}. You may add it to the clickable.json'.format(single_lib))
+            raise ValueError('Cannot build unknown library {}. You may add it to the clickable.json'.format(single_lib))
 
     def build(self, lib, container):
         builder_classes = get_builders()
