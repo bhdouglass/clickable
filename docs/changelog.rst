@@ -3,6 +3,13 @@
 Changelog
 =========
 
+Changes in v5.5.0
+-----------------
+
+- build-libs now only uses the same arch as specified in clickable.json or in the cli args
+- Added the option to build/clean only one lib
+- Added support for GOPATH being a list of paths
+
 Changes in v5.4.0
 -----------------
 

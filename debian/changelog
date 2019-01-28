@@ -1,3 +1,11 @@
+clickable (5.5.0) unstable; urgency=medium
+
+  * build-libs now only uses the same arch as specified in clickable.json or in the cli args
+  * Added the option to build/clean only one lib
+  * Added support for GOPATH being a list of paths
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Mon, 28 Jan 2019 09:34:00 -0500
+
 clickable (5.4.0) unstable; urgency=medium
 
   * Added support for Rust apps
