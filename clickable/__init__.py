@@ -177,6 +177,7 @@ def main():
             else:
                 print_error('There is no builtin or custom command named "{}"'.format(command))
                 print_valid_commands()
+                sys.exit(1)
     except Exception:
         if args.debug:
             raise
