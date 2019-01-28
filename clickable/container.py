@@ -197,7 +197,18 @@ class Container(object):
 
             go_config = ''
             if self.config.gopath:
-                go_config = '-v {}:/gopath:Z -e GOPATH=/gopath'.format(self.config.gopath)
+                gopaths = self.config.gopath.split(':')
+
+                docker_gopaths = []
+                go_configs = []
+                for (index, path) in enumerate(gopaths):
+                    go_configs.append('-v {}:/gopath/path{}:Z'.format(path, index))
+                    docker_gopaths.append('/gopath/path{}'.format(index))
+
+                go_config = '{} -e GOPATH={}'.format(
+                    ' '.join(go_configs),
+                    ':'.join(docker_gopaths),
+                )
 
             rust_config = ''
 
