@@ -56,6 +56,11 @@ Overrides the clickable.json's :ref:`docker_image <clickable-json-docker-image>`
 
 Overrides the clickable.json's :ref:`build_args <clickable-json-build-args>`.
 
+``CLICKABLE_MAKE_ARGS``
+------------------------
+
+Overrides the clickable.json's :ref:`make_args <clickable-json-make-args>`.
+
 ``OPENSTORE_API_KEY``
 ---------------------
 

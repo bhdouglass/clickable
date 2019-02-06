@@ -158,13 +158,23 @@ build_args
 
 Optional, arguments to pass to qmake or cmake. Ex: ``CONFIG+=ubuntu``
 
+.. _clickable-json-make-args:
+
+make_args
+---------
+
+Optional, arguments to pass to make, e.g. a target name. To avoid configuration
+conflicts, the number of make jobs should not be specified here, but by the 
+make_jobs param instead.
+
 .. _clickable-json-dirty:
 
 dirty
 ----------
 
 Optional, whether or not do a dirty build, avoiding to clean the build directory
-before building. The default is ``False``.
+before building. You may also specify this as a cli arg (``--dirty``).
+The default is ``False``.
 
 .. _clickable-json-libraries:
 
