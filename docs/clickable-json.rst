@@ -18,6 +18,12 @@ Example:
     }
 
 
+clickable_minimum_required
+--------------------------
+
+Optional, a minimum Clickable version number required to build the project.
+Ex: ``"4"`` or ``"5.4.0"``
+
 .. _clickable-json-arch:
 
 arch
@@ -146,7 +152,7 @@ Optional, the gopath on the host machine. If left blank, the ``GOPATH`` env var 
 .. _clickable-json-cargo_home:
 
 cargo_home
-------
+----------
 
 Optional, the Cargo home path (usually `~/.cargo`) on the host machine.
 If left blank, the ``CARGO_HOME`` env var will be used.
@@ -161,7 +167,7 @@ Optional, arguments to pass to qmake or cmake. Ex: ``CONFIG+=ubuntu``
 .. _clickable-json-dirty:
 
 dirty
-----------
+-----
 
 Optional, whether or not do a dirty build, avoiding to clean the build directory
 before building. The default is ``False``.
