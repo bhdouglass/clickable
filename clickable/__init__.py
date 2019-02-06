@@ -134,6 +134,7 @@ def main():
     try:
         config = Config(
             args=args,
+            clickable_version=__version__,
             desktop=('desktop' in args.commands),
         )
 
