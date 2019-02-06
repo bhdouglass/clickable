@@ -29,6 +29,7 @@ class Config(object):
         'CARGO_HOME': 'cargo_home',
         'CLICKABLE_DOCKER_IMAGE': 'docker_image',
         'CLICKABLE_BUILD_ARGS': 'build_args',
+        'CLICKABLE_MAKE_ARGS': 'make_args',
         'CLICKABLE_DIRTY': 'dirty',
     }
 
@@ -86,6 +87,7 @@ class Config(object):
             'cargo_home': None,
             'docker_image': None,
             'build_args': None,
+            'make_args': None,
             'dirty': False,
             'libraries': [],
         }
@@ -235,6 +237,21 @@ class Config(object):
         return config
 
     def cleanup_config(self):
+        make_args_contains_jobs = self.make_args and any([arg.startswith('-j') for arg in self.make_args.split()])
+
+        if make_args_contains_jobs:
+            if self.make_jobs:
+                raise ValueError('Conflict: Number of make jobs has been specified by both, "make_args" and "make_jobs"!')
+        else:
+            make_jobs_arg = '-j'
+            if self.make_jobs:
+                make_jobs_arg = '{}{}'.format(make_jobs_arg, self.make_jobs)
+
+            if self.make_args:
+                self.make_args = '{} {}'.format(self.make_args, make_jobs_arg)
+            else:
+                self.make_args = make_jobs_arg
+
         if self.desktop:
             self.config['arch'] = 'amd64'
         elif self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE:

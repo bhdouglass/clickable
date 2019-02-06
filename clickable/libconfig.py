@@ -39,12 +39,12 @@ class LibConfig(object):
             'make_jobs': 0,
             'docker_image': None,
             'build_args': None,
+            'make_args': None,
         }
 
         self.config.update(json_config)
 
-        if self.config['docker_image']:
-            self.custom_docker_image = True
+        self.cleanup_config()
 
         self.check_config_errors()
         self.set_dirs()
@@ -63,8 +63,26 @@ class LibConfig(object):
         self.config['src_dir'] = os.path.join(self.cwd, self.config['src_dir']) if self.config['src_dir'] else os.path.join(self.cwd, 'libs', self.config['name'])
         self.temp = self.config['dir']
 
-    def check_config_errors(self):
+    def cleanup_config(self):
+        make_args_contains_jobs = self.make_args and any([arg.startswith('-j') for arg in self.make_args.split()])
 
+        if make_args_contains_jobs:
+            if self.make_jobs:
+                raise ValueError('Conflict in library section: Number of make jobs has been specified by both, "make_args" and "make_jobs"!')
+        else:
+            make_jobs_arg = '-j'
+            if self.make_jobs:
+                make_jobs_arg = '{}{}'.format(make_jobs_arg, self.make_jobs)
+
+            if self.make_args:
+                self.make_args = '{} {}'.format(self.make_args, make_jobs_arg)
+            else:
+                self.make_args = make_jobs_arg
+
+        if self.config['docker_image']:
+            self.custom_docker_image = True
+
+    def check_config_errors(self):
         # TODO Warning may be removed in a future version
         if 'architectures' in self.config:
             print_warning('architectures key in libraries section ignored. Specify the architecture in app section instead.')
