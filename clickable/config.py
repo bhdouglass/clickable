@@ -8,6 +8,7 @@ from .libconfig import LibConfig
 from .utils import (
     find_manifest,
     get_manifest,
+    merge_make_jobs_into_args,
     env,
     print_warning,
     print_info,
@@ -237,20 +238,7 @@ class Config(object):
         return config
 
     def cleanup_config(self):
-        make_args_contains_jobs = self.make_args and any([arg.startswith('-j') for arg in self.make_args.split()])
-
-        if make_args_contains_jobs:
-            if self.make_jobs:
-                raise ValueError('Conflict: Number of make jobs has been specified by both, "make_args" and "make_jobs"!')
-        else:
-            make_jobs_arg = '-j'
-            if self.make_jobs:
-                make_jobs_arg = '{}{}'.format(make_jobs_arg, self.make_jobs)
-
-            if self.make_args:
-                self.make_args = '{} {}'.format(self.make_args, make_jobs_arg)
-            else:
-                self.make_args = make_jobs_arg
+        self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
 
         if self.desktop:
             self.config['arch'] = 'amd64'

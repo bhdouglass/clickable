@@ -1,7 +1,8 @@
 import os
 
 from clickable.utils import (
-    print_warning
+    print_warning,
+    merge_make_jobs_into_args
 )
 
 class LibConfig(object):
@@ -64,20 +65,7 @@ class LibConfig(object):
         self.temp = self.config['dir']
 
     def cleanup_config(self):
-        make_args_contains_jobs = self.make_args and any([arg.startswith('-j') for arg in self.make_args.split()])
-
-        if make_args_contains_jobs:
-            if self.make_jobs:
-                raise ValueError('Conflict in library section: Number of make jobs has been specified by both, "make_args" and "make_jobs"!')
-        else:
-            make_jobs_arg = '-j'
-            if self.make_jobs:
-                make_jobs_arg = '{}{}'.format(make_jobs_arg, self.make_jobs)
-
-            if self.make_args:
-                self.make_args = '{} {}'.format(self.make_args, make_jobs_arg)
-            else:
-                self.make_args = make_jobs_arg
+        self.make_args = merge_make_jobs_into_args(make_args = self.make_args, make_jobs = self.make_jobs)
 
         if self.config['docker_image']:
             self.custom_docker_image = True

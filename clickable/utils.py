@@ -140,3 +140,21 @@ def get_builders():
                 builder_classes[cls.name] = cls
 
     return builder_classes
+
+def merge_make_jobs_into_args(make_args=None, make_jobs=0):
+    make_args_contains_jobs = make_args and any([arg.startswith('-j') for arg in make_args.split()])
+
+    if make_args_contains_jobs:
+        if make_jobs:
+            raise ValueError('Conflict: Number of make jobs has been specified by both, "make_args" and "make_jobs"!')
+        else:
+            return make_args
+    else:
+        make_jobs_arg = '-j'
+        if make_jobs:
+            make_jobs_arg = '{}{}'.format(make_jobs_arg, make_jobs)
+
+        if make_args:
+            return '{} {}'.format(make_args, make_jobs_arg)
+        else:
+            return make_jobs_arg
