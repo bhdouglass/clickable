@@ -14,9 +14,9 @@ class MakeBuilder(Builder):
             subprocess.check_call(self.config.postmake, cwd=self.config.dir, shell=True)
 
     def make(self):
-        command = 'make -j'
-        if self.config.make_jobs:
-            command = '{}{}'.format(command, self.config.make_jobs)
+        command = 'make'
+        if self.config.make_args:
+            command = '{} {}'.format(command, self.config.make_args)
 
         self.container.run_command(command)
 

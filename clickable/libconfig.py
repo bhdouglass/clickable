@@ -1,7 +1,8 @@
 import os
 
 from clickable.utils import (
-    print_warning
+    print_warning,
+    merge_make_jobs_into_args
 )
 
 class LibConfig(object):
@@ -39,12 +40,12 @@ class LibConfig(object):
             'make_jobs': 0,
             'docker_image': None,
             'build_args': None,
+            'make_args': None,
         }
 
         self.config.update(json_config)
 
-        if self.config['docker_image']:
-            self.custom_docker_image = True
+        self.cleanup_config()
 
         self.check_config_errors()
         self.set_dirs()
@@ -63,8 +64,13 @@ class LibConfig(object):
         self.config['src_dir'] = os.path.join(self.cwd, self.config['src_dir']) if self.config['src_dir'] else os.path.join(self.cwd, 'libs', self.config['name'])
         self.temp = self.config['dir']
 
-    def check_config_errors(self):
+    def cleanup_config(self):
+        self.make_args = merge_make_jobs_into_args(make_args = self.make_args, make_jobs = self.make_jobs)
 
+        if self.config['docker_image']:
+            self.custom_docker_image = True
+
+    def check_config_errors(self):
         # TODO Warning may be removed in a future version
         if 'architectures' in self.config:
             print_warning('architectures key in libraries section ignored. Specify the architecture in app section instead.')
