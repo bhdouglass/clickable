@@ -1,6 +1,7 @@
 import os
 import json
 import platform
+import re
 import xml.etree.ElementTree as ElementTree
 
 from .libconfig import LibConfig
@@ -59,11 +60,13 @@ class Config(object):
     install = True
     debug_build = False
 
-    def __init__(self, args, desktop=False):
+    def __init__(self, args, clickable_version, desktop=False):
         self.desktop = desktop
+        self.clickable_version = clickable_version
         self.cwd = os.getcwd()
 
         self.config = {
+            'clickable_minimum_required': None,
             'arch': 'armhf',
             'template': None,
             'postmake': None,
@@ -255,6 +258,24 @@ class Config(object):
             self.config['default'] = ' '.join(self.config['default'])
 
     def check_config_errors(self):
+        if self.config['clickable_minimum_required']:
+            # Check if specified version string is valid
+            if not re.fullmatch("\d+(\.\d+)*", self.config['clickable_minimum_required']):
+                raise ValueError('"{}" specified as "clickable_minimum_required" is not a valid version number'.format(self.config['clickable_minimum_required']))
+
+            # Convert version strings to integer lists
+            clickable_version_numbers = [int(n) for n in re.split('\.', self.clickable_version)]
+            clickable_required_numbers = [int(n) for n in re.split('\.', self.config['clickable_minimum_required'])]
+            if len(clickable_required_numbers) > len(clickable_version_numbers):
+                print_warning('Clickable version number only consists of {} numbers, but {} numbers specified in "clickable_minimum_required". Superfluous numbers will be ignored.'.format(len(clickable_version_numbers), len(clickable_required_numbers)))
+
+            # Compare all numbers until finding an unequal pair
+            for req, ver in zip(clickable_required_numbers, clickable_version_numbers):
+                if req < ver:
+                    break
+                if req > ver:
+                    raise ValueError('This project requires Clickable version {} ({} is used). Please update Clickable!'.format(self.config['clickable_minimum_required'], self.clickable_version))
+
         if self.config['template'] == self.CUSTOM and not self.config['build']:
             raise ValueError('When using the "custom" template you must specify a "build" in the config')
         if self.config['template'] == self.GO and not self.config['gopath']:
