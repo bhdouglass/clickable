@@ -96,7 +96,7 @@ class Config(object):
             'libraries': [],
         }
 
-        json_config = self.load_json_config()
+        json_config = self.load_json_config(args.config)
         self.config.update(json_config)
         env_config = self.load_env_config()
         self.config.update(env_config)
@@ -146,10 +146,14 @@ class Config(object):
         else:
             super().__setattr__(name, value)
 
-    def load_json_config(self):
+    def load_json_config(self, config_path):
         config = {}
-        if os.path.isfile(os.path.join(self.cwd, 'clickable.json')):
-            with open(os.path.join(self.cwd, 'clickable.json'), 'r') as f:
+        use_default_config = not config_path
+        if use_default_config:
+            config_path = os.path.join(self.cwd, 'clickable.json')
+
+        if os.path.isfile(config_path):
+            with open(config_path, 'r') as f:
                 config_json = {}
                 try:
                     config_json = json.load(f)
@@ -165,6 +169,8 @@ class Config(object):
 
                     if value:
                         config[key] = value
+        elif not use_default_config:
+            raise ValueError('Specified config file {} does not exist.'.format(config_path))
 
         return config
 

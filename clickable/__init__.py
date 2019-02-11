@@ -65,6 +65,11 @@ def main():
         default=None
     )
     parser.add_argument(
+        '--config',
+        help='Use specified config file instead of looking for the optional "clickable.json" in the current directory',
+        default=None
+    )
+    parser.add_argument(
         '--ssh',
         help='Directs command to the device with the given IP address (using ssh)',
         default=None
