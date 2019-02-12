@@ -11,10 +11,8 @@ You can use clickable with apps generated from the old Ubuntu Touch SDK IDE
 or you can start fresh by running ``clickable create``.
 
 To run the default set of sub-commands, simply run ``clickable`` in the root directory
-of your app's code. Clickable with attempt to auto detect the
-:ref:`build template <build-templates>` and other configuration options,
-if you need more advanced usage options read the
-:ref:`clickable.json format guide <clickable-json>`.
+of your app's code. Clickable will attempt to auto detect the
+:ref:`build template <build-templates>` and other configuration options.
 
 Running the default sub-commands will:
 
@@ -24,6 +22,13 @@ Running the default sub-commands will:
 4) Install the app on your phone (By default this uses adb, see below if you want to use ssh)
 5) Kill the running app on the phone
 6) Launch the app on your phone
+
+Configuration
+-------------
+If you need more advanced usage options, you may specify a configuration file
+in the :ref:`clickable.json format <clickable-json>` with ``--config``. If not
+specified, clickable will look for an optional configuration file called
+``clickable.json`` in the current directory.
 
 .. _ssh:
 
