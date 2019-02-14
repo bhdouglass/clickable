@@ -66,7 +66,7 @@ def main():
     )
     parser.add_argument(
         '--config',
-        '-c'.
+        '-c',
         help='Use specified config file instead of looking for the optional "clickable.json" in the current directory',
         default=None
     )
