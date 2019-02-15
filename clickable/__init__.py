@@ -12,7 +12,7 @@ from clickable.config import Config
 from clickable.utils import print_error
 
 
-__version__ = '5.5.0'
+__version__ = '5.5.1'
 
 
 def main():

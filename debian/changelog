@@ -1,3 +1,11 @@
+clickable (5.5.1) unstable; urgency=medium
+
+  * New --config argument to specify a different path to the clickable.json file
+  * New configuration called "clickable_minimum_required" to specify a minimum version of Clickable
+  * New "make_args" configuration for passing arguments to make
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 14 Feb 2019 22:48:00 -0500
+
 clickable (5.5.0) unstable; urgency=medium
 
   * build-libs now only uses the same arch as specified in clickable.json or in the cli args

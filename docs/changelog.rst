@@ -3,6 +3,13 @@
 Changelog
 =========
 
+Changes in v5.5.1
+-----------------
+
+- New --config argument to specify a different path to the clickable.json file
+- New configuration called "clickable_minimum_required" to specify a minimum version of Clickable
+- New "make_args" configuration for passing arguments to make
+
 Changes in v5.5.0
 -----------------
 
@@ -14,7 +21,7 @@ Changes in v5.5.0
 Changes in v5.4.0
 -----------------
 
-- Added support for Rust apps (Thanks to Tim Süberkrüb!)
+- Added support for Rust apps
 - Added support for distros using SELinux
 
 Changes in v5.3.3
