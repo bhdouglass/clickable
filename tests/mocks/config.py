@@ -1,14 +1,15 @@
 from clickable.config import Config
+from unittest.mock import Mock
 
 
 class ConfigMock(Config):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(Mock(), clickable_version='0.0.0', *args, **kwargs)
         self.cwd = '/tmp'
         self.config['dir'] = '/tmp/build'
         self.temp = '/tmp/build/tmp'
 
-    def load_json_config(self):
+    def load_json_config(self, *args):
         return {}
 
     def load_env_config(self):

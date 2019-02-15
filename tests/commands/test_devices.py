@@ -14,7 +14,7 @@ def devices(*args, **kwargs):
 
 class TestDevicesCommand(TestCase):
     def setUp(self):
-        self.config = ConfigMock({})
+        self.config = ConfigMock()
         self.command = DevicesCommand(self.config)
 
     @mock.patch('clickable.device.Device.detect_attached', side_effect=no_devices)

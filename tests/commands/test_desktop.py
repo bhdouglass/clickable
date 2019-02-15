@@ -6,7 +6,7 @@ from ..mocks import ConfigMock
 
 class TestDesktopCommand(TestCase):
     def setUp(self):
-        self.config = ConfigMock({})
+        self.config = ConfigMock()
         self.command = DesktopCommand(self.config)
 
 

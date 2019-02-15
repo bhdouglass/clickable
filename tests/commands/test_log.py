@@ -6,7 +6,7 @@ from ..mocks import ConfigMock, empty_fn
 
 class TestLogCommand(TestCase):
     def setUp(self):
-        self.config = ConfigMock({})
+        self.config = ConfigMock()
         self.command = LogCommand(self.config)
 
     @mock.patch('clickable.device.Device.run_command', side_effect=empty_fn)

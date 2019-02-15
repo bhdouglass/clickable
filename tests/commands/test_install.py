@@ -6,7 +6,7 @@ from ..mocks import ConfigMock, empty_fn
 
 class TestInstallCommand(TestCase):
     def setUp(self):
-        self.config = ConfigMock({})
+        self.config = ConfigMock()
         self.command = InstallCommand(self.config)
 
     @mock.patch('clickable.device.Device.check_any_attached', side_effect=empty_fn)

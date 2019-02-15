@@ -6,7 +6,7 @@ from ..mocks import ConfigMock, empty_fn
 
 class TestRunCommand(TestCase):
     def setUp(self):
-        self.config = ConfigMock({})
+        self.config = ConfigMock()
         self.command = RunCommand(self.config)
 
     @mock.patch('clickable.container.Container.run_command', side_effect=empty_fn)

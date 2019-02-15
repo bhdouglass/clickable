@@ -26,7 +26,7 @@ def temp_exception(path):
 
 class TestCleanCommand(TestCase):
     def setUp(self):
-        self.config = ConfigMock({})
+        self.config = ConfigMock()
         self.command = CleanCommand(self.config)
 
     @mock.patch('shutil.rmtree', side_effect=empty_fn)

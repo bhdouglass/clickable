@@ -6,7 +6,7 @@ from ..mocks import ConfigMock, empty_fn
 
 class TestUpdateCommand(TestCase):
     def setUp(self):
-        self.config = ConfigMock({})
+        self.config = ConfigMock()
         self.command = UpdateCommand(self.config)
 
     @mock.patch('clickable.container.Container.check_docker', side_effect=empty_fn)
