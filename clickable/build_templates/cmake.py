@@ -16,6 +16,9 @@ class CMakeBuilder(MakeBuilder):
         if self.config.build_args:
             command = '{} {}'.format(command, self.config.build_args)
 
+        if self.config.debug_build:
+            command = '{} {}'.format(command, '-DCMAKE_BUILD_TYPE=Debug')
+
         self.container.run_command('{} {}'.format(command, self.config.src_dir))
 
         super().build()
