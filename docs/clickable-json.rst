@@ -162,7 +162,9 @@ If left blank, the ``CARGO_HOME`` env var will be used.
 build_args
 ----------
 
-Optional, arguments to pass to qmake or cmake. Ex: ``CONFIG+=ubuntu``
+Optional, arguments to pass to qmake or cmake. When using `--debug-build`,
+``CONFIG+=debug`` is appended for qmake and ``-DCMAKE_BUILD_TYPE=Debug`` for 
+cmake builds. Ex: ``CONFIG+=ubuntu``
 
 .. _clickable-json-make-args:
 
