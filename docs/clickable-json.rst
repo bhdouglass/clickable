@@ -32,11 +32,6 @@ arch
 Optional, the default is armhf. You may also specify this as a cli arg
 (ex: ``--arch="armhf"``)
 
-prebuild
---------
-
-Optional, a custom command to run before a build.
-
 .. _clickable-json-template:
 
 template
@@ -44,6 +39,12 @@ template
 
 Optional, see :ref:`build template <build-templates>` for the full list of options.
 If left blank the template will be auto detected.
+
+
+prebuild
+--------
+
+Optional, a custom command to run before a build.
 
 build
 -----
@@ -55,6 +56,12 @@ postbuild
 ---------
 
 Optional, a custom command to execute after build and before click build.
+
+
+postmake
+---------
+
+Optional, a custom command to execute after make (during build).
 
 launch
 ------
@@ -103,8 +110,24 @@ default
 Optional, a list of space separated sub-commands to run when no sub-commands are
 specified. Defaults to ``clean build click-build install launch``.
 
+dependencies_build
+------------------
+
+Optional, a list of dependencies that will be installed in the build container.
+
+dependencies_target
+-------------------
+
+Optional, a list of dependencies that will be installed in the build container.
+These will be assumed to be `dependency:arch`, unless an architecture specifier
+is already appended. In desktop mode ``dependencies_target`` is handled just
+like ``dependencies_build``.
+
 dependencies
 ------------
+
+This parameter is deprecated and will be removed in a future version.
+Use ``dependencies_build`` or ``dependencies_target`` instead!
 
 Optional, a list of dependencies that will be installed in the build container.
 These will be assumed to be `dependencie:arch` unless `specificDependencies`
@@ -133,14 +156,6 @@ Example:
         ".gitignore",
         ".gitmodules"
     ]
-
-.. _clickable-json-make-jobs:
-
-make_jobs
----------
-
-Optional, the number of jobs to use when running make, equivalent to make's `-j`
-option. If left blank this defaults to the number of cpus your computer has.
 
 .. _clickable-json-gopath:
 
@@ -173,6 +188,15 @@ Optional, arguments to pass to make, e.g. a target name. To avoid configuration
 conflicts, the number of make jobs should not be specified here, but by the 
 make_jobs param instead.
 
+.. _clickable-json-make-jobs:
+
+make_jobs
+---------
+
+Optional, the number of jobs to use when running make, equivalent to make's `-j`
+option. If left blank this defaults to `-j`, allowing make to execute many
+recipes simultaneously.
+
 .. _clickable-json-dirty:
 
 dirty
@@ -201,8 +225,9 @@ It's a list of dictionaries basically looking like the clickable.json itself. Ex
         }
     ]
   
-The keywords ``prebuild``, ``build``, ``postbuild``, ``postmake``, ``make_jobs``,
-``docker_image``, ``build_args``, ``dependencies`` and ``specificDependencies``
+The keywords ``prebuild``, ``build``, ``postbuild``,
+``postmake``, ``make_jobs``, `make_args``, ``build_args``, `docker_image``,
+``dependencies_build`` and ``dependencies_target``
 can be used for a library the same way as described above for the app. The
 libraries are compiled for the same architecture as specified for the app itself.
 
