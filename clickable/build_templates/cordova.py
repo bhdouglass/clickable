@@ -63,7 +63,13 @@ class CordovaBuilder(MakeBuilder):
     def build(self):
         self.clean_dir(self._dirs['build'])
         self.clean_dir(self._dirs['prefix'])
-        self.container.run_command('cmake {} -DCMAKE_INSTALL_PREFIX={}'.format(self._dirs['make'], self._dirs['build']))
+
+        command = 'cmake {} -DCMAKE_INSTALL_PREFIX={}'.format(self._dirs['make'], self._dirs['build'])
+
+        if self.config.debug_build:
+            command = '{} {}'.format(command, '-DCMAKE_BUILD_TYPE=Debug')
+
+        self.container.run_command(command)
 
         super().build()
 
