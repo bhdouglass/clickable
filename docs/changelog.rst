@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v5.6.0
+-----------------
+
+- Fixed Cordova build
+- Added "--debug-build" support for QMake and CMake templates
+
 Changes in v5.5.1
 -----------------
 
