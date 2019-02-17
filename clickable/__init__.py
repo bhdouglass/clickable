@@ -131,7 +131,7 @@ def main():
     parser.add_argument(
         '--debug-build',
         action='store_true',
-        help='Perform a debug build (experimental, not supported for all plugins, yet)',
+        help='Perform a debug build',
         default=False,
     )
 
