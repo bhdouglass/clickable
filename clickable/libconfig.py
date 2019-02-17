@@ -35,8 +35,10 @@ class LibConfig(object):
             'postbuild': None,
             'dir': None,
             'src_dir': None,
-            'specificDependencies': False,  # TODO make this less confusing
+            'specificDependencies': False,
             'dependencies': [],
+            'dependencies_build': [],
+            'dependencies_target': [],
             'make_jobs': 0,
             'docker_image': None,
             'build_args': None,
@@ -69,6 +71,16 @@ class LibConfig(object):
 
         if self.config['docker_image']:
             self.custom_docker_image = True
+
+        if isinstance(self.config['dependencies'], (str, bytes)):
+            self.config['dependencies'] = self.config['dependencies'].split(' ')
+
+        if self.config['dependencies']:
+            if self.config['specificDependencies']:
+                self.config['dependencies_build'] += self.config['dependencies']
+            else:
+                self.config['dependencies_target'] += self.config['dependencies']
+            print_warning('The params "dependencies" (and possibly "specificDependencies") in your clickable.json are deprecated and will be removed in a future version of Clickable. Use "dependencies_build" and "dependencies_target" instead!')
 
     def check_config_errors(self):
         # TODO Warning may be removed in a future version

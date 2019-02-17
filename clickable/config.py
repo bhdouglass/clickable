@@ -47,7 +47,7 @@ class Config(object):
     RUST = 'rust'
 
     required = ['arch', 'dir', 'docker_image']
-    depricated = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh']
+    deprecated = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh'] # TODO add 'dependencies' and 'specificDependencies'
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO, RUST]
 
     first_docker_info = True
@@ -83,8 +83,10 @@ class Config(object):
             'lxd': False,
             'default': 'clean build click-build install launch',
             'log': None,
-            'specificDependencies': False,  # TODO make this less confusing
+            'specificDependencies': False,
             'dependencies': [],
+            'dependencies_build': [],
+            'dependencies_target': [],
             'ignore': [],
             'make_jobs': 0,
             'gopath': None,
@@ -160,7 +162,7 @@ class Config(object):
                 except ValueError:
                     raise ValueError('Failed reading "clickable.json", it is not valid json')
 
-                for key in self.depricated:
+                for key in self.deprecated:
                     if key in config_json:
                         raise ValueError('"{}" is a no longer a valid configuration option'.format(key))
 
@@ -264,6 +266,17 @@ class Config(object):
 
         if isinstance(self.config['dependencies'], (str, bytes)):
             self.config['dependencies'] = self.config['dependencies'].split(' ')
+
+        if self.config['dependencies']:
+            if self.config['specificDependencies']:
+                self.config['dependencies_build'] += self.config['dependencies']
+            else:
+                self.config['dependencies_target'] += self.config['dependencies']
+            print_warning('The params "dependencies" (and possibly "specificDependencies") in your clickable.json are deprecated and will be removed in a future version of Clickable. Use "dependencies_build" and "dependencies_target" instead!')
+
+        if self.desktop:
+            self.config['dependencies_build'] += self.config['dependencies_target']
+            self.config['dependencies_target'] = []
 
         if type(self.config['default']) == list:
             self.config['default'] = ' '.join(self.config['default'])
