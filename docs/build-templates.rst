@@ -47,3 +47,8 @@ go
 --
 
 A project that uses go version 1.6.
+
+rust
+----
+
+A project that uses rust. Debug builds can be enabled by specifying ``--debug-build``.
