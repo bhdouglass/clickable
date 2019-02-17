@@ -133,6 +133,18 @@ Optional, a list of dependencies that will be installed in the build container.
 These will be assumed to be `dependencie:arch` unless `specificDependencies`
 is set to `true`.
 
+dependencies_ppa
+----------------
+
+Optional, a list of PPAs, that will be enabled in the build container. This is
+only supported for doker mode. Ex:
+
+.. code-block:: javascript
+
+    "dependencies_ppa": [
+        "ppa:bhdouglass/clickable"
+    ]
+
 .. _clickable-json-docker-image:
 
 docker_image
