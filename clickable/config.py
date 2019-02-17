@@ -87,6 +87,7 @@ class Config(object):
             'dependencies': [],
             'dependencies_build': [],
             'dependencies_target': [],
+            'dependencies_ppa': [],
             'ignore': [],
             'make_jobs': 0,
             'gopath': None,

@@ -39,6 +39,7 @@ class LibConfig(object):
             'dependencies': [],
             'dependencies_build': [],
             'dependencies_target': [],
+            'dependencies_ppa': [],
             'make_jobs': 0,
             'docker_image': None,
             'build_args': None,
