@@ -43,7 +43,7 @@ class CordovaBuilder(MakeBuilder):
             wrapped_command = 'docker run -v {cwd}:{cwd} -w {cwd} -u {uid}:{uid} -e HOME=/tmp --rm -i {img} {cmd}'.format(
                 cwd=self.config.cwd,
                 uid=os.getuid(),
-                img=self.base_docker_image,
+                img=self.config.docker_image,
                 cmd=command
             )
 
