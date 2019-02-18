@@ -245,18 +245,22 @@ class Container(object):
             subprocess.check_call(shlex.split(wrapped_command), **kwargs)
 
     def setup_dependencies(self):
-        if len(self.config.dependencies) > 0:
+        if self.config.dependencies_build or self.config.dependencies_target:
             print_info('Checking dependencies')
+
+            dependencies = self.config.dependencies_build
+            for dep in self.config.dependencies_target:
+                if ':' in dep:
+                    dependencies.append(dep)
+                else:
+                    dependencies.append('{}:{}'.format(dep, self.config.arch))
 
             if self.config.lxd or self.config.container_mode:
                 self.run_command('apt-get update', sudo=True, use_dir=False)
 
                 command = 'apt-get install -y --force-yes'
                 run = False
-                for dep in self.config.dependencies:
-                    if self.config.arch == 'armhf' and 'armhf' not in dep and not self.config.specificDependencies:
-                        dep = '{}:{}'.format(dep, self.config.arch)
-
+                for dep in dependencies:
                     exists = ''
                     try:
                         exists = self.run_command('dpkg -s {} | grep Status'.format(dep), get_output=True, use_dir=False)
@@ -277,20 +281,13 @@ class Container(object):
                 if self.config.custom_docker_image:
                     print_info('Skipping dependency check, using a custom docker image')
                 else:
-                    dependencies = ''
-                    for dep in self.config.dependencies:
-                        if self.config.arch == 'armhf' and 'armhf' not in dep and not self.config.specificDependencies:
-                            dependencies = '{} {}:{}'.format(dependencies, dep, self.config.arch)
-                        else:
-                            dependencies = '{} {}'.format(dependencies, dep)
-
                     dockerfile = '''
 FROM {}
 RUN echo set debconf/frontend Noninteractive | debconf-communicate && echo set debconf/priority critical | debconf-communicate
 RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} && apt-get clean
                     '''.format(
                         self.base_docker_image,
-                        dependencies
+                        ' '.join(dependencies)
                     ).strip()
 
                     build = False
