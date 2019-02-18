@@ -27,7 +27,9 @@ class LibConfig(object):
 
     install = False
 
-    def __init__(self, json_config):
+    def __init__(self, json_config, debug_build):
+        self.debug_build = debug_build
+
         self.config = {
             'postmake': None,
             'prebuild': None,
