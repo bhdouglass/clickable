@@ -103,7 +103,7 @@ class Config(object):
         arg_config = self.load_arg_config(args)
         self.config.update(arg_config)
 
-        self.lib_configs = [LibConfig(lib) for lib in self.config['libraries']]
+        self.lib_configs = [LibConfig(lib, self.debug_build) for lib in self.config['libraries']]
 
         self.cleanup_config()
 
