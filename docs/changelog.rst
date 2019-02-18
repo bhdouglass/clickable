@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v5.6.1
+-----------------
+
+- Fixed build lib
+- Made cordova build respect the --debug-build argument
+
 Changes in v5.6.0
 -----------------
 

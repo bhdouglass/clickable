@@ -1,3 +1,10 @@
+clickable (5.6.1) unstable; urgency=medium
+
+  * Fixed build lib
+  * Made cordova build respect the --debug-build argument
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Mon, 18 Feb 2019 10:28:00 -0500
+
 clickable (5.6.0) unstable; urgency=medium
 
   * Fixed Cordova build
