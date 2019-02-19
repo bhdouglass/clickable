@@ -1,3 +1,9 @@
+clickable (5.7.0) unstable; urgency=medium
+
+  * Introduced two new dependency options to separate build and target dependencies
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Mon, 18 Feb 2019 16:47:00 -0500
+
 clickable (5.6.1) unstable; urgency=medium
 
   * Fixed build lib

@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v5.7.0
+-----------------
+
+* Introduced two new dependency options to separate build and target dependencies
+
 Changes in v5.6.1
 -----------------
 
