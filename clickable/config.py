@@ -10,6 +10,7 @@ from .utils import (
     find_manifest,
     get_manifest,
     merge_make_jobs_into_args,
+    flexible_string_to_list,
     env,
     print_warning,
     print_info,
@@ -47,6 +48,9 @@ class Config(object):
     RUST = 'rust'
 
     required = ['arch', 'dir', 'docker_image']
+    flexible_lists = ['dependencies', 'dependencies_build',
+                      'dependencies_target', 'dependencies_ppa',
+                      'build_args', 'make_args', 'default', 'ignore']
     deprecated = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh'] # TODO add 'dependencies' and 'specificDependencies'
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO, RUST]
 
@@ -93,8 +97,8 @@ class Config(object):
             'gopath': None,
             'cargo_home': None,
             'docker_image': None,
-            'build_args': None,
-            'make_args': None,
+            'build_args': [],
+            'make_args': [],
             'dirty': False,
             'libraries': [],
         }
@@ -114,12 +118,9 @@ class Config(object):
         self.is_arm = self.host_arch.startswith('arm')
         self.temp = os.path.join(self.config['dir'], 'tmp')
 
-        if self.config['dirty']:
-            commands = self.config['default'].split()
-
-            if 'clean' in commands:
-                commands.remove('clean')
-                self.config['default'] = ' '.join(commands)
+        if self.config['dirty'] and 'clean' in self.config['default']:
+            self.config['default'].remove('clean')
+        self.config['default'] = ' '.join(self.config['default'])
 
         self.build_arch = self.config['arch']
         if self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE:
@@ -252,6 +253,9 @@ class Config(object):
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
 
+        for key in self.flexible_lists:
+            self.config[key] = flexible_string_to_list(self.config[key])
+
         if self.desktop:
             self.config['arch'] = 'amd64'
         elif self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE:
@@ -265,9 +269,6 @@ class Config(object):
             elif self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE:
                 self.config['kill'] = 'qmlscene'
 
-        if isinstance(self.config['dependencies'], (str, bytes)):
-            self.config['dependencies'] = self.config['dependencies'].split(' ')
-
         if self.config['dependencies']:
             if self.config['specificDependencies']:
                 self.config['dependencies_build'] += self.config['dependencies']
@@ -278,9 +279,6 @@ class Config(object):
         if self.desktop:
             self.config['dependencies_build'] += self.config['dependencies_target']
             self.config['dependencies_target'] = []
-
-        if type(self.config['default']) == list:
-            self.config['default'] = ' '.join(self.config['default'])
 
     def check_config_errors(self):
         if self.config['clickable_minimum_required']:
