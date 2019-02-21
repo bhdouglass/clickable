@@ -13,7 +13,7 @@ class LibConfig(object):
     CMAKE = 'cmake'
     CUSTOM = 'custom'
 
-    required = ['template','name']
+    required = ['template']
     templates = [QMAKE, CMAKE, CUSTOM]
     arch_triplets = { 'armhf': 'arm-linux-gnueabihf',
                       'amd64': 'x86_64-linux-gnu'}
@@ -27,8 +27,9 @@ class LibConfig(object):
 
     install = False
 
-    def __init__(self, json_config, debug_build):
+    def __init__(self, name, json_config, debug_build):
         self.debug_build = debug_build
+        self.name = name
 
         self.config = {
             'postmake': None,
@@ -64,8 +65,8 @@ class LibConfig(object):
             super().__setattr__(name, value)
 
     def set_dirs(self):
-        self.config['dir'] = os.path.join(self.cwd, self.config['dir']) if self.config['dir'] else os.path.join(self.cwd, 'build', self.config['name'])
-        self.config['src_dir'] = os.path.join(self.cwd, self.config['src_dir']) if self.config['src_dir'] else os.path.join(self.cwd, 'libs', self.config['name'])
+        self.config['dir'] = os.path.join(self.cwd, self.config['dir']) if self.config['dir'] else os.path.join(self.cwd, 'build', self.name)
+        self.config['src_dir'] = os.path.join(self.cwd, self.config['src_dir']) if self.config['src_dir'] else os.path.join(self.cwd, 'libs', self.name)
         self.temp = self.config['dir']
 
     def cleanup_config(self):
