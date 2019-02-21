@@ -6,6 +6,7 @@ from clickable.utils import (
     flexible_string_to_list,
 )
 
+
 class LibConfig(object):
     cwd = os.getcwd()
     config = {}
@@ -17,10 +18,12 @@ class LibConfig(object):
     flexible_lists = ['dependencies', 'dependencies_build',
                       'dependencies_target', 'dependencies_ppa',
                       'build_args', 'make_args']
-    required = ['template','name']
+    required = ['template']
     templates = [QMAKE, CMAKE, CUSTOM]
-    arch_triplets = { 'armhf': 'arm-linux-gnueabihf',
-                      'amd64': 'x86_64-linux-gnu'}
+    arch_triplets = {
+        'armhf': 'arm-linux-gnueabihf',
+        'amd64': 'x86_64-linux-gnu'
+    }
 
     first_docker_info = True
     container_mode = False
@@ -110,4 +113,3 @@ class LibConfig(object):
         for key in self.required:
             if key not in self.config:
                 raise ValueError('"{}" is empty in one of the library configs'.format(key))
-
