@@ -201,7 +201,9 @@ If left blank, the ``CARGO_HOME`` env var will be used.
 build_args
 ----------
 
-Optional, arguments to pass to qmake or cmake. Ex: ``CONFIG+=ubuntu``
+Optional, arguments to pass to qmake or cmake. When using `--debug-build`,
+``CONFIG+=debug`` is appended for qmake and ``-DCMAKE_BUILD_TYPE=Debug`` for 
+cmake builds. Ex: ``CONFIG+=ubuntu``
 
 Can be specified as a string or a list of strings.
 
@@ -239,20 +241,23 @@ The default is ``False``.
 libraries
 ---------
 Optional, libraries to be build in the docker container by calling ``clickable build-libs``.
-It's a list of dictionaries basically looking like the clickable.json itself. Example:
+It's a dictionary of dictionaries basically looking like the clickable.json itself. Example:
 
 .. code-block:: javascript
- 
-    "libraries": [
-        {
-            "name": "opencv",
+
+    "libraries": {
+        "opencv": {
             "template": "cmake",
             "make_jobs": "4",
-            "build_args": "-DCMAKE_BUILD_TYPE=Release -DBUILD_LIST=core,imgproc,highgui,imgcodecs -DBUILD_SHARED_LIBS=OFF",
+            "build_args": [
+                "-DCMAKE_BUILD_TYPE=Release",
+                "-DBUILD_LIST=core,imgproc,highgui,imgcodecs"
+                "-DBUILD_SHARED_LIBS=OFF"
+            ]
             "prebuild": "git submodule update --init --recursive"
         }
-    ]
-  
+    }
+
 The keywords ``prebuild``, ``build``, ``postbuild``,
 ``postmake``, ``make_jobs``, `make_args``, ``build_args``, `docker_image``,
 ``dependencies_build``, ``dependencies_target`` and ``dependencies_ppa``,

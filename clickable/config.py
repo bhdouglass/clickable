@@ -100,7 +100,7 @@ class Config(object):
             'build_args': [],
             'make_args': [],
             'dirty': False,
-            'libraries': [],
+            'libraries': {},
         }
 
         json_config = self.load_json_config(args.config)
@@ -110,7 +110,8 @@ class Config(object):
         arg_config = self.load_arg_config(args)
         self.config.update(arg_config)
 
-        self.lib_configs = [LibConfig(lib) for lib in self.config['libraries']]
+        self.convert_deprecated_libraries_list()
+        self.lib_configs = [LibConfig(name, lib, self.debug_build) for name, lib in self.config['libraries'].items()]
 
         self.cleanup_config()
 
@@ -249,6 +250,17 @@ class Config(object):
             config['dirty'] = True
 
         return config
+
+    def convert_deprecated_libraries_list(self):
+        if isinstance(self.config['libraries'], list):
+            print_warning("Specifying libraries as a list is deprecated and will be removed in a future version of Clickable. Specify the libraries as a dictionary instead.")
+
+            dict_libs = {}
+            for lib in self.config['libraries']:
+                if not 'name' in lib:
+                    raise ValueError("Library without name detected")
+                dict_libs[lib['name']] = lib
+            self.config['libraries'] = dict_libs
 
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)

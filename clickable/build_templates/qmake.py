@@ -26,6 +26,9 @@ class QMakeBuilder(MakeBuilder):
         if self.config.build_args:
             command = '{} {}'.format(command, self.config.build_args)
 
+        if self.config.debug_build:
+            command = '{} {}'.format(command, 'CONFIG+=debug')
+
         self.container.run_command('{} {}'.format(command, self.config.src_dir))
 
         super().build()

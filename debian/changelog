@@ -1,3 +1,23 @@
+clickable (5.7.0) unstable; urgency=medium
+
+  * Introduced two new dependency options to separate build and target dependencies
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Mon, 18 Feb 2019 16:47:00 -0500
+
+clickable (5.6.1) unstable; urgency=medium
+
+  * Fixed build lib
+  * Made cordova build respect the --debug-build argument
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Mon, 18 Feb 2019 10:28:00 -0500
+
+clickable (5.6.0) unstable; urgency=medium
+
+  * Fixed Cordova build
+  * Added "--debug-build" support for QMake and CMake templates
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sun, 17 Feb 2019 00:03:00 -0500
+
 clickable (5.5.1) unstable; urgency=medium
 
   * New --config argument to specify a different path to the clickable.json file

@@ -3,6 +3,23 @@
 Changelog
 =========
 
+Changes in v5.7.0
+-----------------
+
+* Introduced two new dependency options to separate build and target dependencies
+
+Changes in v5.6.1
+-----------------
+
+- Fixed build lib
+- Made cordova build respect the --debug-build argument
+
+Changes in v5.6.0
+-----------------
+
+- Fixed Cordova build
+- Added "--debug-build" support for QMake and CMake templates
+
 Changes in v5.5.1
 -----------------
 

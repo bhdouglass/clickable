@@ -43,7 +43,7 @@ class CordovaBuilder(MakeBuilder):
             wrapped_command = 'docker run -v {cwd}:{cwd} -w {cwd} -u {uid}:{uid} -e HOME=/tmp --rm -i {img} {cmd}'.format(
                 cwd=self.config.cwd,
                 uid=os.getuid(),
-                img=self.base_docker_image,
+                img=self.config.docker_image,
                 cmd=command
             )
 
@@ -63,7 +63,13 @@ class CordovaBuilder(MakeBuilder):
     def build(self):
         self.clean_dir(self._dirs['build'])
         self.clean_dir(self._dirs['prefix'])
-        self.container.run_command('cmake {} -DCMAKE_INSTALL_PREFIX={}'.format(self._dirs['make'], self._dirs['build']))
+
+        command = 'cmake {} -DCMAKE_INSTALL_PREFIX={}'.format(self._dirs['make'], self._dirs['build'])
+
+        if self.config.debug_build:
+            command = '{} {}'.format(command, '-DCMAKE_BUILD_TYPE=Debug')
+
+        self.container.run_command(command)
 
         super().build()
 

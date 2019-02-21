@@ -12,7 +12,7 @@ from clickable.config import Config
 from clickable.utils import print_error
 
 
-__version__ = '5.5.1'
+__version__ = '5.7.0'
 
 
 def main():
@@ -131,7 +131,7 @@ def main():
     parser.add_argument(
         '--debug-build',
         action='store_true',
-        help='Perform a debug build (experimental, not supported for all plugins, yet)',
+        help='Perform a debug build',
         default=False,
     )
 
