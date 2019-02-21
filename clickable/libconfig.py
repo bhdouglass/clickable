@@ -2,7 +2,8 @@ import os
 
 from clickable.utils import (
     print_warning,
-    merge_make_jobs_into_args
+    merge_make_jobs_into_args,
+    flexible_string_to_list,
 )
 
 class LibConfig(object):
@@ -13,7 +14,10 @@ class LibConfig(object):
     CMAKE = 'cmake'
     CUSTOM = 'custom'
 
-    required = ['template']
+    flexible_lists = ['dependencies', 'dependencies_build',
+                      'dependencies_target', 'dependencies_ppa',
+                      'build_args', 'make_args']
+    required = ['template','name']
     templates = [QMAKE, CMAKE, CUSTOM]
     arch_triplets = { 'armhf': 'arm-linux-gnueabihf',
                       'amd64': 'x86_64-linux-gnu'}
@@ -42,10 +46,11 @@ class LibConfig(object):
             'dependencies': [],
             'dependencies_build': [],
             'dependencies_target': [],
+            'dependencies_ppa': [],
             'make_jobs': 0,
             'docker_image': None,
-            'build_args': None,
-            'make_args': None,
+            'build_args': [],
+            'make_args': [],
         }
 
         self.config.update(json_config)
@@ -71,6 +76,9 @@ class LibConfig(object):
 
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args = self.make_args, make_jobs = self.make_jobs)
+
+        for key in self.flexible_lists:
+            self.config[key] = flexible_string_to_list(self.config[key])
 
         if self.config['docker_image']:
             self.custom_docker_image = True

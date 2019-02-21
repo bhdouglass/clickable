@@ -110,10 +110,14 @@ default
 Optional, a list of space separated sub-commands to run when no sub-commands are
 specified. Defaults to ``clean build click-build install launch``.
 
+Can be specified as a string or a list of strings.
+
 dependencies_build
 ------------------
 
 Optional, a list of dependencies that will be installed in the build container.
+
+Can be specified as a string or a list of strings.
 
 dependencies_target
 -------------------
@@ -122,6 +126,8 @@ Optional, a list of dependencies that will be installed in the build container.
 These will be assumed to be `dependency:arch`, unless an architecture specifier
 is already appended. In desktop mode ``dependencies_target`` is handled just
 like ``dependencies_build``.
+
+Can be specified as a string or a list of strings.
 
 dependencies
 ------------
@@ -132,6 +138,22 @@ Use ``dependencies_build`` or ``dependencies_target`` instead!
 Optional, a list of dependencies that will be installed in the build container.
 These will be assumed to be `dependencie:arch` unless `specificDependencies`
 is set to `true`.
+
+Can be specified as a string or a list of strings.
+
+dependencies_ppa
+----------------
+
+Optional, a list of PPAs, that will be enabled in the build container. This is
+only supported for doker mode. Ex:
+
+.. code-block:: javascript
+
+    "dependencies_ppa": [
+        "ppa:bhdouglass/clickable"
+    ]
+
+Can be specified as a string or a list of strings.
 
 .. _clickable-json-docker-image:
 
@@ -157,6 +179,8 @@ Example:
         ".gitmodules"
     ]
 
+Can be specified as a string or a list of strings.
+
 .. _clickable-json-gopath:
 
 gopath
@@ -181,6 +205,8 @@ Optional, arguments to pass to qmake or cmake. When using `--debug-build`,
 ``CONFIG+=debug`` is appended for qmake and ``-DCMAKE_BUILD_TYPE=Debug`` for 
 cmake builds. Ex: ``CONFIG+=ubuntu``
 
+Can be specified as a string or a list of strings.
+
 .. _clickable-json-make-args:
 
 make_args
@@ -189,6 +215,8 @@ make_args
 Optional, arguments to pass to make, e.g. a target name. To avoid configuration
 conflicts, the number of make jobs should not be specified here, but by the 
 make_jobs param instead.
+
+Can be specified as a string or a list of strings.
 
 .. _clickable-json-make-jobs:
 
@@ -232,7 +260,7 @@ It's a dictionary of dictionaries basically looking like the clickable.json itse
 
 The keywords ``prebuild``, ``build``, ``postbuild``,
 ``postmake``, ``make_jobs``, `make_args``, ``build_args``, `docker_image``,
-``dependencies_build`` and ``dependencies_target``
+``dependencies_build``, ``dependencies_target`` and ``dependencies_ppa``,
 can be used for a library the same way as described above for the app. The
 libraries are compiled for the same architecture as specified for the app itself.
 

@@ -158,3 +158,8 @@ def merge_make_jobs_into_args(make_args=None, make_jobs=0):
             return '{} {}'.format(make_args, make_jobs_arg)
         else:
             return make_jobs_arg
+
+def flexible_string_to_list(variable):
+    if isinstance(variable, (str, bytes)):
+        return variable.split(' ')
+    return variable
