@@ -213,20 +213,23 @@ The default is ``False``.
 libraries
 ---------
 Optional, libraries to be build in the docker container by calling ``clickable build-libs``.
-It's a list of dictionaries basically looking like the clickable.json itself. Example:
+It's a dictionary of dictionaries basically looking like the clickable.json itself. Example:
 
 .. code-block:: javascript
- 
-    "libraries": [
-        {
-            "name": "opencv",
+
+    "libraries": {
+        "opencv": {
             "template": "cmake",
             "make_jobs": "4",
-            "build_args": "-DCMAKE_BUILD_TYPE=Release -DBUILD_LIST=core,imgproc,highgui,imgcodecs -DBUILD_SHARED_LIBS=OFF",
+            "build_args": [
+                "-DCMAKE_BUILD_TYPE=Release",
+                "-DBUILD_LIST=core,imgproc,highgui,imgcodecs"
+                "-DBUILD_SHARED_LIBS=OFF"
+            ]
             "prebuild": "git submodule update --init --recursive"
         }
-    ]
-  
+    }
+
 The keywords ``prebuild``, ``build``, ``postbuild``,
 ``postmake``, ``make_jobs``, `make_args``, ``build_args``, `docker_image``,
 ``dependencies_build`` and ``dependencies_target``
