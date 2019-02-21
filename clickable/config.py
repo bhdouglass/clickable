@@ -95,7 +95,7 @@ class Config(object):
             'ignore': [],
             'make_jobs': 0,
             'gopath': None,
-            'cargo_home': None,
+            'cargo_home': os.path.expanduser('~/.cargo'),
             'docker_image': None,
             'build_args': [],
             'make_args': [],
