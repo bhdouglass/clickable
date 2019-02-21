@@ -16,7 +16,7 @@ class MakeBuilder(Builder):
     def make(self):
         command = 'make'
         if self.config.make_args:
-            command = '{} {}'.format(command, self.config.make_args)
+            command = '{} {}'.format(command, ' '.join(self.config.make_args))
 
         self.container.run_command(command)
 

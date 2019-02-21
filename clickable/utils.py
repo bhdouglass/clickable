@@ -127,6 +127,7 @@ def env(name):
 
     return value
 
+
 def get_builders():
     builder_classes = {}
     builder_dir = join(dirname(__file__), 'build_templates')
@@ -140,6 +141,7 @@ def get_builders():
                 builder_classes[cls.name] = cls
 
     return builder_classes
+
 
 def merge_make_jobs_into_args(make_args=None, make_jobs=0):
     make_args_contains_jobs = make_args and any([arg.startswith('-j') for arg in make_args.split()])
@@ -158,6 +160,7 @@ def merge_make_jobs_into_args(make_args=None, make_jobs=0):
             return '{} {}'.format(make_args, make_jobs_arg)
         else:
             return make_jobs_arg
+
 
 def flexible_string_to_list(variable):
     if isinstance(variable, (str, bytes)):

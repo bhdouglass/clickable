@@ -24,7 +24,7 @@ class QMakeBuilder(MakeBuilder):
             raise Exception('{} is not supported by the qmake build yet'.format(self.config.build_arch))
 
         if self.config.build_args:
-            command = '{} {}'.format(command, self.config.build_args)
+            command = '{} {}'.format(command, ' '.join(self.config.build_args))
 
         if self.config.debug_build:
             command = '{} {}'.format(command, 'CONFIG+=debug')
