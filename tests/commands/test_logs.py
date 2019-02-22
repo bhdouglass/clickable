@@ -1,4 +1,5 @@
 from unittest import TestCase, mock
+from unittest.mock import ANY
 
 from clickable.commands.logs import LogsCommand
 from ..mocks import ConfigMock, empty_fn
@@ -27,11 +28,11 @@ class TestLogsCommand(TestCase):
         self.config.desktop = True
         self.command.run()
 
-        mock_print_warning.assert_called_once()
+        mock_print_warning.assert_called_once_with(ANY)
 
     @mock.patch('clickable.commands.logs.print_warning', side_effect=empty_fn)
     def test_no_container_mode_logs(self, mock_print_warning):
         self.config.container_mode = True
         self.command.run()
 
-        mock_print_warning.assert_called_once()
+        mock_print_warning.assert_called_once_with(ANY)

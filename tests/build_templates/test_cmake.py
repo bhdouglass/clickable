@@ -17,5 +17,5 @@ class TestCMakeBuilder(TestCase):
     def test_cmake(self):
         main()
 
-        click = os.path.join(self.path, 'build/cmake-test.clickable_1.0.0_armhf.click')
+        click = os.path.join(self.path, 'build/cmake-test.clickable_1.0.0_amd64.click')
         self.assertTrue(os.path.exists(click))

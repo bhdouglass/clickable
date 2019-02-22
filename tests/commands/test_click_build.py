@@ -1,4 +1,5 @@
 from unittest import TestCase, mock
+from unittest.mock import ANY
 
 from clickable.commands.click_build import ClickBuildCommand
 from ..mocks import ConfigMock, empty_fn, false_fn
@@ -24,6 +25,6 @@ class TestClickBuildCommand(TestCase):
         self.command.run()
 
         mock_run_command.assert_called_once_with('click build /fake --no-validate')
-        mock_exists.assert_called_once()
-        mock_makedirs.assert_called_once()
-        mock_copyfile.assert_called_once()
+        mock_exists.assert_called_with(ANY)
+        mock_makedirs.assert_called_with(ANY)
+        mock_copyfile.assert_called_with(ANY, ANY)

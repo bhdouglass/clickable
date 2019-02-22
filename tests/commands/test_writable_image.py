@@ -1,4 +1,5 @@
 from unittest import TestCase, mock
+from unittest.mock import ANY
 
 from clickable.commands.writable_image import WritableImageCommand
 from ..mocks import ConfigMock, empty_fn
@@ -13,4 +14,4 @@ class TestWritableImageCommand(TestCase):
     def test_writable_image(self, mock_run_command):
         self.command.run()
 
-        mock_run_command.assert_called_once()
+        mock_run_command.assert_called_once_with(ANY, cwd=ANY)

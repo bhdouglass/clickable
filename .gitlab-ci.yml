@@ -1,0 +1,4 @@
+test:
+  image: clickable/testing
+  script:
+  - nosetest

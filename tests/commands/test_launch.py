@@ -1,4 +1,5 @@
 from unittest import TestCase, mock
+from unittest.mock import ANY
 
 from clickable.commands.launch import LaunchCommand
 from ..mocks import ConfigMock, empty_fn, exception_fn
@@ -26,14 +27,14 @@ class TestLaunchCommand(TestCase):
         self.config.desktop = True
         self.command.kill()
 
-        mock_print_warning.assert_called_once()
+        mock_print_warning.assert_called_once_with(ANY)
 
     @mock.patch('clickable.commands.launch.print_warning', side_effect=empty_fn)
     def test_kill_skips_container_mode(self, mock_print_warning):
         self.config.container_mode = True
         self.command.kill()
 
-        mock_print_warning.assert_called_once()
+        mock_print_warning.assert_called_once_with(ANY)
 
     @mock.patch('clickable.device.Device.run_command', side_effect=empty_fn)
     def test_launch(self, mock_run_command):

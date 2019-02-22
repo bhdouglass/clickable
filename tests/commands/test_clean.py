@@ -1,4 +1,5 @@
 from unittest import TestCase, mock
+from unittest.mock import ANY
 
 from clickable.commands.clean import CleanCommand
 from ..mocks import ConfigMock, empty_fn, true_fn
@@ -35,8 +36,8 @@ class TestCleanCommand(TestCase):
     def test_clean(self, mock_print_warning, mock_exists, mock_rmtree):
         self.command.run()
 
-        mock_exists.assert_called()
-        mock_rmtree.assert_called()
+        mock_exists.assert_called_with(ANY)
+        mock_rmtree.assert_called_with(ANY)
         mock_print_warning.assert_not_called()
 
     @mock.patch('shutil.rmtree', side_effect=no_file_dir)
@@ -45,8 +46,8 @@ class TestCleanCommand(TestCase):
     def test_no_file_dir(self, mock_print_warning, mock_exists, mock_rmtree):
         self.command.run()
 
-        mock_exists.assert_called()
-        mock_rmtree.assert_called()
+        mock_exists.assert_called_with(ANY)
+        mock_rmtree.assert_called_with(ANY)
         mock_print_warning.assert_not_called()
 
     @mock.patch('shutil.rmtree', side_effect=no_file_temp)
@@ -55,8 +56,8 @@ class TestCleanCommand(TestCase):
     def test_no_file_temp(self, mock_print_warning, mock_exists, mock_rmtree):
         self.command.run()
 
-        mock_exists.assert_called()
-        mock_rmtree.assert_called()
+        mock_exists.assert_called_with(ANY)
+        mock_rmtree.assert_called_with(ANY)
         mock_print_warning.assert_not_called()
 
     @mock.patch('shutil.rmtree', side_effect=dir_exception)
@@ -65,9 +66,9 @@ class TestCleanCommand(TestCase):
     def test_dir_exception(self, mock_print_warning, mock_exists, mock_rmtree):
         self.command.run()
 
-        mock_exists.assert_called()
-        mock_rmtree.assert_called()
-        mock_print_warning.assert_called()
+        mock_exists.assert_called_with(ANY)
+        mock_rmtree.assert_called_with(ANY)
+        mock_print_warning.assert_called_with(ANY)
 
     @mock.patch('shutil.rmtree', side_effect=temp_exception)
     @mock.patch('os.path.exists', side_effect=true_fn)
@@ -75,6 +76,6 @@ class TestCleanCommand(TestCase):
     def test_temp_exception(self, mock_print_warning, mock_exists, mock_rmtree):
         self.command.run()
 
-        mock_exists.assert_called()
-        mock_rmtree.assert_called()
-        mock_print_warning.assert_called()
+        mock_exists.assert_called_with(ANY)
+        mock_rmtree.assert_called_with(ANY)
+        mock_print_warning.assert_called_with(ANY)

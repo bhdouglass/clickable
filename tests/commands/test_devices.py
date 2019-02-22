@@ -1,4 +1,5 @@
 from unittest import TestCase, mock
+from unittest.mock import ANY
 
 from clickable.commands.devices import DevicesCommand
 from ..mocks import ConfigMock, empty_fn
@@ -22,7 +23,7 @@ class TestDevicesCommand(TestCase):
     def test_no_devices(self, mock_print_warning, mock_detect_attached):
         self.command.run()
 
-        mock_detect_attached.assert_called_once()
+        mock_detect_attached.assert_called_once_with()
         mock_print_warning.assert_called_once_with('No attached devices')
 
     @mock.patch('clickable.device.Device.detect_attached', side_effect=devices)
@@ -30,5 +31,5 @@ class TestDevicesCommand(TestCase):
     def test_no_devices(self, mock_print_info, mock_detect_attached):
         self.command.run()
 
-        mock_detect_attached.assert_called_once()
+        mock_detect_attached.assert_called_once_with()
         mock_print_info.assert_called_once_with('foo - bar')

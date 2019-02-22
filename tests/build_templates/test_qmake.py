@@ -17,5 +17,5 @@ class TestQMakeBuilder(TestCase):
     def test_qmake(self):
         main()
 
-        click = os.path.join(self.path, 'build/qmake-test.clickable_1.0.0_armhf.click')
+        click = os.path.join(self.path, 'build/qmake-test.clickable_1.0.0_amd64.click')
         self.assertTrue(os.path.exists(click))
