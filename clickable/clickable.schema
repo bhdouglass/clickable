@@ -1,0 +1,196 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://clickable.bhdouglass.com/clickable.schema",
+  "title": "clickable.json",
+  "description": "The Clickable configuration file",
+  "type": "object",
+  "properties": {
+    "clickable_minimum_required": {
+      "type": "string",
+      "pattern": "^\\d+(\\.\\d+)*$"
+    },
+    "arch": {
+      "type": "string",
+      "enum": [
+        "armhf",
+        "amd64"
+      ]
+    },
+    "template": {
+      "type": "string",
+      "enum": [
+        "pure-qml-qmake",
+        "qmake",
+        "pure-qml-cmake",
+        "cmake",
+        "custom",
+        "cordova",
+        "pure",
+        "python",
+        "go",
+        "rust",
+        ""
+      ]
+    },
+    "prebuild": {"type": "string"},
+    "build": {"type": "string"},
+    "postbuild": {"type": "string"},
+    "postmake": {"type": "string"},
+    "launch": {"type": "string"},
+    "dir": {"type": "string"},
+    "kill": {"type": "string"},
+    "scripts": {
+      "type": "object",
+      "additionalProperties": { "type": "string"}
+    },
+    "lxd": {"type": "boolean"},
+    "default": {
+      "type": ["string","array"],
+      "items": {"type": "string"}
+    },
+    "dependencies_build": {
+      "type": ["string","array"],
+      "items": {"type": "string"}
+    },
+    "dependencies_target": {
+      "type": ["string","array"],
+      "items": {"type": "string"}
+    },
+    "dependencies_ppa": {
+      "type": ["string","array"],
+      "items": {"type": "string"}
+    },
+    "dependencies": {
+      "type": ["string","array"],
+      "items": {"type": "string"}
+    },
+    "specificDependencies": {"type": "boolean"},
+    "docker_image": {"type": "string"},
+    "ignore": {
+      "type": ["string","array"],
+      "items": {"type": "string"}
+    },
+    "gopath": {"type": "string"},
+    "cargo_home": {"type": "string"},
+    "build_args": {
+      "type": ["string","array"],
+      "items": {"type": "string"}
+    },
+    "make_args": {
+      "type": ["string","array"],
+      "items": {"type": "string"}
+    },
+    "make_jobs": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "dirty": {"type": "boolean"},
+    "libraries": {
+      "type": ["object","array"],
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {"type": "string"},
+          "prebuild": {"type": "string"},
+          "build": {"type": "string"},
+          "postbuild": {"type": "string"},
+          "postmake": {"type": "string"},
+          "build_args": {
+            "type": ["string","array"],
+            "items": {"type": "string"}
+          },
+          "make_args": {
+            "type": ["string","array"],
+            "items": {"type": "string"}
+          },
+          "make_jobs": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "docker_image": {"type": "string"},
+          "dependencies_build": {
+            "type": ["string","array"],
+            "items": {"type": "string"}
+          },
+          "dependencies_target": {
+            "type": ["string","array"],
+            "items": {"type": "string"}
+          },
+          "dependencies_ppa": {
+            "type": ["string","array"],
+            "items": {"type": "string"}
+          },
+          "dependencies": {
+            "type": ["string","array"],
+            "items": {"type": "string"}
+          },
+          "specificDependencies": {"type": "boolean"},
+          "template": {
+            "type": "string",
+            "enum":  [
+              "cmake",
+              "qmake",
+              "custom"
+            ]
+          },
+          "dir": {"type": "string"},
+          "src_dir": {"type": "string"}
+        },
+        "required": ["template", "name"],
+        "additionalProperties": false
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "prebuild": {"type": "string"},
+          "build": {"type": "string"},
+          "postbuild": {"type": "string"},
+          "postmake": {"type": "string"},
+          "build_args": {
+            "type": ["string","array"],
+            "items": {"type": "string"}
+          },
+          "make_args": {
+            "type": ["string","array"],
+            "items": {"type": "string"}
+          },
+          "make_jobs": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "docker_image": {"type": "string"},
+          "dependencies_build": {
+            "type": ["string","array"],
+            "items": {"type": "string"}
+          },
+          "dependencies_target": {
+            "type": ["string","array"],
+            "items": {"type": "string"}
+          },
+          "dependencies_ppa": {
+            "type": ["string","array"],
+            "items": {"type": "string"}
+          },
+          "dependencies": {
+            "type": ["string","array"],
+            "items": {"type": "string"}
+          },
+          "specificDependencies": {"type": "boolean"},
+          "template": {
+            "type": "string",
+            "enum":  [
+              "cmake",
+              "qmake",
+              "custom"
+            ]
+          },
+          "dir": {"type": "string"},
+          "src_dir": {"type": "string"}
+        },
+        "required": ["template"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

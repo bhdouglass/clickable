@@ -15,6 +15,7 @@ from .utils import (
     print_warning,
     print_info,
     ManifestNotFoundException,
+    validate_clickable_json,
 )
 
 
@@ -151,6 +152,16 @@ class Config(object):
         else:
             super().__setattr__(name, value)
 
+    def load_json_schema(self):
+        schema_path = os.path.join(os.path.dirname(__file__), 'clickable.schema')
+        with open(schema_path, 'r') as f:
+            schema = {}
+            try:
+                return json.load(f)
+            except ValueError:
+                raise ValueError('Failed reading "clickable.schema", it is not valid json')
+            return None
+
     def load_json_config(self, config_path):
         config = {}
         use_default_config = not config_path
@@ -164,6 +175,9 @@ class Config(object):
                     config_json = json.load(f)
                 except ValueError:
                     raise ValueError('Failed reading "clickable.json", it is not valid json')
+
+                schema = self.load_json_schema()
+                validate_clickable_json(config=config_json, schema=schema)
 
                 for key in self.deprecated:
                     if key in config_json:
