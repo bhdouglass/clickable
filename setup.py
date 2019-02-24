@@ -20,6 +20,7 @@ with open('clickable/__init__.py', 'rb') as f:
 requirements = [
     'cookiecutter',
     'requests',
+    'jsonschema'
 ]
 
 test_requirements = [
