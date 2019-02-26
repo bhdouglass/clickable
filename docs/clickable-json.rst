@@ -141,6 +141,8 @@ is set to `true`.
 
 Can be specified as a string or a list of strings.
 
+.. _clickable-json-dependencies-ppa:
+
 dependencies_ppa
 ----------------
 
@@ -202,7 +204,7 @@ build_args
 ----------
 
 Optional, arguments to pass to qmake or cmake. When using `--debug-build`,
-``CONFIG+=debug`` is appended for qmake and ``-DCMAKE_BUILD_TYPE=Debug`` for 
+``CONFIG+=debug`` is appended for qmake and ``-DCMAKE_BUILD_TYPE=Debug`` for
 cmake builds. Ex: ``CONFIG+=ubuntu``
 
 Can be specified as a string or a list of strings.
@@ -213,7 +215,7 @@ make_args
 ---------
 
 Optional, arguments to pass to make, e.g. a target name. To avoid configuration
-conflicts, the number of make jobs should not be specified here, but by the 
+conflicts, the number of make jobs should not be specified here, but by the
 make_jobs param instead.
 
 Can be specified as a string or a list of strings.
@@ -276,7 +278,7 @@ to build the library with the name ``lib1``.
 
 src_dir
 ^^^^^^^
-Optional, library source directory. Must be relative to the project root. If not specified it defaults to ``libs/<name>`` 
+Optional, library source directory. Must be relative to the project root. If not specified it defaults to ``libs/<name>``
 
 dir
 ^^^

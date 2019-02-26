@@ -23,7 +23,7 @@ Note: ArchLinux user might need to run ``xhost +local:clickable`` before using
 desktop mode.
 
 ``clickable create``
-------------------
+--------------------
 
 Generate a new app from a list of :ref:`app template options <app-templates>`.
 

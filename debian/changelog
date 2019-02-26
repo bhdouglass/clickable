@@ -1,3 +1,11 @@
+clickable (5.8.0) unstable; urgency=medium
+
+  * New configuration option for automatically including ppas in the build environment
+  * Changed libraries` format from a list to a dictionary (the old format is still supported for now)
+  * The default cargo_home is now set to ~/.cargo
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Tue, 26 Feb 2019 16:28:00 -0500
+
 clickable (5.7.0) unstable; urgency=medium
 
   * Introduced two new dependency options to separate build and target dependencies

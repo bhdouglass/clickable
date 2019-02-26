@@ -3,10 +3,17 @@
 Changelog
 =========
 
+Changes in v5.8.0
+-----------------
+
+- New configuration option for automatically including ppas in the build environment: :ref:`dependencies_ppa <clickable-json-dependencies-ppa>`.
+- Changed :ref:`libraries <clickable-json-libraries>` format from a list to a dictionary (the old format is still supported for now)
+- The default ``cargo_home`` is now set to ``~/.cargo``
+
 Changes in v5.7.0
 -----------------
 
-* Introduced two new dependency options to separate build and target dependencies
+- Introduced two new dependency options to separate build and target dependencies
 
 Changes in v5.6.1
 -----------------
