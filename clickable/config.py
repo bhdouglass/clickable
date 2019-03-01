@@ -51,7 +51,7 @@ class Config(object):
     flexible_lists = ['dependencies', 'dependencies_build',
                       'dependencies_target', 'dependencies_ppa',
                       'build_args', 'make_args', 'default', 'ignore']
-    deprecated = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh'] # TODO add 'dependencies' and 'specificDependencies'
+    deprecated = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh']  # TODO add 'dependencies' and 'specificDependencies'
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO, RUST]
 
     first_docker_info = True

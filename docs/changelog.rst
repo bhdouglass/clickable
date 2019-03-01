@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v5.8.1
+-----------------
+
+- Fixed a bug in make_args
+
 Changes in v5.8.0
 -----------------
 

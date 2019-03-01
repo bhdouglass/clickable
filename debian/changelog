@@ -1,3 +1,9 @@
+clickable (5.8.1) unstable; urgency=medium
+
+  * Fixed a bug in make_args
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Thu, 28 Feb 2019 23:18:00 -0500
+
 clickable (5.8.0) unstable; urgency=medium
 
   * New configuration option for automatically including ppas in the build environment

@@ -11,6 +11,7 @@ from clickable.build_templates.base import Builder
 
 # TODO use these subprocess functions everywhere
 
+
 def prepare_command(cmd, shell=False):
     if isinstance(cmd, str):
         if shell:
@@ -144,7 +145,7 @@ def get_builders():
 
 
 def merge_make_jobs_into_args(make_args=None, make_jobs=0):
-    make_args_contains_jobs = make_args and any([arg.startswith('-j') for arg in make_args.split()])
+    make_args_contains_jobs = make_args and any([arg.startswith('-j') for arg in make_args])
 
     if make_args_contains_jobs:
         if make_jobs:
