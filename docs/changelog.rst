@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v5.9.0
+-----------------
+
+- New schema validation for clickable.json
+- Publish to the OpenStore with a changelog message
+
 Changes in v5.8.1
 -----------------
 
