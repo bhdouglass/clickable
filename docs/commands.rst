@@ -106,6 +106,10 @@ Dumps the apps log file on the device.
 Publish your click app to the OpenStore. Check the
 :ref:`Getting started doc <getting-started>` for more info.
 
+``clickable publish "changelog message"``
+
+Publish your click app to the OpenStore with a message to add to the changelog.
+
 ``clickable run "some command"``
 --------------------------------
 

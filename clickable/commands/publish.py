@@ -41,7 +41,10 @@ class PublishCommand(Command):
         url = url + OPENSTORE_API_PATH.format(self.config.find_package_name())
         channel = 'xenial' if self.config.is_xenial else 'vivid'
         files = {'file': open(click_path, 'rb')}
-        data = {'channel': channel}
+        data = {
+            'channel': channel,
+            'changelog': path_arg,
+        }
         params = {'apikey': self.config.apikey}
 
         print_info('Uploading version {} of {} for {} to the OpenStore'.format(self.config.find_version(), self.config.find_package_name(), channel))
