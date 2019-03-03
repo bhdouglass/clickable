@@ -8,6 +8,7 @@ Build-Depends: debhelper (>= 9),
                help2man,
                python3 (>= 3.3),
                python3-cookiecutter,
+               python3-jsonschema,
                python3-ipdb,
                python3-stdeb
 Standards-Version: 4.1.4

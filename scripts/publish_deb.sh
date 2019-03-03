@@ -12,7 +12,7 @@ function docker_run {
         -e HOME=$HOME \
         -e USER=$USER \
         --rm \
-        -it clickable/build-deb:python3 $1
+        -it clickable/build-deb $1
 }
 
 function publish {
