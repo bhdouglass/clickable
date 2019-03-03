@@ -19,6 +19,7 @@ Architecture: all
 Depends: adb | android-tools-adb,
          docker.io | docker-ce,
          python3-requests,
+         python3-jsonschema,
          ${misc:Depends},
          ${python3:Depends}
 Recommends: python3-distutils

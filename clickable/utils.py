@@ -167,3 +167,22 @@ def flexible_string_to_list(variable):
     if isinstance(variable, (str, bytes)):
         return variable.split(' ')
     return variable
+
+def validate_clickable_json(config, schema):
+    try:
+        from jsonschema import validate, ValidationError
+        try:
+            validate(instance=config, schema=schema)
+        except ValidationError as e:
+            print_error("The clickable.json configuration file is invalid!")
+            error_message = e.message
+            # Lets add the key to the invalid value
+            if e.path:
+                if len(e.path) > 1 and isinstance(e.path[-1], int):
+                    error_message = "{} (in '{}')".format(error_message, e.path[-2])
+                else:
+                    error_message = "{} (in '{}')".format(error_message, e.path[-1])
+            raise ValueError(error_message)
+    except ImportError:
+        print_warning("Dependency 'jsonschema' not found. Could not validate clickable.json.")
+        pass
