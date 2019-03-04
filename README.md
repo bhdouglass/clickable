@@ -37,6 +37,13 @@ made by Stefano.
 
 ## Development
 
+### Run clickable
+
+To test clickable, run `clickable-dev` from the repository root directory. To
+enable configuration validation either install **jsonschema** via pip 
+(`pip3 install jsonschema`) or apt (`apt install python3-jsonschema`). If you
+got clickable regularely installed, you already have jsonschema, too.
+
 ### Run the tests
 
 Install nose and the coverage modules: `pip3 install nose coverage`
