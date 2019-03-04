@@ -1,8 +1,8 @@
 include LICENSE
 include README.md
+include clickable/clickable.schema
 
 recursive-include debian *
-recursive-include docker *
 recursive-include docs *
 recursive-include scripts *
 recursive-include clickable/build_templates *

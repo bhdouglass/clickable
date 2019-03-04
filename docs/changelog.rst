@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v5.9.1
+-----------------
+
+- Fixed missing schema file
+
 Changes in v5.9.0
 -----------------
 

@@ -1,4 +1,10 @@
-clickable (5.9.0b) unstable; urgency=medium
+clickable (5.9.1) unstable; urgency=medium
+
+  * Fixed missing schema file
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sun, 03 Mar 2019 23:05:00 -0500
+
+clickable (5.9.0) unstable; urgency=medium
 
   * New schema validation for clickable.json
   * Publish to the OpenStore with a changelog message
