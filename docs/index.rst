@@ -7,7 +7,7 @@ distribution. Get logs for debugging and directly access a terminal on your devi
 
 Clickable is fully Open Source and can be found on `GitLab <https://gitlab.com/clickable/clickable>`__.
 Clickable is developed by `Brian Douglass <http://bhdouglass.com>`__ and
-`Jonatan Zeidler <https://gitlab.com/jonnius>`__ with a huge
+`Jonatan Hatakeyama Zeidler <https://gitlab.com/jonnius>`__ with a huge
 thank you to all the `contributors <https://gitlab.com/clickable/clickable/graphs/master>`__.
 
 Using Clickable
