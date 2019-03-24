@@ -17,7 +17,7 @@ Changes in v5.9.0
 Changes in v5.8.1
 -----------------
 
-- Fixed a bug in make_args
+- Fixed a bug in ``make_args``
 
 Changes in v5.8.0
 -----------------
@@ -29,7 +29,7 @@ Changes in v5.8.0
 Changes in v5.7.0
 -----------------
 
-- Introduced two new dependency options to separate build and target dependencies
+- Introduced two new dependency options to separate `build <clickable-json-dependencies_build>` and `target <clickable-json-dependencies_target>` dependencies
 
 Changes in v5.6.1
 -----------------
@@ -41,14 +41,14 @@ Changes in v5.6.0
 -----------------
 
 - Fixed Cordova build
-- Added "--debug-build" support for QMake and CMake templates
+- Added ``--debug-build`` support for QMake and CMake templates
 
 Changes in v5.5.1
 -----------------
 
-- New --config argument to specify a different path to the clickable.json file
-- New configuration called "clickable_minimum_required" to specify a minimum version of Clickable
-- New "make_args" configuration for passing arguments to make
+- New ``--config`` argument to specify a different path to the clickable.json file
+- New configuration called ``clickable_minimum_required`` to specify a minimum version of Clickable
+- New ``make_args`` configuration for passing arguments to make
 
 Changes in v5.5.0
 -----------------

@@ -12,7 +12,7 @@ Example:
         "scripts": {
             "test": "make test"
         },
-        "dependencies": [
+        "dependencies_target": [
             "libpoppler-qt5-dev"
         ]
     }
@@ -112,12 +112,16 @@ specified. Defaults to ``clean build click-build install launch``.
 
 Can be specified as a string or a list of strings.
 
+.. _clickable-json-dependencies_build:
+
 dependencies_build
 ------------------
 
 Optional, a list of dependencies that will be installed in the build container.
 
 Can be specified as a string or a list of strings.
+
+.. _clickable-json-dependencies_target:
 
 dependencies_target
 -------------------
@@ -204,8 +208,8 @@ build_args
 ----------
 
 Optional, arguments to pass to qmake or cmake. When using `--debug-build`,
-``CONFIG+=debug`` is appended for qmake and ``-DCMAKE_BUILD_TYPE=Debug`` for
-cmake builds. Ex: ``CONFIG+=ubuntu``
+``CONFIG+=debug`` is additionally appended for qmake and 
+``-DCMAKE_BUILD_TYPE=Debug`` for cmake and cordova builds. Ex: ``CONFIG+=ubuntu``
 
 Can be specified as a string or a list of strings.
 
@@ -215,8 +219,8 @@ make_args
 ---------
 
 Optional, arguments to pass to make, e.g. a target name. To avoid configuration
-conflicts, the number of make jobs should not be specified here, but by the
-make_jobs param instead.
+conflicts, the number of make jobs should not be specified here, but using
+``make_jobs`` instead, so it can be overriden by the according environment variable.
 
 Can be specified as a string or a list of strings.
 
@@ -236,7 +240,7 @@ dirty
 
 Optional, whether or not do a dirty build, avoiding to clean the build directory
 before building. You may also specify this as a cli arg (``--dirty``).
-The default is ``False``.
+The default is ``false``.
 
 .. _clickable-json-libraries:
 
@@ -260,7 +264,7 @@ It's a dictionary of dictionaries basically looking like the clickable.json itse
             "make_jobs": "4",
             "build_args": [
                 "-DCMAKE_BUILD_TYPE=Release",
-                "-DBUILD_LIST=core,imgproc,highgui,imgcodecs"
+                "-DBUILD_LIST=core,imgproc,highgui,imgcodecs",
                 "-DBUILD_SHARED_LIBS=OFF"
             ]
             "prebuild": "git submodule update --init --recursive"
@@ -268,26 +272,29 @@ It's a dictionary of dictionaries basically looking like the clickable.json itse
     }
 
 The keywords ``prebuild``, ``build``, ``postbuild``,
-``postmake``, ``make_jobs``, `make_args``, ``build_args``, `docker_image``,
+``postmake``, ``make_jobs``, ``make_args``, ``build_args``, ``docker_image``,
 ``dependencies_build``, ``dependencies_target`` and ``dependencies_ppa``,
 can be used for a library the same way as described above for the app. The
 libraries are compiled for the same architecture as specified for the app itself.
+
+A single library can be build by specifying its name as ``clickable build-libs lib1``
+to build the library with name ``lib1``.
 
 template
 ^^^^^^^^
 Required, but only ``cmake``, ``qmake`` and ``custom`` are allowed.
 
-name
-^^^^
-Required, name of the library, which is used to set source dir (**src_dir**) and build dir (**dir**), if not specified explicitly.
-A single library can be build by specifying its name as ``clickable build-libs lib1``
-to build the library with the name ``lib1``.
-
 src_dir
 ^^^^^^^
-Optional, library source directory. Must be relative to the project root. If not specified it defaults to ``libs/<name>``
+Optional, library source directory. Must be relative to the project root. It defaults to ``libs/<name>``
 
 dir
 ^^^
-Optional, library build directory. Must be relative to the project root. If not specified it defaults to ``build/<name>``. The architecture triplet is appended, so that builds for different architectures can
+Optional, library build directory. Must be relative to the project root. It
+defaults to ``build/<name>``. The architecture triplet is appended, so that
+builds for different architectures can
 exist in parallel (``arm-linux-gnueabihf`` for ``armhf`` and ``x86_64-linux-gnu`` for ``amd64``).
+
+Consider defining a custom build directory for the app itself (Ex: ``build/app``). Otherwise 
+cleaning the app would clean the library, too.
+
