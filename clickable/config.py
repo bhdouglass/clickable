@@ -83,6 +83,7 @@ class Config(object):
             'launch': None,
             'dir': './build/',
             'src_dir': self.cwd,
+            'root_dir': self.cwd,
             'kill': None,
             'scripts': {},
             'lxd': False,

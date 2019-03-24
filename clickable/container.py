@@ -170,7 +170,7 @@ class Container(object):
 
     def run_command(self, command, force_lxd=False, sudo=False, get_output=False, use_dir=True, cwd=None):
         wrapped_command = command
-        cwd = cwd if cwd else self.config.cwd
+        cwd = cwd if cwd else os.path.abspath(self.config.root_dir)
 
         if self.config.container_mode:
             wrapped_command = 'bash -c "{}"'.format(command)

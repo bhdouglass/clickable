@@ -225,8 +225,8 @@ Can be specified as a string or a list of strings.
 make_jobs
 ---------
 
-Optional, the number of jobs to use when running make, equivalent to make's `-j`
-option. If left blank this defaults to `-j`, allowing make to execute many
+Optional, the number of jobs to use when running make, equivalent to make's ``-j``
+option. If left blank this defaults to ``-j``, allowing make to execute many
 recipes simultaneously.
 
 .. _clickable-json-dirty:
@@ -239,6 +239,13 @@ before building. You may also specify this as a cli arg (``--dirty``).
 The default is ``False``.
 
 .. _clickable-json-libraries:
+
+root_dir
+--------
+
+Optional, specify a different root directory for the project. For example,
+if you clickable.json file is in ``platforms/ubuntu_touch`` and you want to include
+code from root of your project you can set ``root_dir: "../.."``.
 
 libraries
 ---------
