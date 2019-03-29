@@ -45,6 +45,7 @@ class LibConfig(object):
             'postbuild': None,
             'dir': None,
             'src_dir': None,
+            'root_dir': self.cwd,
             'specificDependencies': False,
             'dependencies': [],
             'dependencies_build': [],
