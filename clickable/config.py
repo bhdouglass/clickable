@@ -94,7 +94,7 @@ class Config(object):
             'dependencies_build': [],
             'dependencies_target': [],
             'dependencies_ppa': [],
-            'ignore': [],
+            'ignore': ['.git', '.bzr'],
             'make_jobs': 0,
             'gopath': None,
             'cargo_home': os.path.expanduser('~/.cargo'),

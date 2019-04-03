@@ -16,12 +16,12 @@ class RustBuilder(Builder):
             # Click stuff
             os.path.abspath(self.config.temp),
             os.path.abspath(self.config.dir),
-            self.config.ignore,
             'clickable.json',
             os.path.abspath(os.path.join(self.config.cwd, 'Cargo.toml')),
             os.path.abspath(os.path.join(self.config.cwd, 'Cargo.lock')),
-            os.path.abspath(os.path.join(self.config.cwd, 'target'))
+            os.path.abspath(os.path.join(self.config.cwd, 'target')),
         ])
+        self.paths_to_ignore.extend(self.config.ignore)
 
     @property
     def _cargo_target(self):
@@ -41,7 +41,11 @@ class RustBuilder(Builder):
         ignored = []
         for content in contents:
             abs_path = os.path.abspath(os.path.join(path, content))
-            if abs_path in self.paths_to_ignore or os.path.splitext(content)[1] == '.rs':
+            if (
+                abs_path in self.paths_to_ignore or
+                content in self.paths_to_ignore or
+                os.path.splitext(content)[1] == '.rs'
+            ):
                 ignored += [content]
         return ignored
 
