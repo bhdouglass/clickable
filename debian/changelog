@@ -1,3 +1,10 @@
+clickable (5.10.0) unstable; urgency=medium
+
+  * Added configuration option "root_dir"
+  * Always ignore .git/.bzr directories when building pure, rust, or go apps
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 03 Apr 2019 10:39:00 -0500
+
 clickable (5.9.1) unstable; urgency=medium
 
   * Fixed missing schema file

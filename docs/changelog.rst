@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v5.10.1
+------------------
+
+- Added configuration option "root_dir"
+- Always ignore .git/.bzr directories when building pure, rust, or go apps
+
 Changes in v5.9.1
 -----------------
 
