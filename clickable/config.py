@@ -94,7 +94,7 @@ class Config(object):
             'dependencies_build': [],
             'dependencies_target': [],
             'dependencies_ppa': [],
-            'ignore': ['.git', '.bzr'],
+            'ignore': [],
             'make_jobs': 0,
             'gopath': None,
             'cargo_home': os.path.expanduser('~/.cargo'),
@@ -306,6 +306,8 @@ class Config(object):
         if self.desktop:
             self.config['dependencies_build'] += self.config['dependencies_target']
             self.config['dependencies_target'] = []
+
+        self.ignore.extend(['.git', '.bzr'])
 
     def check_config_errors(self):
         if self.config['clickable_minimum_required']:

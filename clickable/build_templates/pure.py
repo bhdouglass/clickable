@@ -38,8 +38,6 @@ class PureQMLCMakeBuilder(PureQMLMakeBuilder, CMakeBuilder):
 class PureBuilder(Builder):
     name = Config.PURE
 
-    default_ignore = ['.git', '.bzr']
-
     def _ignore(self, path, contents):
         ignored = []
         for content in contents:
@@ -49,8 +47,7 @@ class PureBuilder(Builder):
                 cpath == os.path.abspath(self.config.temp) or
                 cpath == os.path.abspath(self.config.dir) or
                 content in self.config.ignore or
-                content == 'clickable.json' or
-                content in self.default_ignore
+                content == 'clickable.json'
             ):
                 ignored.append(content)
 
