@@ -15,7 +15,7 @@ class TestLaunchCommand(TestCase):
         self.config.kill = 'foo'
         self.command.kill()
 
-        mock_run_command.assert_called_once_with('pkill -f foo')
+        mock_run_command.assert_called_once_with('pkill -f \\"foo and bar\\"')
 
     @mock.patch('clickable.device.Device.run_command', side_effect=exception_fn)
     def test_kill_ignores_exceptions(self, mock_run_command):

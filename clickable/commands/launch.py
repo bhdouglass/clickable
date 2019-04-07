@@ -17,7 +17,7 @@ class LaunchCommand(Command):
 
         if self.config.kill:
             try:
-                self.device.run_command('pkill -f {}'.format(self.config.kill))
+                self.device.run_command('pkill -f \\"{}\\"'.format(self.config.kill))
             except Exception:
                 pass  # Nothing to do, the process probably wasn't running
 
