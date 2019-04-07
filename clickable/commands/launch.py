@@ -17,7 +17,10 @@ class LaunchCommand(Command):
 
         if self.config.kill:
             try:
-                self.device.run_command('pkill -f \\"{}\\"'.format(self.config.kill))
+                # Enclose first character in square brackets to prevent
+                # spurious error when running `pkill -f` over `adb`
+                kill = '[' + self.config.kill[:1] + ']' + self.config.kill[1:]
+                self.device.run_command('pkill -f \\"{}\\"'.format(kill))
             except Exception:
                 pass  # Nothing to do, the process probably wasn't running
 
