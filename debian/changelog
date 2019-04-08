@@ -1,3 +1,10 @@
+clickable (5.11.0) unstable; urgency=medium
+
+  - Smarter app killing using "pkill -f"
+  - Fix deprecated configuration options showing as a schema error
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sun, 07 Apr 2019 23:55:00 -0500
+
 clickable (5.10.0) unstable; urgency=medium
 
   * Added configuration option "root_dir"

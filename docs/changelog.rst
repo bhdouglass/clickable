@@ -3,7 +3,13 @@
 Changelog
 =========
 
-Changes in v5.10.1
+Changes in v5.11.0
+------------------
+
+- Smarter app killing using "pkill -f"
+- Fix deprecated configuration options showing as a schema error
+
+Changes in v5.10.0
 ------------------
 
 - Added configuration option "root_dir"
