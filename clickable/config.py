@@ -177,12 +177,12 @@ class Config(object):
                 except ValueError:
                     raise ValueError('Failed reading "clickable.json", it is not valid json')
 
-                schema = self.load_json_schema()
-                validate_clickable_json(config=config_json, schema=schema)
-
                 for key in self.deprecated:
                     if key in config_json:
                         raise ValueError('"{}" is a no longer a valid configuration option'.format(key))
+
+                schema = self.load_json_schema()
+                validate_clickable_json(config=config_json, schema=schema)
 
                 for key in self.config:
                     value = config_json.get(key, None)
