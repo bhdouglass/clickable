@@ -12,14 +12,14 @@ class TestLaunchCommand(TestCase):
 
     @mock.patch('clickable.device.Device.run_command', side_effect=empty_fn)
     def test_kill(self, mock_run_command):
-        self.config.kill = 'foo'
+        self.config.kill = 'foo and bar'
         self.command.kill()
 
-        mock_run_command.assert_called_once_with('pkill foo')
+        mock_run_command.assert_called_once_with('pkill -f \\"[f]oo and bar\\"')
 
     @mock.patch('clickable.device.Device.run_command', side_effect=exception_fn)
     def test_kill_ignores_exceptions(self, mock_run_command):
-        self.config.kill = 'foo'
+        self.config.kill = 'foo and bar'
         self.command.kill()
 
     @mock.patch('clickable.commands.launch.print_warning', side_effect=empty_fn)
