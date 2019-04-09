@@ -46,6 +46,12 @@ container (no need to install it on your computer).
 
 .. _publishing:
 
+Handling dependencies
+---------------------
+For more information about compiling, using and deploying app dependencies, check out the
+`docs over at UBports <https://docs.ubports.com/en/latest/appdev/guides/dependencies.html>`__.
+
+
 Publishing to the OpenStore
 ---------------------------
 
