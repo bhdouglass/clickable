@@ -27,11 +27,11 @@ Placeholder   Output
 ============= ======
 $ARCH_TRIPLET Target architecture triplet (``arm-linux-gnueabihf``, ``x86_64-linux-gnu`` or ``all``)
 $ROOT         Value of ``root_dir``
-$BUILD_DIR    Value of ``dir``
+$BUILD_DIR    Value of ``build_dir``
 $SRC_DIR      Value of ``src_dir```
 ============= ======
 
-Parameters accepting placeholders: ``root_dir``, ``dir``, ``src_dir``, ``gopath``, ``cargo_home``, ``scripts``, ``build``, ``build_args``, ``make_args``, ``postmake``, ``postbuild``, ``prebuild``. This is an ordered list. Parameters that are used as placeholders themselfs accept only predecessors. Ex: ``$ROOT`` can be used in ``src_dir``, but not vice-versa.
+Parameters accepting placeholders: ``root_dir``, ``build_dir``, ``src_dir``, ``gopath``, ``cargo_home``, ``scripts``, ``build``, ``build_args``, ``make_args``, ``postmake``, ``postbuild``, ``prebuild``. This is an ordered list. Parameters that are used as placeholders themselfs accept only predecessors. Ex: ``$ROOT`` can be used in ``src_dir``, but not vice-versa.
 
 Example:
 
@@ -39,7 +39,7 @@ Example:
 
     {
         "template": "cmake",
-        "dir": "$ROOT/build/$ARCH_TRIPLET"
+        "build_dir": "$ROOT/build/$ARCH_TRIPLET"
     }
 
 clickable_minimum_required
@@ -94,10 +94,15 @@ Optional, a custom command to launch the app.
 
 .. _clickable-json-dir:
 
+build_dir
+---------
+
+Optional, a custom build directory. Defaults to ``$ROOT/build/``
+
 dir
 ---
 
-Optional, a custom build directory. Defaults to ``$ROOT/build/``
+Deprecated, use ``build_dir`` instead.
 
 src_dir
 -------
@@ -326,9 +331,14 @@ src_dir
 ^^^^^^^
 Optional, library source directory. Must be relative to the project root. It defaults to ``$ROOT/libs/$NAME``
 
-dir
-^^^
+build_dir
+^^^^^^^^^
 Optional, library build directory. Must be relative to the project root. It
 defaults to ``$ROOT/build/$NAME/$ARCH_TRIPLET``. Thanks to the architecture triplet, builds for different architectures can
 exist in parallel.
+
+dir
+^^^
+
+Deprecated, use ``build_dir`` instead.
 
