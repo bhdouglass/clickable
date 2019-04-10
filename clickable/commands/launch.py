@@ -34,7 +34,7 @@ class LaunchCommand(Command):
             app = path_arg
         else:
             app = '{}_{}_{}'.format(self.config.find_package_name(), self.config.find_app_name(), self.config.find_version())
-            cwd = self.config.dir
+            cwd = self.config.build_dir
 
         launch = 'ubuntu-app-launch {}'.format(app)
         if self.config.launch:

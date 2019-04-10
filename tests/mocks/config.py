@@ -6,7 +6,7 @@ class ConfigMock(Config):
     def __init__(self, *args, **kwargs):
         super().__init__(Mock(), clickable_version='0.0.0', *args, **kwargs)
         self.cwd = '/tmp'
-        self.config['dir'] = '/tmp/build'
+        self.config['build_dir'] = '/tmp/build'
         self.temp = '/tmp/build/tmp'
 
     def load_json_config(self, *args):

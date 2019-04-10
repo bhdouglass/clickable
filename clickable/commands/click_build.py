@@ -17,7 +17,7 @@ class ClickBuildCommand(Command):
 
         if self.config.click_output:
             click = self.config.get_click_filename()
-            click_path = os.path.join(self.config.dir, click)
+            click_path = os.path.join(self.config.build_dir, click)
             output_file = os.path.join(self.config.click_output, click)
 
             if not os.path.exists(self.config.click_output):

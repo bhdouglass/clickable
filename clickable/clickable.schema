@@ -38,6 +38,7 @@
     "postmake": {"type": "string"},
     "launch": {"type": "string"},
     "dir": {"type": "string"},
+    "build_dir": {"type": "string"},
     "src_dir": {"type": "string"},
     "root_dir": {"type": "string"},
     "kill": {"type": "string"},
@@ -136,6 +137,7 @@
             ]
           },
           "dir": {"type": "string"},
+          "build_dir": {"type": "string"},
           "src_dir": {"type": "string"}
         },
         "required": ["template", "name"],
@@ -187,6 +189,7 @@
             ]
           },
           "dir": {"type": "string"},
+          "build_dir": {"type": "string"},
           "src_dir": {"type": "string"}
         },
         "required": ["template"],

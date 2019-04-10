@@ -38,7 +38,7 @@ class Device(object):
             return
 
         if not cwd:
-            cwd = self.config.dir
+            cwd = self.config.build_dir
 
         wrapped_command = ''
         if self.config.ssh:

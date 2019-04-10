@@ -25,13 +25,13 @@ class LibConfig(object):
         "$ARCH_TRIPLET": "arch_triplet",
         "$NAME": "name",
         "$ROOT": "root_dir",
-        "$BUILD_DIR": "dir",
+        "$BUILD_DIR": "build_dir",
         "$SRC_DIR": "src_dir",
     }
-    accepts_placeholders = ["root_dir", "dir", "src_dir",
+    accepts_placeholders = ["root_dir", "build_dir", "src_dir",
                             "build", "build_args", "make_args", "postmake", "postbuild", "prebuild"]
 
-    path_keys = ['root_dir', 'dir', 'src_dir']
+    path_keys = ['root_dir', 'build_dir', 'src_dir']
     required = ['template']
     flexible_lists = ['dependencies', 'dependencies_build',
                       'dependencies_target', 'dependencies_ppa',
@@ -59,7 +59,8 @@ class LibConfig(object):
             'prebuild': None,
             'build': None,
             'postbuild': None,
-            'dir': '$ROOT/build/$NAME/$ARCH_TRIPLET',
+            'dir': None,
+            'build_dir': '$ROOT/build/$NAME/$ARCH_TRIPLET',
             'src_dir': '$ROOT/libs/$NAME',
             'root_dir': root_dir,
             'specificDependencies': False,
@@ -85,7 +86,7 @@ class LibConfig(object):
             if self.config[key]:
                 self.config[key] = os.path.abspath(self.config[key])
 
-        self.temp = self.config['dir']
+        self.temp = self.config['build_dir']
 
         self.check_config_errors()
 
@@ -110,6 +111,10 @@ class LibConfig(object):
 
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
+
+        if self.config['dir']:
+            self.config['build_dir'] = self.config['dir']
+            print_warning('The param "dir" in your clickable.json is deprecated and will be removed in a future version of Clickable. Use "build_dir" instead!')
 
         for key in self.flexible_lists:
             self.config[key] = flexible_string_to_list(self.config[key])

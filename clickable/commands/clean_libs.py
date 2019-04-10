@@ -24,9 +24,9 @@ class CleanLibsCommand(Command):
                 print_info("Cleaning {}".format(lib.name))
                 found = True
 
-                if os.path.exists(lib.dir):
+                if os.path.exists(lib.build_dir):
                     try:
-                        shutil.rmtree(lib.dir)
+                        shutil.rmtree(lib.build_dir)
                     except Exception:
                         cls, value, traceback = sys.exc_info()
                         if cls == OSError and 'No such file or directory' in str(value):  # TODO see if there is a proper way to do this
@@ -34,7 +34,7 @@ class CleanLibsCommand(Command):
                         else:
                             print_warning('Failed to clean the build directory: {}: {}'.format(type, value))
                 else:
-                    print_info('Nothing to clean. Path does not exist: {}'.format(lib.dir))
+                    print_info('Nothing to clean. Path does not exist: {}'.format(lib.build_dir))
 
         if single_lib and not found:
             raise ValueError('Cannot clean unknown library {}. You may add it to the clickable.json'.format(single_lib))
