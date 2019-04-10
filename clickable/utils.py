@@ -5,6 +5,7 @@ import os
 import shlex
 import glob
 import inspect
+import configparser
 from os.path import dirname, basename, isfile, join
 
 from clickable.build_templates.base import Builder
@@ -63,12 +64,12 @@ def print_error(message):
     print(Colors.ERROR + message + Colors.CLEAR)
 
 
-class ManifestNotFoundException(Exception):
+class FileNotFoundException(Exception):
     pass
 
 
-def find_manifest(cwd, temp_dir=None, build_dir=None, ignore_dir=None):
-    manifests = []
+def find(names, cwd, temp_dir=None, build_dir=None, ignore_dir=None, extensions_only=False):
+    found = []
     searchpaths = []
     searchpaths.append(cwd)
 
@@ -77,30 +78,39 @@ def find_manifest(cwd, temp_dir=None, build_dir=None, ignore_dir=None):
 
     for (root, dirs, files) in itertools.chain.from_iterable(os.walk(path, topdown=True) for path in searchpaths):
         for name in files:
-            if name == 'manifest.json':
+            ok = (name in names)
+
+            if extensions_only:
+                ok = any([name.endswith(n) for n in names])
+
+            if ok:
                 if ignore_dir is not None and root.startswith(ignore_dir):
                     continue
 
-                manifests.append(os.path.join(root, name))
+                found.append(os.path.join(root, name))
 
-    if not manifests:
-        raise ManifestNotFoundException('Could not find manifest.json')
+    if not found:
+        raise FileNotFoundException('Could not find {}'.format(', '.join(names)))
 
     # Favor the manifest in the install dir first, then fall back to the build dir and finally the source dir
-    manifest = ''
-    for m in manifests:
-        if temp_dir and m.startswith(os.path.realpath(temp_dir) + os.sep):
-            manifest = m
+    file = ''
+    for f in found:
+        if temp_dir and f.startswith(os.path.realpath(temp_dir) + os.sep):
+            file = f
 
-    if not manifest:
-        for m in manifests:
-            if build_dir and m.startswith(os.path.realpath(build_dir) + os.sep):
-                manifest = m
+    if not file:
+        for f in found:
+            if build_dir and f.startswith(os.path.realpath(build_dir) + os.sep):
+                file = f
 
-    if not manifest:
-        manifest = manifests[0]
+    if not file:
+        file = found[0]
 
-    return manifest
+    return file
+
+
+def find_manifest(cwd, temp_dir=None, build_dir=None, ignore_dir=None):
+    return find(['manifest.json'], cwd, temp_dir, build_dir, ignore_dir)
 
 
 def get_manifest(cwd, temp_dir=None, build_dir=None):
@@ -112,6 +122,21 @@ def get_manifest(cwd, temp_dir=None, build_dir=None):
             raise ValueError('Failed reading "manifest.json", it is not valid json')
 
     return manifest
+
+
+def get_desktop(cwd, temp_dir=None, build_dir=None):
+    desktop = {}
+
+    try:
+        config = configparser.ConfigParser()
+        config.read(find(['.desktop', '.desktop.in'], cwd, temp_dir, build_dir, extensions_only=True))
+
+        if 'Desktop Entry' in config:
+            desktop = config['Desktop Entry']
+    except ValueError:
+        raise ValueError('Failed reading desktop file')
+
+    return desktop
 
 
 def check_command(command):
@@ -167,6 +192,7 @@ def flexible_string_to_list(variable):
     if isinstance(variable, (str, bytes)):
         return variable.split(' ')
     return variable
+
 
 def validate_clickable_json(config, schema):
     try:

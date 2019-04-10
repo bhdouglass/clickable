@@ -9,12 +9,13 @@ from .libconfig import LibConfig
 from .utils import (
     find_manifest,
     get_manifest,
+    get_desktop,
     merge_make_jobs_into_args,
     flexible_string_to_list,
     env,
     print_warning,
     print_info,
-    ManifestNotFoundException,
+    FileNotFoundException,
     validate_clickable_json,
 )
 
@@ -115,11 +116,12 @@ class Config(object):
         self.convert_deprecated_libraries_list()
         self.lib_configs = [LibConfig(name, lib, self.debug_build) for name, lib in self.config['libraries'].items()]
 
-        self.cleanup_config()
-
         self.host_arch = platform.machine()
         self.is_arm = self.host_arch.startswith('arm')
+        self.config['dir'] = os.path.abspath(self.config['dir'])
         self.temp = os.path.join(self.config['dir'], 'tmp')
+
+        self.cleanup_config()
 
         if self.config['dirty'] and 'clean' in self.config['default']:
             self.config['default'].remove('clean')
@@ -288,13 +290,21 @@ class Config(object):
         elif self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE:
             self.config['arch'] = 'all'
 
-        self.config['dir'] = os.path.abspath(self.config['dir'])
-
         if not self.config['kill']:
             if self.config['template'] == self.CORDOVA:
                 self.config['kill'] = 'cordova-ubuntu'
             elif self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE:
                 self.config['kill'] = 'qmlscene'
+            else:
+                try:
+                    desktop = get_desktop(self.cwd, self.temp, self.config['dir'])
+                except ValueError:
+                    desktop = None
+                except FileNotFoundException:
+                    desktop = None
+
+                if desktop and 'Exec' in desktop:
+                    self.config['kill'] = desktop['Exec']
 
         if self.config['dependencies']:
             if self.config['specificDependencies']:
@@ -357,7 +367,7 @@ class Config(object):
                     manifest = get_manifest(os.getcwd())
                 except ValueError:
                     manifest = None
-                except ManifestNotFoundException:
+                except FileNotFoundException:
                     manifest = None
 
             if not template and 'CMakeLists.txt' in directory:
