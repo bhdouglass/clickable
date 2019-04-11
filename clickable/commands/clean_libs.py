@@ -24,10 +24,6 @@ class CleanLibsCommand(Command):
                 print_info("Cleaning {}".format(lib.name))
                 found = True
 
-                lib.arch = self.config.arch
-                if lib.arch in lib.arch_triplets:
-                    lib.dir = os.path.join(lib.dir, lib.arch_triplets[lib.arch])
-
                 if os.path.exists(lib.dir):
                     try:
                         shutil.rmtree(lib.dir)
