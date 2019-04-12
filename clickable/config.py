@@ -25,7 +25,7 @@ class Config(object):
     ENV_MAP = {
         'CLICKABLE_ARCH': 'arch',
         'CLICKABLE_TEMPLATE': 'template',
-        'CLICKABLE_DIR': 'dir',
+        'CLICKABLE_BUILD_DIR': 'build_dir',
         'CLICKABLE_LXD': 'lxd',
         'CLICKABLE_DEFAULT': 'default',
         'CLICKABLE_MAKE_JOBS': 'make_jobs',
@@ -57,14 +57,14 @@ class Config(object):
     replacements = {
         "$ARCH_TRIPLET": "arch_triplet",
         "$ROOT": "root_dir",
-        "$BUILD_DIR": "dir",
+        "$BUILD_DIR": "build_dir",
         "$SRC_DIR": "src_dir",
     }
-    accepts_placeholders = ["root_dir", "dir", "src_dir", "gopath", "cargo_home", "scripts",
+    accepts_placeholders = ["root_dir", "build_dir", "src_dir", "gopath", "cargo_home", "scripts",
                             "build", "build_args", "make_args", "postmake", "postbuild", "prebuild"]
 
-    path_keys = ['root_dir', 'dir', 'src_dir', 'cargo_home', 'gopath']
-    required = ['arch', 'dir', 'docker_image']
+    path_keys = ['root_dir', 'build_dir', 'src_dir', 'cargo_home', 'gopath']
+    required = ['arch', 'build_dir', 'docker_image']
     flexible_lists = ['dependencies', 'dependencies_build',
                       'dependencies_target', 'dependencies_ppa',
                       'build_args', 'make_args', 'default', 'ignore']
@@ -98,7 +98,8 @@ class Config(object):
             'build': None,
             'postbuild': None,
             'launch': None,
-            'dir': '$ROOT/build',
+            'dir': None,
+            'build_dir': '$ROOT/build',
             'src_dir': '$ROOT',
             'root_dir': self.cwd,
             'kill': None,
@@ -128,8 +129,6 @@ class Config(object):
         self.config.update(env_config)
         arg_config = self.load_arg_config(args)
         self.config.update(arg_config)
-
-        self.convert_deprecated_libraries_list()
 
         self.cleanup_config()
 
@@ -165,7 +164,7 @@ class Config(object):
             if self.config[key]:
                 self.config[key] = os.path.abspath(self.config[key])
 
-        self.temp = os.path.join(self.config['dir'], 'tmp')
+        self.temp = os.path.join(self.config['build_dir'], 'tmp')
 
         self.check_config_errors()
 
@@ -318,6 +317,12 @@ class Config(object):
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
 
+        if self.config['dir']:
+            self.config['build_dir'] = self.config['dir']
+            print_warning('The param "dir" in your clickable.json is deprecated and will be removed in a future version of Clickable. Use "build_dir" instead!')
+
+        self.convert_deprecated_libraries_list()
+
         for key in self.flexible_lists:
             self.config[key] = flexible_string_to_list(self.config[key])
 
@@ -424,7 +429,7 @@ class Config(object):
         if self.config['template'] == Config.CORDOVA:
             manifest = find_manifest(self.temp, ignore_dir=ignore_dir)
         else:
-            manifest = find_manifest(self.cwd, self.temp, self.config['dir'], ignore_dir)
+            manifest = find_manifest(self.cwd, self.temp, self.config['build_dir'], ignore_dir)
 
         return manifest
 
@@ -432,7 +437,7 @@ class Config(object):
         if self.config['template'] == Config.CORDOVA:
             manifest = get_manifest(self.temp)
         else:
-            manifest = get_manifest(self.cwd, self.temp, self.config['dir'])
+            manifest = get_manifest(self.cwd, self.temp, self.config['build_dir'])
 
         return manifest
 

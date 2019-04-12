@@ -12,9 +12,9 @@ class CleanCommand(Command):
     help = 'Clean the build directory'
 
     def run(self, path_arg=None):
-        if os.path.exists(self.config.dir):
+        if os.path.exists(self.config.build_dir):
             try:
-                shutil.rmtree(self.config.dir)
+                shutil.rmtree(self.config.build_dir)
             except Exception:
                 cls, value, traceback = sys.exc_info()
                 if cls == OSError and 'No such file or directory' in str(value):  # TODO see if there is a proper way to do this

@@ -24,8 +24,8 @@ class InstallCommand(Command):
             click_path = path_arg
         else:
             click = self.config.get_click_filename()
-            click_path = os.path.join(self.config.dir, click)
-            cwd = self.config.dir
+            click_path = os.path.join(self.config.build_dir, click)
+            cwd = self.config.build_dir
 
         if self.config.ssh:
             command = 'scp {} phablet@{}:/home/phablet/'.format(click_path, self.config.ssh)

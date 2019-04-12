@@ -182,13 +182,13 @@ class Container(object):
                 target_command = 'maint'
 
             if use_dir:
-                command = 'cd {}; {}'.format(self.config.dir, command)
+                command = 'cd {}; {}'.format(self.config.build_dir, command)
 
             wrapped_command = 'usdk-target {} clickable-{} -- bash -c "{}"'.format(target_command, self.config.build_arch, command)
         else:  # Docker
             self.check_docker()
 
-            if ' ' in cwd or ' ' in self.config.dir:
+            if ' ' in cwd or ' ' in self.config.build_dir:
                 raise Exception('There are spaces in the current path, this will cause errors in the build process')
 
             if self.config.first_docker_info:
@@ -229,7 +229,7 @@ class Container(object):
                 cwd,
                 go_config,
                 rust_config,
-                self.config.dir if use_dir else cwd,
+                self.config.build_dir if use_dir else cwd,
                 os.getuid(),
                 self.docker_image,
                 command,
@@ -237,7 +237,7 @@ class Container(object):
 
         kwargs = {}
         if use_dir:
-            kwargs['cwd'] = self.config.dir
+            kwargs['cwd'] = self.config.build_dir
 
         if get_output:
             return run_subprocess_check_output(shlex.split(wrapped_command), **kwargs)

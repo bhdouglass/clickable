@@ -34,7 +34,7 @@ class LibBuildCommand(Command):
                 lib.build_arch = self.config.build_arch
 
                 try:
-                    os.makedirs(lib.dir)
+                    os.makedirs(lib.build_dir)
                 except FileExistsError:
                     pass
                 except Exception:
@@ -49,7 +49,7 @@ class LibBuildCommand(Command):
                 self.build(lib, container)
 
                 if lib.postbuild:
-                    run_subprocess_check_call(lib.postbuild, cwd=lib.dir, shell=True)
+                    run_subprocess_check_call(lib.postbuild, cwd=lib.build_dir, shell=True)
 
         if single_lib and not found:
             raise ValueError('Cannot build unknown library {}. You may add it to the clickable.json'.format(single_lib))
