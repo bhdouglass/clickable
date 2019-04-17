@@ -1,7 +1,17 @@
+clickable (5.12.0) unstable; urgency=medium
+
+  * clickable.json supports placeholders now
+  * Add new src_dir configuration option
+  * Make build-libs respect root_dir, too
+  * Fix build-libs for architecture all
+  * When no kill configuration option is specified Clickable will use the Exec line from the desktop file
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 17 Apr 2019 15:44:00 -0500
+
 clickable (5.11.0) unstable; urgency=medium
 
-  - Smarter app killing using "pkill -f"
-  - Fix deprecated configuration options showing as a schema error
+  * Smarter app killing using "pkill -f"
+  * Fix deprecated configuration options showing as a schema error
 
  -- Brian Douglass <bhdouglass@gmail.com>  Sun, 07 Apr 2019 23:55:00 -0500
 

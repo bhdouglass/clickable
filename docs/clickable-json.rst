@@ -92,7 +92,7 @@ launch
 
 Optional, a custom command to launch the app.
 
-.. _clickable-json-dir:
+.. _clickable-json-build_dir:
 
 build_dir
 ---------
@@ -242,7 +242,7 @@ build_args
 ----------
 
 Optional, arguments to pass to qmake or cmake. When using `--debug-build`,
-``CONFIG+=debug`` is additionally appended for qmake and 
+``CONFIG+=debug`` is additionally appended for qmake and
 ``-DCMAKE_BUILD_TYPE=Debug`` for cmake and cordova builds. Ex: ``CONFIG+=ubuntu``
 
 Can be specified as a string or a list of strings.
@@ -341,4 +341,3 @@ dir
 ^^^
 
 Deprecated, use ``build_dir`` instead.
-

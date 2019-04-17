@@ -3,16 +3,25 @@
 Changelog
 =========
 
+Chagnes in v5.12.0
+------------------
+
+- clickable.json supports :ref:`placeholders <clickable-json-placeholders>` now
+- Add new ``src_dir`` configuration option
+- Make build-libs respect ``root_dir``, too
+- Fix build-libs for architecture all
+- When no ``kill`` configuration option is specified Clickable will use the Exec line from the desktop file
+
 Changes in v5.11.0
 ------------------
 
-- Smarter app killing using "pkill -f"
+- Smarter app killing using ``pkill -f``
 - Fix deprecated configuration options showing as a schema error
 
 Changes in v5.10.0
 ------------------
 
-- Added configuration option "root_dir"
+- Added configuration option ``root_dir``
 - Always ignore .git/.bzr directories when building pure, rust, or go apps
 
 Changes in v5.9.1
