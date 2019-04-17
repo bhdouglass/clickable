@@ -304,7 +304,7 @@ class Config(object):
                     desktop = None
 
                 if desktop and 'Exec' in desktop:
-                    self.config['kill'] = desktop['Exec']
+                    self.config['kill'] = desktop['Exec'].replace('%u', '').replace('%U', '').strip()
 
         if self.config['dependencies']:
             if self.config['specificDependencies']:

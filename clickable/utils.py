@@ -5,7 +5,6 @@ import os
 import shlex
 import glob
 import inspect
-import configparser
 from os.path import dirname, basename, isfile, join
 
 from clickable.build_templates.base import Builder
@@ -127,14 +126,15 @@ def get_manifest(cwd, temp_dir=None, build_dir=None):
 def get_desktop(cwd, temp_dir=None, build_dir=None):
     desktop = {}
 
-    try:
-        config = configparser.ConfigParser()
-        config.read(find(['.desktop', '.desktop.in'], cwd, temp_dir, build_dir, extensions_only=True))
+    desktop_file = find(['.desktop', '.desktop.in'], cwd, temp_dir, build_dir, extensions_only=True)
 
-        if 'Desktop Entry' in config:
-            desktop = config['Desktop Entry']
-    except ValueError:
-        raise ValueError('Failed reading desktop file')
+    if desktop_file:
+        with open(desktop_file, 'r') as f:
+            # Not using configparser here since it has issues with %U that many apps have
+            for line in f.readlines():
+                if '=' in line:
+                    pos = line.find('=')
+                    desktop[line[:pos]] = line[(pos + 1):].strip()
 
     return desktop
 
