@@ -16,10 +16,10 @@ Overrides the clickable.json's :ref:`arch <clickable-json-arch>`.
 
 Overrides the clickable.json's :ref:`template <clickable-json-template>`.
 
-``CLICKABLE_DIR``
------------------
+``CLICKABLE_BUILD_DIR``
+-----------------------
 
-Overrides the clickable.json's :ref:`dir <clickable-json-dir>`.
+Overrides the clickable.json's :ref:`dir <clickable-json-build_dir>`.
 
 ``CLICKABLE_LXD``
 -----------------

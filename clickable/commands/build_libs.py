@@ -29,22 +29,12 @@ class LibBuildCommand(Command):
                 print_info("Building {}".format(lib.name))
                 found = True
 
-                lib.arch = self.config.arch
-                lib.build_arch = self.config.build_arch
                 lib.container_mode = self.config.container_mode
-
-                if lib.arch in lib.arch_triplets:
-                    lib.dir = os.path.join(lib.dir, lib.arch_triplets[lib.arch])
-                    if not lib.custom_docker_image:
-                        if self.config.is_xenial:
-                            lib.docker_image = 'clickable/ubuntu-sdk:16.04-{}'.format(lib.arch)
-                        else:
-                            lib.docker_image = 'clickable/ubuntu-sdk:15.04-{}'.format(lib.arch)
-                else:
-                  print_warning('Building library for unkown architecture {}'.format(lib.arch))
+                lib.docker_image = self.config.docker_image
+                lib.build_arch = self.config.build_arch
 
                 try:
-                    os.makedirs(lib.dir)
+                    os.makedirs(lib.build_dir)
                 except FileExistsError:
                     pass
                 except Exception:
@@ -59,7 +49,7 @@ class LibBuildCommand(Command):
                 self.build(lib, container)
 
                 if lib.postbuild:
-                    run_subprocess_check_call(lib.postbuild, cwd=lib.dir, shell=True)
+                    run_subprocess_check_call(lib.postbuild, cwd=lib.build_dir, shell=True)
 
         if single_lib and not found:
             raise ValueError('Cannot build unknown library {}. You may add it to the clickable.json'.format(single_lib))

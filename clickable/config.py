@@ -26,7 +26,7 @@ class Config(object):
     ENV_MAP = {
         'CLICKABLE_ARCH': 'arch',
         'CLICKABLE_TEMPLATE': 'template',
-        'CLICKABLE_DIR': 'dir',
+        'CLICKABLE_BUILD_DIR': 'build_dir',
         'CLICKABLE_LXD': 'lxd',
         'CLICKABLE_DEFAULT': 'default',
         'CLICKABLE_MAKE_JOBS': 'make_jobs',
@@ -49,7 +49,23 @@ class Config(object):
     GO = 'go'
     RUST = 'rust'
 
-    required = ['arch', 'dir', 'docker_image']
+    arch_triplet_mapping = {
+        'armhf': 'arm-linux-gnueabihf',
+        'amd64': 'x86_64-linux-gnu',
+        'all': 'all'
+    }
+
+    replacements = {
+        "$ARCH_TRIPLET": "arch_triplet",
+        "$ROOT": "root_dir",
+        "$BUILD_DIR": "build_dir",
+        "$SRC_DIR": "src_dir",
+    }
+    accepts_placeholders = ["root_dir", "build_dir", "src_dir", "gopath", "cargo_home", "scripts",
+                            "build", "build_args", "make_args", "postmake", "postbuild", "prebuild"]
+
+    path_keys = ['root_dir', 'build_dir', 'src_dir', 'cargo_home', 'gopath']
+    required = ['arch', 'build_dir', 'docker_image']
     flexible_lists = ['dependencies', 'dependencies_build',
                       'dependencies_target', 'dependencies_ppa',
                       'build_args', 'make_args', 'default', 'ignore']
@@ -76,14 +92,16 @@ class Config(object):
         self.config = {
             'clickable_minimum_required': None,
             'arch': 'armhf',
+            'arch_triplet': None,
             'template': None,
             'postmake': None,
             'prebuild': None,
             'build': None,
             'postbuild': None,
             'launch': None,
-            'dir': './build/',
-            'src_dir': self.cwd,
+            'dir': None,
+            'build_dir': '$ROOT/build',
+            'src_dir': '$ROOT',
             'root_dir': self.cwd,
             'kill': None,
             'scripts': {},
@@ -113,13 +131,8 @@ class Config(object):
         arg_config = self.load_arg_config(args)
         self.config.update(arg_config)
 
-        self.convert_deprecated_libraries_list()
-        self.lib_configs = [LibConfig(name, lib, self.debug_build) for name, lib in self.config['libraries'].items()]
-
         self.host_arch = platform.machine()
         self.is_arm = self.host_arch.startswith('arm')
-        self.config['dir'] = os.path.abspath(self.config['dir'])
-        self.temp = os.path.join(self.config['dir'], 'tmp')
 
         self.cleanup_config()
 
@@ -144,7 +157,18 @@ class Config(object):
             else:
                 self.config['docker_image'] = 'clickable/ubuntu-sdk:15.04-{}'.format(self.build_arch)
 
+        self.config['arch_triplet'] = self.arch_triplet_mapping[self.config['arch']]
+
+        self.substitute_placeholders()
+
+        for key in self.path_keys:
+            if self.config[key]:
+                self.config[key] = os.path.abspath(self.config[key])
+
         self.check_config_errors()
+
+        self.lib_configs = [LibConfig(name, lib, self.config['arch'], self.config['root_dir'], self.debug_build)
+                                    for name, lib in self.config['libraries'].items()]
 
     def __getattr__(self, name):
         return self.config[name]
@@ -268,6 +292,16 @@ class Config(object):
 
         return config
 
+    def substitute_placeholders(self):
+        for key in self.accepts_placeholders:
+            for sub in self.replacements:
+                rep = self.config[self.replacements[sub]]
+                if self.config[key]:
+                    if isinstance(self.config[key], list):
+                        self.config[key] = [val.replace(sub, rep) for val in self.config[key]]
+                    else:
+                        self.config[key] = self.config[key].replace(sub, rep)
+
     def convert_deprecated_libraries_list(self):
         if isinstance(self.config['libraries'], list):
             print_warning("Specifying libraries as a list is deprecated and will be removed in a future version of Clickable. Specify the libraries as a dictionary instead.")
@@ -281,6 +315,15 @@ class Config(object):
 
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
+
+        if self.config['dir']:
+            self.config['build_dir'] = self.config['dir']
+            print_warning('The param "dir" in your clickable.json is deprecated and will be removed in a future version of Clickable. Use "build_dir" instead!')
+
+        self.config['build_dir'] = os.path.abspath(self.config['build_dir'])
+        self.temp = os.path.join(self.config['build_dir'], 'tmp')
+
+        self.convert_deprecated_libraries_list()
 
         for key in self.flexible_lists:
             self.config[key] = flexible_string_to_list(self.config[key])
@@ -297,7 +340,7 @@ class Config(object):
                 self.config['kill'] = 'qmlscene'
             else:
                 try:
-                    desktop = get_desktop(self.cwd, self.temp, self.config['dir'])
+                    desktop = get_desktop(self.cwd, self.temp, self.config['build_dir'])
                 except ValueError:
                     desktop = None
                 except FileNotFoundException:
@@ -398,7 +441,7 @@ class Config(object):
         if self.config['template'] == Config.CORDOVA:
             manifest = find_manifest(self.temp, ignore_dir=ignore_dir)
         else:
-            manifest = find_manifest(self.cwd, self.temp, self.config['dir'], ignore_dir)
+            manifest = find_manifest(self.cwd, self.temp, self.config['build_dir'], ignore_dir)
 
         return manifest
 
@@ -406,7 +449,7 @@ class Config(object):
         if self.config['template'] == Config.CORDOVA:
             manifest = get_manifest(self.temp)
         else:
-            manifest = get_manifest(self.cwd, self.temp, self.config['dir'])
+            manifest = get_manifest(self.cwd, self.temp, self.config['build_dir'])
 
         return manifest
 

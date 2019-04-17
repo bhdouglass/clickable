@@ -17,6 +17,30 @@ Example:
         ]
     }
 
+.. _clickable-json-placeholders:
+
+Placeholders
+------------
+
+============= ======
+Placeholder   Output
+============= ======
+$ARCH_TRIPLET Target architecture triplet (``arm-linux-gnueabihf``, ``x86_64-linux-gnu`` or ``all``)
+$ROOT         Value of ``root_dir``
+$BUILD_DIR    Value of ``build_dir``
+$SRC_DIR      Value of ``src_dir```
+============= ======
+
+Parameters accepting placeholders: ``root_dir``, ``build_dir``, ``src_dir``, ``gopath``, ``cargo_home``, ``scripts``, ``build``, ``build_args``, ``make_args``, ``postmake``, ``postbuild``, ``prebuild``. This is an ordered list. Parameters that are used as placeholders themselfs accept only predecessors. Ex: ``$ROOT`` can be used in ``src_dir``, but not vice-versa.
+
+Example:
+
+.. code-block:: javascript
+
+    {
+        "template": "cmake",
+        "build_dir": "$ROOT/build/$ARCH_TRIPLET"
+    }
 
 clickable_minimum_required
 --------------------------
@@ -70,10 +94,20 @@ Optional, a custom command to launch the app.
 
 .. _clickable-json-dir:
 
+build_dir
+---------
+
+Optional, a custom build directory. Defaults to ``$ROOT/build/``
+
 dir
 ---
 
-Optional, a custom build directory. Defaults to ``./build/``
+Deprecated, use ``build_dir`` instead.
+
+src_dir
+-------
+
+Optional, a custom source directory. Defaults to ``$ROOT``
 
 kill
 ----
@@ -277,8 +311,17 @@ The keywords ``prebuild``, ``build``, ``postbuild``,
 can be used for a library the same way as described above for the app. The
 libraries are compiled for the same architecture as specified for the app itself.
 
-A single library can be build by specifying its name as ``clickable build-libs lib1``
-to build the library with name ``lib1``.
+Consider defining a custom build directory for the app itself (Ex: ``build/app``). Otherwise cleaning the app cleans the library, too.
+
+In addition to the :ref:`placeholders <clickable-json-placeholders>` described above, the following placeholders are available:
+
+============= ======
+Placeholder   Output
+============= ======
+$NAME         The library name (key name in the ``libraries`` dictionary)
+============= ======
+
+A single library can be build by specifying its name as ``clickable build-libs lib1`` to build the library with name ``lib1``.
 
 template
 ^^^^^^^^
@@ -286,15 +329,16 @@ Required, but only ``cmake``, ``qmake`` and ``custom`` are allowed.
 
 src_dir
 ^^^^^^^
-Optional, library source directory. Must be relative to the project root. It defaults to ``libs/<name>``
+Optional, library source directory. Must be relative to the project root. It defaults to ``$ROOT/libs/$NAME``
+
+build_dir
+^^^^^^^^^
+Optional, library build directory. Must be relative to the project root. It
+defaults to ``$ROOT/build/$NAME/$ARCH_TRIPLET``. Thanks to the architecture triplet, builds for different architectures can
+exist in parallel.
 
 dir
 ^^^
-Optional, library build directory. Must be relative to the project root. It
-defaults to ``build/<name>``. The architecture triplet is appended, so that
-builds for different architectures can
-exist in parallel (``arm-linux-gnueabihf`` for ``armhf`` and ``x86_64-linux-gnu`` for ``amd64``).
 
-Consider defining a custom build directory for the app itself (Ex: ``build/app``). Otherwise 
-cleaning the app would clean the library, too.
+Deprecated, use ``build_dir`` instead.
 

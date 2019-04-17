@@ -45,7 +45,7 @@ class PureBuilder(Builder):
 
             if (
                 cpath == os.path.abspath(self.config.temp) or
-                cpath == os.path.abspath(self.config.dir) or
+                cpath == os.path.abspath(self.config.build_dir) or
                 content in self.config.ignore or
                 content == 'clickable.json'
             ):

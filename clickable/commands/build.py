@@ -12,7 +12,7 @@ class BuildCommand(Command):
 
     def run(self, path_arg=None):
         try:
-            os.makedirs(self.config.dir)
+            os.makedirs(self.config.build_dir)
         except FileExistsError:
             pass
         except Exception:
@@ -26,7 +26,7 @@ class BuildCommand(Command):
         self.build()
 
         if self.config.postbuild:
-            run_subprocess_check_call(self.config.postbuild, cwd=self.config.dir, shell=True)
+            run_subprocess_check_call(self.config.postbuild, cwd=self.config.build_dir, shell=True)
 
     def build(self):
         template = self.config.get_template()

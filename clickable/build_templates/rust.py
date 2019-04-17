@@ -15,7 +15,7 @@ class RustBuilder(Builder):
         self.paths_to_ignore.extend([
             # Click stuff
             os.path.abspath(self.config.temp),
-            os.path.abspath(self.config.dir),
+            os.path.abspath(self.config.build_dir),
             'clickable.json',
             os.path.abspath(os.path.join(self.config.cwd, 'Cargo.toml')),
             os.path.abspath(os.path.join(self.config.cwd, 'Cargo.lock')),

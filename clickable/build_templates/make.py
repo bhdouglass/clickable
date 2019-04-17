@@ -11,7 +11,7 @@ from clickable.config import Config
 class MakeBuilder(Builder):
     def post_make(self):
         if self.config.postmake:
-            subprocess.check_call(self.config.postmake, cwd=self.config.dir, shell=True)
+            subprocess.check_call(self.config.postmake, cwd=self.config.build_dir, shell=True)
 
     def make(self):
         command = 'make'

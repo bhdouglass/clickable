@@ -29,7 +29,7 @@ class CordovaBuilder(MakeBuilder):
         }
 
         self.config.temp = self._dirs['build']
-        self.config.dir = self._dirs['prefix']
+        self.config.build_dir = self._dirs['prefix']
 
         if not os.path.isdir(self.platform_dir):
             # fail when not using docker, need it anyways
