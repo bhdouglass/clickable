@@ -3,7 +3,12 @@
 Changelog
 =========
 
-Chagnes in v5.12.0
+Changes in v5.12.1
+------------------
+
+- Fixed issues with build dir
+
+Changes in v5.12.0
 ------------------
 
 - clickable.json supports :ref:`placeholders <clickable-json-placeholders>` now

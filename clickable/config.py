@@ -165,6 +165,8 @@ class Config(object):
             if self.config[key]:
                 self.config[key] = os.path.abspath(self.config[key])
 
+        self.temp = os.path.join(self.config['build_dir'], 'tmp')
+
         self.check_config_errors()
 
         self.lib_configs = [LibConfig(name, lib, self.config['arch'], self.config['root_dir'], self.debug_build)
@@ -320,9 +322,6 @@ class Config(object):
             self.config['build_dir'] = self.config['dir']
             print_warning('The param "dir" in your clickable.json is deprecated and will be removed in a future version of Clickable. Use "build_dir" instead!')
 
-        self.config['build_dir'] = os.path.abspath(self.config['build_dir'])
-        self.temp = os.path.join(self.config['build_dir'], 'tmp')
-
         self.convert_deprecated_libraries_list()
 
         for key in self.flexible_lists:
@@ -340,7 +339,7 @@ class Config(object):
                 self.config['kill'] = 'qmlscene'
             else:
                 try:
-                    desktop = get_desktop(self.cwd, self.temp, self.config['build_dir'])
+                    desktop = get_desktop(self.cwd)
                 except ValueError:
                     desktop = None
                 except FileNotFoundException:
