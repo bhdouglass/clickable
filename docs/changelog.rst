@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v5.12.2
+------------------
+
+- Fixed ``scripts`` breaking Clickable
+
 Changes in v5.12.1
 ------------------
 

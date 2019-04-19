@@ -1,3 +1,9 @@
+clickable (5.12.2) unstable; urgency=medium
+
+  * Fixed scripts breaking Clickable
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Fri, 19 Apr 2019 00:39:00 -0500
+
 clickable (5.12.1) unstable; urgency=medium
 
   * Fixed issues with build dir
