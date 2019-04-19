@@ -299,7 +299,9 @@ class Config(object):
             for sub in self.replacements:
                 rep = self.config[self.replacements[sub]]
                 if self.config[key]:
-                    if isinstance(self.config[key], list):
+                    if isinstance(self.config[key], dict):
+                        self.config[key] = {k: val.replace(sub, rep) for (k, val) in self.config[key].items()}
+                    elif isinstance(self.config[key], list):
                         self.config[key] = [val.replace(sub, rep) for val in self.config[key]]
                     else:
                         self.config[key] = self.config[key].replace(sub, rep)
