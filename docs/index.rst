@@ -45,8 +45,8 @@ Install Via PPA (Ubuntu)
 Install Via AUR (Arch Linux)
 ----------------------------
 
-* Using your favorite AUR helper, install the `clickable package <https://aur.archlinux.org/packages/clickable/>`__
-* Example: ``pacaur -S clickable``
+* Using your favorite AUR helper, install the `clickable-git package <https://aur.archlinux.org/packages/clickable-git/>`__
+* Example: ``pacaur -S clickable-git``
 
 Getting Started
 ---------------
