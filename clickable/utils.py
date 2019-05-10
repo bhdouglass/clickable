@@ -67,15 +67,28 @@ class FileNotFoundException(Exception):
     pass
 
 
-def find(names, cwd, temp_dir=None, build_dir=None, ignore_dir=None, extensions_only=False):
+def find(names, cwd, temp_dir=None, build_dir=None, ignore_dir=None, extensions_only=False, depth=None):
     found = []
     searchpaths = []
     searchpaths.append(cwd)
 
+    include_build_dir = False
     if build_dir and not build_dir.startswith(os.path.realpath(cwd) + os.sep):
+        include_build_dir = True
         searchpaths.append(build_dir)
 
     for (root, dirs, files) in itertools.chain.from_iterable(os.walk(path, topdown=True) for path in searchpaths):
+        # Ignore hidden directories
+        dirs[:] = [dir for dir in dirs if not dir[0] == '.']
+
+        if depth:
+            if include_build_dir and root.startswith(build_dir):
+                if root.count(os.sep) >= (build_dir.count(os.sep) + depth):
+                    del dirs[:]
+            elif root.startswith(cwd):
+                if root.count(os.sep) >= (cwd.count(os.sep) + depth):
+                    del dirs[:]
+
         for name in files:
             ok = (name in names)
 
@@ -126,7 +139,7 @@ def get_manifest(cwd, temp_dir=None, build_dir=None):
 def get_desktop(cwd, temp_dir=None, build_dir=None):
     desktop = {}
 
-    desktop_file = find(['.desktop', '.desktop.in'], cwd, temp_dir, build_dir, extensions_only=True)
+    desktop_file = find(['.desktop', '.desktop.in'], cwd, temp_dir, build_dir, extensions_only=True, depth=3)
 
     if desktop_file:
         with open(desktop_file, 'r') as f:
