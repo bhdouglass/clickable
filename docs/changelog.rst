@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v5.12.3
+------------------
+
+- Fixed slowdown when running clickable in a non-project directory
+
 Changes in v5.12.2
 ------------------
 
