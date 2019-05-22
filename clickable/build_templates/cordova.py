@@ -31,12 +31,9 @@ class CordovaBuilder(CMakeBuilder):
                 sys.exit(1)
 
             command = self.container.run_command("cordova platform add ubuntu")
-    def post_make(self):
-        www_dir = os.path.join(self.platform_dir, 'www')
-        shutil.rmtree(www_dir)
-        shutil.copytree(os.path.join(self.config.cwd, 'www'), www_dir)
-        shutil.copyfile(os.path.join(self.config.cwd, 'config.xml'), os.path.join(www_dir, 'config.xml'))
 
+    def make_install(self):
+        super().make_install()
         copies = {
             'www': None,
             'platform_www': 'www',
@@ -80,5 +77,3 @@ class CordovaBuilder(CMakeBuilder):
 
             with open(apparmor_file, 'w') as apparmor_writer:
                 json.dump(apparmor, apparmor_writer, indent=4)
-
-        super().post_make()
