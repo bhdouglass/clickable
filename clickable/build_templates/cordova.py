@@ -30,18 +30,7 @@ class CordovaBuilder(CMakeBuilder):
                 print_error('Docker is required to intialize cordova directories. Enable docker or run "cordova platform add ubuntu" manually to remove this message')
                 sys.exit(1)
 
-            command = 'cordova platform add ubuntu'
-
-            # Can't use self.container.run_command because need to set -e HOME=/tmp
-            wrapped_command = 'docker run -v {cwd}:{cwd} -w {cwd} -u {uid}:{uid} -e HOME=/tmp --rm -i {img} {cmd}'.format(
-                cwd=self.config.cwd,
-                uid=os.getuid(),
-                img=self.config.docker_image,
-                cmd=command
-            )
-
-            subprocess.check_call(shlex.split(wrapped_command))
-
+            command = self.container.run_command("cordova platform add ubuntu")
     def post_make(self):
         www_dir = os.path.join(self.platform_dir, 'www')
         shutil.rmtree(www_dir)
