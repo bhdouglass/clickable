@@ -6,12 +6,12 @@ import sys
 import os
 from distutils.dir_util import copy_tree
 
-from .make import MakeBuilder
+from .cmake import CMakeBuilder
 from clickable.utils import print_error, print_warning
 from clickable.config import Config
 
 
-class CordovaBuilder(MakeBuilder):
+class CordovaBuilder(CMakeBuilder):
     name = Config.CORDOVA
 
     # Lots of this code was based off of this:
