@@ -19,6 +19,6 @@ class CMakeBuilder(MakeBuilder):
         if self.config.debug_build:
             command = '{} {}'.format(command, '-DCMAKE_BUILD_TYPE=Debug')
 
-        self.container.run_command('{} {}'.format(command, self.config.src_dir))
+        self.container.run_command('{} {} -DCMAKE_INSTALL_PREFIX:PATH=/.'.format(command, self.config.src_dir))
 
         super().build()

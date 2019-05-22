@@ -22,14 +22,7 @@ class CordovaBuilder(CMakeBuilder):
         self.platform_dir = os.path.join(self.config.cwd, 'platforms/ubuntu/')
         self.sdk = 'ubuntu-sdk-16.04' if self.config.is_xenial else 'ubuntu-sdk-15.04'
 
-        self._dirs = {
-            'build': '{}/{}/{}/build/' .format(self.platform_dir, self.sdk, self.config.build_arch),
-            'prefix': '{}/{}/{}/prefix/'.format(self.platform_dir, self.sdk, self.config.build_arch),
-            'make': '{}/build'.format(self.platform_dir)
-        }
-
-        self.config.temp = self._dirs['build']
-        self.config.build_dir = self._dirs['prefix']
+        self.config.src_dir = os.path.join(self.platform_dir, 'build')
 
         if not os.path.isdir(self.platform_dir):
             # fail when not using docker, need it anyways
@@ -48,30 +41,6 @@ class CordovaBuilder(CMakeBuilder):
             )
 
             subprocess.check_call(shlex.split(wrapped_command))
-
-    def clean_dir(self, path):
-        if os.path.exists(path) and os.path.isdir(path):
-            shutil.rmtree(path)
-
-        try:
-            os.makedirs(path)
-        except FileExistsError:
-            pass
-        except Exception:
-            print_warning('Failed to create dir ({}): {}'.format(path, str(sys.exc_info()[0])))
-
-    def build(self):
-        self.clean_dir(self._dirs['build'])
-        self.clean_dir(self._dirs['prefix'])
-
-        command = 'cmake {} -DCMAKE_INSTALL_PREFIX={}'.format(self._dirs['make'], self._dirs['build'])
-
-        if self.config.debug_build:
-            command = '{} {}'.format(command, '-DCMAKE_BUILD_TYPE=Debug')
-
-        self.container.run_command(command)
-
-        super().build()
 
     def post_make(self):
         www_dir = os.path.join(self.platform_dir, 'www')
@@ -96,7 +65,7 @@ class CordovaBuilder(CMakeBuilder):
         for file_to_copy_source, file_to_copy_dest in copies.items():
             full_source_path = os.path.join(self.platform_dir,
                                             file_to_copy_source)
-            full_dest_path = os.path.join(self._dirs['build'],
+            full_dest_path = os.path.join(self.config.temp,
                                           file_to_copy_dest)
             if os.path.isdir(full_source_path):
                 # https://stackoverflow.com/a/31039095/6381767
@@ -112,7 +81,7 @@ class CordovaBuilder(CMakeBuilder):
         with open(self.config.find_manifest(), 'w') as manifest_writer:
             json.dump(manifest, manifest_writer, indent=4)
 
-        apparmor_file = os.path.join(self._dirs['build'], 'apparmor.json')
+        apparmor_file = os.path.join(self.config.temp, 'apparmor.json')
         with open(apparmor_file, 'r') as apparmor_reader:
             apparmor = json.load(apparmor_reader)
             apparmor['policy_version'] = 16.04 if self.config.is_xenial else 1.3
@@ -124,7 +93,3 @@ class CordovaBuilder(CMakeBuilder):
                 json.dump(apparmor, apparmor_writer, indent=4)
 
         super().post_make()
-
-    def make_install(self):
-        # No DESTDIR needed
-        self.container.run_command('make install')
