@@ -439,17 +439,10 @@ class Config(object):
         return self.config['template']
 
     def find_manifest(self, ignore_dir=None):
-        manifest = find_manifest(self.cwd, self.temp, self.config['build_dir'], ignore_dir)
-
-        return manifest
+        return find_manifest(self.cwd, self.temp, self.config['build_dir'], ignore_dir)
 
     def get_manifest(self):
-        if self.config['template'] == Config.CORDOVA:
-            manifest = get_manifest(self.temp)
-        else:
-            manifest = get_manifest(self.cwd, self.temp, self.config['build_dir'])
-
-        return manifest
+        return get_manifest(self.cwd, self.temp, self.config['build_dir'])
 
     def find_version(self):
         if self.config['template'] == Config.CORDOVA:
