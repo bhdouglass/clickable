@@ -25,11 +25,6 @@ class CordovaBuilder(CMakeBuilder):
         self.config.src_dir = os.path.join(self.platform_dir, 'build')
 
         if not os.path.isdir(self.platform_dir):
-            # fail when not using docker, need it anyways
-            if self.config.container_mode or self.config.lxd:
-                print_error('Docker is required to intialize cordova directories. Enable docker or run "cordova platform add ubuntu" manually to remove this message')
-                sys.exit(1)
-
             command = self.container.run_command("cordova platform add ubuntu")
 
     def make_install(self):
