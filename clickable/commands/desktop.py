@@ -66,17 +66,31 @@ class DesktopCommand(Command):
 
         self.container.check_docker()
 
+        package_name = self.config.find_package_name()
+
         share = '/tmp/clickable/share'
         if not os.path.isdir(share):
             os.makedirs(share)
+
+        full_share = os.path.join(share, package_name, package_name)
+        if not os.path.isdir(full_share):
+            os.makedirs(full_share)
 
         cache = '/tmp/clickable/cache'
         if not os.path.isdir(cache):
             os.makedirs(cache)
 
+        full_cache = os.path.join(cache, package_name, package_name)
+        if not os.path.isdir(full_cache):
+            os.makedirs(full_cache)
+
         config = '/tmp/clickable/config'
         if not os.path.isdir(config):
             os.makedirs(config)
+
+        full_config = os.path.join(config, package_name, package_name)
+        if not os.path.isdir(full_config):
+            os.makedirs(full_config)
 
         volumes = '-v {}:{}:Z -v /tmp/.X11-unix:/tmp/.X11-unix:Z -v {}:{}:Z -v {}:/home/phablet/.local/share:Z -v {}:/home/phablet/.cache:Z -v {}:/home/phablet/.config:Z'.format(
             self.config.cwd,
@@ -116,7 +130,7 @@ class DesktopCommand(Command):
         if execute.startswith('webapp-container'):
             # This is needed for the webapp-container, so only do it for this case
             volumes = '{} -v /etc/passwd:/etc/passwd:Z'.format(volumes)
-            environment = '{} -e APP_ID={}'.format(environment, self.config.find_package_name())
+            environment = '{} -e APP_ID={}'.format(environment, package_name)
 
         go_config = ''
         if self.config.gopath:
