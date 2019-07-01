@@ -285,6 +285,14 @@ Optional, specify a different root directory for the project. For example,
 if you clickable.json file is in ``platforms/ubuntu_touch`` and you want to include
 code from root of your project you can set ``root_dir: "../.."``.
 
+.. _clickable-json-test:
+
+test
+----
+
+Optional, specify a different test command to run when running ``clickable test``.
+The default is ``qmltestrunner``.
+
 libraries
 ---------
 Optional, libraries to be build in the docker container by calling ``clickable build-libs``.

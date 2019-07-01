@@ -72,6 +72,13 @@ compiled click to the directory specified by ``--output``.
 Takes the built click package and runs click-review against it. This allows you
 to review your click without installing click-review on your computer.
 
+``clickable test``
+--------------------
+
+Run your test suite in with a virtual screen. By default this runs qmltestrunner,
+but you can specify a custom command by setting the :ref:`test <clickable-json-test>`
+property in your clickable.json.
+
 ``clickable install``
 ---------------------
 

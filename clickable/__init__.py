@@ -141,7 +141,7 @@ def main():
         config = Config(
             args=args,
             clickable_version=__version__,
-            desktop=('desktop' in args.commands),
+            desktop=('desktop' in args.commands or 'test' in args.commands),
         )
 
         VALID_COMMANDS = command_names + list(config.scripts.keys())

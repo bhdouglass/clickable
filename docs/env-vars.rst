@@ -105,3 +105,8 @@ Overrides the clickable.json's :ref:`dirty <clickable-json-dirty>`.
 -------------------------
 
 Same as ``--debug-build``
+
+``CLICKABLE_TEST``
+------------------
+
+Overrides the clickable.json's :ref:`test <clickable-json-test>`.

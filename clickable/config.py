@@ -36,6 +36,7 @@ class Config(object):
         'CLICKABLE_BUILD_ARGS': 'build_args',
         'CLICKABLE_MAKE_ARGS': 'make_args',
         'CLICKABLE_DIRTY': 'dirty',
+        'CLICKABLE_TEST': 'test',
     }
 
     PURE_QML_QMAKE = 'pure-qml-qmake'
@@ -122,6 +123,7 @@ class Config(object):
             'make_args': [],
             'dirty': False,
             'libraries': {},
+            'test': 'qmltestrunner',
         }
 
         json_config = self.load_json_config(args.config)
