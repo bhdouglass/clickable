@@ -50,3 +50,8 @@ computer via adb. If you have multiple devices attached to your computer you
 can specify which device to install/launch/etc on by using the flag
 ``--serial-number`` or ``-s`` for short. You can get the serial number
 by running ``clickable devices``.
+
+Debugging with GDB
+------------------
+
+GDB Debugging via Clickable is only available in desktop mode and can be started by running ``clickable desktop --gdb``.

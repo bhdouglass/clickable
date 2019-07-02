@@ -134,6 +134,12 @@ def main():
         help='Perform a debug build',
         default=False,
     )
+    parser.add_argument(
+        '--gdb',
+        action='store_true',
+        help='Start gdb to debug the app (only desktop mode)',
+        default=False,
+    )
 
     args = parser.parse_args()
 

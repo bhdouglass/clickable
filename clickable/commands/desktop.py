@@ -172,7 +172,11 @@ class DesktopCommand(Command):
         if run_xhost:
             subprocess.check_call(shlex.split('xhost +local:docker'))
 
-        command = '{} run {} {} {} {} -w {} -u {} --rm -i {} bash -c "{}"'.format(
+        if self.config.debug_gdb:
+            execute = 'gdb --args {}'.format(execute)
+            environment = '{} --cap-add=SYS_PTRACE --security-opt seccomp=unconfined'.format(environment)
+
+        command = '{} run {} {} {} {} -w {} -u {} --rm -it {} bash -c "{}"'.format(
             'nvidia-docker' if self.config.use_nvidia else 'docker',
             volumes,
             go_config,

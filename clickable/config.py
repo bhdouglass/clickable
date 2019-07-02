@@ -84,6 +84,7 @@ class Config(object):
     custom_docker_image = True
     install = True
     debug_build = False
+    debug_gdb = False
 
     def __init__(self, args, clickable_version, desktop=False):
         self.desktop = desktop
@@ -281,6 +282,10 @@ class Config(object):
         if args.debug_build:
             self.debug_build = True
 
+        if args.gdb:
+            self.debug_build = True
+            self.debug_gdb = True
+
         config = {}
         if args.arch:
             config['arch'] = args.arch
@@ -366,6 +371,9 @@ class Config(object):
         self.ignore.extend(['.git', '.bzr'])
 
     def check_config_errors(self):
+        if self.debug_gdb and not self.desktop:
+            raise ValueError("GDB debugging is only supported in desktop mode! Consider running 'clickable desktop --gdb'")
+
         if self.config['clickable_minimum_required']:
             # Check if specified version string is valid
             if not re.fullmatch("\d+(\.\d+)*", self.config['clickable_minimum_required']):
