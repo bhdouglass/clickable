@@ -88,6 +88,7 @@
       "minimum": 1
     },
     "dirty": {"type": "boolean"},
+    "test": {"type": "string"},
     "libraries": {
       "type": ["object","array"],
       "items": {
