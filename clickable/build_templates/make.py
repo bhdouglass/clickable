@@ -18,7 +18,7 @@ class MakeBuilder(Builder):
         if self.config.make_args:
             command = '{} {}'.format(command, ' '.join(self.config.make_args))
 
-        self.container.run_command(command)
+        self.config.container.run_command(command)
 
     def make_install(self):
         if os.path.exists(self.config.temp) and os.path.isdir(self.config.temp):

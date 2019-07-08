@@ -230,7 +230,7 @@ class Config(object):
             self.apikey = env('OPENSTORE_API_KEY')
 
         if env('CLICKABLE_CONTAINER_MODE'):
-            self.container_mode = True
+            self.config.container_mode = True
 
         if env('CLICKABLE_SERIAL_NUMBER'):
             self.device_serial_number = env('CLICKABLE_SERIAL_NUMBER')
@@ -268,7 +268,7 @@ class Config(object):
             self.click_output = args.output
 
         if args.container_mode:
-            self.container_mode = args.container_mode
+            self.config.container_mode = args.container_mode
 
         if args.nvidia:
             self.use_nvidia = args.nvidia

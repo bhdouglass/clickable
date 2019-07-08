@@ -64,7 +64,7 @@ class DesktopCommand(Command):
         with open(xauth, 'a'):
             os.utime(xauth, None)
 
-        self.container.check_docker()
+        self.config.container.check_docker()
 
         package_name = self.config.find_package_name()
 
@@ -184,7 +184,7 @@ class DesktopCommand(Command):
             environment,
             self.config.temp,
             os.getuid(),
-            self.container.docker_image,
+            self.config.container.docker_image,
             execute,
         )
 

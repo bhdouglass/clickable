@@ -34,4 +34,4 @@ class GoBuilder(Builder):
             self.config.temp,
             self.config.find_app_name(),
         )
-        self.container.run_command(gocommand)
+        self.config.container.run_command(gocommand)

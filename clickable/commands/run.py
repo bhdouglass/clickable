@@ -10,5 +10,5 @@ class RunCommand(Command):
         if not path_arg:
             raise ValueError('No command supplied for `clickable run`')
 
-        self.container.setup_dependencies()
-        self.container.run_command(path_arg, use_dir=False)
+        self.config.container.setup_dependencies()
+        self.config.container.run_command(path_arg, use_dir=False)

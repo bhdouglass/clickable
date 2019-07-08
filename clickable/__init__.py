@@ -9,6 +9,7 @@ import subprocess
 
 from clickable.commands.base import Command
 from clickable.config import Config
+from clickable.container import Container
 from clickable.utils import print_error
 
 
@@ -149,6 +150,7 @@ def main():
             clickable_version=__version__,
             desktop=('desktop' in args.commands or 'test' in args.commands),
         )
+        config.container = Container(config)
 
         VALID_COMMANDS = command_names + list(config.scripts.keys())
 
