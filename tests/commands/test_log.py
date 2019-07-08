@@ -2,12 +2,14 @@ from unittest import TestCase, mock
 from unittest.mock import ANY
 
 from clickable.commands.log import LogCommand
+from clickable.container import Container
 from ..mocks import ConfigMock, empty_fn
 
 
 class TestLogCommand(TestCase):
     def setUp(self):
         self.config = ConfigMock()
+        self.config.container = Container(self.config)
         self.command = LogCommand(self.config)
 
     @mock.patch('clickable.device.Device.run_command', side_effect=empty_fn)

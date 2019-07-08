@@ -2,6 +2,7 @@ from unittest import TestCase, mock
 from unittest.mock import ANY
 
 from clickable.commands.devices import DevicesCommand
+from clickable.container import Container
 from ..mocks import ConfigMock, empty_fn
 
 
@@ -16,6 +17,7 @@ def devices(*args, **kwargs):
 class TestDevicesCommand(TestCase):
     def setUp(self):
         self.config = ConfigMock()
+        self.config.container = Container(self.config)
         self.command = DevicesCommand(self.config)
 
     @mock.patch('clickable.device.Device.detect_attached', side_effect=no_devices)
