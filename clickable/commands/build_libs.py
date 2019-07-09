@@ -32,6 +32,8 @@ class LibBuildCommand(Command):
                 lib.container_mode = self.config.container_mode
                 lib.docker_image = self.config.docker_image
                 lib.build_arch = self.config.build_arch
+                lib.container = Container(lib)
+                lib.container.setup_dependencies()
 
                 try:
                     os.makedirs(lib.build_dir)
@@ -39,9 +41,6 @@ class LibBuildCommand(Command):
                     pass
                 except Exception:
                     print_warning('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
-
-                container = Container(lib)
-                container.setup_dependencies()
 
                 if lib.prebuild:
                     run_subprocess_check_call(lib.prebuild, cwd=self.config.cwd, shell=True)
@@ -54,7 +53,7 @@ class LibBuildCommand(Command):
         if single_lib and not found:
             raise ValueError('Cannot build unknown library {}. You may add it to the clickable.json'.format(single_lib))
 
-    def build(self, lib, container):
+    def build(self, lib):
         builder_classes = get_builders()
-        builder = builder_classes[lib.template](lib, container, None)
+        builder = builder_classes[lib.template](lib, None)
         builder.build()

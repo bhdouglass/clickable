@@ -13,7 +13,7 @@ class ClickBuildCommand(Command):
     def run(self, path_arg=None):
         command = 'click build {} --no-validate'.format(os.path.dirname(self.config.find_manifest()))
 
-        self.container.run_command(command)
+        self.config.container.run_command(command)
 
         if self.config.click_output:
             click = self.config.get_click_filename()

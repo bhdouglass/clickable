@@ -2,6 +2,7 @@ from unittest import TestCase, mock
 from unittest.mock import ANY
 
 from clickable.commands.update import UpdateCommand
+from clickable.container import Container
 from ..mocks import ConfigMock, empty_fn
 
 
@@ -12,6 +13,7 @@ def string_fn(*args, **kwargs):
 class TestUpdateCommand(TestCase):
     def setUp(self):
         self.config = ConfigMock()
+        self.config.container = Container(self.config)
         self.command = UpdateCommand(self.config)
 
     @mock.patch('clickable.container.Container.check_docker', side_effect=empty_fn)

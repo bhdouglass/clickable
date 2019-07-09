@@ -8,7 +8,7 @@ class QMakeBuilder(MakeBuilder):
     def make_install(self):
         super().make_install()
 
-        self.container.run_command('make INSTALL_ROOT={} install'.format(self.config.temp))
+        self.config.container.run_command('make INSTALL_ROOT={} install'.format(self.config.temp))
 
     def build(self):
         command = None
@@ -29,6 +29,6 @@ class QMakeBuilder(MakeBuilder):
         if self.config.debug_build:
             command = '{} {}'.format(command, 'CONFIG+=debug')
 
-        self.container.run_command('{} {}'.format(command, self.config.src_dir))
+        self.config.container.run_command('{} {}'.format(command, self.config.src_dir))
 
         super().build()

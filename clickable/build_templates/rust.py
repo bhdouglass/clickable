@@ -71,7 +71,7 @@ class RustBuilder(Builder):
         cargo_command = 'cargo build {} --target {}' \
             .format('--release' if not self.config.debug_build else '',
                     self._cargo_target)
-        self.container.run_command(cargo_command)
+        self.config.container.run_command(cargo_command)
 
         # There could be more than one executable
         executables = glob.glob('{}/target/{}/{}/*'

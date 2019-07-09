@@ -3,7 +3,7 @@ class Builder(object):
 
     def __init__(self, config, container, device):
         self.config = config
-        self.container = container
+        self.config.container = container
         self.device = device
 
     def build(self):

@@ -18,7 +18,7 @@ class BuildCommand(Command):
         except Exception:
             print_warning('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
 
-        self.container.setup_dependencies()
+        self.config.container.setup_dependencies()
 
         if self.config.prebuild:
             run_subprocess_check_call(self.config.prebuild, cwd=self.config.cwd, shell=True)
@@ -32,5 +32,5 @@ class BuildCommand(Command):
         template = self.config.get_template()
 
         builder_classes = get_builders()
-        builder = builder_classes[template](self.config, self.container, self.device)
+        builder = builder_classes[template](self.config, self.config.container, self.device)
         builder.build()

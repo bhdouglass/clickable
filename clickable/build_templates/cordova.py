@@ -39,7 +39,7 @@ class CordovaBuilder(MakeBuilder):
 
             command = 'cordova platform add ubuntu'
 
-            # Can't use self.container.run_command because need to set -e HOME=/tmp
+            # Can't use self.config.container.run_command because need to set -e HOME=/tmp
             wrapped_command = 'docker run -v {cwd}:{cwd} -w {cwd} -u {uid}:{uid} -e HOME=/tmp --rm -i {img} {cmd}'.format(
                 cwd=self.config.cwd,
                 uid=os.getuid(),
@@ -69,7 +69,7 @@ class CordovaBuilder(MakeBuilder):
         if self.config.debug_build:
             command = '{} {}'.format(command, '-DCMAKE_BUILD_TYPE=Debug')
 
-        self.container.run_command(command)
+        self.config.container.run_command(command)
 
         super().build()
 
@@ -127,4 +127,4 @@ class CordovaBuilder(MakeBuilder):
 
     def make_install(self):
         # No DESTDIR needed
-        self.container.run_command('make install')
+        self.config.container.run_command('make install')

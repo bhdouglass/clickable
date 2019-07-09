@@ -14,13 +14,13 @@ class UpdateCommand(Command):
     help = 'Update the docker container for use with clickable'
 
     def run(self, path_arg=None):
-        self.container.check_docker()
+        self.config.container.check_docker()
 
-        command = 'docker pull {}'.format(self.container.base_docker_image)
+        command = 'docker pull {}'.format(self.config.container.base_docker_image)
         run_subprocess_check_call(command)
 
-        if 'armhf' in self.container.base_docker_image:
-            image = self.container.base_docker_image.replace('armhf', 'amd64')
+        if 'armhf' in self.config.container.base_docker_image:
+            image = self.config.container.base_docker_image.replace('armhf', 'amd64')
             command = 'docker images -q {}'.format(image)
             image_exists = run_subprocess_check_output(command).strip()
 
