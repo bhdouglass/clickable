@@ -25,7 +25,7 @@ class CordovaBuilder(CMakeBuilder):
         self.config.src_dir = os.path.join(self.platform_dir, 'build')
 
         if not os.path.isdir(self.platform_dir):
-            command = self.container.run_command("cordova platform add ubuntu")
+            command = self.config.container.run_command("cordova platform add ubuntu")
 
     def make_install(self):
         super().make_install()

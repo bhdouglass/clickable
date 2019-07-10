@@ -2,6 +2,7 @@ from unittest import TestCase, mock
 from unittest.mock import ANY
 
 from clickable.commands.clean import CleanCommand
+from clickable.container import Container
 from ..mocks import ConfigMock, empty_fn, true_fn
 
 
@@ -28,6 +29,7 @@ def temp_exception(path):
 class TestCleanCommand(TestCase):
     def setUp(self):
         self.config = ConfigMock()
+        self.config.container = Container(self.config)
         self.command = CleanCommand(self.config)
 
     @mock.patch('shutil.rmtree', side_effect=empty_fn)

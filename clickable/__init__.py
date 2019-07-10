@@ -9,6 +9,7 @@ import subprocess
 
 from clickable.commands.base import Command
 from clickable.config import Config
+from clickable.container import Container
 from clickable.utils import print_error
 
 
@@ -134,6 +135,12 @@ def main():
         help='Perform a debug build',
         default=False,
     )
+    parser.add_argument(
+        '--gdb',
+        action='store_true',
+        help='Start gdb to debug the app (only desktop mode)',
+        default=False,
+    )
 
     args = parser.parse_args()
 
@@ -141,8 +148,9 @@ def main():
         config = Config(
             args=args,
             clickable_version=__version__,
-            desktop=('desktop' in args.commands),
+            desktop=('desktop' in args.commands or 'test' in args.commands),
         )
+        config.container = Container(config)
 
         VALID_COMMANDS = command_names + list(config.scripts.keys())
 

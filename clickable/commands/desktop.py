@@ -64,19 +64,33 @@ class DesktopCommand(Command):
         with open(xauth, 'a'):
             os.utime(xauth, None)
 
-        self.container.check_docker()
+        self.config.container.check_docker()
+
+        package_name = self.config.find_package_name()
 
         share = '/tmp/clickable/share'
         if not os.path.isdir(share):
             os.makedirs(share)
 
+        full_share = os.path.join(share, package_name, package_name)
+        if not os.path.isdir(full_share):
+            os.makedirs(full_share)
+
         cache = '/tmp/clickable/cache'
         if not os.path.isdir(cache):
             os.makedirs(cache)
 
+        full_cache = os.path.join(cache, package_name, package_name)
+        if not os.path.isdir(full_cache):
+            os.makedirs(full_cache)
+
         config = '/tmp/clickable/config'
         if not os.path.isdir(config):
             os.makedirs(config)
+
+        full_config = os.path.join(config, package_name, package_name)
+        if not os.path.isdir(full_config):
+            os.makedirs(full_config)
 
         volumes = '-v {}:{}:Z -v /tmp/.X11-unix:/tmp/.X11-unix:Z -v {}:{}:Z -v {}:/home/phablet/.local/share:Z -v {}:/home/phablet/.cache:Z -v {}:/home/phablet/.config:Z'.format(
             self.config.cwd,
@@ -116,7 +130,7 @@ class DesktopCommand(Command):
         if execute.startswith('webapp-container'):
             # This is needed for the webapp-container, so only do it for this case
             volumes = '{} -v /etc/passwd:/etc/passwd:Z'.format(volumes)
-            environment = '{} -e APP_ID={}'.format(environment, self.config.find_package_name())
+            environment = '{} -e APP_ID={}'.format(environment, package_name)
 
         go_config = ''
         if self.config.gopath:
@@ -158,7 +172,11 @@ class DesktopCommand(Command):
         if run_xhost:
             subprocess.check_call(shlex.split('xhost +local:docker'))
 
-        command = '{} run {} {} {} {} -w {} -u {} --rm -i {} bash -c "{}"'.format(
+        if self.config.debug_gdb:
+            execute = 'gdb --args {}'.format(execute)
+            environment = '{} --cap-add=SYS_PTRACE --security-opt seccomp=unconfined'.format(environment)
+
+        command = '{} run {} {} {} {} -w {} -u {} --rm -it {} bash -c "{}"'.format(
             'nvidia-docker' if self.config.use_nvidia else 'docker',
             volumes,
             go_config,
@@ -166,7 +184,7 @@ class DesktopCommand(Command):
             environment,
             self.config.temp,
             os.getuid(),
-            self.container.docker_image,
+            self.config.container.docker_image,
             execute,
         )
 

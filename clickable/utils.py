@@ -79,7 +79,12 @@ def find(names, cwd, temp_dir=None, build_dir=None, ignore_dir=None, extensions_
 
     for (root, dirs, files) in itertools.chain.from_iterable(os.walk(path, topdown=True) for path in searchpaths):
         # Ignore hidden directories
-        dirs[:] = [dir for dir in dirs if not dir[0] == '.']
+        new_dirs = []
+        for dir in dirs:
+            if os.path.join(root, dir) == build_dir or not dir[0] == '.':
+                new_dirs.append(dir)
+
+        dirs[:] = new_dirs
 
         if depth:
             if include_build_dir and root.startswith(build_dir):
