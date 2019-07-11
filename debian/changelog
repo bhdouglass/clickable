@@ -1,3 +1,14 @@
+clickable (5.13.0) unstable; urgency=medium
+
+  * Added new debugging with gdb argument
+  * Added new test command for running tests inside the container
+  * When running in desktop mode, cache/share/config directories are automatically created
+  * Fixed hidden build directories causing errors when looking for the manifest
+  * Fixed issue with cordova building
+  * Fixed dependencies not being used the first time clickable is run
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 10 Jul 2019 23:54:00 -0500
+
 clickable (5.12.3) unstable; urgency=medium
 
   * Fixed slowdown when running clickable in a non-project directory

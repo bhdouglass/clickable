@@ -51,6 +51,8 @@ can specify which device to install/launch/etc on by using the flag
 ``--serial-number`` or ``-s`` for short. You can get the serial number
 by running ``clickable devices``.
 
+.. _debugging-with-gdb:
+
 Debugging with GDB
 ------------------
 

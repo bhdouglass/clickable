@@ -72,6 +72,8 @@ compiled click to the directory specified by ``--output``.
 Takes the built click package and runs click-review against it. This allows you
 to review your click without installing click-review on your computer.
 
+.. _commands-test:
+
 ``clickable test``
 --------------------
 

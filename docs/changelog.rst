@@ -3,6 +3,16 @@
 Changelog
 =========
 
+Changes in v5.13.0
+------------------
+
+- Added new :ref:`debugging with gdb <debugging-with-gdb>` argument
+- Added new :ref:`test <commands-test>` command for running tests inside the container
+- When running in desktop mode, cache/share/config directories are automatically created
+- Fixed hidden build directories causing errors when looking for the manifest
+- Fixed issue with cordova building
+- Fixed dependencies not being used the first time clickable is run
+
 Changes in v5.12.3
 ------------------
 
