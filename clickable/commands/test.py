@@ -13,4 +13,4 @@ class TestCommand(Command):
     def run(self, path_arg=None):
         command = 'xvfb-startup {}'.format(self.config.test)
 
-        self.container.run_command(command, use_dir=False)
+        self.config.container.run_command(command, use_dir=False)
