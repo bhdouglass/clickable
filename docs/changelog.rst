@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v5.13.1
+------------------
+
+- Follow up fixes for dependencies not being used for the first run
+
 Changes in v5.13.0
 ------------------
 
