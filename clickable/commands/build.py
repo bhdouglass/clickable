@@ -32,5 +32,5 @@ class BuildCommand(Command):
         template = self.config.get_template()
 
         builder_classes = get_builders()
-        builder = builder_classes[template](self.config, self.config.container, self.device)
+        builder = builder_classes[template](self.config, self.device)
         builder.build()

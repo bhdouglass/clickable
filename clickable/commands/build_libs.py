@@ -45,7 +45,7 @@ class LibBuildCommand(Command):
                 if lib.prebuild:
                     run_subprocess_check_call(lib.prebuild, cwd=self.config.cwd, shell=True)
 
-                self.build(lib, container)
+                self.build(lib)
 
                 if lib.postbuild:
                     run_subprocess_check_call(lib.postbuild, cwd=lib.build_dir, shell=True)
