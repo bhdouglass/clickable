@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v5.13.2
+------------------
+
+- Fixed libraries not building after latest update
+
 Changes in v5.13.1
 ------------------
 
