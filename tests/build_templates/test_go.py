@@ -11,7 +11,7 @@ class TestGoBuilder(TestCase):
         self.config = ConfigMock({})
         self.container = Container(self.config)
         self.device = Device(self.config)
-        self.command = GoBuilder(self.config, self.container, self.command)
+        self.command = GoBuilder(self.config, self.command)
 
 
 # TODO implement this
