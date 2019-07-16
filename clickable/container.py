@@ -34,9 +34,8 @@ class Container(object):
                 self.docker_image = self.config.docker_image
                 self.base_docker_image = self.docker_image
 
-                if 'clickable/ubuntu-sdk' in self.docker_image:
+                if self.docker_image in self.config.container_list:
                     if self.config.use_nvidia:
-                        self.docker_image += '-nvidia'
                         check_command('nvidia-docker')
 
                     self.base_docker_image = self.docker_image
