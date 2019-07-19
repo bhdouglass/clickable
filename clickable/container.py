@@ -20,9 +20,9 @@ from clickable.config import Config
 class Container(object):
     def __init__(self, config):
         self.config = config
-        self.clickableDir = '.clickable/{}'.format(self.config.build_arch)
-        self.dockerNameFile = '{}/name.txt'.format(self.clickableDir)
-        self.dockerFile = '{}/Dockerfile'.format(self.clickableDir)
+        self.clickable_dir = '.clickable/{}'.format(self.config.build_arch)
+        self.docker_name_file = '{}/name.txt'.format(self.clickable_dir)
+        self.docker_file = '{}/Dockerfile'.format(self.clickable_dir)
 
         if not self.config.container_mode:
             if self.config.lxd:
@@ -40,8 +40,8 @@ class Container(object):
 
                     self.base_docker_image = self.docker_image
 
-                    if os.path.exists(self.dockerNameFile):
-                        with open(self.dockerNameFile, 'r') as f:
+                    if os.path.exists(self.docker_name_file):
+                        with open(self.docker_name_file, 'r') as f:
                             self.docker_image = f.read().strip()
 
     def start_docker(self):
@@ -162,11 +162,6 @@ class Container(object):
 
             raise Exception('Log out or restart to apply changes')
 
-    def update_docker(self):
-        self.check_docker()
-
-        subprocess.check_call(shlex.split('docker pull {}'.format(self.base_docker_image)))
-
     def run_command(self, command, force_lxd=False, sudo=False, get_output=False, use_dir=True, cwd=None):
         wrapped_command = command
         cwd = cwd if cwd else os.path.abspath(self.config.root_dir)
@@ -243,7 +238,7 @@ class Container(object):
         else:
             subprocess.check_call(shlex.split(wrapped_command), **kwargs)
 
-    def setup_dependencies(self):
+    def setup_dependencies(self, force_build=False):
         if self.config.dependencies_build or self.config.dependencies_target:
             print_info('Checking dependencies')
 
@@ -294,13 +289,13 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
                         ' '.join(dependencies)
                     ).strip()
 
-                    build = False
+                    build = force_build
 
-                    if not os.path.exists(self.clickableDir):
-                        os.makedirs(self.clickableDir)
+                    if not os.path.exists(self.clickable_dir):
+                        os.makedirs(self.clickable_dir)
 
-                    if os.path.exists(self.dockerFile):
-                        with open(self.dockerFile, 'r') as f:
+                    if os.path.exists(self.docker_file):
+                        with open(self.docker_file, 'r') as f:
                             if dockerfile.strip() != f.read().strip():
                                 build = True
                     else:
@@ -312,16 +307,16 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
                         build = not image_exists
 
                     if build:
-                        with open(self.dockerFile, 'w') as f:
+                        with open(self.docker_file, 'w') as f:
                             f.write(dockerfile)
 
                         self.docker_image = '{}-{}'.format(self.base_docker_image, uuid.uuid4())
-                        with open(self.dockerNameFile, 'w') as f:
+                        with open(self.docker_name_file, 'w') as f:
                             f.write(self.docker_image)
 
                         print_info('Generating new docker image')
                         try:
-                            subprocess.check_call(shlex.split('docker build -t {} .'.format(self.docker_image)), cwd=self.clickableDir)
+                            subprocess.check_call(shlex.split('docker build -t {} .'.format(self.docker_image)), cwd=self.clickable_dir)
                         except subprocess.CalledProcessError:
                             self.clean_clickable()
                             raise
@@ -329,7 +324,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
                         print_info('Dependencies already setup')
 
     def clean_clickable(self):
-        path = os.path.join(self.config.cwd, self.clickableDir)
+        path = os.path.join(self.config.cwd, self.clickable_dir)
         if os.path.exists(path):
             try:
                 shutil.rmtree(path)
