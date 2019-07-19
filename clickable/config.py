@@ -50,6 +50,16 @@ class Config(object):
     GO = 'go'
     RUST = 'rust'
 
+    container_mapping = {
+        ('15.04', 'armhf'): 'clickable/ubuntu-sdk:15.04-armhf',
+        ('16.04', 'armhf'): 'clickable/ubuntu-sdk:16.04-armhf',
+        ('15.04', 'amd64'): 'clickable/ubuntu-sdk:15.04-amd64',
+        ('16.04', 'amd64'): 'clickable/ubuntu-sdk:16.04-amd64',
+        ('16.04', 'amd64-nvidia'): 'clickable/ubuntu-sdk:16.04-amd64-nvidia',
+    }
+
+    container_list = list(container_mapping.values())
+
     arch_triplet_mapping = {
         'armhf': 'arm-linux-gnueabihf',
         'amd64': 'x86_64-linux-gnu',
@@ -155,10 +165,13 @@ class Config(object):
 
         if not self.config['docker_image']:
             self.custom_docker_image = False
+            image = self.build_arch
+            if self.use_nvidia:
+                image = "{}-nvidia".format(image)
             if self.is_xenial:
-                self.config['docker_image'] = 'clickable/ubuntu-sdk:16.04-{}'.format(self.build_arch)
+                self.config['docker_image'] = self.container_mapping[('16.04', image)]
             else:
-                self.config['docker_image'] = 'clickable/ubuntu-sdk:15.04-{}'.format(self.build_arch)
+                self.config['docker_image'] = self.container_mapping[('15.04', image)]
 
         self.config['arch_triplet'] = self.arch_triplet_mapping[self.config['arch']]
 
