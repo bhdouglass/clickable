@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v5.13.3
+------------------
+
+- Fixed the update command so it updates all available Docker images
+
 Changes in v5.13.2
 ------------------
 
