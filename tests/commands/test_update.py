@@ -19,11 +19,9 @@ class TestUpdateCommand(TestCase):
     @mock.patch('clickable.container.Container.check_docker', side_effect=empty_fn)
     @mock.patch('clickable.commands.update.run_subprocess_check_output', side_effect=string_fn)
     @mock.patch('clickable.commands.update.run_subprocess_check_call', side_effect=empty_fn)
-    @mock.patch('clickable.container.Container.setup_dependencies', side_effect=empty_fn)
-    def test_update(self, mock_setup_dependencies, mock_run_subprocess_check_call, mock_run_subprocess_check_output, mock_check_docker):
+    def test_update(self, mock_run_subprocess_check_call, mock_run_subprocess_check_output, mock_check_docker):
         self.command.run()
 
-        mock_setup_dependencies.assert_called_once_with(force_build=True)
         mock_check_docker.assert_called_once_with()
         mock_run_subprocess_check_output.assert_called_with(ANY)
         mock_run_subprocess_check_call.assert_called_with(ANY)

@@ -29,6 +29,3 @@ class UpdateCommand(Command):
 
         for image in self.config.container_list:
             update_image(image)
-
-        if not self.config.lxd:
-            self.config.container.setup_dependencies(force_build=True)
