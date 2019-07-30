@@ -20,6 +20,16 @@ class LibConfig(object):
         'amd64': 'x86_64-linux-gnu',
         'all': 'all'
     }
+    
+    container_mapping = {
+        ('15.04', 'armhf'): 'clickable/ubuntu-sdk:15.04-armhf',
+        ('16.04', 'armhf'): 'clickable/ubuntu-sdk:16.04-armhf',
+        ('15.04', 'amd64'): 'clickable/ubuntu-sdk:15.04-amd64',
+        ('16.04', 'amd64'): 'clickable/ubuntu-sdk:16.04-amd64',
+        ('16.04', 'amd64-nvidia'): 'clickable/ubuntu-sdk:16.04-amd64-nvidia',
+    }
+
+    container_list = list(container_mapping.values())
 
     replacements = {
         "$ARCH_TRIPLET": "arch_triplet",
