@@ -41,8 +41,23 @@ class Container(object):
                     self.base_docker_image = self.docker_image
 
                     if os.path.exists(self.docker_name_file):
-                        with open(self.docker_name_file, 'r') as f:
-                            self.docker_image = f.read().strip()
+                        self.restore_cached_container()
+
+    def restore_cached_container(self):
+        with open(self.docker_name_file, 'r') as f:
+            cached_container = f.read().strip()
+
+            command_base = 'docker images -q {}'.format(self.base_docker_image)
+            command_cached = 'docker history -q {}'.format(cached_container)
+
+            hash_base = run_subprocess_check_output(command_base).strip()
+            history_cached = run_subprocess_check_output(command_cached).strip()
+
+            if hash_base in history_cached:
+                print_info("Found cached container")
+                self.docker_image = cached_container
+            else:
+                print_info("Found outdated container")
 
     def start_docker(self):
         started = False
@@ -294,7 +309,7 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
                     if not os.path.exists(self.clickable_dir):
                         os.makedirs(self.clickable_dir)
 
-                    if os.path.exists(self.docker_file):
+                    if self.docker_image != self.base_docker_image and os.path.exists(self.docker_file):
                         with open(self.docker_file, 'r') as f:
                             if dockerfile.strip() != f.read().strip():
                                 build = True
