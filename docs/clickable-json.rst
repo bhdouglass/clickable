@@ -185,7 +185,7 @@ dependencies_ppa
 ----------------
 
 Optional, a list of PPAs, that will be enabled in the build container. This is
-only supported for doker mode. Ex:
+only supported for docker mode. Ex:
 
 .. code-block:: javascript
 
