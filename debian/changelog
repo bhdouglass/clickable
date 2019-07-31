@@ -1,3 +1,10 @@
+clickable (5.14.0) unstable; urgency=medium
+
+  * Added check for outdated containers when using custom dependencies
+  * Fixed building libraries
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 31 Jul 2019 00:02:00 -0500
+
 clickable (5.13.3) unstable; urgency=medium
 
   * Fixed the update command so it updates all available Docker images

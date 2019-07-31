@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v5.14.0
+------------------
+
+- Added check for outdated containers when using custom dependencies
+- Fixed building libraries
+
 Changes in v5.13.3
 ------------------
 
