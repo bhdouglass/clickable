@@ -224,13 +224,19 @@ class Container(object):
             if self.config.config['template'] == Config.RUST and self.config.cargo_home:
                 cargo_registry = os.path.join(self.config.cargo_home, 'registry')
                 cargo_git = os.path.join(self.config.cargo_home, 'git')
+                cargo_package_cache_lock = os.path.join(self.config.cargo_home, '.package-cache')
 
                 os.makedirs(cargo_registry, exist_ok=True)
                 os.makedirs(cargo_git, exist_ok=True)
 
-                rust_config = '-v {}:/opt/rust/cargo/registry:Z -v {}:/opt/rust/cargo/git:Z'.format(
+                # create .package-cache if it doesn't exist
+                with open(cargo_package_cache_lock, "a"):
+                    pass
+
+                rust_config = '-v {}:/opt/rust/cargo/registry:Z -v {}:/opt/rust/cargo/git:Z -v {}:/opt/rust/cargo/.package-cache'.format(
                     cargo_registry,
                     cargo_git,
+                    cargo_package_cache_lock,
                 )
 
             wrapped_command = 'docker run -v {}:{}:Z {} {} -w {} -u {} -e HOME=/tmp --rm -i {} bash -c "{}"'.format(
