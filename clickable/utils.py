@@ -6,6 +6,7 @@ import shlex
 import glob
 import inspect
 from os.path import dirname, basename, isfile, join
+import multiprocessing
 
 from clickable.build_templates.base import Builder
 
@@ -196,9 +197,10 @@ def merge_make_jobs_into_args(make_args=None, make_jobs=0):
         else:
             return make_args
     else:
-        make_jobs_arg = '-j'
         if make_jobs:
-            make_jobs_arg = '{}{}'.format(make_jobs_arg, make_jobs)
+            make_jobs_arg = '-j{}'.format(make_jobs)
+        else:
+            make_jobs_arg = '-j{}'.format(multiprocessing.cpu_count())
 
         if make_args:
             return '{} {}'.format(make_args, make_jobs_arg)
