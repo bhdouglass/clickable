@@ -175,11 +175,11 @@ class Config(object):
 
         self.config['arch_triplet'] = self.arch_triplet_mapping[self.config['arch']]
 
-        self.substitute_placeholders()
-
         for key in self.path_keys:
-            if self.config[key]:
+            if key not in self.accepts_placeholders and self.config[key]:
                 self.config[key] = os.path.abspath(self.config[key])
+
+        self.substitute_placeholders()
 
         self.temp = os.path.join(self.config['build_dir'], 'tmp')
 
@@ -325,6 +325,8 @@ class Config(object):
                         self.config[key] = [val.replace(sub, rep) for val in self.config[key]]
                     else:
                         self.config[key] = self.config[key].replace(sub, rep)
+            if key in self.path_keys and self.config[key]:
+                self.config[key] = os.path.abspath(self.config[key])
 
     def convert_deprecated_libraries_list(self):
         if isinstance(self.config['libraries'], list):
