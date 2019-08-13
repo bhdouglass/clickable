@@ -1,3 +1,11 @@
+clickable (5.14.1) unstable; urgency=medium
+
+  * Limit make processes to the number of cpus on the system
+  * Fix missing directory for newer Rust versions
+  * Fix placeholders not being absolute
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Tue, 13 Aug 2019 00:16:00 -0500
+
 clickable (5.14.0) unstable; urgency=medium
 
   * Added check for outdated containers when using custom dependencies

@@ -3,6 +3,13 @@
 Changelog
 =========
 
+Changes in v5.14.1
+------------------
+
+- Limit make processes to the number of cpus on the system
+- Fix missing directory for newer Rust versions
+- Fix placeholders not being absolute
+
 Changes in v5.14.0
 ------------------
 
