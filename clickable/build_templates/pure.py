@@ -54,6 +54,8 @@ class PureBuilder(Builder):
         return ignored
 
     def build(self):
+        if os.path.isdir(self.config.temp):
+            raise ValueError('Build directory already exists. Please run "clickable clean" before building again!')
         shutil.copytree(self.config.cwd, self.config.temp, ignore=self._ignore)
         print_info('Copied files to temp directory for click building')
 
