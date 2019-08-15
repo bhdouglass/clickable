@@ -57,8 +57,6 @@ class LibConfig(object):
     custom_docker_image = False
     gopath = None
 
-    install = False
-
     def __init__(self, name, json_config, arch, root_dir, debug_build):
         self.debug_build = debug_build
 

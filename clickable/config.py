@@ -96,7 +96,6 @@ class Config(object):
     apikey = None
     is_xenial = True
     custom_docker_image = True
-    install = True
     debug_build = False
     debug_gdb = False
 

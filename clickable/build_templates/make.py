@@ -36,5 +36,4 @@ class MakeBuilder(Builder):
     def build(self):
         self.make()
         self.post_make()
-        if self.config.install:
-            self.make_install()
+        self.make_install()
