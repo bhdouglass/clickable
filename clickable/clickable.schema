@@ -40,6 +40,7 @@
     "dir": {"type": "string"},
     "build_dir": {"type": "string"},
     "src_dir": {"type": "string"},
+    "install_dir": {"type": "string"},
     "root_dir": {"type": "string"},
     "kill": {"type": "string"},
     "scripts": {
@@ -139,7 +140,8 @@
           },
           "dir": {"type": "string"},
           "build_dir": {"type": "string"},
-          "src_dir": {"type": "string"}
+          "src_dir": {"type": "string"},
+          "install_dir": {"type": "string"}
         },
         "required": ["template", "name"],
         "additionalProperties": false
@@ -191,7 +193,8 @@
           },
           "dir": {"type": "string"},
           "build_dir": {"type": "string"},
-          "src_dir": {"type": "string"}
+          "src_dir": {"type": "string"},
+          "install_dir": {"type": "string"}
         },
         "required": ["template"],
         "additionalProperties": false
