@@ -21,15 +21,15 @@ class MakeBuilder(Builder):
         self.config.container.run_command(command)
 
     def make_install(self):
-        if os.path.exists(self.config.temp) and os.path.isdir(self.config.temp):
-            shutil.rmtree(self.config.temp)
+        if os.path.exists(self.config.install_dir) and os.path.isdir(self.config.install_dir):
+            shutil.rmtree(self.config.install_dir)
 
         try:
-            os.makedirs(self.config.temp)
+            os.makedirs(self.config.install_dir)
         except FileExistsError:
             print_warning('Failed to create temp dir, already exists')
         except Exception:
-            print_warning('Failed to create temp dir ({}): {}'.format(self.config.temp, str(sys.exc_info()[0])))
+            print_warning('Failed to create temp dir ({}): {}'.format(self.config.install_dir, str(sys.exc_info()[0])))
 
         # The actual make command is implemented in the subclasses
 

@@ -41,7 +41,7 @@ class LibConfig(object):
     accepts_placeholders = ["root_dir", "build_dir", "src_dir",
                             "build", "build_args", "make_args", "postmake", "postbuild", "prebuild"]
 
-    path_keys = ['root_dir', 'build_dir', 'src_dir']
+    path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir']
     required = ['template']
     flexible_lists = ['dependencies', 'dependencies_build',
                       'dependencies_target', 'dependencies_ppa',
@@ -82,6 +82,7 @@ class LibConfig(object):
             'docker_image': None,
             'build_args': [],
             'make_args': [],
+            'install_dir': '$BUILD_DIR/install'
         }
 
         self.config.update(json_config)
@@ -95,8 +96,6 @@ class LibConfig(object):
         for key in self.path_keys:
             if self.config[key]:
                 self.config[key] = os.path.abspath(self.config[key])
-
-        self.temp = self.config['build_dir']
 
         self.check_config_errors()
 

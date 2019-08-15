@@ -42,7 +42,7 @@ class DesktopCommand(Command):
         if not desktop_path:
             raise Exception('Could not find desktop file for app "{}"'.format(app))
 
-        desktop_path = os.path.join(self.config.temp, desktop_path)
+        desktop_path = os.path.join(self.config.install_dir, desktop_path)
         if not os.path.exists(desktop_path):
             raise Exception('Could not desktop file does not exist: "{}"'.format(desktop_path))
 
@@ -106,8 +106,8 @@ class DesktopCommand(Command):
             volumes += ' -v /dev/snd/pcmC2D0c:/dev/snd/pcmC2D0c:Z -v /dev/snd/controlC2:/dev/snd/controlC2:Z --device /dev/snd'
 
         lib_path = ':'.join([
-            os.path.join(self.config.temp, 'lib/x86_64-linux-gnu'),
-            os.path.join(self.config.temp, 'lib'),
+            os.path.join(self.config.install_dir, 'lib/x86_64-linux-gnu'),
+            os.path.join(self.config.install_dir, 'lib'),
             '/usr/local/nvidia/lib',
             '/usr/local/nvidia/lib64',
         ])
@@ -116,9 +116,9 @@ class DesktopCommand(Command):
             '/usr/local/nvidia/bin',
             '/bin',
             '/usr/bin',
-            os.path.join(self.config.temp, 'bin'),
-            os.path.join(self.config.temp, 'lib/x86_64-linux-gnu/bin'),
-            self.config.temp,
+            os.path.join(self.config.install_dir, 'bin'),
+            os.path.join(self.config.install_dir, 'lib/x86_64-linux-gnu/bin'),
+            self.config.install_dir,
         ])
         environment = '-e XAUTHORITY=/tmp/.docker.xauth -e DISPLAY={} -e QML2_IMPORT_PATH={} -e LD_LIBRARY_PATH={} -e PATH={} -e HOME=/home/phablet -e OXIDE_NO_SANDBOX=1'.format(
             os.environ['DISPLAY'],
@@ -182,10 +182,10 @@ class DesktopCommand(Command):
             go_config,
             rust_config,
             environment,
-            self.config.temp,
+            self.config.install_dir,
             os.getuid(),
             self.config.container.docker_image,
             execute,
         )
 
-        subprocess.check_call(shlex.split(command), cwd=self.config.temp)
+        subprocess.check_call(shlex.split(command), cwd=self.config.install_dir)

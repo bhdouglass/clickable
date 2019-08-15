@@ -22,9 +22,9 @@ class CleanCommand(Command):
                 else:
                     print_warning('Failed to clean the build directory: {}: {}'.format(type, value))
 
-        if os.path.exists(self.config.temp):
+        if os.path.exists(self.config.install_dir):
             try:
-                shutil.rmtree(self.config.temp)
+                shutil.rmtree(self.config.install_dir)
             except Exception:
                 cls, value, traceback = sys.exc_info()
                 if cls == OSError and 'No such file or directory' in str(value):  # TODO see if there is a proper way to do this
