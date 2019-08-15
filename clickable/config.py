@@ -71,9 +71,12 @@ class Config(object):
         "$ROOT": "root_dir",
         "$BUILD_DIR": "build_dir",
         "$SRC_DIR": "src_dir",
+        "$INSTALL_DIR": "install_dir",
     }
-    accepts_placeholders = ["root_dir", "build_dir", "src_dir", "gopath", "cargo_home", "scripts",
-                            "build", "build_args", "make_args", "postmake", "postbuild", "prebuild"]
+    accepts_placeholders = ["root_dir", "build_dir", "src_dir", "install_dir",
+                            "gopath", "cargo_home", "scripts", "build",
+                            "build_args", "make_args", "postmake", "postbuild",
+                            "prebuild"]
 
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
                  'cargo_home', 'gopath']
