@@ -52,7 +52,7 @@ Run nose to complete the tests: `nosetests`
 
 ### Related Repositories
 
-* [Clickable docker images](https://gitlab.com/clickable/clickable-docker-images)
+* [Clickable docker images and app templates](https://gitlab.com/clickable)
 
 ## Donate
 
