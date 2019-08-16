@@ -50,6 +50,10 @@ Install nose and the coverage modules: `pip3 install nose coverage`
 
 Run nose to complete the tests: `nosetests`
 
+### Related Repositories
+
+* [Clickable docker images and app templates](https://gitlab.com/clickable)
+
 ## Donate
 
 If you like Clickable, consider giving a small donation over at my
