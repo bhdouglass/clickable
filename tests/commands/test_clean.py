@@ -80,4 +80,3 @@ class TestCleanCommand(TestCase):
 
         mock_exists.assert_called_with(ANY)
         mock_rmtree.assert_called_with(ANY)
-        mock_print_warning.assert_called_with(ANY)
