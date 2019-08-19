@@ -98,6 +98,7 @@ class Config(object):
     custom_docker_image = True
     debug_build = False
     debug_gdb = False
+    debug_gdb_port = None
 
     def __init__(self, args, clickable_version, desktop=False):
         self.desktop = desktop
@@ -300,6 +301,11 @@ class Config(object):
         if args.gdb:
             self.debug_build = True
             self.debug_gdb = True
+
+        if args.gdbserver:
+            self.debug_build = True
+            self.debug_gdb = True
+            self.debug_gdb_port = args.gdbserver
 
         config = {}
         if args.arch:
