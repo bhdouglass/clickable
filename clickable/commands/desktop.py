@@ -173,8 +173,13 @@ class DesktopCommand(Command):
             subprocess.check_call(shlex.split('xhost +local:docker'))
 
         if self.config.debug_gdb:
-            execute = 'gdb --args {}'.format(execute)
-            environment = '{} --cap-add=SYS_PTRACE --security-opt seccomp=unconfined'.format(environment)
+            if self.config.debug_gdb_port:
+                port = self.config.debug_gdb_port
+                execute = 'gdbserver localhost:{} {}'.format(port, execute)
+                environment = '{0} -p {1}:{1}'.format(environment, port)
+            else:
+                execute = 'gdb --args {}'.format(execute)
+                environment = '{} --cap-add=SYS_PTRACE --security-opt seccomp=unconfined'.format(environment)
 
         command = '{} run {} {} {} {} -w {} -u {} --rm -it {} bash -c "{}"'.format(
             'nvidia-docker' if self.config.use_nvidia else 'docker',
