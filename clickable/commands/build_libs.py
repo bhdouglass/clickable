@@ -32,7 +32,7 @@ class LibBuildCommand(Command):
                 lib.container_mode = self.config.container_mode
                 lib.docker_image = self.config.docker_image
                 lib.build_arch = self.config.build_arch
-                lib.container = Container(lib)
+                lib.container = Container(lib, lib.name)
                 lib.container.setup_dependencies()
 
                 try:
