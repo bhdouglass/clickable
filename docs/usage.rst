@@ -53,7 +53,9 @@ by running ``clickable devices``.
 
 .. _debugging-with-gdb:
 
-Debugging with GDB
-------------------
+Debugging
+---------
 
 GDB Debugging via Clickable is only available in desktop mode and can be started by running ``clickable desktop --gdb``.
+
+Alternatively a GDB Server can be started with ``clickable desktop --gdbserver <port>`` (just choose any port, e.g. ``3333``). Check for an option to do GDB Remote Debugging in your IDE and connect to ``localhost:<port>``.

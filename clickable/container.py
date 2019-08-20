@@ -18,9 +18,11 @@ from clickable.config import Config
 
 
 class Container(object):
-    def __init__(self, config):
+    def __init__(self, config, name=None):
         self.config = config
         self.clickable_dir = '.clickable/{}'.format(self.config.build_arch)
+        if name:
+            self.clickable_dir = '{}/{}'.format(self.clickable_dir, name)
         self.docker_name_file = '{}/name.txt'.format(self.clickable_dir)
         self.docker_file = '{}/Dockerfile'.format(self.clickable_dir)
 
