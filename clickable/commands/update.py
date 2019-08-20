@@ -5,12 +5,8 @@ from .base import Command
 from clickable.utils import (
     run_subprocess_check_call,
     run_subprocess_check_output,
+    image_exists,
 )
-
-
-def image_exists(image):
-    command = 'docker images -q {}'.format(image)
-    return run_subprocess_check_output(command).strip() != ""
 
 
 def update_image(image):
