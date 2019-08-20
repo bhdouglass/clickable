@@ -23,5 +23,4 @@ class TestUpdateCommand(TestCase):
         self.command.run()
 
         mock_check_docker.assert_called_once_with()
-        mock_run_subprocess_check_output.assert_called_with(ANY)
         mock_run_subprocess_check_call.assert_called_with(ANY)
