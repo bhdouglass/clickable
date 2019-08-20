@@ -91,11 +91,11 @@ class LibConfig(object):
 
         self.config['arch_triplet'] = self.arch_triplet_mapping[self.config['arch']]
 
-        self.substitute_placeholders()
-
         for key in self.path_keys:
-            if self.config[key]:
+            if key not in self.accepts_placeholders and self.config[key]:
                 self.config[key] = os.path.abspath(self.config[key])
+
+        self.substitute_placeholders()
 
         self.check_config_errors()
 
@@ -113,10 +113,14 @@ class LibConfig(object):
             for sub in self.replacements:
                 rep = self.config[self.replacements[sub]]
                 if self.config[key]:
-                    if isinstance(self.config[key], list):
+                    if isinstance(self.config[key], dict):
+                        self.config[key] = {k: val.replace(sub, rep) for (k, val) in self.config[key].items()}
+                    elif isinstance(self.config[key], list):
                         self.config[key] = [val.replace(sub, rep) for val in self.config[key]]
                     else:
                         self.config[key] = self.config[key].replace(sub, rep)
+            if key in self.path_keys and self.config[key]:
+                self.config[key] = os.path.abspath(self.config[key])
 
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
