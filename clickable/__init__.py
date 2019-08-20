@@ -136,6 +136,10 @@ def main():
         default=False,
     )
     parser.add_argument(
+        '--gdbserver',
+        help='Start gdbserver at the given port to debug the app remotely (only desktop mode)',
+    )
+    parser.add_argument(
         '--gdb',
         action='store_true',
         help='Start gdb to debug the app (only desktop mode)',
