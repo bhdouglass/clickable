@@ -14,7 +14,7 @@ class GoBuilder(Builder):
         for content in contents:
             cpath = os.path.abspath(os.path.join(path, content))
             if (
-                cpath == os.path.abspath(self.config.temp) or
+                cpath == os.path.abspath(self.config.install_dir) or
                 cpath == os.path.abspath(self.config.build_dir) or
                 content in self.config.ignore or
                 content == 'clickable.json' or
@@ -27,11 +27,11 @@ class GoBuilder(Builder):
         return ignored
 
     def build(self):
-        shutil.copytree(self.config.cwd, self.config.temp, ignore=self._ignore)
+        shutil.copytree(self.config.cwd, self.config.install_dir, ignore=self._ignore)
 
         gocommand = '/usr/local/go/bin/go build -pkgdir {}/.clickable/go -i -o {}/{} ..'.format(
             self.config.cwd,
-            self.config.temp,
+            self.config.install_dir,
             self.config.find_app_name(),
         )
         self.config.container.run_command(gocommand)

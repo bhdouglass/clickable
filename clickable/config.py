@@ -71,11 +71,15 @@ class Config(object):
         "$ROOT": "root_dir",
         "$BUILD_DIR": "build_dir",
         "$SRC_DIR": "src_dir",
+        "$INSTALL_DIR": "install_dir",
     }
-    accepts_placeholders = ["root_dir", "build_dir", "src_dir", "gopath", "cargo_home", "scripts",
-                            "build", "build_args", "make_args", "postmake", "postbuild", "prebuild"]
+    accepts_placeholders = ["root_dir", "build_dir", "src_dir", "install_dir",
+                            "gopath", "cargo_home", "scripts", "build",
+                            "build_args", "make_args", "postmake", "postbuild",
+                            "prebuild"]
 
-    path_keys = ['root_dir', 'build_dir', 'src_dir', 'cargo_home', 'gopath']
+    path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
+                 'cargo_home', 'gopath']
     required = ['arch', 'build_dir', 'docker_image']
     flexible_lists = ['dependencies', 'dependencies_build',
                       'dependencies_target', 'dependencies_ppa',
@@ -92,7 +96,6 @@ class Config(object):
     apikey = None
     is_xenial = True
     custom_docker_image = True
-    install = True
     debug_build = False
     debug_gdb = False
 
@@ -135,6 +138,7 @@ class Config(object):
             'dirty': False,
             'libraries': {},
             'test': 'qmltestrunner',
+            'install_dir': '$BUILD_DIR/install'
         }
 
         json_config = self.load_json_config(args.config)
@@ -180,8 +184,6 @@ class Config(object):
                 self.config[key] = os.path.abspath(self.config[key])
 
         self.substitute_placeholders()
-
-        self.temp = os.path.join(self.config['build_dir'], 'tmp')
 
         self.check_config_errors()
 
@@ -464,10 +466,10 @@ class Config(object):
         return self.config['template']
 
     def find_manifest(self, ignore_dir=None):
-        return find_manifest(self.cwd, self.temp, self.config['build_dir'], ignore_dir)
+        return find_manifest(self.cwd, self.install_dir, self.config['build_dir'], ignore_dir)
 
     def get_manifest(self):
-        return get_manifest(self.cwd, self.temp, self.config['build_dir'])
+        return get_manifest(self.cwd, self.install_dir, self.config['build_dir'])
 
     def find_version(self):
         if self.config['template'] == Config.CORDOVA:

@@ -46,7 +46,7 @@ class CordovaBuilder(CMakeBuilder):
         for file_to_copy_source, file_to_copy_dest in copies.items():
             full_source_path = os.path.join(self.platform_dir,
                                             file_to_copy_source)
-            full_dest_path = os.path.join(self.config.temp,
+            full_dest_path = os.path.join(self.config.install_dir,
                                           file_to_copy_dest)
             if os.path.isdir(full_source_path):
                 # https://stackoverflow.com/a/31039095/6381767
@@ -62,7 +62,7 @@ class CordovaBuilder(CMakeBuilder):
         with open(self.config.find_manifest(), 'w') as manifest_writer:
             json.dump(manifest, manifest_writer, indent=4)
 
-        apparmor_file = os.path.join(self.config.temp, 'apparmor.json')
+        apparmor_file = os.path.join(self.config.install_dir, 'apparmor.json')
         with open(apparmor_file, 'r') as apparmor_reader:
             apparmor = json.load(apparmor_reader)
             apparmor['policy_version'] = 16.04 if self.config.is_xenial else 1.3

@@ -14,7 +14,7 @@ class PureQMLMakeBuilder(MakeBuilder):
     def post_make(self):
         super().post_make()
 
-        manifest_file = self.config.find_manifest(ignore_dir=self.config.temp)
+        manifest_file = self.config.find_manifest(ignore_dir=self.config.install_dir)
         with open(manifest_file, 'r') as f:
             manifest = {}
             try:
@@ -44,7 +44,7 @@ class PureBuilder(Builder):
             cpath = os.path.abspath(os.path.join(path, content))
 
             if (
-                cpath == os.path.abspath(self.config.temp) or
+                cpath == os.path.abspath(self.config.install_dir) or
                 cpath == os.path.abspath(self.config.build_dir) or
                 content in self.config.ignore or
                 content == 'clickable.json'
@@ -54,10 +54,10 @@ class PureBuilder(Builder):
         return ignored
 
     def build(self):
-        if os.path.isdir(self.config.temp):
+        if os.path.isdir(self.config.install_dir):
             raise ValueError('Build directory already exists. Please run "clickable clean" before building again!')
-        shutil.copytree(self.config.cwd, self.config.temp, ignore=self._ignore)
-        print_info('Copied files to temp directory for click building')
+        shutil.copytree(self.config.cwd, self.config.install_dir, ignore=self._ignore)
+        print_info('Copied files to install directory for click building')
 
 
 class PythonBuilder(PureBuilder):

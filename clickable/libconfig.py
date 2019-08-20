@@ -37,11 +37,13 @@ class LibConfig(object):
         "$ROOT": "root_dir",
         "$BUILD_DIR": "build_dir",
         "$SRC_DIR": "src_dir",
+        "$INSTALL_DIR": "install_dir",
     }
-    accepts_placeholders = ["root_dir", "build_dir", "src_dir",
-                            "build", "build_args", "make_args", "postmake", "postbuild", "prebuild"]
+    accepts_placeholders = ["root_dir", "build_dir", "src_dir", "install_dir",
+                            "build", "build_args", "make_args", "postmake",
+                            "postbuild", "prebuild"]
 
-    path_keys = ['root_dir', 'build_dir', 'src_dir']
+    path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir']
     required = ['template']
     flexible_lists = ['dependencies', 'dependencies_build',
                       'dependencies_target', 'dependencies_ppa',
@@ -54,8 +56,6 @@ class LibConfig(object):
     use_nvidia = False
     custom_docker_image = False
     gopath = None
-
-    install = False
 
     def __init__(self, name, json_config, arch, root_dir, debug_build):
         self.debug_build = debug_build
@@ -82,6 +82,7 @@ class LibConfig(object):
             'docker_image': None,
             'build_args': [],
             'make_args': [],
+            'install_dir': '$BUILD_DIR/install'
         }
 
         self.config.update(json_config)
@@ -95,8 +96,6 @@ class LibConfig(object):
         for key in self.path_keys:
             if self.config[key]:
                 self.config[key] = os.path.abspath(self.config[key])
-
-        self.temp = self.config['build_dir']
 
         self.check_config_errors()
 

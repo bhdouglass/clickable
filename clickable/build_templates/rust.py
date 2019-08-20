@@ -14,7 +14,7 @@ class RustBuilder(Builder):
         self.paths_to_ignore = self._find_click_assets()
         self.paths_to_ignore.extend([
             # Click stuff
-            os.path.abspath(self.config.temp),
+            os.path.abspath(self.config.install_dir),
             os.path.abspath(self.config.build_dir),
             'clickable.json',
             os.path.abspath(os.path.join(self.config.cwd, 'Cargo.toml')),
@@ -51,21 +51,21 @@ class RustBuilder(Builder):
 
     def build(self):
         # Remove old artifacts unless the dirty option is active
-        if not self.config.dirty and os.path.isdir(self.config.temp):
-            shutil.rmtree(self.config.temp)
+        if not self.config.dirty and os.path.isdir(self.config.install_dir):
+            shutil.rmtree(self.config.install_dir)
 
         # Copy project assets
-        shutil.copytree(self.config.cwd, self.config.temp, ignore=self._ignore)
+        shutil.copytree(self.config.cwd, self.config.install_dir, ignore=self._ignore)
 
         # Copy click assets
         if self.config.build_arch == 'armhf':
-            target_dir = self.config.temp + '/lib/arm-linux-gnueabihf/bin/'
+            target_dir = self.config.install_dir + '/lib/arm-linux-gnueabihf/bin/'
         else:
-            target_dir = self.config.temp
+            target_dir = self.config.install_dir
         os.makedirs(target_dir, exist_ok=True)
         assets = self._find_click_assets()
         for asset in assets:
-            shutil.copy2(asset, self.config.temp)
+            shutil.copy2(asset, self.config.install_dir)
 
         # Build using cargo
         cargo_command = 'cargo build {} --target {}' \
