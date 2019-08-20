@@ -113,7 +113,7 @@ Optional, a custom source directory. Defaults to ``$ROOT``
 install_dir
 -----------
 
-Optional, a custom install directory (used to gather data that goes into the click package). Should be a sub directory of ``$BUILD_DIR`` (to ensure write permissions). Defaults to ``$BUILD_DIR/tmp``
+Optional, a custom install directory (used to gather data that goes into the click package). Defaults to ``$BUILD_DIR/tmp``
 
 kill
 ----
@@ -353,7 +353,7 @@ exist in parallel.
 
 install_dir
 ^^^^^^^^^^^
-Optional, a custom install directory. Should be a sub directory of ``$BUILD_DIR`` (to ensure write permissions). Defaults to ``$BUILD_DIR/install``
+Optional, a custom install directory. Defaults to ``$BUILD_DIR/install``
 
 dir
 ^^^
