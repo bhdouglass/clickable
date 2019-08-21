@@ -106,7 +106,7 @@ def main():
     parser.add_argument(
         '--nvidia',
         action='store_true',
-        help='Use nvidia-docker rather than docker',
+        help='Use docker with --runtime=nvidia and *-nvidia docker image',
         default=False,
     )
     parser.add_argument(

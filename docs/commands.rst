@@ -22,6 +22,11 @@ Compile and run the app on the desktop.
 Note: ArchLinux user might need to run ``xhost +local:clickable`` before using
 desktop mode.
 
+Run
+``clickable desktop --debug``
+
+to show the executed docker command.
+
 ``clickable create``
 --------------------
 
@@ -165,6 +170,22 @@ useful from running clickable from within a container.
 ``clickable desktop --nvidia``
 ------------------------------
 
-Use clickable's desktop mode with proprietary Nvidia drivers. This requires
+Use clickable's desktop mode with proprietary nvidia drivers. This requires
 nvidia-docker to be installed and setup. Please note, only version 1 of
 nvidia-docker is supported at this time (version 2 does not support OpenGL).
+
+See:
+
+* https://nvidia.github.io/nvidia-docker
+* https://github.com/NVIDIA/nvidia-docker
+* https://github.com/NVIDIA/nvidia-docker/wiki/Installation-(version-1.0)
+
+You may define `CLICKABLE_NVIDIA=1` to always run clickable with nvidia support.
+Test this with `CLICKABLE_NVIDIA=1 clickable desktop`. 
+
+Add it to your ~/.bashrc, ~/.zshrc, etc to activate this behavior permanently:
+
+```bash
+export CLICKABLE_NVIDIA=1
+```
+
