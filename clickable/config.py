@@ -96,6 +96,7 @@ class Config(object):
     apikey = None
     is_xenial = True
     custom_docker_image = True
+    debug = False
     debug_build = False
     debug_gdb = False
     debug_gdb_port = None
@@ -287,13 +288,16 @@ class Config(object):
             self.container_mode = args.container_mode
 
         if args.nvidia:
-            self.use_nvidia = args.nvidia
+            self.use_nvidia = True
 
         if args.apikey:
             self.apikey = args.apikey
 
         if args.vivid:
             self.is_xenial = not args.vivid
+
+        if args.debug:
+            self.debug = True
 
         if args.debug_build:
             self.debug_build = True
