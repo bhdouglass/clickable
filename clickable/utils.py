@@ -232,3 +232,8 @@ def validate_clickable_json(config, schema):
     except ImportError:
         print_warning("Dependency 'jsonschema' not found. Could not validate clickable.json.")
         pass
+
+def image_exists(image):
+    command = 'docker images -q {}'.format(image)
+    return run_subprocess_check_output(command).strip() != ""
+

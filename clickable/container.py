@@ -12,7 +12,8 @@ from clickable.utils import (
     run_subprocess_check_output,
     print_info,
     print_warning,
-    check_command
+    check_command,
+    image_exists,
 )
 from clickable.config import Config
 
@@ -48,6 +49,10 @@ class Container(object):
     def restore_cached_container(self):
         with open(self.docker_name_file, 'r') as f:
             cached_container = f.read().strip()
+
+            if not image_exists(cached_container):
+                print_info("Cached container does not exist anymore")
+                return
 
             command_base = 'docker images -q {}'.format(self.base_docker_image)
             command_cached = 'docker history -q {}'.format(cached_container)
