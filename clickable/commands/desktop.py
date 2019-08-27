@@ -6,7 +6,8 @@ from pathlib import Path
 from clickable.utils import (
     check_command,
     print_warning,
-    print_info
+    print_info,
+    makedirs,
 )
 from .base import Command
 from .build import BuildCommand
@@ -17,6 +18,7 @@ from .docker.go_support import GoSupport
 from .docker.nvidia_support import NvidiaSupport
 from .docker.rust_support import RustSupport
 from .docker.webapp_support import WebappSupport
+from .docker.theme_support import ThemeSupport
 
 
 class DesktopCommand(Command):
@@ -99,6 +101,8 @@ class DesktopCommand(Command):
 
         DebugGdbSupport(config).update(docker_config)
 
+        ThemeSupport(config).update(docker_config)
+
         return docker_config;
 
     def determine_path_of_desktop_file(self, config):
@@ -176,9 +180,9 @@ class DesktopCommand(Command):
     def setup_volume_mappings(self, local_working_directory, package_name):
         xauth_path = self.touch_xauth()
 
-        share_path = self.makedirs('/tmp/clickable/share/{package}/{package}'.format(package=package_name))
-        cache_path = self.makedirs('/tmp/clickable/cache/{package}/{package}'.format(package=package_name))
-        config_path = self.makedirs('/tmp/clickable/config/{package}/{package}'.format(package=package_name))
+        share_path = makedirs('/tmp/clickable/share/{package}/{package}'.format(package=package_name))
+        cache_path = makedirs('/tmp/clickable/cache/{package}/{package}'.format(package=package_name))
+        config_path = makedirs('/tmp/clickable/config/{package}/{package}'.format(package=package_name))
 
         return {
             local_working_directory: local_working_directory,
@@ -193,10 +197,6 @@ class DesktopCommand(Command):
         xauth_path = '/tmp/.docker.xauth'
         Path(xauth_path).touch()
         return xauth_path
-
-    def makedirs(self, path):
-        os.makedirs(path, 0o777, True)
-        return path
 
     def run_docker_command(self, docker_config, verbose_mode):
         command = docker_config.render_command()
