@@ -52,7 +52,7 @@ class DesktopCommand(Command):
         config.container.check_docker()
 
     def allow_docker_to_connect_to_xserver(self):
-        if (self.is_xhost_installed()):
+        if self.is_xhost_installed():
             subprocess.check_call(shlex.split('xhost +local:docker'))
         else:
             print_warning('xhost not installed, desktop mode may fail')
@@ -99,7 +99,7 @@ class DesktopCommand(Command):
 
         DebugGdbSupport(config).update(docker_config)
 
-        return docker_config;
+        return docker_config
 
     def determine_path_of_desktop_file(self, config):
         desktop_path = None

@@ -4,6 +4,7 @@ import platform
 import re
 import xml.etree.ElementTree as ElementTree
 
+from clickable.system.queries.nvidia_drivers_installed import NvidiaDriversInstalled
 from .libconfig import LibConfig
 
 from .utils import (
@@ -169,15 +170,14 @@ class Config(object):
         if self.desktop:
             self.build_arch = 'amd64'
 
+        if NvidiaDriversInstalled().is_met():
+            if self.debug:
+                print_info('Turning on nvidia mode.')
+            self.use_nvidia = True
+
         if not self.config['docker_image']:
             self.custom_docker_image = False
-            image = self.build_arch
-            if self.use_nvidia:
-                image = "{}-nvidia".format(image)
-            if self.is_xenial:
-                self.config['docker_image'] = self.container_mapping[('16.04', image)]
-            else:
-                self.config['docker_image'] = self.container_mapping[('15.04', image)]
+            self.use_arch(self.build_arch)
 
         self.config['arch_triplet'] = self.arch_triplet_mapping[self.config['arch']]
 
@@ -191,6 +191,14 @@ class Config(object):
 
         self.lib_configs = [LibConfig(name, lib, self.config['arch'], self.config['root_dir'], self.debug_build)
                                     for name, lib in self.config['libraries'].items()]
+
+    def use_arch(self, build_arch):
+        if self.use_nvidia and not build_arch.endswith('-nvidia'):
+            build_arch = "{}-nvidia".format(build_arch)
+        if self.is_xenial:
+            self.config['docker_image'] = self.container_mapping[('16.04', build_arch)]
+        else:
+            self.config['docker_image'] = self.container_mapping[('15.04', build_arch)]
 
     def __getattr__(self, name):
         return self.config[name]
