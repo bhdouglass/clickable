@@ -170,22 +170,23 @@ useful from running clickable from within a container.
 ``clickable desktop --nvidia``
 ------------------------------
 
-Use clickable's desktop mode with proprietary nvidia drivers. This requires
-nvidia-docker to be installed and setup. Please note, only version 1 of
-nvidia-docker is supported at this time (version 2 does not support OpenGL).
+``clickable`` checks automatically if nvidia-drivers are installed and turns on nvidia mode.
+The ``--nvidia`` flag lets you manually enforce nvidia mode.
 
-See:
+Depending on your docker version, the docker execution will change and
+you need to provide additional system requirements:
 
-* https://nvidia.github.io/nvidia-docker
-* https://github.com/NVIDIA/nvidia-docker
-* https://github.com/NVIDIA/nvidia-docker/wiki/Installation-(version-1.0)
+**docker &lt; 19.03 system requirements**
 
-You may define `CLICKABLE_NVIDIA=1` to always run clickable with nvidia support.
-Test this with `CLICKABLE_NVIDIA=1 clickable desktop`. 
+* nvidia-modprobe
+* nvidia-docker
 
-Add it to your ~/.bashrc, ~/.zshrc, etc to activate this behavior permanently:
+On Ubuntu, install these requirements using ``apt install nvidia-modprobe nvidia-docker``.
 
-```bash
-export CLICKABLE_NVIDIA=1
-```
+**docker &gt;= 19.03 system requirements**
 
+* nvidia-container-toolkit
+
+On Ubuntu, install these requirements using ``apt install nvidia-container-toolkit``.
+
+Run clickable with the ``--debug`` flag to see the executed command for your system.

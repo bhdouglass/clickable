@@ -38,9 +38,6 @@ class Container(object):
                 self.base_docker_image = self.docker_image
 
                 if self.docker_image in self.config.container_list:
-                    if self.config.use_nvidia:
-                        check_command('nvidia-docker')
-
                     self.base_docker_image = self.docker_image
 
                     if os.path.exists(self.docker_name_file):
