@@ -43,7 +43,7 @@ class PublishCommand(Command):
         files = {'file': open(click_path, 'rb')}
         data = {
             'channel': channel,
-            'changelog': path_arg,
+            'changelog': path_arg.encode('utf8', 'surrogateescape'),
         }
         params = {'apikey': self.config.apikey}
 
