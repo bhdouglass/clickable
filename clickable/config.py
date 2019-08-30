@@ -169,11 +169,11 @@ class Config(object):
 
         if self.desktop:
             self.build_arch = 'amd64'
-
-        if NvidiaDriversInstalled().is_met():
-            if self.debug:
-                print_info('Turning on nvidia mode.')
-            self.use_nvidia = True
+            # only turn on nvidia mode in desktop mode
+            if NvidiaDriversInstalled().is_met():
+                if self.debug:
+                    print_info('Turning on nvidia mode.')
+                self.use_nvidia = True
 
         if not self.config['docker_image']:
             self.custom_docker_image = False
