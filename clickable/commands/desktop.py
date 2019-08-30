@@ -153,6 +153,7 @@ class DesktopCommand(Command):
             'PATH': self.get_docker_path_env(working_directory),
             'HOME': '/home/phablet',
             'OXIDE_NO_SANDBOX': '1',
+            'UBUNTU_APP_LAUNCH_ARCH': 'x86_64-linux-gnu',
         }
 
     def get_docker_lib_path_env(self, working_directory):
