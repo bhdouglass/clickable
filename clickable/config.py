@@ -82,10 +82,10 @@ class Config(object):
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
                  'cargo_home', 'gopath']
     required = ['arch', 'build_dir', 'docker_image']
-    flexible_lists = ['dependencies', 'dependencies_build',
-                      'dependencies_target', 'dependencies_ppa',
+    flexible_lists = ['dependencies_target', 'dependencies_ppa',
                       'build_args', 'make_args', 'default', 'ignore']
-    deprecated = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh']  # TODO add 'dependencies' and 'specificDependencies'
+    deprecated = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh',
+                  'dependencies', 'specificDependencies']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO, RUST]
 
     first_docker_info = True
@@ -127,8 +127,6 @@ class Config(object):
             'lxd': False,
             'default': 'clean build install launch',
             'log': None,
-            'specificDependencies': False,
-            'dependencies': [],
             'dependencies_build': [],
             'dependencies_target': [],
             'dependencies_ppa': [],
@@ -398,13 +396,6 @@ class Config(object):
 
                 if desktop and 'Exec' in desktop:
                     self.config['kill'] = desktop['Exec'].replace('%u', '').replace('%U', '').strip()
-
-        if self.config['dependencies']:
-            if self.config['specificDependencies']:
-                self.config['dependencies_build'] += self.config['dependencies']
-            else:
-                self.config['dependencies_target'] += self.config['dependencies']
-            print_warning('The params "dependencies" (and possibly "specificDependencies") in your clickable.json are deprecated and will be removed in a future version of Clickable. Use "dependencies_build" and "dependencies_target" instead!')
 
         if self.desktop:
             self.config['dependencies_build'] += self.config['dependencies_target']

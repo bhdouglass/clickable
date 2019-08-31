@@ -177,19 +177,6 @@ Add dependencies here that your app depends on.
 
 Can be specified as a string or a list of strings.
 
-dependencies
-------------
-
-This parameter is deprecated and will be removed in a future version.
-Use ``dependencies_build`` (where ``specificDependencies`` is ``true``)
-or ``dependencies_target`` instead!
-
-Optional, a list of dependencies that will be installed in the build container.
-These will be assumed to be ``dependency:arch`` unless ``specificDependencies``
-is set to ``true``.
-
-Can be specified as a string or a list of strings.
-
 .. _clickable-json-dependencies-ppa:
 
 dependencies_ppa
