@@ -51,9 +51,7 @@ class Config(object):
     RUST = 'rust'
 
     container_mapping = {
-        ('15.04', 'armhf'): 'clickable/ubuntu-sdk:15.04-armhf',
         ('16.04', 'armhf'): 'clickable/ubuntu-sdk:16.04-armhf',
-        ('15.04', 'amd64'): 'clickable/ubuntu-sdk:15.04-amd64',
         ('16.04', 'amd64'): 'clickable/ubuntu-sdk:16.04-amd64',
         ('16.04', 'amd64-nvidia'): 'clickable/ubuntu-sdk:16.04-amd64-nvidia',
     }
@@ -94,7 +92,6 @@ class Config(object):
     container_mode = False
     use_nvidia = False
     apikey = None
-    is_xenial = True
     custom_docker_image = True
     debug = False
     debug_build = False
@@ -191,10 +188,7 @@ class Config(object):
     def use_arch(self, build_arch):
         if self.use_nvidia and not build_arch.endswith('-nvidia'):
             build_arch = "{}-nvidia".format(build_arch)
-        if self.is_xenial:
-            self.config['docker_image'] = self.container_mapping[('16.04', build_arch)]
-        else:
-            self.config['docker_image'] = self.container_mapping[('15.04', build_arch)]
+        self.config['docker_image'] = self.container_mapping[('16.04', build_arch)]
 
     def __getattr__(self, name):
         return self.config[name]
@@ -265,9 +259,6 @@ class Config(object):
         if env('CLICKABLE_NVIDIA'):
             self.use_nvidia = True
 
-        if env('CLICKABLE_VIVID'):
-            self.is_xenial = False
-
         if env('CLICKABLE_DEBUG_BUILD'):
             self.debug_build = True
 
@@ -299,9 +290,6 @@ class Config(object):
 
         if args.apikey:
             self.apikey = args.apikey
-
-        if args.vivid:
-            self.is_xenial = not args.vivid
 
         if args.debug:
             self.debug = True

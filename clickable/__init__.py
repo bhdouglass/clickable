@@ -107,12 +107,6 @@ def main():
         help='Api key for the OpenStore',
     )
     parser.add_argument(
-        '--vivid',
-        action='store_true',
-        help='Use the old vivid build container',
-        default=False,
-    )
-    parser.add_argument(
         '--docker-image',
         help='Use a specific docker image to build with'
     )
