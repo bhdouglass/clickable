@@ -84,7 +84,7 @@ class Config(object):
     flexible_lists = ['dependencies_target', 'dependencies_ppa',
                       'build_args', 'make_args', 'default', 'ignore']
     deprecated = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh',
-                  'dependencies', 'specificDependencies', 'dir']
+                  'dependencies', 'specificDependencies', 'dir', 'lxd']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO, RUST]
 
     first_docker_info = True
@@ -117,7 +117,7 @@ class Config(object):
             'build': None,
             'postbuild': None,
             'launch': None,
-            'build_dir': '$ROOT/build',
+            'build_dir': '$ROOT/build/$ARCH_TRIPLET/app',
             'src_dir': '$ROOT',
             'root_dir': self.cwd,
             'kill': None,
