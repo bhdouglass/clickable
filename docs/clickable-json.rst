@@ -159,7 +159,7 @@ dependencies_build
 
 Optional, a list of dependencies that will be installed in the build container.
 
-These will not be installed in the target arch.
+Add dependencies here that are part of your build tool chain.
 
 Can be specified as a string or a list of strings.
 
