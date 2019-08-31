@@ -46,7 +46,6 @@
       "type": "object",
       "additionalProperties": { "type": "string"}
     },
-    "lxd": {"type": "boolean"},
     "default": {
       "type": ["string","array"],
       "items": {"type": "string"}

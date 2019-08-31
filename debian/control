@@ -24,5 +24,5 @@ Depends: adb | android-tools-adb,
          ${misc:Depends},
          ${python3:Depends}
 Recommends: python3-distutils
-Suggests: lxd, ubuntu-sdk-tools, x11-xserver-utils
+Suggests: ubuntu-sdk-tools, x11-xserver-utils
 Description: Compile, build, and deploy Ubuntu Touch click packages all from the command line.

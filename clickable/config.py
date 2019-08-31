@@ -28,7 +28,6 @@ class Config(object):
         'CLICKABLE_ARCH': 'arch',
         'CLICKABLE_TEMPLATE': 'template',
         'CLICKABLE_BUILD_DIR': 'build_dir',
-        'CLICKABLE_LXD': 'lxd',
         'CLICKABLE_DEFAULT': 'default',
         'CLICKABLE_MAKE_JOBS': 'make_jobs',
         'GOPATH': 'gopath',
@@ -123,7 +122,6 @@ class Config(object):
             'root_dir': self.cwd,
             'kill': None,
             'scripts': {},
-            'lxd': False,
             'default': 'clean build install launch',
             'log': None,
             'dependencies_build': [],
@@ -326,9 +324,6 @@ class Config(object):
         config = {}
         if args.arch:
             config['arch'] = args.arch
-
-        if args.lxd:
-            config['lxd'] = args.lxd
 
         if args.docker_image:
             config['docker_image'] = args.docker_image

@@ -128,15 +128,6 @@ Optional, an object detailing custom commands to run. For example:
         "echo": "echo Hello World"
     }
 
-.. _clickable-json-lxd:
-
-lxd
----
-
-Optional, whether or not to use a lxd container to build the app. Default is to use
-docker to build the app. LXD is deprecated and its support will be removed
-in a future version of clickable.
-
 .. _clickable-json-default:
 
 default

@@ -87,12 +87,6 @@ def main():
         default=False,
     )
     parser.add_argument(
-        '--lxd',
-        action='store_true',
-        help='Run build commands in a lxd container',
-        default=False,
-    )
-    parser.add_argument(
         '--output',
         help='Where to output the compiled click package',
     )

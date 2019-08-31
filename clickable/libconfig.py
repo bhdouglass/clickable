@@ -51,7 +51,6 @@ class LibConfig(object):
 
     first_docker_info = True
     container_mode = False
-    lxd = False
     use_nvidia = False
     custom_docker_image = False
     gopath = None

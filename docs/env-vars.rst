@@ -21,11 +21,6 @@ Overrides the clickable.json's :ref:`template <clickable-json-template>`.
 
 Overrides the clickable.json's :ref:`dir <clickable-json-build_dir>`.
 
-``CLICKABLE_LXD``
------------------
-
-Overrides the clickable.json's :ref:`lxd <clickable-json-lxd>`.
-
 ``CLICKABLE_DEFAULT``
 ---------------------
 

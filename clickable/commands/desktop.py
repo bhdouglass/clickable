@@ -32,12 +32,7 @@ class DesktopCommand(Command):
         self.run_docker_command(docker_config, verbose_mode=self.config.debug)
 
     def prepare_run(self, config):
-        self.validate_lxd_for_desktop_mode(config.lxd)
         self.run_clean_and_build_commands(config)
-
-    def validate_lxd_for_desktop_mode(self, is_lxd_requested):
-        if is_lxd_requested:
-            raise Exception('Using lxd for desktop mode is not supported')
 
     def run_clean_and_build_commands(self, config):
         if not config.dirty:
