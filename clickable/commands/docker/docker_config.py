@@ -1,4 +1,5 @@
 class DockerConfig(object):
+    docker_executable = 'docker'
     volumes = {}
     environment = {}
     extra_options = {}
@@ -61,7 +62,11 @@ class DockerConfig(object):
         return self.render_dictionary_as_variables(self.extra_options)
 
     def render_command_string(self, volumes_string, environment_string, extra_options_string):
-        return 'docker run {volumes} {env} {extra_options} -w {working_dir} --user={uid} --rm -it {docker_image} bash -c "{executable}"'.format(
+        return (
+            '{docker} run {volumes} {env} {extra_options} -w {working_dir} --user={uid} '
+            '--rm -it {docker_image} bash -c "{executable}"'
+        ).format(
+            docker=self.docker_executable,
             volumes=volumes_string,
             env=environment_string,
             extra_options=extra_options_string,

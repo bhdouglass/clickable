@@ -54,7 +54,7 @@ class DesktopCommand(Command):
         config.container.check_docker()
 
     def allow_docker_to_connect_to_xserver(self):
-        if (self.is_xhost_installed()):
+        if self.is_xhost_installed():
             subprocess.check_call(shlex.split('xhost +local:docker'))
         else:
             print_warning('xhost not installed, desktop mode may fail')
@@ -103,7 +103,7 @@ class DesktopCommand(Command):
 
         ThemeSupport(config).update(docker_config)
 
-        return docker_config;
+        return docker_config
 
     def determine_path_of_desktop_file(self, config):
         desktop_path = None
@@ -157,6 +157,7 @@ class DesktopCommand(Command):
             'PATH': self.get_docker_path_env(working_directory),
             'HOME': '/home/phablet',
             'OXIDE_NO_SANDBOX': '1',
+            'UBUNTU_APP_LAUNCH_ARCH': 'x86_64-linux-gnu',
         }
 
     def get_docker_lib_path_env(self, working_directory):
