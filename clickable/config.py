@@ -516,6 +516,24 @@ class Config(object):
 
         return package
 
+    def find_package_title(self):
+        if self.config['template'] == Config.CORDOVA:
+            tree = ElementTree.parse('config.xml')
+            root = tree.getroot()
+            title = root.attrib['name'] if 'name' in root.attrib else None
+
+            if not title:
+                raise ValueError('No package title specified in config.xml')
+
+        else:
+            title = self.get_manifest().get('title', None)
+
+            if not title:
+                raise ValueError(
+                    'No package title specified in manifest.json or clickable.json')
+
+        return title
+
     def find_app_name(self):
         app = None
         hooks = self.get_manifest().get('hooks', {})

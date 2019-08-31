@@ -1,4 +1,5 @@
 import os
+import urllib.parse
 
 requests_available = True
 try:
@@ -38,7 +39,8 @@ class PublishCommand(Command):
         if 'OPENSTORE_API' in os.environ and os.environ['OPENSTORE_API']:
             url = os.environ['OPENSTORE_API']
 
-        url = url + OPENSTORE_API_PATH.format(self.config.find_package_name())
+        package_name = self.config.find_package_name()
+        url = url + OPENSTORE_API_PATH.format(package_name)
         channel = 'xenial' if self.config.is_xenial else 'vivid'
         files = {'file': open(click_path, 'rb')}
         data = {
@@ -47,10 +49,19 @@ class PublishCommand(Command):
         }
         params = {'apikey': self.config.apikey}
 
-        print_info('Uploading version {} of {} for {} to the OpenStore'.format(self.config.find_version(), self.config.find_package_name(), channel))
+        print_info('Uploading version {} of {} for {} to the OpenStore'.format(self.config.find_version(), package_name, channel))
         response = requests.post(url, files=files, data=data, params=params)
         if response.status_code == requests.codes.ok:
             print_success('Upload successful')
+        elif response.status_code == requests.codes.not_found:
+            title = urllib.parse.quote(self.config.find_package_title())
+            raise Exception(
+                'App needs to be created in the OpenStore before you can publish it. Visit {}/submit?appId={}&name={}'.format(
+                    OPENSTORE_API,
+                    package_name,
+                    title,
+                )
+            )
         else:
             if response.text == 'Unauthorized':
                 raise Exception('Failed to upload click: Unauthorized')
