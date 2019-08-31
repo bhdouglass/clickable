@@ -100,11 +100,6 @@ build_dir
 
 Optional, a custom build directory. Defaults to ``$ROOT/build/``
 
-dir
----
-
-Deprecated, use ``build_dir`` instead.
-
 src_dir
 -------
 
@@ -346,7 +341,3 @@ exist in parallel.
 install_dir
 ^^^^^^^^^^^
 Optional, a custom install directory. Defaults to ``$BUILD_DIR/install``
-
-dir
-^^^
-Deprecated, use ``build_dir`` instead.

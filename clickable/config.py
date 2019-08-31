@@ -85,7 +85,7 @@ class Config(object):
     flexible_lists = ['dependencies_target', 'dependencies_ppa',
                       'build_args', 'make_args', 'default', 'ignore']
     deprecated = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh',
-                  'dependencies', 'specificDependencies']
+                  'dependencies', 'specificDependencies', 'dir']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO, RUST]
 
     first_docker_info = True
@@ -118,7 +118,6 @@ class Config(object):
             'build': None,
             'postbuild': None,
             'launch': None,
-            'dir': None,
             'build_dir': '$ROOT/build',
             'src_dir': '$ROOT',
             'root_dir': self.cwd,
@@ -366,10 +365,6 @@ class Config(object):
 
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
-
-        if self.config['dir']:
-            self.config['build_dir'] = self.config['dir']
-            print_warning('The param "dir" in your clickable.json is deprecated and will be removed in a future version of Clickable. Use "build_dir" instead!')
 
         self.convert_deprecated_libraries_list()
 

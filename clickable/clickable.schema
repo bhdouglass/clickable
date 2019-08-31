@@ -37,7 +37,6 @@
     "postbuild": {"type": "string"},
     "postmake": {"type": "string"},
     "launch": {"type": "string"},
-    "dir": {"type": "string"},
     "build_dir": {"type": "string"},
     "src_dir": {"type": "string"},
     "install_dir": {"type": "string"},
@@ -128,7 +127,6 @@
               "custom"
             ]
           },
-          "dir": {"type": "string"},
           "build_dir": {"type": "string"},
           "src_dir": {"type": "string"},
           "install_dir": {"type": "string"}
@@ -176,7 +174,6 @@
               "custom"
             ]
           },
-          "dir": {"type": "string"},
           "build_dir": {"type": "string"},
           "src_dir": {"type": "string"},
           "install_dir": {"type": "string"}

@@ -68,7 +68,6 @@ class LibConfig(object):
             'prebuild': None,
             'build': None,
             'postbuild': None,
-            'dir': None,
             'build_dir': '$ROOT/build/$NAME/$ARCH_TRIPLET',
             'src_dir': '$ROOT/libs/$NAME',
             'root_dir': root_dir,
@@ -121,10 +120,6 @@ class LibConfig(object):
 
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
-
-        if self.config['dir']:
-            self.config['build_dir'] = self.config['dir']
-            print_warning('The param "dir" in your clickable.json is deprecated and will be removed in a future version of Clickable. Use "build_dir" instead!')
 
         for key in self.flexible_lists:
             self.config[key] = flexible_string_to_list(self.config[key])
