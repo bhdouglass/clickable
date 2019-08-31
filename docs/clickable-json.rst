@@ -173,7 +173,7 @@ These will be assumed to be ``dependency:arch``, unless an architecture specifie
 is already appended. In desktop mode ``dependencies_target`` is handled just
 like ``dependencies_build``.
 
-These will be installed in the target arch (usually armhf).
+Add dependencies here that your app depends on.
 
 Can be specified as a string or a list of strings.
 
