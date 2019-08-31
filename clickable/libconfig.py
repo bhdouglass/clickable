@@ -67,7 +67,7 @@ class LibConfig(object):
             'prebuild': None,
             'build': None,
             'postbuild': None,
-            'build_dir': '$ROOT/build/$NAME/$ARCH_TRIPLET',
+            'build_dir': '$ROOT/build/$ARCH_TRIPLET/$NAME',
             'src_dir': '$ROOT/libs/$NAME',
             'root_dir': root_dir,
             'dependencies_build': [],
