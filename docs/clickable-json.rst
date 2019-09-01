@@ -75,7 +75,7 @@ build
 -----
 
 Optional, a custom command to run instead of the default build. If using
-the `custom` template this is required.
+the ``custom`` template this is required.
 
 postbuild
 ---------
@@ -159,6 +159,8 @@ dependencies_build
 
 Optional, a list of dependencies that will be installed in the build container.
 
+Add dependencies here that are part of your build tool chain.
+
 Can be specified as a string or a list of strings.
 
 .. _clickable-json-dependencies_target:
@@ -167,9 +169,11 @@ dependencies_target
 -------------------
 
 Optional, a list of dependencies that will be installed in the build container.
-These will be assumed to be `dependency:arch`, unless an architecture specifier
+These will be assumed to be ``dependency:arch``, unless an architecture specifier
 is already appended. In desktop mode ``dependencies_target`` is handled just
 like ``dependencies_build``.
+
+Add dependencies here that your app depends on.
 
 Can be specified as a string or a list of strings.
 
@@ -177,11 +181,12 @@ dependencies
 ------------
 
 This parameter is deprecated and will be removed in a future version.
-Use ``dependencies_build`` or ``dependencies_target`` instead!
+Use ``dependencies_build`` (where ``specificDependencies`` is ``true``)
+or ``dependencies_target`` instead!
 
 Optional, a list of dependencies that will be installed in the build container.
-These will be assumed to be `dependencie:arch` unless `specificDependencies`
-is set to `true`.
+These will be assumed to be ``dependency:arch`` unless ``specificDependencies``
+is set to ``true``.
 
 Can be specified as a string or a list of strings.
 
@@ -213,7 +218,7 @@ on `Docker Hub <https://hub.docker.com/r/clickable/ubuntu-sdk/tags/>`__.
 ignore
 ------
 
-Optional, a list of files to ignore when building a `pure` template
+Optional, a list of files to ignore when building a ``pure`` template
 Example:
 
 .. code-block:: javascript
@@ -239,7 +244,7 @@ Optional, the gopath on the host machine. If left blank, the ``GOPATH`` env var 
 cargo_home
 ----------
 
-Optional, the Cargo home path (usually `~/.cargo`) on the host machine.
+Optional, the Cargo home path (usually ``~/.cargo``) on the host machine.
 If left blank, the ``CARGO_HOME`` env var will be used.
 
 .. _clickable-json-build-args:
@@ -247,7 +252,7 @@ If left blank, the ``CARGO_HOME`` env var will be used.
 build_args
 ----------
 
-Optional, arguments to pass to qmake or cmake. When using `--debug-build`,
+Optional, arguments to pass to qmake or cmake. When using ``--debug-build``,
 ``CONFIG+=debug`` is additionally appended for qmake and
 ``-DCMAKE_BUILD_TYPE=Debug`` for cmake and cordova builds. Ex: ``CONFIG+=ubuntu``
 
