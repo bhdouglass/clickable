@@ -148,7 +148,7 @@ default
 -------
 
 Optional, a list of space separated sub-commands to run when no sub-commands are
-specified. Defaults to ``clean build click-build install launch``.
+specified. Defaults to ``clean build install launch``.
 
 Can be specified as a string or a list of strings.
 
