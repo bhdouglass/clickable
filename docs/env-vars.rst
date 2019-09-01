@@ -110,3 +110,8 @@ Same as ``--debug-build``
 ------------------
 
 Overrides the clickable.json's :ref:`test <clickable-json-test>`.
+
+``CLICKABLE_DARK_MODE``
+-----------------------
+
+Same as ``--dark-mode``
