@@ -22,10 +22,9 @@ Compile and run the app on the desktop.
 Note: ArchLinux user might need to run ``xhost +local:clickable`` before using
 desktop mode.
 
-Run
-``clickable desktop --debug``
+Run ``clickable desktop --debug`` to show the executed docker command.
 
-to show the executed docker command.
+Run ``clickable desktop --dark-mode`` to set the dark mode preference.
 
 ``clickable create``
 --------------------

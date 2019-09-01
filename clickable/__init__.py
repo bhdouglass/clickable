@@ -39,7 +39,6 @@ def main():
                 for alias in cls.aliases:
                     command_aliases[alias] = cls.name
 
-    # TODO show the help text
     def show_valid_commands():
         n = [
             'Valid commands:',
@@ -143,6 +142,12 @@ def main():
         '--gdb',
         action='store_true',
         help='Start gdb to debug the app (only desktop mode)',
+        default=False,
+    )
+    parser.add_argument(
+        '--dark-mode',
+        action='store_true',
+        help='Use the dark theme when running apps (only desktop mode)',
         default=False,
     )
 

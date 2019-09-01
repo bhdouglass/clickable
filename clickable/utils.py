@@ -236,3 +236,7 @@ def image_exists(image):
     command = 'docker images -q {}'.format(image)
     return run_subprocess_check_output(command).strip() != ""
 
+
+def makedirs(path):
+    os.makedirs(path, 0o777, True)
+    return path

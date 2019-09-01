@@ -101,6 +101,7 @@ class Config(object):
     debug_build = False
     debug_gdb = False
     debug_gdb_port = None
+    dark_mode = False
 
     def __init__(self, args, clickable_version, desktop=False):
         self.desktop = desktop
@@ -275,6 +276,9 @@ class Config(object):
         if env('CLICKABLE_DEBUG_BUILD'):
             self.debug_build = True
 
+        if env('CLICKABLE_DARK_MODE'):
+            self.dark_mode = True
+
         config = {}
         for var, name in self.ENV_MAP.items():
             if env(var):
@@ -318,6 +322,9 @@ class Config(object):
             self.debug_build = True
             self.debug_gdb = True
             self.debug_gdb_port = args.gdbserver
+
+        if args.dark_mode:
+            self.dark_mode = True
 
         config = {}
         if args.arch:
