@@ -332,3 +332,18 @@ exist in parallel.
 install_dir
 ^^^^^^^^^^^
 Optional, a custom install directory. Defaults to ``$BUILD_DIR/install``
+
+Removed keywords
+----------------
+The following keywords are no longer supported:
+
+- ``dependencies`` (use ``dependencies_target`` and ``dependencies_build`` instead)
+- ``specificDependencies``
+- ``dir`` (use ``build_dir`` instead)
+- ``lxd``
+- ``premake`` (use ``prebuild``, ``postmake`` or ``postbuild`` instead)
+- ``ssh`` (use program option ``--ssh`` or environment variable ``CLICKABLE_SSH`` instead)
+- ``chroot``
+- ``sdk``
+- ``package``
+- ``app``
