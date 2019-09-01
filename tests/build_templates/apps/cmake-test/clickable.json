@@ -1,7 +1,7 @@
 {
   "template": "cmake",
   "kill": "qmlscene",
-  "default": "clean build click-build",
+  "default": "clean build",
   "build_args": "-DUBUNTU=ON",
   "arch": "amd64"
 }

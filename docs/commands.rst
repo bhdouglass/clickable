@@ -5,7 +5,7 @@ Commands
 
 From the root directory of your project you have the following sub-commands available:
 
-You can combine the commands together like ``clickable build click-build install launch``
+You can combine the commands together like ``clickable build install launch``
 
 ``clickable``
 -------------
@@ -60,13 +60,11 @@ Cleans out the build dir.
 -------------------
 
 Builds the project using the specified template, build dir, and build commands.
+Then it takes the built files and compiles them into a click package (you can
+find it in the build dir).
 
-``clickable click-build``
--------------------------
-
-Takes the built files and compiles them into a click package (you can find it in the build dir).
-
-``clickable click-build --output=/path/to/some/diretory``
+``clickable build --output=/path/to/some/diretory``
+---------------------------------------------------
 
 Takes the built files and compiles them into a click package, outputting the
 compiled click to the directory specified by ``--output``.

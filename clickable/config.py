@@ -124,7 +124,7 @@ class Config(object):
             'kill': None,
             'scripts': {},
             'lxd': False,
-            'default': 'clean build click-build install launch',
+            'default': 'clean build install launch',
             'log': None,
             'specificDependencies': False,
             'dependencies': [],
