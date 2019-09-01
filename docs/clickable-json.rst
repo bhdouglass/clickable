@@ -108,7 +108,7 @@ Optional, a custom source directory. Defaults to ``$ROOT``
 install_dir
 -----------
 
-Optional, a custom install directory (used to gather data that goes into the click package). Defaults to ``$BUILD_DIR/tmp``
+Optional, a custom install directory (used to gather data that goes into the click package). Defaults to ``$BUILD_DIR/install``
 
 kill
 ----
@@ -297,7 +297,7 @@ It's a dictionary of dictionaries basically looking like the clickable.json itse
         }
     }
 
-The keywords ``prebuild``, ``build``, ``postbuild``,
+The keywords ``install_dir``, ``prebuild``, ``build``, ``postbuild``,
 ``postmake``, ``make_jobs``, ``make_args``, ``build_args``, ``docker_image``,
 ``dependencies_build``, ``dependencies_target`` and ``dependencies_ppa``,
 can be used for a library the same way as described above for the app. The
@@ -328,10 +328,6 @@ build_dir
 Optional, library build directory. Must be relative to the project root. It
 defaults to ``$ROOT/build/$NAME/$ARCH_TRIPLET``. Thanks to the architecture triplet, builds for different architectures can
 exist in parallel.
-
-install_dir
-^^^^^^^^^^^
-Optional, a custom install directory. Defaults to ``$BUILD_DIR/install``
 
 Removed keywords
 ----------------
