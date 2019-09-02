@@ -13,7 +13,7 @@ from clickable.container import Container
 from clickable.utils import print_error
 
 
-__version__ = '5.14.1'
+__version__ = '6.0.0'
 
 
 def main():

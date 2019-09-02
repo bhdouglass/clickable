@@ -3,6 +3,39 @@
 Changelog
 =========
 
+Changes in v6.0.0
+-----------------
+
+New features
+^^^^^^^^^^^^
+
+- When publishing an app for the first time a link to create it on the OpenStore will be shown
+- Desktop mode can now use the dark theme with the ``--dark-mode`` argument
+- Automatically detect when nvidia drivers are used for desktop mode
+- Use native docker nvidia integration rather than nvidia-docker (when the installed docker version supports it)
+- The UBUNTU_APP_LAUNCH_ARCH env var is now set for desktop mode
+- Added remote gdb debugging in desktop mode via the ``--gdbserver <port>`` argument
+- Added configurable ``install_dir``
+- Libraries get installed when using ``cmake`` or ``qmake`` build template (into ``install_dir``)
+
+Breaking Changes
+^^^^^^^^^^^^^^^^
+
+- The ``click-build`` command has been merged into the ``build`` command
+- Removed deprecated configuration properties: ``dependencies``, ``specificDependencies``, and ``dir``
+- Removed deprecated library configuration format
+- Removed deprecated lxd support
+- Moved the default build directory from ``build`` to ``build/<arch triplet>/app``
+- Moved the default library build directory to ``build/<arch triplet>/<lib name>``
+- Removed deprecated vivid support
+
+Bug Fixes
+^^^^^^^^^
+
+- Fixed utf-8 codec error
+- Use separate cached containers when building libraries
+- Automatically rebuild the cached docker image for dependencies
+
 Changes in v5.14.1
 ------------------
 

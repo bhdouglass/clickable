@@ -1,3 +1,26 @@
+clickable (6.0.0) unstable; urgency=medium
+
+  * When publishing an app for the first time a link to create it on the OpenStore will be shown
+  * Desktop mode can now use the dark theme with the --dark-mode argument
+  * Automatically detect when nvidia drivers are used for desktop mode
+  * Use native docker nvidia integration rather than nvidia-docker (when the installed docker version supports it)
+  * The UBUNTU_APP_LAUNCH_ARCH env var is now set for desktop mode
+  * Added remote gdb debugging in desktop mode via the --gdbserver <port> argument (allows debugging in IDEs)
+  * Added configurable install_dir
+  * Libraries get installed when using ``cmake`` or ``qmake`` build template (into ``install_dir``)
+  * The click-build command has been merged into the build command
+  * Removed deprecated configuration properties: dependencies, specificDependencies, and dir
+  * Removed deprecated library configuration format
+  * Removed deprecated lxd support
+  * Moved the default build directory from build to build/<arch triplet>/app
+  * Moved the default library build directory to build/<arch triplet>/<lib name>
+  * Removed deprecated vivid support
+  * Fixed utf-8 codec error
+  * Use separate cached containers when building libraries
+  * Automatically rebuild the cached docker image for dependencies
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sun, 01 Sep 2019 00:28:00 -0500
+
 clickable (5.14.1) unstable; urgency=medium
 
   * Limit make processes to the number of cpus on the system
