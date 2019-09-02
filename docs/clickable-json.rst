@@ -100,11 +100,6 @@ build_dir
 
 Optional, a custom build directory. Defaults to ``$ROOT/build/``
 
-dir
----
-
-Deprecated, use ``build_dir`` instead.
-
 src_dir
 -------
 
@@ -132,15 +127,6 @@ Optional, an object detailing custom commands to run. For example:
         "test": "make test",
         "echo": "echo Hello World"
     }
-
-.. _clickable-json-lxd:
-
-lxd
----
-
-Optional, whether or not to use a lxd container to build the app. Default is to use
-docker to build the app. LXD is deprecated and its support will be removed
-in a future version of clickable.
 
 .. _clickable-json-default:
 
@@ -174,19 +160,6 @@ is already appended. In desktop mode ``dependencies_target`` is handled just
 like ``dependencies_build``.
 
 Add dependencies here that your app depends on.
-
-Can be specified as a string or a list of strings.
-
-dependencies
-------------
-
-This parameter is deprecated and will be removed in a future version.
-Use ``dependencies_build`` (where ``specificDependencies`` is ``true``)
-or ``dependencies_target`` instead!
-
-Optional, a list of dependencies that will be installed in the build container.
-These will be assumed to be ``dependency:arch`` unless ``specificDependencies``
-is set to ``true``.
 
 Can be specified as a string or a list of strings.
 
@@ -359,7 +332,3 @@ exist in parallel.
 install_dir
 ^^^^^^^^^^^
 Optional, a custom install directory. Defaults to ``$BUILD_DIR/install``
-
-dir
-^^^
-Deprecated, use ``build_dir`` instead.

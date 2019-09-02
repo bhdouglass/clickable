@@ -87,12 +87,6 @@ def main():
         default=False,
     )
     parser.add_argument(
-        '--lxd',
-        action='store_true',
-        help='Run build commands in a lxd container',
-        default=False,
-    )
-    parser.add_argument(
         '--output',
         help='Where to output the compiled click package',
     )
@@ -111,12 +105,6 @@ def main():
     parser.add_argument(
         '--apikey',
         help='Api key for the OpenStore',
-    )
-    parser.add_argument(
-        '--vivid',
-        action='store_true',
-        help='Use the old vivid build container',
-        default=False,
     )
     parser.add_argument(
         '--docker-image',

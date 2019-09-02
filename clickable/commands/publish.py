@@ -41,7 +41,7 @@ class PublishCommand(Command):
 
         package_name = self.config.find_package_name()
         url = url + OPENSTORE_API_PATH.format(package_name)
-        channel = 'xenial' if self.config.is_xenial else 'vivid'
+        channel = 'xenial'
         files = {'file': open(click_path, 'rb')}
         data = {
             'channel': channel,

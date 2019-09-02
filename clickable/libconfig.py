@@ -45,14 +45,12 @@ class LibConfig(object):
 
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir']
     required = ['template']
-    flexible_lists = ['dependencies', 'dependencies_build',
-                      'dependencies_target', 'dependencies_ppa',
+    flexible_lists = ['dependencies_target', 'dependencies_ppa',
                       'build_args', 'make_args']
     templates = [QMAKE, CMAKE, CUSTOM]
 
     first_docker_info = True
     container_mode = False
-    lxd = False
     use_nvidia = False
     custom_docker_image = False
     gopath = None
@@ -69,12 +67,9 @@ class LibConfig(object):
             'prebuild': None,
             'build': None,
             'postbuild': None,
-            'dir': None,
-            'build_dir': '$ROOT/build/$NAME/$ARCH_TRIPLET',
+            'build_dir': '$ROOT/build/$ARCH_TRIPLET/$NAME',
             'src_dir': '$ROOT/libs/$NAME',
             'root_dir': root_dir,
-            'specificDependencies': False,
-            'dependencies': [],
             'dependencies_build': [],
             'dependencies_target': [],
             'dependencies_ppa': [],
@@ -125,22 +120,11 @@ class LibConfig(object):
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
 
-        if self.config['dir']:
-            self.config['build_dir'] = self.config['dir']
-            print_warning('The param "dir" in your clickable.json is deprecated and will be removed in a future version of Clickable. Use "build_dir" instead!')
-
         for key in self.flexible_lists:
             self.config[key] = flexible_string_to_list(self.config[key])
 
         if self.config['docker_image']:
             self.custom_docker_image = True
-
-        if self.config['dependencies']:
-            if self.config['specificDependencies']:
-                self.config['dependencies_build'] += self.config['dependencies']
-            else:
-                self.config['dependencies_target'] += self.config['dependencies']
-            print_warning('The params "dependencies" (and possibly "specificDependencies") in your clickable.json are deprecated and will be removed in a future version of Clickable. Use "dependencies_build" and "dependencies_target" instead!')
 
     def check_config_errors(self):
         if self.config['template'] == self.CUSTOM and not self.config['build']:

@@ -28,7 +28,6 @@ class Config(object):
         'CLICKABLE_ARCH': 'arch',
         'CLICKABLE_TEMPLATE': 'template',
         'CLICKABLE_BUILD_DIR': 'build_dir',
-        'CLICKABLE_LXD': 'lxd',
         'CLICKABLE_DEFAULT': 'default',
         'CLICKABLE_MAKE_JOBS': 'make_jobs',
         'GOPATH': 'gopath',
@@ -52,9 +51,7 @@ class Config(object):
     RUST = 'rust'
 
     container_mapping = {
-        ('15.04', 'armhf'): 'clickable/ubuntu-sdk:15.04-armhf',
         ('16.04', 'armhf'): 'clickable/ubuntu-sdk:16.04-armhf',
-        ('15.04', 'amd64'): 'clickable/ubuntu-sdk:15.04-amd64',
         ('16.04', 'amd64'): 'clickable/ubuntu-sdk:16.04-amd64',
         ('16.04', 'amd64-nvidia'): 'clickable/ubuntu-sdk:16.04-amd64-nvidia',
     }
@@ -82,10 +79,10 @@ class Config(object):
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
                  'cargo_home', 'gopath']
     required = ['arch', 'build_dir', 'docker_image']
-    flexible_lists = ['dependencies', 'dependencies_build',
-                      'dependencies_target', 'dependencies_ppa',
+    flexible_lists = ['dependencies_target', 'dependencies_ppa',
                       'build_args', 'make_args', 'default', 'ignore']
-    deprecated = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh']  # TODO add 'dependencies' and 'specificDependencies'
+    removed_keywords = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh',
+                        'dependencies', 'specificDependencies', 'dir', 'lxd']
     templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO, RUST]
 
     first_docker_info = True
@@ -95,7 +92,6 @@ class Config(object):
     container_mode = False
     use_nvidia = False
     apikey = None
-    is_xenial = True
     custom_docker_image = True
     debug = False
     debug_build = False
@@ -118,17 +114,13 @@ class Config(object):
             'build': None,
             'postbuild': None,
             'launch': None,
-            'dir': None,
-            'build_dir': '$ROOT/build',
+            'build_dir': '$ROOT/build/$ARCH_TRIPLET/app',
             'src_dir': '$ROOT',
             'root_dir': self.cwd,
             'kill': None,
             'scripts': {},
-            'lxd': False,
             'default': 'clean build install launch',
             'log': None,
-            'specificDependencies': False,
-            'dependencies': [],
             'dependencies_build': [],
             'dependencies_target': [],
             'dependencies_ppa': [],
@@ -196,10 +188,7 @@ class Config(object):
     def use_arch(self, build_arch):
         if self.use_nvidia and not build_arch.endswith('-nvidia'):
             build_arch = "{}-nvidia".format(build_arch)
-        if self.is_xenial:
-            self.config['docker_image'] = self.container_mapping[('16.04', build_arch)]
-        else:
-            self.config['docker_image'] = self.container_mapping[('15.04', build_arch)]
+        self.config['docker_image'] = self.container_mapping[('16.04', build_arch)]
 
     def __getattr__(self, name):
         return self.config[name]
@@ -234,7 +223,7 @@ class Config(object):
                 except ValueError:
                     raise ValueError('Failed reading "clickable.json", it is not valid json')
 
-                for key in self.deprecated:
+                for key in self.removed_keywords:
                     if key in config_json:
                         raise ValueError('"{}" is a no longer a valid configuration option'.format(key))
 
@@ -270,9 +259,6 @@ class Config(object):
         if env('CLICKABLE_NVIDIA'):
             self.use_nvidia = True
 
-        if env('CLICKABLE_VIVID'):
-            self.is_xenial = False
-
         if env('CLICKABLE_DEBUG_BUILD'):
             self.debug_build = True
 
@@ -305,9 +291,6 @@ class Config(object):
         if args.apikey:
             self.apikey = args.apikey
 
-        if args.vivid:
-            self.is_xenial = not args.vivid
-
         if args.debug:
             self.debug = True
 
@@ -329,9 +312,6 @@ class Config(object):
         config = {}
         if args.arch:
             config['arch'] = args.arch
-
-        if args.lxd:
-            config['lxd'] = args.lxd
 
         if args.docker_image:
             config['docker_image'] = args.docker_image
@@ -355,25 +335,8 @@ class Config(object):
             if key in self.path_keys and self.config[key]:
                 self.config[key] = os.path.abspath(self.config[key])
 
-    def convert_deprecated_libraries_list(self):
-        if isinstance(self.config['libraries'], list):
-            print_warning("Specifying libraries as a list is deprecated and will be removed in a future version of Clickable. Specify the libraries as a dictionary instead.")
-
-            dict_libs = {}
-            for lib in self.config['libraries']:
-                if not 'name' in lib:
-                    raise ValueError("Library without name detected")
-                dict_libs[lib['name']] = lib
-            self.config['libraries'] = dict_libs
-
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
-
-        if self.config['dir']:
-            self.config['build_dir'] = self.config['dir']
-            print_warning('The param "dir" in your clickable.json is deprecated and will be removed in a future version of Clickable. Use "build_dir" instead!')
-
-        self.convert_deprecated_libraries_list()
 
         for key in self.flexible_lists:
             self.config[key] = flexible_string_to_list(self.config[key])
@@ -398,13 +361,6 @@ class Config(object):
 
                 if desktop and 'Exec' in desktop:
                     self.config['kill'] = desktop['Exec'].replace('%u', '').replace('%U', '').strip()
-
-        if self.config['dependencies']:
-            if self.config['specificDependencies']:
-                self.config['dependencies_build'] += self.config['dependencies']
-            else:
-                self.config['dependencies_target'] += self.config['dependencies']
-            print_warning('The params "dependencies" (and possibly "specificDependencies") in your clickable.json are deprecated and will be removed in a future version of Clickable. Use "dependencies_build" and "dependencies_target" instead!')
 
         if self.desktop:
             self.config['dependencies_build'] += self.config['dependencies_target']

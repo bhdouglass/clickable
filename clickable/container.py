@@ -28,20 +28,16 @@ class Container(object):
         self.docker_file = '{}/Dockerfile'.format(self.clickable_dir)
 
         if not self.config.container_mode:
-            if self.config.lxd:
-                print_warning('Use of lxd is deprecated and will be removed in a future version')
-                check_command('usdk-target')
-            else:
-                check_command('docker')
+            check_command('docker')
 
-                self.docker_image = self.config.docker_image
+            self.docker_image = self.config.docker_image
+            self.base_docker_image = self.docker_image
+
+            if self.docker_image in self.config.container_list:
                 self.base_docker_image = self.docker_image
 
-                if self.docker_image in self.config.container_list:
-                    self.base_docker_image = self.docker_image
-
-                    if os.path.exists(self.docker_name_file):
-                        self.restore_cached_container()
+                if os.path.exists(self.docker_name_file):
+                    self.restore_cached_container()
 
     def restore_cached_container(self):
         with open(self.docker_name_file, 'r') as f:
@@ -91,59 +87,6 @@ class Container(object):
             time.sleep(3)  # Give it a sec to boot up
             self.check_docker(retries)
 
-    def start_lxd(self):
-        started = False
-        error_code = run_subprocess_call(shlex.split('which systemctl'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-        if error_code == 0:
-            print_info('Asking for root to start lxd')
-            error_code = run_subprocess_call(shlex.split('sudo systemctl start lxd'))
-
-            started = (error_code == 0)
-
-        return started
-
-    def check_lxd(self):
-        name = 'clickable-{}'.format(self.config.build_arch)
-
-        status = ''
-        try:
-            status = run_subprocess_check_output(shlex.split('usdk-target status {}'.format(name)), stderr=subprocess.STDOUT)
-            status = json.loads(status)['status']
-        except subprocess.CalledProcessError as e:
-            if e.output.strip() == 'error: Could not connect to the LXD server.' or 'Can\'t establish a working socket connection' in e.output.strip():
-                started = self.start_lxd()
-                if started:
-                    status = 'Running'  # Pretend it's started, but we will call this function again to check if it's actually ok
-
-                    time.sleep(3)  # Give it a sec to boot up
-                    self.check_lxd()
-                else:
-                    raise Exception('LXD is not running, please start it')
-            elif e.output.strip() == 'error: Could not query container status. error: not found':
-                raise Exception('No lxd container exists to build in, please run `clickable setup-lxd`')
-            else:
-                print(e.output)
-                raise e
-
-        if status != 'Running':
-            print_info('Going to start lxd container "{}"'.format(name))
-            subprocess.check_call(shlex.split('lxc start {}'.format(name)))
-
-    def lxd_container_exists(self):
-        name = 'clickable-{}'.format(self.config.build_arch)
-
-        # Check for existing container
-        existing = run_subprocess_check_output(shlex.split('{} list'.format(self.usdk_target)))
-        existing = json.loads(existing)
-
-        found = False
-        for container in existing:
-            if container['name'] == name:
-                found = True
-
-        return found
-
     def docker_group_exists(self):
         group_exists = False
         with open('/etc/group', 'r') as f:
@@ -181,23 +124,12 @@ class Container(object):
 
             raise Exception('Log out or restart to apply changes')
 
-    def run_command(self, command, force_lxd=False, sudo=False, get_output=False, use_dir=True, cwd=None):
+    def run_command(self, command, sudo=False, get_output=False, use_dir=True, cwd=None):
         wrapped_command = command
         cwd = cwd if cwd else os.path.abspath(self.config.root_dir)
 
         if self.config.container_mode:
             wrapped_command = 'bash -c "{}"'.format(command)
-        elif force_lxd or self.config.lxd:
-            self.check_lxd()
-
-            target_command = 'exec'
-            if sudo:
-                target_command = 'maint'
-
-            if use_dir:
-                command = 'cd {}; {}'.format(self.config.build_dir, command)
-
-            wrapped_command = 'usdk-target {} clickable-{} -- bash -c "{}"'.format(target_command, self.config.build_arch, command)
         else:  # Docker
             self.check_docker()
 
@@ -274,79 +206,58 @@ class Container(object):
                 else:
                     dependencies.append('{}:{}'.format(dep, self.config.arch))
 
-            if self.config.lxd or self.config.container_mode:
-                self.run_command('apt-get update', sudo=True, use_dir=False)
+            self.check_docker()
 
-                command = 'apt-get install -y --force-yes'
-                run = False
-                for dep in dependencies:
-                    exists = ''
-                    try:
-                        exists = self.run_command('dpkg -s {} | grep Status'.format(dep), get_output=True, use_dir=False)
-                    except subprocess.CalledProcessError:
-                        exists = ''
-
-                    if exists.strip() != 'Status: install ok installed':
-                        run = True
-                        command = '{} {}'.format(command, dep)
-
-                if run:
-                    self.run_command(command, sudo=True, use_dir=False)
-                else:
-                    print_info('Dependencies already installed')
-            else:  # Docker
-                self.check_docker()
-
-                if self.config.custom_docker_image:
-                    print_info('Skipping dependency check, using a custom docker image')
-                else:
-                    command_ppa = ''
-                    if self.config.dependencies_ppa:
-                        command_ppa = 'RUN add-apt-repository {}'.format(' '.join(self.config.dependencies_ppa))
-                    dockerfile = '''
+            if self.config.custom_docker_image:
+                print_info('Skipping dependency check, using a custom docker image')
+            else:
+                command_ppa = ''
+                if self.config.dependencies_ppa:
+                    command_ppa = 'RUN add-apt-repository {}'.format(' '.join(self.config.dependencies_ppa))
+                dockerfile = '''
 FROM {}
 RUN echo set debconf/frontend Noninteractive | debconf-communicate && echo set debconf/priority critical | debconf-communicate
 {}
 RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} && apt-get clean
-                    '''.format(
-                        self.base_docker_image,
-                        command_ppa,
-                        ' '.join(dependencies)
-                    ).strip()
+                '''.format(
+                    self.base_docker_image,
+                    command_ppa,
+                    ' '.join(dependencies)
+                ).strip()
 
-                    build = force_build
+                build = force_build
 
-                    if not os.path.exists(self.clickable_dir):
-                        os.makedirs(self.clickable_dir)
+                if not os.path.exists(self.clickable_dir):
+                    os.makedirs(self.clickable_dir)
 
-                    if self.docker_image != self.base_docker_image and os.path.exists(self.docker_file):
-                        with open(self.docker_file, 'r') as f:
-                            if dockerfile.strip() != f.read().strip():
-                                build = True
-                    else:
-                        build = True
+                if self.docker_image != self.base_docker_image and os.path.exists(self.docker_file):
+                    with open(self.docker_file, 'r') as f:
+                        if dockerfile.strip() != f.read().strip():
+                            build = True
+                else:
+                    build = True
 
-                    if not build:
-                        command = 'docker images -q {}'.format(self.docker_image)
-                        image_exists = run_subprocess_check_output(command).strip()
-                        build = not image_exists
+                if not build:
+                    command = 'docker images -q {}'.format(self.docker_image)
+                    image_exists = run_subprocess_check_output(command).strip()
+                    build = not image_exists
 
-                    if build:
-                        with open(self.docker_file, 'w') as f:
-                            f.write(dockerfile)
+                if build:
+                    with open(self.docker_file, 'w') as f:
+                        f.write(dockerfile)
 
-                        self.docker_image = '{}-{}'.format(self.base_docker_image, uuid.uuid4())
-                        with open(self.docker_name_file, 'w') as f:
-                            f.write(self.docker_image)
+                    self.docker_image = '{}-{}'.format(self.base_docker_image, uuid.uuid4())
+                    with open(self.docker_name_file, 'w') as f:
+                        f.write(self.docker_image)
 
-                        print_info('Generating new docker image')
-                        try:
-                            subprocess.check_call(shlex.split('docker build -t {} .'.format(self.docker_image)), cwd=self.clickable_dir)
-                        except subprocess.CalledProcessError:
-                            self.clean_clickable()
-                            raise
-                    else:
-                        print_info('Dependencies already setup')
+                    print_info('Generating new docker image')
+                    try:
+                        subprocess.check_call(shlex.split('docker build -t {} .'.format(self.docker_image)), cwd=self.clickable_dir)
+                    except subprocess.CalledProcessError:
+                        self.clean_clickable()
+                        raise
+                else:
+                    print_info('Dependencies already setup')
 
     def clean_clickable(self):
         path = os.path.join(self.config.cwd, self.clickable_dir)

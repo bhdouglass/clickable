@@ -20,7 +20,7 @@ class CordovaBuilder(CMakeBuilder):
         super().__init__(*args, **kwargs)
 
         self.platform_dir = os.path.join(self.config.cwd, 'platforms/ubuntu/')
-        self.sdk = 'ubuntu-sdk-16.04' if self.config.is_xenial else 'ubuntu-sdk-15.04'
+        self.sdk = 'ubuntu-sdk-16.04'
 
         self.config.src_dir = os.path.join(self.platform_dir, 'build')
 
@@ -65,7 +65,7 @@ class CordovaBuilder(CMakeBuilder):
         apparmor_file = os.path.join(self.config.install_dir, 'apparmor.json')
         with open(apparmor_file, 'r') as apparmor_reader:
             apparmor = json.load(apparmor_reader)
-            apparmor['policy_version'] = 16.04 if self.config.is_xenial else 1.3
+            apparmor['policy_version'] = 16.04
 
             if 'webview' not in apparmor['policy_groups']:
                 apparmor['policy_groups'].append('webview')

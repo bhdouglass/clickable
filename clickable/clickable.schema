@@ -37,7 +37,6 @@
     "postbuild": {"type": "string"},
     "postmake": {"type": "string"},
     "launch": {"type": "string"},
-    "dir": {"type": "string"},
     "build_dir": {"type": "string"},
     "src_dir": {"type": "string"},
     "install_dir": {"type": "string"},
@@ -47,7 +46,6 @@
       "type": "object",
       "additionalProperties": { "type": "string"}
     },
-    "lxd": {"type": "boolean"},
     "default": {
       "type": ["string","array"],
       "items": {"type": "string"}
@@ -64,11 +62,6 @@
       "type": ["string","array"],
       "items": {"type": "string"}
     },
-    "dependencies": {
-      "type": ["string","array"],
-      "items": {"type": "string"}
-    },
-    "specificDependencies": {"type": "boolean"},
     "docker_image": {"type": "string"},
     "ignore": {
       "type": ["string","array"],
@@ -91,61 +84,7 @@
     "dirty": {"type": "boolean"},
     "test": {"type": "string"},
     "libraries": {
-      "type": ["object","array"],
-      "items": {
-        "type": "object",
-        "properties": {
-          "name": {"type": "string"},
-          "prebuild": {"type": "string"},
-          "build": {"type": "string"},
-          "postbuild": {"type": "string"},
-          "postmake": {"type": "string"},
-          "build_args": {
-            "type": ["string","array"],
-            "items": {"type": "string"}
-          },
-          "make_args": {
-            "type": ["string","array"],
-            "items": {"type": "string"}
-          },
-          "make_jobs": {
-            "type": "integer",
-            "minimum": 1
-          },
-          "docker_image": {"type": "string"},
-          "dependencies_build": {
-            "type": ["string","array"],
-            "items": {"type": "string"}
-          },
-          "dependencies_target": {
-            "type": ["string","array"],
-            "items": {"type": "string"}
-          },
-          "dependencies_ppa": {
-            "type": ["string","array"],
-            "items": {"type": "string"}
-          },
-          "dependencies": {
-            "type": ["string","array"],
-            "items": {"type": "string"}
-          },
-          "specificDependencies": {"type": "boolean"},
-          "template": {
-            "type": "string",
-            "enum":  [
-              "cmake",
-              "qmake",
-              "custom"
-            ]
-          },
-          "dir": {"type": "string"},
-          "build_dir": {"type": "string"},
-          "src_dir": {"type": "string"},
-          "install_dir": {"type": "string"}
-        },
-        "required": ["template", "name"],
-        "additionalProperties": false
-      },
+      "type": ["object"],
       "additionalProperties": {
         "type": "object",
         "properties": {
@@ -178,11 +117,6 @@
             "type": ["string","array"],
             "items": {"type": "string"}
           },
-          "dependencies": {
-            "type": ["string","array"],
-            "items": {"type": "string"}
-          },
-          "specificDependencies": {"type": "boolean"},
           "template": {
             "type": "string",
             "enum":  [
@@ -191,7 +125,6 @@
               "custom"
             ]
           },
-          "dir": {"type": "string"},
           "build_dir": {"type": "string"},
           "src_dir": {"type": "string"},
           "install_dir": {"type": "string"}
