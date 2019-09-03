@@ -8,4 +8,4 @@ class ClickBuildCommand(Command):
     help = 'Deprecated'
 
     def run(self, path_arg=None):
-        print_warning('The click-build command has been merged into the build command and will be removed in a future version')
+        print_warning('The click-build command has been merged into the build command. Please remove this command from your CI, as this warning will be removed in a future version.')
