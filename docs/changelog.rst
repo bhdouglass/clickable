@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.0.1
+-----------------
+
+- Added back click-build with a warning to not break existing apps
+
 Changes in v6.0.0
 -----------------
 
