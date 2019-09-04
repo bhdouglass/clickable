@@ -29,9 +29,9 @@ class GoBuilder(Builder):
     def build(self):
         shutil.copytree(self.config.cwd, self.config.install_dir, ignore=self._ignore)
 
-        gocommand = '/usr/local/go/bin/go build -pkgdir {}/.clickable/go -i -o {}/{} ..'.format(
-            self.config.cwd,
-            self.config.install_dir,
-            self.config.find_app_name(),
+        gocommand = '/usr/local/go/bin/go build -pkgdir {cwd}/.clickable/go -i -o {install_dir}/{app_name} ../../..'.format(
+            cwd=self.config.cwd,
+            install_dir=self.config.install_dir,
+            app_name=self.config.find_app_name(),
         )
         self.config.container.run_command(gocommand)
