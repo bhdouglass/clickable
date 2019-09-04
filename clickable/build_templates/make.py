@@ -13,6 +13,9 @@ class MakeBuilder(Builder):
         if self.config.postmake:
             subprocess.check_call(self.config.postmake, cwd=self.config.build_dir, shell=True)
 
+    def post_make_install(self):
+        pass
+
     def make(self):
         command = 'make'
         if self.config.make_args:
@@ -37,3 +40,4 @@ class MakeBuilder(Builder):
         self.make()
         self.post_make()
         self.make_install()
+        self.post_make_install()

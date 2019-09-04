@@ -127,13 +127,14 @@ def find(names, cwd, temp_dir=None, build_dir=None, ignore_dir=None, extensions_
     return file
 
 
-def find_manifest(cwd, temp_dir=None, build_dir=None, ignore_dir=None):
-    return find(['manifest.json'], cwd, temp_dir, build_dir, ignore_dir)
+def write_manifest(install_dir, manifest):
+    with open(os.path.join(install_dir, "manifest.json"), 'w') as writer:
+        json.dump(manifest, writer, indent=4)
 
 
-def get_manifest(cwd, temp_dir=None, build_dir=None):
+def get_manifest(install_dir):
     manifest = {}
-    with open(find_manifest(cwd, temp_dir, build_dir), 'r') as f:
+    with open(os.path.join(install_dir, "manifest.json"), 'r') as f:
         try:
             manifest = json.load(f)
         except ValueError:
@@ -141,6 +142,8 @@ def get_manifest(cwd, temp_dir=None, build_dir=None):
 
     return manifest
 
+def find_any_manifest(cwd, temp_dir=None, build_dir=None, ignore_dir=None):
+    return find(['manifest.json'], cwd, temp_dir, build_dir, ignore_dir)
 
 def get_desktop(cwd, temp_dir=None, build_dir=None):
     desktop = {}

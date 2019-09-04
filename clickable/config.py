@@ -8,8 +8,9 @@ from clickable.system.queries.nvidia_drivers_installed import NvidiaDriversInsta
 from .libconfig import LibConfig
 
 from .utils import (
-    find_manifest,
+    write_manifest,
     get_manifest,
+    find_any_manifest,
     get_desktop,
     merge_make_jobs_into_args,
     flexible_string_to_list,
@@ -420,7 +421,7 @@ class Config(object):
 
             if not template:
                 try:
-                    manifest = get_manifest(os.getcwd())
+                    manifest = find_any_manifest(os.getcwd())
                 except ValueError:
                     manifest = None
                 except FileNotFoundException:
@@ -450,11 +451,11 @@ class Config(object):
 
         return self.config['template']
 
-    def find_manifest(self, ignore_dir=None):
-        return find_manifest(self.cwd, self.install_dir, self.config['build_dir'], ignore_dir)
+    def write_manifest(self, manifest):
+        return write_manifest(self.install_dir, manifest)
 
     def get_manifest(self):
-        return get_manifest(self.cwd, self.install_dir, self.config['build_dir'])
+        return get_manifest(self.install_dir)
 
     def find_version(self):
         if self.config['template'] == Config.CORDOVA:

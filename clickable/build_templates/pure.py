@@ -6,25 +6,17 @@ from .base import Builder
 from .make import MakeBuilder
 from .cmake import CMakeBuilder
 from .qmake import QMakeBuilder
-from clickable.utils import print_info, find_manifest
+from clickable.utils import print_info
 from clickable.config import Config
 
 
 class PureQMLMakeBuilder(MakeBuilder):
-    def post_make(self):
-        super().post_make()
+    def post_make_install(self):
+        super().post_make_install()
 
-        manifest_file = self.config.find_manifest(ignore_dir=self.config.install_dir)
-        with open(manifest_file, 'r') as f:
-            manifest = {}
-            try:
-                manifest = json.load(f)
-            except ValueError:
-                raise ValueError('Failed reading "manifest.json", it is not valid json')
-
-            manifest['architecture'] = 'all'
-            with open(manifest_file, 'w') as writer:
-                json.dump(manifest, writer, indent=4)
+        manifest = self.config.get_manifest()
+        manifest['architecture'] = 'all'
+        self.config.write_manifest(manifest) 
 
 
 class PureQMLQMakeBuilder(PureQMLMakeBuilder, QMakeBuilder):

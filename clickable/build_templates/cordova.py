@@ -59,8 +59,7 @@ class CordovaBuilder(CMakeBuilder):
         manifest = self.config.get_manifest()
         manifest['architecture'] = self.config.build_arch
         manifest['framework'] = self.sdk
-        with open(self.config.find_manifest(), 'w') as manifest_writer:
-            json.dump(manifest, manifest_writer, indent=4)
+        self.config.write_manifest(manifest)
 
         apparmor_file = os.path.join(self.config.install_dir, 'apparmor.json')
         with open(apparmor_file, 'r') as apparmor_reader:
