@@ -236,10 +236,10 @@ class Container(object):
                     if self.config.dependencies_ppa:
                         command_ppa = 'RUN add-apt-repository {}'.format(' '.join(self.config.dependencies_ppa))
                     dockerfile = '''
-    FROM {}
-    RUN echo set debconf/frontend Noninteractive | debconf-communicate && echo set debconf/priority critical | debconf-communicate
-    {}
-    RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} && apt-get clean
+FROM {}
+RUN echo set debconf/frontend Noninteractive | debconf-communicate && echo set debconf/priority critical | debconf-communicate
+{}
+RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} && apt-get clean
                     '''.format(
                         self.base_docker_image,
                         command_ppa,

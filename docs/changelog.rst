@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.0.2
+-----------------
+
+- Fixed container mode
+
 Changes in v6.0.1
 -----------------
 
