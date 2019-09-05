@@ -30,10 +30,11 @@ class BuildCommand(Command):
             run_subprocess_check_call(self.config.prebuild, cwd=self.config.cwd, shell=True)
 
         self.build()
-        self.click_build()
 
         if self.config.postbuild:
             run_subprocess_check_call(self.config.postbuild, cwd=self.config.build_dir, shell=True)
+
+        self.click_build()
 
     def build(self):
         template = self.config.get_template()
