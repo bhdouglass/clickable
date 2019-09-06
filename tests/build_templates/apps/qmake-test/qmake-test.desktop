@@ -1,7 +1,0 @@
-[Desktop Entry]
-Name=qmake test
-Exec=qmlscene qmake-test/Main.qml
-Icon=assets/logo.svg
-Terminal=false
-Type=Application
-X-Ubuntu-Touch=true
