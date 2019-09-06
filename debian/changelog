@@ -1,3 +1,10 @@
+clickable (6.0.3) unstable; urgency=medium
+
+  * Fixed building go apps
+  * Fixed post build happening after the click is built
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Fri, 06 Sep 2019 00:15:00 -0500
+
 clickable (6.0.2) unstable; urgency=medium
 
   * Fixed container mode

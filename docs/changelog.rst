@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v6.0.3
+-----------------
+
+- Fixed building go apps
+- Fixed post build happening after the click is built
+
 Changes in v6.0.2
 -----------------
 
