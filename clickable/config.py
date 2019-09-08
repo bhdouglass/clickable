@@ -80,7 +80,8 @@ class Config(object):
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
                  'cargo_home', 'gopath']
     required = ['arch', 'build_dir', 'docker_image']
-    flexible_lists = ['dependencies_target', 'dependencies_ppa',
+    flexible_lists = ['dependencies_build', 'dependencies_target',
+                      'dependencies_ppa',
                       'build_args', 'make_args', 'default', 'ignore']
     removed_keywords = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh',
                         'dependencies', 'specificDependencies', 'dir', 'lxd']
