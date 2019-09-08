@@ -1,6 +1,0 @@
-{
-  "template": "qmake",
-  "kill": "qmlscene",
-  "default": "clean build",
-  "arch": "amd64"
-}

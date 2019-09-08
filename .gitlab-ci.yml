@@ -1,4 +1,9 @@
-test:
+integration-test:
   image: clickable/testing
   script:
-  - nosetests
+    - nosetests tests/integration
+
+unit-test:
+  image: clickable/testing
+  script:
+    - nosetests tests/unit
