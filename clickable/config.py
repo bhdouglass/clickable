@@ -10,7 +10,7 @@ from .libconfig import LibConfig
 from .utils import (
     write_manifest,
     get_manifest,
-    find_any_manifest,
+    get_any_manifest,
     get_desktop,
     merge_make_jobs_into_args,
     flexible_string_to_list,
@@ -421,7 +421,7 @@ class Config(object):
 
             if not template:
                 try:
-                    manifest = find_any_manifest(os.getcwd())
+                    manifest = get_any_manifest(os.getcwd())
                 except ValueError:
                     manifest = None
                 except FileNotFoundException:
