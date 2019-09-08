@@ -8,6 +8,7 @@ from clickable.utils import (
     print_info,
     get_builders,
     run_subprocess_check_call,
+    makedirs,
 )
 
 
@@ -31,6 +32,8 @@ class BuildCommand(Command):
 
         self.build()
 
+        self.install_additional_files()
+
         if self.config.postbuild:
             run_subprocess_check_call(self.config.postbuild, cwd=self.config.build_dir, shell=True)
 
@@ -42,6 +45,23 @@ class BuildCommand(Command):
         builder_classes = get_builders()
         builder = builder_classes[template](self.config, self.device)
         builder.build()
+
+    def install_files(self, pattern, dest_dir):
+        print_info("Installing {}".format(pattern))
+        makedirs(dest_dir)
+        command = 'cp -r {} {}'.format(pattern, dest_dir)
+        self.config.container.run_command(command)
+
+    def install_additional_files(self):
+        for p in self.config.install_lib:
+            self.install_files(p, os.path.join(self.config.install_dir,
+                                               self.config.app_lib_dir))
+        for p in self.config.install_bin:
+            self.install_files(p, os.path.join(self.config.install_dir,
+                                               self.config.app_bin_dir))
+        for p in self.config.install_qml:
+            self.install_files(p, os.path.join(self.config.install_dir,
+                                               self.config.app_qml_dir))
 
     def click_build(self):
         command = 'click build {} --no-validate'.format(self.config.install_dir)

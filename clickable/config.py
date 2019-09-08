@@ -70,17 +70,23 @@ class Config(object):
         "BUILD_DIR": "build_dir",
         "SRC_DIR": "src_dir",
         "INSTALL_DIR": "install_dir",
+        "CLICK_LD_LIBRARY_PATH": "app_lib_dir",
+        "CLICK_PATH": "app_bin_dir",
+        "CLICK_QML2_IMPORT_PATH": "app_qml_dir",
     }
     accepts_placeholders = ["root_dir", "build_dir", "src_dir", "install_dir",
                             "gopath", "cargo_home", "scripts", "build",
                             "build_args", "make_args", "postmake", "postbuild",
-                            "prebuild"]
+                            "prebuild", "app_lib_dir", "app_bin_dir",
+                            "app_qml_dir"]
 
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
-                 'cargo_home', 'gopath']
+                 'cargo_home', 'gopath', 'app_lib_dir', 'app_bin_dir',
+                 'app_qml_dir']
     required = ['arch', 'build_dir', 'docker_image']
     flexible_lists = ['dependencies_build', 'dependencies_target',
                       'dependencies_ppa',
+                      'install_lib', 'install_bin', 'install_qml',
                       'build_args', 'make_args', 'default', 'ignore']
     removed_keywords = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh',
                         'dependencies', 'specificDependencies', 'dir', 'lxd']
@@ -126,6 +132,12 @@ class Config(object):
             'dependencies_build': [],
             'dependencies_target': [],
             'dependencies_ppa': [],
+            'install_lib': [],
+            'install_bin': [],
+            'install_qml': [],
+            'app_lib_dir': '$INSTALL_DIR/lib/$ARCH_TRIPLET',
+            'app_bin_dir': '$INSTALL_DIR/lib/$ARCH_TRIPLET/bin',
+            'app_qml_dir': '$INSTALL_DIR/lib/$ARCH_TRIPLET',
             'ignore': [],
             'make_jobs': 0,
             'gopath': None,
@@ -165,6 +177,9 @@ class Config(object):
 
         if self.config['arch'] == 'all':
             self.build_arch = 'armhf'
+            self.config['app_lib_dir'] = '$INSTALL_DIR/lib'
+            self.config['app_bin_dir'] = '$INSTALL_DIR'
+            self.config['app_qml_dir'] = '$INSTALL_DIR/qml'
 
         if self.desktop:
             self.build_arch = 'amd64'
