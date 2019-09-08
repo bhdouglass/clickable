@@ -49,7 +49,7 @@ class CreateCommand(Command):
     name = 'create'
     help = 'Generate a new app from a list of app template options'
 
-    def run(self, path_arg=None):
+    def run(self, path_arg=None, no_input=False):
         if not cookiecutter_available:
             raise Exception('Cookiecutter is not available on your computer, more information can be found here: https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter')
 
@@ -79,6 +79,6 @@ class CreateCommand(Command):
             app_template = APP_TEMPLATES[choice - 1]
 
         print_info('Generating new app from template: {}'.format(app_template['display']))
-        cookiecutter(app_template['url'])
+        cookiecutter(app_template['url'], no_input=no_input)
 
         print_info('Your new app has been generated, go to the app\'s directory and run clickable to get started')

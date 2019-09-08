@@ -99,7 +99,7 @@ class Config(object):
     debug_gdb_port = None
     dark_mode = False
 
-    def __init__(self, args, clickable_version, desktop=False):
+    def __init__(self, args=None, clickable_version=None, desktop=False):
         self.desktop = desktop
         self.clickable_version = clickable_version
         self.cwd = os.getcwd()
@@ -137,12 +137,16 @@ class Config(object):
             'install_dir': '$BUILD_DIR/install'
         }
 
-        json_config = self.load_json_config(args.config)
+        config_path = args.config if args else ''
+        json_config = self.load_json_config(config_path)
         self.config.update(json_config)
+
         env_config = self.load_env_config()
         self.config.update(env_config)
-        arg_config = self.load_arg_config(args)
-        self.config.update(arg_config)
+
+        if args:
+            arg_config = self.load_arg_config(args)
+            self.config.update(arg_config)
 
         self.host_arch = platform.machine()
         self.is_arm = self.host_arch.startswith('arm')
