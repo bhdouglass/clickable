@@ -7,7 +7,7 @@ class ConfigMock(Config):
         super().__init__(Mock(), clickable_version='0.0.0', *args, **kwargs)
         self.cwd = '/tmp'
         self.config['build_dir'] = '/tmp/build'
-        self.temp = '/tmp/build/tmp'
+        self.config['install_dir'] = '/tmp/build/tmp'
 
     def load_json_config(self, *args):
         return {}
@@ -18,8 +18,8 @@ class ConfigMock(Config):
     def load_arg_config(self, *args):
         return {}
 
-    def find_manifest(self, *args):
-        return '/fake/manifest.json'
+    def write_manifest(self, *args):
+        pass
 
     def get_manifest(self):
         return {

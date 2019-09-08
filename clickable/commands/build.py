@@ -44,7 +44,7 @@ class BuildCommand(Command):
         builder.build()
 
     def click_build(self):
-        command = 'click build {} --no-validate'.format(os.path.dirname(self.config.find_manifest()))
+        command = 'click build {} --no-validate'.format(self.config.install_dir)
 
         self.config.container.run_command(command)
 

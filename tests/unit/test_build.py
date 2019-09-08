@@ -16,7 +16,7 @@ class TestBuildCommand(TestCase):
     def test_click_build(self, mock_run_command):
         self.command.click_build()
 
-        mock_run_command.assert_called_once_with('click build /fake --no-validate')
+        mock_run_command.assert_called_once_with('click build /tmp/build/tmp --no-validate')
 
     @mock.patch('clickable.container.Container.run_command', side_effect=empty_fn)
     @mock.patch('os.path.exists', side_effect=false_fn)
@@ -26,7 +26,7 @@ class TestBuildCommand(TestCase):
         self.config.click_output = '/foo/bar'
         self.command.click_build()
 
-        mock_run_command.assert_called_once_with('click build /fake --no-validate')
+        mock_run_command.assert_called_once_with('click build /tmp/build/tmp --no-validate')
         mock_exists.assert_called_with(ANY)
         mock_makedirs.assert_called_with(ANY)
         mock_copyfile.assert_called_with(ANY, ANY)
