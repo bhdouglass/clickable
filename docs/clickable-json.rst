@@ -24,16 +24,19 @@ Placeholders & Environment Variables
 
 The following placeholders can be used in the clickable.json. They are also provided as environment variables during build.
 
-====================== ======
-Placeholder            Output
-====================== ======
-$ARCH_TRIPLET          Target architecture triplet (``arm-linux-gnueabihf``, ``x86_64-linux-gnu`` or ``all``)
-$ROOT                  Value of ``root_dir``
-$BUILD_DIR             Value of ``build_dir``
-$SRC_DIR               Value of ``src_dir``
-$INSTALL_DIR           Value of ``install_dir``
-$<lib>_LIB_INSTALL_DIR Value of ``install_dir`` from ``<lib>`` (see :ref:`libraries <clickable-json-libraries>`)
-====================== ======
+======================= ======
+Placeholder             Output
+======================= ======
+$ARCH_TRIPLET           Target architecture triplet (``arm-linux-gnueabihf``, ``x86_64-linux-gnu`` or ``all``)
+$ROOT                   Value of ``root_dir``
+$BUILD_DIR              Value of ``build_dir``
+$SRC_DIR                Value of ``src_dir``
+$INSTALL_DIR            Value of ``install_dir``
+$CLICK_LD_LIBRARY_PATH  ``$INSTALL_DIR/lib/$ARCH_TRIPLET`` (``$INSTALL_DIR/lib`` for architecture independent apps)
+$CLICK_QML2_IMPORT_PATH ``$INSTALL_DIR/lib/$ARCH_TRIPLET`` (``$INSTALL_DIR/qml`` for architecture independent apps, which is not in ``QML2_IMPORT_PATH`` at runtime)
+$CLICK_PATH             ``$INSTALL_DIR/lib/$ARCH_TRIPLET/bin`` (``$INSTALL_DIR`` for architecture independent apps)
+$<lib>_LIB_INSTALL_DIR  Value of ``install_dir`` from ``<lib>`` (see :ref:`libraries <clickable-json-libraries>`)
+======================= ======
 
 Parameters accepting placeholders: ``root_dir``, ``build_dir``, ``src_dir``, ``install_dir``, ``gopath``, ``cargo_home``, ``scripts``, ``build``, ``build_args``, ``make_args``, ``postmake``, ``postbuild``, ``prebuild``. This is an ordered list. Parameters that are used as placeholders themselfs accept only predecessors. Ex: ``$ROOT`` can be used in ``src_dir``, but not vice-versa.
 
@@ -43,14 +46,14 @@ Example:
 
     {
         "template": "cmake",
-        "build_dir": "$ROOT/build/$ARCH_TRIPLET"
+        "build_dir": "$ROOT/build/$ARCH_TRIPLET/myApp"
     }
 
 clickable_minimum_required
 --------------------------
 
 Optional, a minimum Clickable version number required to build the project.
-Ex: ``"4"`` or ``"5.4.0"``
+Ex: ``"6"`` or ``"5.4.0"``
 
 .. _clickable-json-arch:
 
@@ -112,6 +115,48 @@ install_dir
 -----------
 
 Optional, a custom install directory (used to gather data that goes into the click package). Defaults to ``$BUILD_DIR/install``
+
+install_lib
+-----------
+
+Optional, additional libraries that should be installed with the app. The destination directory is ``$CLICK_LD_LIBRARY_PATH``. Ex:
+
+.. code-block:: javascript
+
+    "install_lib": [
+        "/usr/lib/$ARCH_TRIPLET/libasound.so*"
+    ]
+
+Can be specified as a string or a list of strings.
+Supports wildcards as this actually calls ``cp -r <from> <to>`` in a bash.
+
+install_qml
+-----------
+
+Optional, additional QML files or directories that should be installed with the app. The destination directory is ``$CLICK_QML2_IMPORT_PATH``. Ex:
+
+.. code-block:: javascript
+
+    "install_qml": [
+        "/usr/lib/$ARCH_TRIPLET/qt5/qml/QtGraphicalEffects"
+    ]
+
+Can be specified as a string or a list of strings.
+Supports wildcards as this actually calls ``cp -r <from> <to>`` in a bash.
+
+install_bin
+-----------
+
+Optional, additional executables that should be installed with the app. The destination directory is ``$CLICK_PATH``. Ex:
+
+.. code-block:: javascript
+
+    "install_bin": [
+        "/usr/bin/htop"
+    ]
+
+Can be specified as a string or a list of strings.
+Supports wildcards as this actually calls ``cp -r <from> <to>`` in a bash.
 
 kill
 ----
