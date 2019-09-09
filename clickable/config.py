@@ -65,12 +65,12 @@ class Config(object):
         'all': 'all'
     }
 
-    replacements = {
-        "$ARCH_TRIPLET": "arch_triplet",
-        "$ROOT": "root_dir",
-        "$BUILD_DIR": "build_dir",
-        "$SRC_DIR": "src_dir",
-        "$INSTALL_DIR": "install_dir",
+    placeholders = {
+        "ARCH_TRIPLET": "arch_triplet",
+        "ROOT": "root_dir",
+        "BUILD_DIR": "build_dir",
+        "SRC_DIR": "src_dir",
+        "INSTALL_DIR": "install_dir",
     }
     accepts_placeholders = ["root_dir", "build_dir", "src_dir", "install_dir",
                             "gopath", "cargo_home", "scripts", "build",
@@ -185,6 +185,7 @@ class Config(object):
                 self.config[key] = os.path.abspath(self.config[key])
 
         self.substitute_placeholders()
+        self.set_env_vars()
 
         self.check_config_errors()
 
@@ -327,17 +328,29 @@ class Config(object):
 
         return config
 
+    def prepare_docker_env_vars(self):
+        docker_env_vars = []
+        for key, conf in self.placeholders.items():
+            val = self.config[conf]
+            docker_env_vars.append('-e {}="{}"'.format(key, val))
+        return " ".join(docker_env_vars)
+
+    def set_env_vars(self):
+        for key, conf in self.placeholders.items():
+            os.environ[key] = self.config[conf]
+
     def substitute_placeholders(self):
         for key in self.accepts_placeholders:
-            for sub in self.replacements:
-                rep = self.config[self.replacements[sub]]
+            for sub in self.placeholders:
+                substitute = "$"+sub
+                rep = self.config[self.placeholders[sub]]
                 if self.config[key]:
                     if isinstance(self.config[key], dict):
-                        self.config[key] = {k: val.replace(sub, rep) for (k, val) in self.config[key].items()}
+                        self.config[key] = {k: val.replace(substitute, rep) for (k, val) in self.config[key].items()}
                     elif isinstance(self.config[key], list):
-                        self.config[key] = [val.replace(sub, rep) for val in self.config[key]]
+                        self.config[key] = [val.replace(substitute, rep) for val in self.config[key]]
                     else:
-                        self.config[key] = self.config[key].replace(sub, rep)
+                        self.config[key] = self.config[key].replace(substitute, rep)
             if key in self.path_keys and self.config[key]:
                 self.config[key] = os.path.abspath(self.config[key])
 
