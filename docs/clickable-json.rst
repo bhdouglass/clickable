@@ -24,15 +24,16 @@ Placeholders & Environment Variables
 
 The following placeholders can be used in the clickable.json. They are also provided as environment variables during build.
 
-============= ======
-Placeholder   Output
-============= ======
-$ARCH_TRIPLET Target architecture triplet (``arm-linux-gnueabihf``, ``x86_64-linux-gnu`` or ``all``)
-$ROOT         Value of ``root_dir``
-$BUILD_DIR    Value of ``build_dir``
-$SRC_DIR      Value of ``src_dir``
-$INSTALL_DIR  Value of ``install_dir``
-============= ======
+====================== ======
+Placeholder            Output
+====================== ======
+$ARCH_TRIPLET          Target architecture triplet (``arm-linux-gnueabihf``, ``x86_64-linux-gnu`` or ``all``)
+$ROOT                  Value of ``root_dir``
+$BUILD_DIR             Value of ``build_dir``
+$SRC_DIR               Value of ``src_dir``
+$INSTALL_DIR           Value of ``install_dir``
+$<lib>_LIB_INSTALL_DIR Value of ``install_dir`` from ``<lib>`` (see :ref:`libraries <clickable-json-libraries>`)
+====================== ======
 
 Parameters accepting placeholders: ``root_dir``, ``build_dir``, ``src_dir``, ``install_dir``, ``gopath``, ``cargo_home``, ``scripts``, ``build``, ``build_args``, ``make_args``, ``postmake``, ``postbuild``, ``prebuild``. This is an ordered list. Parameters that are used as placeholders themselfs accept only predecessors. Ex: ``$ROOT`` can be used in ``src_dir``, but not vice-versa.
 
@@ -278,6 +279,8 @@ test
 
 Optional, specify a different test command to run when running ``clickable test``.
 The default is ``qmltestrunner``.
+
+.. _clickable-json-libraries:
 
 libraries
 ---------
