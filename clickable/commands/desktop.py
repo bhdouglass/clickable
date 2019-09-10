@@ -19,6 +19,7 @@ from .docker.nvidia_support import NvidiaSupport
 from .docker.rust_support import RustSupport
 from .docker.webapp_support import WebappSupport
 from .docker.theme_support import ThemeSupport
+from .docker.multimedia_support import MultimediaSupport
 
 
 class DesktopCommand(Command):
@@ -97,6 +98,8 @@ class DesktopCommand(Command):
         DebugGdbSupport(config).update(docker_config)
 
         ThemeSupport(config).update(docker_config)
+
+        MultimediaSupport(config).update(docker_config)
 
         return docker_config
 
