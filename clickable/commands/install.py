@@ -43,3 +43,4 @@ class InstallCommand(Command):
             run_subprocess_check_call(command, cwd=cwd, shell=True)
 
         self.device.run_command('pkcon install-local --allow-untrusted /home/phablet/{}'.format(click), cwd=cwd)
+        self.device.run_command('rm /home/phablet/{}'.format(click), cwd=cwd)
