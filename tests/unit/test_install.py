@@ -22,7 +22,7 @@ class TestInstallCommand(TestCase):
         mock_check_any_attached.assert_called_once_with()
         mock_check_multiple_attached.assert_called_once_with()
         mock_run_subprocess_check_call.assert_called_once_with('adb push /tmp/build/foo.bar_1.2.3_armhf.click /home/phablet/', cwd='/tmp/build', shell=True)
-        mock_run_command.assert_called_once_with(ANY, cwd='/tmp/build')
+        mock_run_command.assert_called_with(ANY, cwd='/tmp/build')
 
     @mock.patch('clickable.device.Device.check_any_attached', side_effect=empty_fn)
     @mock.patch('clickable.device.Device.run_command', side_effect=empty_fn)
@@ -33,7 +33,7 @@ class TestInstallCommand(TestCase):
 
         mock_check_any_attached.assert_called_once_with()
         mock_run_subprocess_check_call.assert_called_once_with('adb -s foo push /tmp/build/foo.bar_1.2.3_armhf.click /home/phablet/', cwd='/tmp/build', shell=True)
-        mock_run_command.assert_called_once_with(ANY, cwd='/tmp/build')
+        mock_run_command.assert_called_with(ANY, cwd='/tmp/build')
 
     @mock.patch('clickable.device.Device.run_command', side_effect=empty_fn)
     @mock.patch('clickable.commands.install.run_subprocess_check_call', side_effect=empty_fn)
@@ -42,7 +42,7 @@ class TestInstallCommand(TestCase):
         self.command.run()
 
         mock_run_subprocess_check_call.assert_called_once_with('scp /tmp/build/foo.bar_1.2.3_armhf.click phablet@foo:/home/phablet/', cwd='/tmp/build', shell=True)
-        mock_run_command.assert_called_once_with(ANY, cwd='/tmp/build')
+        mock_run_command.assert_called_with(ANY, cwd='/tmp/build')
 
     @mock.patch('clickable.device.Device.check_any_attached', side_effect=empty_fn)
     @mock.patch('clickable.device.Device.check_multiple_attached', side_effect=empty_fn)
@@ -54,7 +54,7 @@ class TestInstallCommand(TestCase):
         mock_check_any_attached.assert_called_once_with()
         mock_check_multiple_attached.assert_called_once_with()
         mock_run_subprocess_check_call.assert_called_once_with('adb push /foo/bar.click /home/phablet/', cwd='.', shell=True)
-        mock_run_command.assert_called_once_with(ANY, cwd='.')
+        mock_run_command.assert_called_with(ANY, cwd='.')
 
     @mock.patch('clickable.commands.install.print_warning', side_effect=empty_fn)
     def test_skip_desktop_mode(self, mock_print_warning):
