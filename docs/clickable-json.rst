@@ -19,8 +19,10 @@ Example:
 
 .. _clickable-json-placeholders:
 
-Placeholders
-------------
+Placeholders & Environment Variables
+------------------------------------
+
+The following placeholders can be used in the clickable.json. They are also provided as environment variables during build.
 
 ============= ======
 Placeholder   Output

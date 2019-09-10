@@ -175,9 +175,12 @@ class Container(object):
                     cargo_package_cache_lock,
                 )
 
-            wrapped_command = 'docker run -v {}:{}:Z {} {} -w {} -u {} -e HOME=/tmp --rm -i {} bash -c "{}"'.format(
+            env_vars = self.config.prepare_docker_env_vars()
+
+            wrapped_command = 'docker run -v {}:{}:Z {} {} {} -w {} -u {} -e HOME=/tmp --rm -i {} bash -c "{}"'.format(
                 cwd,
                 cwd,
+                env_vars,
                 go_config,
                 rust_config,
                 self.config.build_dir if use_dir else cwd,
