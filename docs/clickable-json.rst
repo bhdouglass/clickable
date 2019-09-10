@@ -22,7 +22,10 @@ Example:
 Placeholders & Environment Variables
 ------------------------------------
 
-The following placeholders can be used in the clickable.json. They are also provided as environment variables during build.
+The following placeholders can be used in the clickable.json.
+They are also provided as environment variables during build.
+When passing ``--debug-build`` to Clickable, ``DEBUG_BUILD=1`` is set
+as an environment variable additionally.
 
 ====================== ======
 Placeholder            Output
