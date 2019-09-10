@@ -409,9 +409,6 @@ class Config(object):
         self.ignore.extend(['.git', '.bzr'])
 
     def check_config_errors(self):
-        if self.debug_gdb and not self.desktop:
-            raise ValueError("GDB debugging is only supported in desktop mode! Consider running 'clickable desktop --gdb'")
-
         if self.config['clickable_minimum_required']:
             # Check if specified version string is valid
             if not re.fullmatch("\d+(\.\d+)*", self.config['clickable_minimum_required']):
@@ -429,6 +426,17 @@ class Config(object):
                     break
                 if req > ver:
                     raise ValueError('This project requires Clickable version {} ({} is used). Please update Clickable!'.format(self.config['clickable_minimum_required'], self.clickable_version))
+
+        if self.config['arch'] == 'all':
+            install_keys = ['install_lib', 'install_bin', 'install_qml']
+            for key in install_keys:
+                if self.config[key]:
+                    print_warning("'{}' ({}) marked for install, even though architecture is 'all'.".format("', '".join(self.config[key]), key))
+            if self.config['install_qml']:
+                print_warning("Be aware that QML modules are going to be installed to {}, which is not part of 'QML2_IMPORT_PATH' at runtime.".format(self.config['app_qml_dir']))
+
+        if self.debug_gdb and not self.desktop:
+            raise ValueError("GDB debugging is only supported in desktop mode! Consider running 'clickable desktop --gdb'")
 
         if self.config['template'] == self.CUSTOM and not self.config['build']:
             raise ValueError('When using the "custom" template you must specify a "build" in the config')
