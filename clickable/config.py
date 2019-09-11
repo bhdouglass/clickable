@@ -32,7 +32,6 @@ class Config(object):
         'CLICKABLE_DEFAULT': 'default',
         'CLICKABLE_MAKE_JOBS': 'make_jobs',
         'GOPATH': 'gopath',
-        'CARGO_HOME': 'cargo_home',
         'CLICKABLE_DOCKER_IMAGE': 'docker_image',
         'CLICKABLE_BUILD_ARGS': 'build_args',
         'CLICKABLE_MAKE_ARGS': 'make_args',
@@ -129,7 +128,7 @@ class Config(object):
             'ignore': [],
             'make_jobs': 0,
             'gopath': None,
-            'cargo_home': os.path.expanduser('~/.cargo'),
+            'cargo_home': os.path.expanduser('~/.clickable/cargo'),
             'docker_image': None,
             'build_args': [],
             'make_args': [],
@@ -421,8 +420,7 @@ class Config(object):
             raise ValueError('When using the "go" template you must specify a "gopath" in the config or use the '
                              '"GOPATH"env variable')
         if self.config['template'] == self.RUST and not self.config['cargo_home']:
-            raise ValueError('When using the "rust" template you must specify a "cargo_home" in the config or use the '
-                             '"CARGO_HOME" env variable')
+            raise ValueError('When using the "rust" template you must specify a "cargo_home" in the config')
 
         if self.config['template'] and self.config['template'] not in self.templates:
             raise ValueError('"{}" is not a valid template ({})'.format(self.config['template'], ', '.join(self.templates)))
