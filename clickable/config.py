@@ -19,6 +19,7 @@ from .utils import (
     print_info,
     FileNotFoundException,
     validate_clickable_json,
+    make_absolute,
 )
 
 
@@ -78,11 +79,12 @@ class Config(object):
                             "gopath", "cargo_home", "scripts", "build",
                             "build_args", "make_args", "postmake", "postbuild",
                             "prebuild", "app_lib_dir", "app_bin_dir",
+                            "install_lib", "install_qml", "install_bin",
                             "app_qml_dir"]
 
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
                  'cargo_home', 'gopath', 'app_lib_dir', 'app_bin_dir',
-                 'app_qml_dir']
+                 'app_qml_dir', 'install_lib', 'install_bin', 'install_qml']
     required = ['arch', 'build_dir', 'docker_image']
     flexible_lists = ['dependencies_build', 'dependencies_target',
                       'dependencies_ppa',
@@ -206,7 +208,7 @@ class Config(object):
 
         for key in self.path_keys:
             if key not in self.accepts_placeholders and self.config[key]:
-                self.config[key] = os.path.abspath(self.config[key])
+                self.config[key] = make_absolute(self.config[key])
 
         self.substitute_placeholders()
         self.set_env_vars()
@@ -373,7 +375,7 @@ class Config(object):
                     else:
                         self.config[key] = self.config[key].replace(substitute, rep)
             if key in self.path_keys and self.config[key]:
-                self.config[key] = os.path.abspath(self.config[key])
+                self.config[key] = make_absolute(self.config[key])
 
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
