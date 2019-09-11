@@ -150,6 +150,9 @@ def get_manifest(install_dir):
 def get_any_manifest(cwd, temp_dir=None, build_dir=None, ignore_dir=None):
     return load_manifest(find(['manifest.json'], cwd, temp_dir, build_dir, ignore_dir))
 
+def try_find_locale(install_dir):
+    return ':'.join(glob.glob("{}/**/locale".format(install_dir), recursive=True))
+
 def get_desktop(cwd, temp_dir=None, build_dir=None):
     desktop = {}
 

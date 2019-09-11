@@ -108,6 +108,7 @@ class Config(object):
     debug_gdb_port = None
     dark_mode = False
     desktop_device_home = os.path.expanduser('~/.clickable/home')
+    desktop_locale = os.getenv('LANG', 'C')
 
     def __init__(self, args=None, clickable_version=None, desktop=False):
         self.desktop = desktop
@@ -339,6 +340,9 @@ class Config(object):
         if args.dark_mode:
             self.dark_mode = True
 
+        if args.lang:
+            self.desktop_locale = args.lang
+
         config = {}
         if args.arch:
             config['arch'] = args.arch
@@ -391,6 +395,9 @@ class Config(object):
 
         for key in self.flexible_lists:
             self.config[key] = flexible_string_to_list(self.config[key])
+
+        if self.desktop_locale != "C" and "." not in self.desktop_locale:
+            self.desktop_locale = "{}.UTF-8".format(self.desktop_locale)
 
         if self.desktop:
             self.config['arch'] = 'amd64'

@@ -8,6 +8,7 @@ from clickable.utils import (
     print_warning,
     print_info,
     makedirs,
+    try_find_locale,
 )
 from .base import Command
 from .build import BuildCommand
@@ -148,6 +149,23 @@ class DesktopCommand(Command):
         lib_path = self.get_docker_lib_path_env(working_directory)
 
         return {
+            'LANG': self.config.desktop_locale,
+            'LANGUAGE': self.config.desktop_locale,
+            'LC_CTYPE': self.config.desktop_locale,
+            'LC_NUMERIC': self.config.desktop_locale,
+            'LC_TIME': self.config.desktop_locale,
+            'LC_COLLATE': self.config.desktop_locale,
+            'LC_MONETARY': self.config.desktop_locale,
+            'LC_MESSAGES': self.config.desktop_locale,
+            'LC_PAPER': self.config.desktop_locale,
+            'LC_NAME': self.config.desktop_locale,
+            'LC_ADDRESS': self.config.desktop_locale,
+            'LC_TELEPHONE': self.config.desktop_locale,
+            'LC_MEASUREMENT': self.config.desktop_locale,
+            'LC_IDENTIFICATION': self.config.desktop_locale,
+            'LC_ALL': self.config.desktop_locale,
+            'APP_DIR': self.config.install_dir,
+            'TEXTDOMAINDIR': try_find_locale(self.config.install_dir),
             'XAUTHORITY': '/tmp/.docker.xauth',
             'DISPLAY': os.environ['DISPLAY'],
             'QML2_IMPORT_PATH': lib_path,
