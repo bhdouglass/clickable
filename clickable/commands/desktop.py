@@ -176,7 +176,7 @@ class DesktopCommand(Command):
     def setup_volume_mappings(self, local_working_directory, package_name):
         xauth_path = self.touch_xauth()
 
-        device_home = os.path.expanduser('~/.clickable/home')
+        device_home = self.config.desktop_device_home
         makedirs(device_home)
         print_info("Mounting device home to {}".format(device_home))
 
