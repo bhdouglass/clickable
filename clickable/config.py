@@ -180,6 +180,15 @@ class Config(object):
 
         self.config['arch_triplet'] = self.arch_triplet_mapping[self.config['arch']]
 
+        self.lib_configs = [LibConfig(name, lib, self.config['arch'], self.config['root_dir'], self.debug_build)
+                                    for name, lib in self.config['libraries'].items()]
+
+        for lib in self.lib_configs:
+            key = '{}_lib_install_dir'.format(lib.name)
+            placeholder = '{}_LIB_INSTALL_DIR'.format(lib.name)
+            self.config[key] = lib.install_dir
+            self.placeholders.update({placeholder: key})
+
         for key in self.path_keys:
             if key not in self.accepts_placeholders and self.config[key]:
                 self.config[key] = os.path.abspath(self.config[key])
@@ -188,9 +197,6 @@ class Config(object):
         self.set_env_vars()
 
         self.check_config_errors()
-
-        self.lib_configs = [LibConfig(name, lib, self.config['arch'], self.config['root_dir'], self.debug_build)
-                                    for name, lib in self.config['libraries'].items()]
 
     def use_arch(self, build_arch):
         if self.use_nvidia and not build_arch.endswith('-nvidia'):
