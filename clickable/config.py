@@ -54,12 +54,14 @@ class Config(object):
         ('16.04', 'armhf'): 'clickable/ubuntu-sdk:16.04-armhf',
         ('16.04', 'amd64'): 'clickable/ubuntu-sdk:16.04-amd64',
         ('16.04', 'amd64-nvidia'): 'clickable/ubuntu-sdk:16.04-amd64-nvidia',
+        ('16.04', 'arm64'): 'clickable/ubuntu-sdk:16.04-arm64',
     }
 
     container_list = list(container_mapping.values())
 
     arch_triplet_mapping = {
         'armhf': 'arm-linux-gnueabihf',
+        'arm64': 'aarch64-linux-gnu',
         'amd64': 'x86_64-linux-gnu',
         'all': 'all'
     }
@@ -178,6 +180,8 @@ class Config(object):
             self.custom_docker_image = False
             self.use_arch(self.build_arch)
 
+        if self.config['arch'] not in self.arch_triplet_mapping:
+            raise ValueError('There currently is no support for {}'.format(self.config['arch']))
         self.config['arch_triplet'] = self.arch_triplet_mapping[self.config['arch']]
 
         self.lib_configs = [LibConfig(name, lib, self.config['arch'], self.config['root_dir'], self.debug_build)
@@ -201,6 +205,9 @@ class Config(object):
     def use_arch(self, build_arch):
         if self.use_nvidia and not build_arch.endswith('-nvidia'):
             build_arch = "{}-nvidia".format(build_arch)
+
+        if ('16.04', build_arch) not in self.container_mapping:
+            raise ValueError('There is currently no docker image for 16.04/{}'.format(build_arch))
         self.config['docker_image'] = self.container_mapping[('16.04', build_arch)]
 
     def __getattr__(self, name):
