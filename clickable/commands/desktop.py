@@ -176,17 +176,15 @@ class DesktopCommand(Command):
     def setup_volume_mappings(self, local_working_directory, package_name):
         xauth_path = self.touch_xauth()
 
-        share_path = makedirs('/tmp/clickable/share/{package}/{package}'.format(package=package_name))
-        cache_path = makedirs('/tmp/clickable/cache/{package}/{package}'.format(package=package_name))
-        config_path = makedirs('/tmp/clickable/config/{package}/{package}'.format(package=package_name))
+        device_home = self.config.desktop_device_home
+        makedirs(device_home)
+        print_info("Mounting device home to {}".format(device_home))
 
         return {
             local_working_directory: local_working_directory,
             '/tmp/.X11-unix': '/tmp/.X11-unix',
             xauth_path: xauth_path,
-            share_path: '/home/phablet/.local/share',
-            cache_path: '/home/phablet/.cache',
-            config_path: '/home/phablet/.config'
+            device_home: '/home/phablet',
         }
 
     def touch_xauth(self):

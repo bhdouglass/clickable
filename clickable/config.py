@@ -99,6 +99,7 @@ class Config(object):
     debug_gdb = False
     debug_gdb_port = None
     dark_mode = False
+    desktop_device_home = os.path.expanduser('~/.clickable/home')
 
     def __init__(self, args=None, clickable_version=None, desktop=False):
         self.desktop = desktop

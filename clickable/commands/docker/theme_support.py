@@ -15,7 +15,7 @@ class ThemeSupport(DockerSupport):
     def update(self, docker_config: DockerConfig):
         package_name = self.config.find_package_name()
 
-        config_path = makedirs('/tmp/clickable/config/{package}/{package}/ubuntu-ui-toolkit'.format(package=package_name))
+        config_path = makedirs(os.path.join(self.config.desktop_device_home, '.config/ubuntu-ui-toolkit'))
 
         theme = 'Ubuntu.Components.Themes.Ambiance'
         if self.config.dark_mode:
