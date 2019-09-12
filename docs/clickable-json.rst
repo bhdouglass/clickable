@@ -220,8 +220,8 @@ Optional, the gopath on the host machine. If left blank, the ``GOPATH`` env var 
 cargo_home
 ----------
 
-Optional, the Cargo home path (usually ``~/.cargo``) on the host machine.
-If left blank, the ``CARGO_HOME`` env var will be used.
+Optional, the Cargo home path on the host machine that is used for caching.
+Defaults to ``~/.clickable/cargo``.
 
 .. _clickable-json-build-args:
 

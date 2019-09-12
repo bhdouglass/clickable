@@ -158,6 +158,7 @@ class Container(object):
             rust_config = ''
 
             if self.config.config['template'] == Config.RUST and self.config.cargo_home:
+                print_info("Caching cargo related files in {}".format(self.config.cargo_home))
                 cargo_registry = os.path.join(self.config.cargo_home, 'registry')
                 cargo_git = os.path.join(self.config.cargo_home, 'git')
                 cargo_package_cache_lock = os.path.join(self.config.cargo_home, '.package-cache')
