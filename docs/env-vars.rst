@@ -6,6 +6,10 @@ Environment Variables
 Environment variables will override values in the clickable.json and can be
 overridden by command line arguments.
 
+In contrast to the environment variables described here that configure
+Clickable, there are :ref:`environment variables <clickable-json-placeholders>` set by
+Clickable to be used during build.
+
 ``CLICKABLE_ARCH``
 ------------------
 

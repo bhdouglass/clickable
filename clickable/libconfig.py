@@ -106,14 +106,23 @@ class LibConfig(object):
 
     def prepare_docker_env_vars(self):
         docker_env_vars = []
-        for key, conf in self.placeholders.items():
-            val = self.config[conf]
+        for key, val in self.get_env_vars():
             docker_env_vars.append('-e {}="{}"'.format(key, val))
         return " ".join(docker_env_vars)
 
     def set_env_vars(self):
+        os.environ.update(self.get_env_vars())
+
+    def get_env_vars(self):
+        env_vars = {}
+
+        if self.debug_build:
+            env_vars['DEBUG_BUILD'] = '1'
+
         for key, conf in self.placeholders.items():
-            os.environ[key] = self.config[conf]
+            env_vars[key] = self.config[conf]
+
+        return env_vars
 
     def substitute_placeholders(self):
         for key in self.accepts_placeholders:
