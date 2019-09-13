@@ -62,6 +62,18 @@
       "type": ["string","array"],
       "items": {"type": "string"}
     },
+    "install_lib": {
+      "type": ["string","array"],
+      "items": {"type": "string"}
+    },
+    "install_bin": {
+      "type": ["string","array"],
+      "items": {"type": "string"}
+    },
+    "install_qml": {
+      "type": ["string","array"],
+      "items": {"type": "string"}
+    },
     "docker_image": {"type": "string"},
     "ignore": {
       "type": ["string","array"],

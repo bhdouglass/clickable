@@ -19,6 +19,7 @@ from .utils import (
     print_info,
     FileNotFoundException,
     validate_clickable_json,
+    make_absolute,
 )
 
 
@@ -70,17 +71,24 @@ class Config(object):
         "BUILD_DIR": "build_dir",
         "SRC_DIR": "src_dir",
         "INSTALL_DIR": "install_dir",
+        "CLICK_LD_LIBRARY_PATH": "app_lib_dir",
+        "CLICK_PATH": "app_bin_dir",
+        "CLICK_QML2_IMPORT_PATH": "app_qml_dir",
     }
     accepts_placeholders = ["root_dir", "build_dir", "src_dir", "install_dir",
                             "gopath", "cargo_home", "scripts", "build",
                             "build_args", "make_args", "postmake", "postbuild",
-                            "prebuild"]
+                            "prebuild", "app_lib_dir", "app_bin_dir",
+                            "install_lib", "install_qml", "install_bin",
+                            "app_qml_dir"]
 
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
-                 'cargo_home', 'gopath']
+                 'cargo_home', 'gopath', 'app_lib_dir', 'app_bin_dir',
+                 'app_qml_dir', 'install_lib', 'install_bin', 'install_qml']
     required = ['arch', 'build_dir', 'docker_image']
     flexible_lists = ['dependencies_build', 'dependencies_target',
                       'dependencies_ppa',
+                      'install_lib', 'install_bin', 'install_qml',
                       'build_args', 'make_args', 'default', 'ignore']
     removed_keywords = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh',
                         'dependencies', 'specificDependencies', 'dir', 'lxd']
@@ -126,6 +134,12 @@ class Config(object):
             'dependencies_build': [],
             'dependencies_target': [],
             'dependencies_ppa': [],
+            'install_lib': [],
+            'install_bin': [],
+            'install_qml': [],
+            'app_lib_dir': '$INSTALL_DIR/lib/$ARCH_TRIPLET',
+            'app_bin_dir': '$INSTALL_DIR/lib/$ARCH_TRIPLET/bin',
+            'app_qml_dir': '$INSTALL_DIR/lib/$ARCH_TRIPLET',
             'ignore': [],
             'make_jobs': 0,
             'gopath': None,
@@ -165,6 +179,9 @@ class Config(object):
 
         if self.config['arch'] == 'all':
             self.build_arch = 'armhf'
+            self.config['app_lib_dir'] = '$INSTALL_DIR/lib'
+            self.config['app_bin_dir'] = '$INSTALL_DIR'
+            self.config['app_qml_dir'] = '$INSTALL_DIR/qml'
 
         if self.desktop:
             self.build_arch = 'amd64'
@@ -191,7 +208,7 @@ class Config(object):
 
         for key in self.path_keys:
             if key not in self.accepts_placeholders and self.config[key]:
-                self.config[key] = os.path.abspath(self.config[key])
+                self.config[key] = make_absolute(self.config[key])
 
         self.substitute_placeholders()
         self.set_env_vars()
@@ -367,7 +384,7 @@ class Config(object):
                     else:
                         self.config[key] = self.config[key].replace(substitute, rep)
             if key in self.path_keys and self.config[key]:
-                self.config[key] = os.path.abspath(self.config[key])
+                self.config[key] = make_absolute(self.config[key])
 
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
@@ -403,9 +420,6 @@ class Config(object):
         self.ignore.extend(['.git', '.bzr'])
 
     def check_config_errors(self):
-        if self.debug_gdb and not self.desktop:
-            raise ValueError("GDB debugging is only supported in desktop mode! Consider running 'clickable desktop --gdb'")
-
         if self.config['clickable_minimum_required']:
             # Check if specified version string is valid
             if not re.fullmatch("\d+(\.\d+)*", self.config['clickable_minimum_required']):
@@ -423,6 +437,17 @@ class Config(object):
                     break
                 if req > ver:
                     raise ValueError('This project requires Clickable version {} ({} is used). Please update Clickable!'.format(self.config['clickable_minimum_required'], self.clickable_version))
+
+        if self.config['arch'] == 'all':
+            install_keys = ['install_lib', 'install_bin', 'install_qml']
+            for key in install_keys:
+                if self.config[key]:
+                    print_warning("'{}' ({}) marked for install, even though architecture is 'all'.".format("', '".join(self.config[key]), key))
+            if self.config['install_qml']:
+                print_warning("Be aware that QML modules are going to be installed to {}, which is not part of 'QML2_IMPORT_PATH' at runtime.".format(self.config['app_qml_dir']))
+
+        if self.debug_gdb and not self.desktop:
+            raise ValueError("GDB debugging is only supported in desktop mode! Consider running 'clickable desktop --gdb'")
 
         if self.config['template'] == self.CUSTOM and not self.config['build']:
             raise ValueError('When using the "custom" template you must specify a "build" in the config')

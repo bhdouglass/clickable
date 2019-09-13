@@ -4,6 +4,7 @@ import json
 import os
 import shlex
 import glob
+import shutil
 import inspect
 from os.path import dirname, basename, isfile, join
 import multiprocessing
@@ -247,3 +248,10 @@ def image_exists(image):
 def makedirs(path):
     os.makedirs(path, 0o777, True)
     return path
+
+
+def make_absolute(path):
+    if isinstance(path, list):
+        return [make_absolute(p) for p in path]
+    else:
+        return os.path.abspath(path)
