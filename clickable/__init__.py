@@ -140,6 +140,10 @@ class Clickable(object):
             help='Use the dark theme when running apps (only desktop mode)',
             default=False,
         )
+        parser.add_argument(
+            '--lang',
+            help='Start app in with the given language code (only desktop mode)',
+        )
 
         args = parser.parse_args()
         if 'help' in args.commands:
