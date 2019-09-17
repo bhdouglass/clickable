@@ -1,4 +1,5 @@
 from .config import ConfigMock
+from .libconfig import LibConfigMock
 
 
 def empty_fn(*args, **kwargs):
