@@ -34,7 +34,8 @@ class DesktopCommand(Command):
         self.run_docker_command(docker_config, verbose_mode=self.config.debug)
 
     def prepare_run(self, config):
-        self.run_clean_and_build_commands(config)
+        if not config.desktop_skip_build:
+            self.run_clean_and_build_commands(config)
 
     def run_clean_and_build_commands(self, config):
         if not config.dirty:

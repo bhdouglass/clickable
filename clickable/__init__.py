@@ -144,6 +144,12 @@ class Clickable(object):
             '--lang',
             help='Start app in with the given language code (only desktop mode)',
         )
+        parser.add_argument(
+            '--skip-build',
+            action='store_true',
+            help='Start app without building it first (only desktop mode)',
+            default=False,
+        )
 
         args = parser.parse_args()
         if 'help' in args.commands:
