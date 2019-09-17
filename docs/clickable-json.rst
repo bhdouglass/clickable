@@ -24,7 +24,7 @@ Placeholders & Environment Variables
 
 The following placeholders can be used in the clickable.json.
 They are also provided as environment variables during build.
-When passing ``--debug-build`` to Clickable, ``DEBUG_BUILD=1`` is set
+When passing ``--debug`` to Clickable, ``DEBUG_BUILD=1`` is set
 as an environment variable additionally.
 
 ======================= ======
@@ -278,7 +278,7 @@ Defaults to ``~/.clickable/cargo``.
 build_args
 ----------
 
-Optional, arguments to pass to qmake or cmake. When using ``--debug-build``,
+Optional, arguments to pass to qmake or cmake. When using ``--debug``,
 ``CONFIG+=debug`` is additionally appended for qmake and
 ``-DCMAKE_BUILD_TYPE=Debug`` for cmake and cordova builds. Ex: ``CONFIG+=ubuntu``
 

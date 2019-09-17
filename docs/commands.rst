@@ -22,7 +22,7 @@ Compile and run the app on the desktop.
 Note: ArchLinux user might need to run ``xhost +local:clickable`` before using
 desktop mode.
 
-Run ``clickable desktop --debug`` to show the executed docker command.
+Run ``clickable desktop --verbose`` to show the executed docker command.
 
 Run ``clickable desktop --dark-mode`` to set the dark mode preference.
 
@@ -52,7 +52,7 @@ On Ubuntu, install these requirements using ``apt install nvidia-modprobe nvidia
 
 On Ubuntu, install these requirements using ``apt install nvidia-container-toolkit``.
 
-Run clickable with the ``--debug`` flag to see the executed command for your system.
+Run clickable with the ``--verbose`` flag to see the executed command for your system.
 
 
 ``clickable create``

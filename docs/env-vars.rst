@@ -98,7 +98,7 @@ Overrides the clickable.json's :ref:`dirty <clickable-json-dirty>`.
 ``CLICKABLE_DEBUG_BUILD``
 -------------------------
 
-Same as ``--debug-build``
+Same as ``--debug``
 
 ``CLICKABLE_TEST``
 ------------------

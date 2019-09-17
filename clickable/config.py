@@ -104,7 +104,7 @@ class Config(object):
     use_nvidia = False
     apikey = None
     custom_docker_image = True
-    debug = False
+    verbose = False
     debug_build = False
     debug_gdb = False
     debug_gdb_port = None
@@ -190,7 +190,7 @@ class Config(object):
             self.build_arch = 'amd64'
             # only turn on nvidia mode in desktop mode
             if NvidiaDriversInstalled().is_met():
-                if self.debug:
+                if self.verbose:
                     print_info('Turning on nvidia mode.')
                 self.use_nvidia = True
 
@@ -329,11 +329,15 @@ class Config(object):
         if args.apikey:
             self.apikey = args.apikey
 
+        if args.verbose:
+            self.verbose = True
+
         if args.debug:
-            self.debug = True
+            self.debug_build = True
 
         if args.debug_build:
             self.debug_build = True
+            print_warning('"--debug-build" is deprecated, use "--debug" instead!')
 
         if args.gdb:
             self.debug_build = True
