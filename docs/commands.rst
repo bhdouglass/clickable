@@ -26,6 +26,35 @@ Run ``clickable desktop --debug`` to show the executed docker command.
 
 Run ``clickable desktop --dark-mode`` to set the dark mode preference.
 
+Run ``clickable desktop --lang <language code>`` to test using a different language.
+
+.. _nvidia:
+
+``clickable desktop --nvidia``
+------------------------------
+
+``clickable`` checks automatically if nvidia-drivers are installed and turns on nvidia mode.
+The ``--nvidia`` flag lets you manually enforce nvidia mode.
+
+Depending on your docker version, the docker execution will change and
+you need to provide additional system requirements:
+
+**docker &lt; 19.03 system requirements**
+
+* nvidia-modprobe
+* nvidia-docker
+
+On Ubuntu, install these requirements using ``apt install nvidia-modprobe nvidia-docker``.
+
+**docker &gt;= 19.03 system requirements**
+
+* nvidia-container-toolkit
+
+On Ubuntu, install these requirements using ``apt install nvidia-container-toolkit``.
+
+Run clickable with the ``--debug`` flag to see the executed command for your system.
+
+
 ``clickable create``
 --------------------
 
@@ -161,29 +190,3 @@ Runs a custom command specified in the "scripts" config
 
 Runs all builds commands on the current machine and not in a container. This is
 useful from running clickable from within a container.
-
-.. _nvidia:
-
-``clickable desktop --nvidia``
-------------------------------
-
-``clickable`` checks automatically if nvidia-drivers are installed and turns on nvidia mode.
-The ``--nvidia`` flag lets you manually enforce nvidia mode.
-
-Depending on your docker version, the docker execution will change and
-you need to provide additional system requirements:
-
-**docker &lt; 19.03 system requirements**
-
-* nvidia-modprobe
-* nvidia-docker
-
-On Ubuntu, install these requirements using ``apt install nvidia-modprobe nvidia-docker``.
-
-**docker &gt;= 19.03 system requirements**
-
-* nvidia-container-toolkit
-
-On Ubuntu, install these requirements using ``apt install nvidia-container-toolkit``.
-
-Run clickable with the ``--debug`` flag to see the executed command for your system.

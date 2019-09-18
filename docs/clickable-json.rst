@@ -119,6 +119,8 @@ install_dir
 
 Optional, a custom install directory (used to gather data that goes into the click package). Defaults to ``$BUILD_DIR/install``
 
+.. _clickable-json-install_lib:
+
 install_lib
 -----------
 
@@ -310,8 +312,6 @@ dirty
 Optional, whether or not do a dirty build, avoiding to clean the build directory
 before building. You may also specify this as a cli arg (``--dirty``).
 The default is ``false``.
-
-.. _clickable-json-libraries:
 
 root_dir
 --------

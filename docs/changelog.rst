@@ -3,6 +3,21 @@
 Changelog
 =========
 
+Changes in v6.1.0
+-----------------
+
+- Apps now use host locale in desktop mode
+- Added ``--lang`` argument to override the language when running in desktop mode
+- Added support for multimedia in desktop mode
+- Make app data, config and cache persistent in desktop mode by mounting phablet home folder to ~/.clickable/home
+- Added arm64 support and docker images (does not yet work for apps built with qmake)
+- :ref:`Added placeholders and env vars to commands and scripts run via clickable <clickable-json-placeholders>`
+- :ref:`Added option to install libs/qml/binaries from the docker image into the click package <clickable-json-install_lib>`
+- Switched to a clickable specific Cargo home for Rust apps
+- Click packages are now deleted from the device after installing
+- Fixed ``dependencies_build`` not being allowed as a string
+- Fixed issues finding the manifest file
+
 Changes in v6.0.3
 -----------------
 

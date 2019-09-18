@@ -1,3 +1,19 @@
+clickable (6.1.0) unstable; urgency=medium
+
+  * Apps now use host locale in desktop mode
+  * Added --lang argument to override the language when running in desktop mode
+  * Added support for multimedia in desktop mode
+  * Make app data, config and cache persistent in desktop mode by mounting phablet home folder to ~/.clickable/home
+  * Added arm64 support and docker images (does not yet work for apps built with qmake)
+  * Added placeholders and env vars to commands and scripts run via clickable
+  * Added option to install libs/qml/binaries from the docker image into the click package
+  * Switched to a clickable specific Cargo home for Rust apps
+  * Click packages are now deleted from the device after installing
+  * Fixed dependencies_build not being allowed as a string
+  * Fixed issues finding the manifest file
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Mon, 16 Sep 2019 14:02:00 -0500
+
 clickable (6.0.3) unstable; urgency=medium
 
   * Fixed building go apps
@@ -26,7 +42,7 @@ clickable (6.0.0) unstable; urgency=medium
   * The UBUNTU_APP_LAUNCH_ARCH env var is now set for desktop mode
   * Added remote gdb debugging in desktop mode via the --gdbserver <port> argument (allows debugging in IDEs)
   * Added configurable install_dir
-  * Libraries get installed when using ``cmake`` or ``qmake`` build template (into ``install_dir``)
+  * Libraries get installed when using cmake or qmake build template (into install_dir)
   * The click-build command has been merged into the build command
   * Removed deprecated configuration properties: dependencies, specificDependencies, and dir
   * Removed deprecated library configuration format
