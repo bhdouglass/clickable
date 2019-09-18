@@ -6,6 +6,7 @@ import os
 import shutil
 import getpass
 import uuid
+import sys
 
 from clickable.utils import (
     run_subprocess_call,
@@ -104,7 +105,10 @@ class Container(object):
         return (' docker ' in output or output.endswith(' docker') or output.startswith('docker ') or output == 'docker')
 
     def needs_setup(self):
-        return (not self.docker_group_exists() or not self.user_part_of_docker_group())
+        return (
+            sys.platform != 'darwin' and
+            (not self.docker_group_exists() or not self.user_part_of_docker_group())
+        )
 
     def setup_docker(self):
         print_info('Setting up docker')
