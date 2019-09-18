@@ -111,6 +111,7 @@ class Config(object):
     dark_mode = False
     desktop_device_home = os.path.expanduser('~/.clickable/home')
     desktop_locale = os.getenv('LANG', 'C')
+    desktop_skip_build = False
 
     def __init__(self, args=None, clickable_version=None, desktop=False):
         self.desktop = desktop
@@ -363,6 +364,9 @@ class Config(object):
 
         if args.dirty:
             config['dirty'] = True
+
+        if args.skip_build:
+            self.desktop_skip_build = True
 
         return config
 
