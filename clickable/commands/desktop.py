@@ -31,7 +31,8 @@ class DesktopCommand(Command):
     def run(self, path_arg=None):
         self.prepare_run(self.config)
         docker_config = self.setup_docker(self.config)
-        self.run_docker_command(docker_config, verbose_mode=self.config.debug)
+        self.run_docker_command(docker_config,
+                                verbose_mode=self.config.verbose)
 
     def prepare_run(self, config):
         self.run_clean_and_build_commands(config)

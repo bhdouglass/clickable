@@ -83,9 +83,9 @@ class Clickable(object):
             help='Use the specified arch when building (ignores the setting in clickable.json)'
         )
         parser.add_argument(
-            '--debug',
+            '--verbose',
             action='store_true',
-            help='Runs clickable in debug mode',
+            help='Allows to debug clickable by enabling verbose output',
             default=False,
         )
         parser.add_argument(
@@ -120,6 +120,12 @@ class Clickable(object):
         )
         parser.add_argument(
             '--debug-build',
+            action='store_true',
+            help='Perform a debug build (deprecated, use --debug instead)',
+            default=False,
+        )
+        parser.add_argument(
+            '--debug',
             action='store_true',
             help='Perform a debug build',
             default=False,
@@ -207,7 +213,7 @@ def main():
     try:
         clickable.run(args.commands, args)
     except Exception:
-        if args.debug:
+        if args.verbose:
             raise
         else:
             print_error(str(sys.exc_info()[1]))
