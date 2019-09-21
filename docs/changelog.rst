@@ -3,6 +3,14 @@
 Changelog
 =========
 
+Changes in v6.2.0
+-----------------
+
+- Replaced the ``--debug`` argument with ``--verbose``
+- Switched the ``--debug-build`` argument to ``--debug``
+- Initial support for running Clickable on MacOS
+- Added new desktop mode argument ``--skip-build`` to run an app in desktop mode without recompiling
+
 Changes in v6.1.0
 -----------------
 
