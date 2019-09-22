@@ -1,3 +1,5 @@
+import os
+
 from .base import Command
 from clickable.utils import print_info
 
@@ -7,41 +9,20 @@ try:
 except ImportError:
     cookiecutter_available = False
 
-APP_TEMPLATES = [
-    {
-        'name': 'pure-qml-cmake',
-        'display': 'Pure QML App (built using CMake)',
-        'url': 'https://gitlab.com/clickable/ut-app-pure-qml-cmake-template',
-    }, {
-        'name': 'cmake',
-        'display': 'C++/QML App (built using CMake)',
-        'url': 'https://gitlab.com/clickable/ut-app-cmake-template',
-    }, {
-        'name': 'python-cmake',
-        'display': 'Python/QML App (built using CMake)',
-        'url': 'https://gitlab.com/clickable/ut-app-python-cmake-template',
-    }, {
-        'name': 'html',
-        'display': 'HTML App',
-        'url': 'https://gitlab.com/clickable/ut-app-html-template',
-    }, {
-        'name': 'webapp',
-        'display': 'Simple Webapp',
-        'url': 'https://gitlab.com/clickable/ut-app-webapp-template',
-    }, {
-        'name': 'go',
-        'display': 'Go/QML App',
-        'url': 'https://gitlab.com/clickable/ut-app-go-template',
-    }, {
-        'name': 'main-cpp',
-        'display': 'C++/QML App (built using CMake with a main.cpp)',
-        'url': 'https://gitlab.com/clickable/ut-app-binary-cmake-template',
-    }, {
-        'name': 'rust',
-        'display': 'Rust/QML App',
-        'url': 'https://gitlab.com/clickable/ut-app-rust-template',
-    }
-]
+
+COOKIECUTTER_URL = 'https://gitlab.com/clickable/ut-app-meta-template'
+
+
+# Map old template names to new template names
+TEMPLATE_MAP = {
+    'pure-qml-cmake': 'QML Only',
+    'cmake': 'C++ (Plugin)',
+    'python-cmake': 'Python',
+    'html': 'HTML',
+    'go': 'Go',
+    'main-cpp': 'C++ (Binary)',
+    'rust': 'Rust',
+}
 
 
 class CreateCommand(Command):
@@ -53,32 +34,20 @@ class CreateCommand(Command):
         if not cookiecutter_available:
             raise Exception('Cookiecutter is not available on your computer, more information can be found here: https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter')
 
-        app_template = None
+        config_file = os.path.expanduser('~/.clickable/cookiecutter_config.yaml')
+        if not os.path.isfile(config_file):
+            config_file = None
+
+        extra_context = {}
         if path_arg:
-            for template in APP_TEMPLATES:
-                if template['name'] == path_arg:
-                    app_template = template
+            if path_arg in TEMPLATE_MAP:
+                extra_context['Template'] = TEMPLATE_MAP[path_arg]
+            else:
+                extra_context['Template'] = path_arg
 
-        if not app_template:
-            print_info('Available app templates:')
-            for (index, template) in enumerate(APP_TEMPLATES):
-                print('[{}] {} - {}'.format(index + 1, template['name'], template['display']))
-
-            choice = input('Choose an app template [1]: ').strip()
-            if not choice:
-                choice = '1'
-
-            try:
-                choice = int(choice)
-            except ValueError:
-                raise Exception('Invalid choice')
-
-            if choice > len(APP_TEMPLATES) or choice < 1:
-                raise Exception('Invalid choice')
-
-            app_template = APP_TEMPLATES[choice - 1]
-
-        print_info('Generating new app from template: {}'.format(app_template['display']))
-        cookiecutter(app_template['url'], no_input=no_input)
-
-        print_info('Your new app has been generated, go to the app\'s directory and run clickable to get started')
+        cookiecutter(
+            COOKIECUTTER_URL,
+            extra_context=extra_context,
+            no_input=no_input,
+            config_file=config_file,
+        )
