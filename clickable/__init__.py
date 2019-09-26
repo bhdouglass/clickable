@@ -11,7 +11,7 @@ import logging
 from clickable.commands.base import Command
 from clickable.config import Config
 from clickable.container import Container
-from clickable.logger import logger
+from clickable.logger import logger, log_file, console_handler
 from clickable.exceptions import ClickableException
 
 
@@ -219,7 +219,7 @@ def main():
     args = clickable.parse_args()
 
     if args.verbose:
-        logger.setLevel(logging.DEBUG)
+        console_handler.setLevel(logging.DEBUG)
     logger.debug('Clickable v' + __version__)
 
     try:
@@ -228,12 +228,11 @@ def main():
         logger.error(str(e))
         sys.exit(1)
     except Exception as e:
-        if args.verbose:
-            logger.exception('Encountered and unknown error: ' + str(e))
-        else:
+        logger.debug('Encountered and unknown error', exc_info=e)
+        if not args.verbose:
             logger.critical('Encountered and unknown error: ' + str(e))
 
-        logger.critical('If you believe this is a bug, please run clickable again with --verbose and file a report at https://gitlab.com/clickable/clickable/issues')
+        logger.critical('If you believe this is a bug, please file a report at https://gitlab.com/clickable/clickable/issues with the log file located at ' + log_file)
         sys.exit(2)
 
 

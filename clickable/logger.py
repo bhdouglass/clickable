@@ -1,4 +1,5 @@
 import logging
+import os
 
 
 class Colors:
@@ -31,8 +32,22 @@ class ColorFormatter(logging.Formatter):
 # TODO log to a file
 
 logger = logging.getLogger('clickable')
-console = logging.StreamHandler()
-console.setFormatter(ColorFormatter())
+logger.setLevel(logging.DEBUG)
 
-logger.setLevel(logging.INFO)
-logger.addHandler(console)
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(ColorFormatter())
+console_handler.setLevel(logging.INFO)
+
+log_dir = os.path.expanduser('~/.clickable')
+log_file = os.path.join(log_dir, 'clickable.log')
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
+
+if os.path.exists(log_file):
+    os.unlink(log_file)
+
+file_handler = logging.FileHandler(log_file)
+file_handler.setLevel(logging.DEBUG)
+
+logger.addHandler(console_handler)
+logger.addHandler(file_handler)
