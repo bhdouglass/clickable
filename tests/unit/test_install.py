@@ -56,16 +56,16 @@ class TestInstallCommand(TestCase):
         mock_run_subprocess_check_call.assert_called_once_with('adb push /foo/bar.click /home/phablet/', cwd='.', shell=True)
         mock_run_command.assert_called_with(ANY, cwd='.')
 
-    @mock.patch('clickable.commands.install.print_warning', side_effect=empty_fn)
-    def test_skip_desktop_mode(self, mock_print_warning):
+    @mock.patch('clickable.commands.install.logger.debug', side_effect=empty_fn)
+    def test_skip_desktop_mode(self, mock_logger_debug):
         self.config.desktop = True
         self.command.run()
 
-        mock_print_warning.assert_called_once_with(ANY)
+        mock_logger_debug.assert_called_once_with(ANY)
 
-    @mock.patch('clickable.commands.install.print_warning', side_effect=empty_fn)
-    def test_skip_container_mode(self, mock_print_warning):
+    @mock.patch('clickable.commands.install.logger.debug', side_effect=empty_fn)
+    def test_skip_container_mode(self, mock_logger_debug):
         self.config.container_mode = True
         self.command.run()
 
-        mock_print_warning.assert_called_once_with(ANY)
+        mock_logger_debug.assert_called_once_with(ANY)

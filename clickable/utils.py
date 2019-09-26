@@ -10,6 +10,8 @@ from os.path import dirname, basename, isfile, join
 import multiprocessing
 
 from clickable.build_templates.base import Builder
+from clickable.logger import logger
+from clickable.exceptions import FileNotFoundException, ClickableException
 
 # TODO use these subprocess functions everywhere
 
@@ -39,34 +41,6 @@ def run_subprocess_check_call(cmd, shell=False, cwd=None, **args):
 
 def run_subprocess_check_output(cmd, shell=False, **args):
     return subprocess.check_output(prepare_command(cmd, shell), shell=shell, **args).decode()
-
-
-class Colors:
-    INFO = '\033[94m'
-    SUCCESS = '\033[92m'
-    WARNING = '\033[93m'
-    ERROR = '\033[91m'
-    CLEAR = '\033[0m'
-
-
-def print_info(message):
-    print(Colors.INFO + message + Colors.CLEAR)
-
-
-def print_success(message):
-    print(Colors.SUCCESS + message + Colors.CLEAR)
-
-
-def print_warning(message):
-    print(Colors.WARNING + message + Colors.CLEAR)
-
-
-def print_error(message):
-    print(Colors.ERROR + message + Colors.CLEAR)
-
-
-class FileNotFoundException(Exception):
-    pass
 
 
 def find(names, cwd, temp_dir=None, build_dir=None, ignore_dir=None, extensions_only=False, depth=None):
@@ -139,7 +113,7 @@ def load_manifest(manifest_path):
         try:
             manifest = json.load(f)
         except ValueError:
-            raise ValueError(
+            raise ClickableException(
                 'Failed reading "manifest.json", it is not valid json')
 
     return manifest
@@ -172,7 +146,7 @@ def check_command(command):
     error_code = run_subprocess_call(shlex.split('which {}'.format(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     if error_code != 0:
-        raise Exception('The command "{}" does not exist on this system, please install it for clickable to work properly"'.format(command))
+        raise ClickableException('The command "{}" does not exist on this system, please install it for clickable to work properly"'.format(command))
 
 
 def env(name):
@@ -203,7 +177,7 @@ def merge_make_jobs_into_args(make_args=None, make_jobs=0):
 
     if make_args_contains_jobs:
         if make_jobs:
-            raise ValueError('Conflict: Number of make jobs has been specified by both, "make_args" and "make_jobs"!')
+            raise ClickableException('Conflict: Number of make jobs has been specified by both, "make_args" and "make_jobs"!')
         else:
             return make_args
     else:
@@ -230,7 +204,7 @@ def validate_clickable_json(config, schema):
         try:
             validate(instance=config, schema=schema)
         except ValidationError as e:
-            print_error("The clickable.json configuration file is invalid!")
+            logger.error("The clickable.json configuration file is invalid!")
             error_message = e.message
             # Lets add the key to the invalid value
             if e.path:
@@ -238,9 +212,9 @@ def validate_clickable_json(config, schema):
                     error_message = "{} (in '{}')".format(error_message, e.path[-2])
                 else:
                     error_message = "{} (in '{}')".format(error_message, e.path[-1])
-            raise ValueError(error_message)
+            raise ClickableException(error_message)
     except ImportError:
-        print_warning("Dependency 'jsonschema' not found. Could not validate clickable.json.")
+        logger.warning("Dependency 'jsonschema' not found. Could not validate clickable.json.")
         pass
 
 def image_exists(image):

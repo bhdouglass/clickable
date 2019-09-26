@@ -8,12 +8,8 @@ except ImportError:
     requests_available = False
 
 from .base import Command
-from clickable.utils import (
-    print_info,
-    print_warning,
-    print_error,
-    print_success,
-)
+from clickable.logger import logger
+from clickable.exceptions import ClickableException
 
 
 OPENSTORE_API = 'https://open-store.io'
@@ -27,10 +23,10 @@ class PublishCommand(Command):
 
     def run(self, path_arg=''):
         if not requests_available:
-            raise Exception('Unable to publish app, python requests module is not installed')
+            raise ClickableException('Unable to publish app, python requests module is not installed')
 
         if not self.config.apikey:
-            raise Exception('No api key specified, use OPENSTORE_API_KEY or --apikey')
+            raise ClickableException('No api key specified, use OPENSTORE_API_KEY or --apikey')
 
         click = self.config.get_click_filename()
         click_path = os.path.join(self.config.build_dir, click)
@@ -49,13 +45,13 @@ class PublishCommand(Command):
         }
         params = {'apikey': self.config.apikey}
 
-        print_info('Uploading version {} of {} for {} to the OpenStore'.format(self.config.find_version(), package_name, channel))
+        logger.info('Uploading version {} of {} for {} to the OpenStore'.format(self.config.find_version(), package_name, channel))
         response = requests.post(url, files=files, data=data, params=params)
         if response.status_code == requests.codes.ok:
-            print_success('Upload successful')
+            logger.info('Upload successful')
         elif response.status_code == requests.codes.not_found:
             title = urllib.parse.quote(self.config.find_package_title())
-            raise Exception(
+            raise ClickableException(
                 'App needs to be created in the OpenStore before you can publish it. Visit {}/submit?appId={}&name={}'.format(
                     OPENSTORE_API,
                     package_name,
@@ -64,6 +60,6 @@ class PublishCommand(Command):
             )
         else:
             if response.text == 'Unauthorized':
-                raise Exception('Failed to upload click: Unauthorized')
+                raise ClickableException('Failed to upload click: Unauthorized')
             else:
-                raise Exception('Failed to upload click: {}'.format(response.json()['message']))
+                raise ClickableException('Failed to upload click: {}'.format(response.json()['message']))

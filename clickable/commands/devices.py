@@ -1,5 +1,5 @@
 from .base import Command
-from clickable.utils import print_info, print_warning
+from clickable.logger import logger
 
 
 class DevicesCommand(Command):
@@ -11,7 +11,7 @@ class DevicesCommand(Command):
         devices = self.device.detect_attached()
 
         if len(devices) == 0:
-            print_warning('No attached devices')
+            logger.warning('No attached devices')
         else:
             for device in devices:
-                print_info(device)
+                logger.info(device)

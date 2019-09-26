@@ -1,15 +1,11 @@
 import os
 import sys
 
-from clickable.utils import (
-    print_info,
-    print_warning
-)
-
-
 from .base import Command
-from clickable.utils import print_warning, get_builders, run_subprocess_check_call
+from clickable.logger import logger
+from clickable.utils import get_builders, run_subprocess_check_call
 from clickable.container import Container
+from clickable.exceptions import ClickableException
 
 
 class LibBuildCommand(Command):
@@ -19,14 +15,14 @@ class LibBuildCommand(Command):
 
     def run(self, path_arg=""):
         if not self.config.lib_configs:
-            print_warning('No libraries defined.')
+            logger.warning('No libraries defined.')
 
         single_lib = path_arg
         found = False
 
         for lib in self.config.lib_configs:
             if not single_lib or single_lib == lib.name:
-                print_info("Building {}".format(lib.name))
+                logger.info("Building {}".format(lib.name))
                 found = True
 
                 lib.container_mode = self.config.container_mode
@@ -40,7 +36,7 @@ class LibBuildCommand(Command):
                 except FileExistsError:
                     pass
                 except Exception:
-                    print_warning('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
+                    logger.warning('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
 
                 if lib.prebuild:
                     run_subprocess_check_call(lib.prebuild, cwd=self.config.cwd, shell=True)
@@ -51,7 +47,7 @@ class LibBuildCommand(Command):
                     run_subprocess_check_call(lib.postbuild, cwd=lib.build_dir, shell=True)
 
         if single_lib and not found:
-            raise ValueError('Cannot build unknown library {}. You may add it to the clickable.json'.format(single_lib))
+            raise ClickableException('Cannot build unknown library {}. You may add it to the clickable.json'.format(single_lib))
 
     def build(self, lib):
         builder_classes = get_builders()

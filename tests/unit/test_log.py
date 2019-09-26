@@ -25,16 +25,16 @@ class TestLogCommand(TestCase):
 
         mock_run_command.assert_called_once_with('cat foo.log')
 
-    @mock.patch('clickable.commands.log.print_warning', side_effect=empty_fn)
-    def test_no_desktop_mode_log(self, mock_print_warning):
+    @mock.patch('clickable.commands.log.logger.debug', side_effect=empty_fn)
+    def test_no_desktop_mode_log(self, mock_logger_debug):
         self.config.desktop = True
         self.command.run()
 
-        mock_print_warning.assert_called_once_with(ANY)
+        mock_logger_debug.assert_called_once_with(ANY)
 
-    @mock.patch('clickable.commands.log.print_warning', side_effect=empty_fn)
-    def test_no_container_mode_log(self, mock_print_warning):
+    @mock.patch('clickable.commands.log.logger.debug', side_effect=empty_fn)
+    def test_no_container_mode_log(self, mock_logger_debug):
         self.config.container_mode = True
         self.command.run()
 
-        mock_print_warning.assert_called_once_with(ANY)
+        mock_logger_debug.assert_called_once_with(ANY)
