@@ -5,6 +5,7 @@ from clickable.utils import (
     flexible_string_to_list,
 )
 from clickable.exceptions import ClickableException
+from clickable.logger import logger
 
 
 class LibConfig(object):
@@ -94,6 +95,9 @@ class LibConfig(object):
         self.set_env_vars()
 
         self.check_config_errors()
+
+        for key, value in self.config.items():
+            logger.debug('Lib {} config value {}: {}'.format(name, key, value))
 
     def __getattr__(self, name):
         return self.config[name]

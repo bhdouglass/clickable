@@ -220,6 +220,9 @@ class Config(object):
 
         self.check_config_errors()
 
+        for key, value in self.config.items():
+            logger.debug('App config value {}: {}'.format(key, value))
+
     def use_arch(self, build_arch):
         if self.use_nvidia and not build_arch.endswith('-nvidia'):
             build_arch = "{}-nvidia".format(build_arch)

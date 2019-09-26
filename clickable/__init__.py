@@ -204,8 +204,10 @@ class Clickable(object):
         # This should help clean up the arguments & command_arg
         for command in commands:
             if command in self.config.scripts:
+                logger.debug('Running the "{}" script'.format(command))
                 subprocess.check_call(self.config.scripts[command], cwd=self.config.cwd, shell=True)
             elif command in self.command_names:
+                logger.debug('Running the "{}" command'.format(command))
                 cmd = self.command_classes[command](self.config)
                 cmd.run(command_arg)
             else:
