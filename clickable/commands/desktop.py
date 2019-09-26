@@ -9,6 +9,7 @@ from clickable.utils import (
     try_find_locale,
 )
 from clickable.logger import logger
+from clickable.exceptions import ClickableException
 from .base import Command
 from .build import BuildCommand
 from .clean import CleanCommand
@@ -119,21 +120,21 @@ class DesktopCommand(Command):
                     break
 
         if not desktop_path:
-            raise Exception('Could not find desktop file for app "{}"'.format(app))
+            raise ClickableException('Could not find desktop file for app "{}"'.format(app))
 
         # TODO finding the configured desktop entry should be moved to Config
         # We could then proceed here with making it an absolute path and
         # checking if it exists
         desktop_path = os.path.join(config.install_dir, desktop_path)
         if not os.path.exists(desktop_path):
-            raise Exception('Could not determine executable. Desktop file does not exist: "{}"'.format(desktop_path))
+            raise ClickableException('Could not determine executable. Desktop file does not exist: "{}"'.format(desktop_path))
 
         return desktop_path
 
     def determine_executable(self, desktop_path):
         execute = self.find_configured_exec_in_desktop_file(desktop_path)
         if not execute:
-            raise Exception('No "Exec" line found in the desktop file {}'.format(desktop_path))
+            raise ClickableException('No "Exec" line found in the desktop file {}'.format(desktop_path))
 
         return execute.replace('Exec=', '').strip()
 

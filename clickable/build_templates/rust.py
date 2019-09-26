@@ -4,6 +4,7 @@ import shutil
 
 from .base import Builder
 from clickable.config import Config
+from clickable.exceptions import ClickableException
 
 
 class RustBuilder(Builder):
@@ -29,7 +30,7 @@ class RustBuilder(Builder):
             return 'armv7-unknown-linux-gnueabihf'
         elif self.config.build_arch == 'amd64':
             return 'x86_64-unknown-linux-gnu'
-        raise ValueError('Arch {} unsupported by rust template'.format(self.config.build_arch))
+        raise ClickableException('Arch {} unsupported by rust template'.format(self.config.build_arch))
 
     def _find_click_assets(self):
         assets = glob.glob('{}/**/manifest.json'.format(self.config.cwd), recursive=True)

@@ -8,6 +8,7 @@ from .cmake import CMakeBuilder
 from .qmake import QMakeBuilder
 from clickable.logger import logger
 from clickable.config import Config
+from clickable.exceptions import ClickableException
 
 
 class PureQMLMakeBuilder(MakeBuilder):
@@ -47,7 +48,7 @@ class PureBuilder(Builder):
 
     def build(self):
         if os.path.isdir(self.config.install_dir):
-            raise ValueError('Build directory already exists. Please run "clickable clean" before building again!')
+            raise ClickableException('Build directory already exists. Please run "clickable clean" before building again!')
         shutil.copytree(self.config.cwd, self.config.install_dir, ignore=self._ignore)
         logger.info('Copied files to install directory for click building')
 

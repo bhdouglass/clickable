@@ -20,6 +20,7 @@ from .utils import (
     make_absolute,
 )
 from .logger import logger
+from clickable.exceptions import ClickableException
 
 
 class Config(object):
@@ -198,7 +199,7 @@ class Config(object):
             self.use_arch(self.build_arch)
 
         if self.config['arch'] not in self.arch_triplet_mapping:
-            raise ValueError('There currently is no support for {}'.format(self.config['arch']))
+            raise ClickableException('There currently is no support for {}'.format(self.config['arch']))
         self.config['arch_triplet'] = self.arch_triplet_mapping[self.config['arch']]
 
         self.lib_configs = [LibConfig(name, lib, self.config['arch'], self.config['root_dir'], self.debug_build)
@@ -224,7 +225,7 @@ class Config(object):
             build_arch = "{}-nvidia".format(build_arch)
 
         if ('16.04', build_arch) not in self.container_mapping:
-            raise ValueError('There is currently no docker image for 16.04/{}'.format(build_arch))
+            raise ClickableException('There is currently no docker image for 16.04/{}'.format(build_arch))
         self.config['docker_image'] = self.container_mapping[('16.04', build_arch)]
 
     def __getattr__(self, name):
@@ -242,8 +243,8 @@ class Config(object):
             schema = {}
             try:
                 return json.load(f)
-            except ValueError:
-                raise ValueError('Failed reading "clickable.schema", it is not valid json')
+            except ClickableException:
+                raise ClickableException('Failed reading "clickable.schema", it is not valid json')
             return None
 
     def load_json_config(self, config_path):
@@ -257,12 +258,12 @@ class Config(object):
                 config_json = {}
                 try:
                     config_json = json.load(f)
-                except ValueError:
-                    raise ValueError('Failed reading "clickable.json", it is not valid json')
+                except ClickableException:
+                    raise ClickableException('Failed reading "clickable.json", it is not valid json')
 
                 for key in self.removed_keywords:
                     if key in config_json:
-                        raise ValueError('"{}" is a no longer a valid configuration option'.format(key))
+                        raise ClickableException('"{}" is a no longer a valid configuration option'.format(key))
 
                 schema = self.load_json_schema()
                 validate_clickable_json(config=config_json, schema=schema)
@@ -273,7 +274,7 @@ class Config(object):
                     if value:
                         config[key] = value
         elif not use_default_config:
-            raise ValueError('Specified config file {} does not exist.'.format(config_path))
+            raise ClickableException('Specified config file {} does not exist.'.format(config_path))
 
         return config
 
@@ -425,7 +426,7 @@ class Config(object):
             else:
                 try:
                     desktop = get_desktop(self.cwd)
-                except ValueError:
+                except ClickableException:
                     desktop = None
                 except FileNotFoundException:
                     desktop = None
@@ -443,7 +444,7 @@ class Config(object):
         if self.config['clickable_minimum_required']:
             # Check if specified version string is valid
             if not re.fullmatch("\d+(\.\d+)*", self.config['clickable_minimum_required']):
-                raise ValueError('"{}" specified as "clickable_minimum_required" is not a valid version number'.format(self.config['clickable_minimum_required']))
+                raise ClickableException('"{}" specified as "clickable_minimum_required" is not a valid version number'.format(self.config['clickable_minimum_required']))
 
             # Convert version strings to integer lists
             clickable_version_numbers = [int(n) for n in re.split('\.', self.clickable_version)]
@@ -456,7 +457,7 @@ class Config(object):
                 if req < ver:
                     break
                 if req > ver:
-                    raise ValueError('This project requires Clickable version {} ({} is used). Please update Clickable!'.format(self.config['clickable_minimum_required'], self.clickable_version))
+                    raise ClickableException('This project requires Clickable version {} ({} is used). Please update Clickable!'.format(self.config['clickable_minimum_required'], self.clickable_version))
 
         if self.config['arch'] == 'all':
             install_keys = ['install_lib', 'install_bin', 'install_qml']
@@ -467,22 +468,22 @@ class Config(object):
                 logger.warning("Be aware that QML modules are going to be installed to {}, which is not part of 'QML2_IMPORT_PATH' at runtime.".format(self.config['app_qml_dir']))
 
         if self.debug_gdb and not self.desktop:
-            raise ValueError("GDB debugging is only supported in desktop mode! Consider running 'clickable desktop --gdb'")
+            raise ClickableException("GDB debugging is only supported in desktop mode! Consider running 'clickable desktop --gdb'")
 
         if self.config['template'] == self.CUSTOM and not self.config['build']:
-            raise ValueError('When using the "custom" template you must specify a "build" in the config')
+            raise ClickableException('When using the "custom" template you must specify a "build" in the config')
         if self.config['template'] == self.GO and not self.config['gopath']:
-            raise ValueError('When using the "go" template you must specify a "gopath" in the config or use the '
+            raise ClickableException('When using the "go" template you must specify a "gopath" in the config or use the '
                              '"GOPATH"env variable')
         if self.config['template'] == self.RUST and not self.config['cargo_home']:
-            raise ValueError('When using the "rust" template you must specify a "cargo_home" in the config')
+            raise ClickableException('When using the "rust" template you must specify a "cargo_home" in the config')
 
         if self.config['template'] and self.config['template'] not in self.templates:
-            raise ValueError('"{}" is not a valid template ({})'.format(self.config['template'], ', '.join(self.templates)))
+            raise ClickableException('"{}" is not a valid template ({})'.format(self.config['template'], ', '.join(self.templates)))
 
         for key in self.required:
             if key not in self.config:
-                raise ValueError('"{}" is empty in the config file'.format(key))
+                raise ClickableException('"{}" is empty in the config file'.format(key))
 
     def get_template(self):
         if not self.config['template']:
@@ -495,7 +496,7 @@ class Config(object):
             if not template:
                 try:
                     manifest = get_any_manifest(os.getcwd())
-                except ValueError:
+                except ClickableException:
                     manifest = None
                 except FileNotFoundException:
                     manifest = None
@@ -547,13 +548,13 @@ class Config(object):
             package = root.attrib['id'] if 'id' in root.attrib else None
 
             if not package:
-                raise ValueError('No package name specified in config.xml')
+                raise ClickableException('No package name specified in config.xml')
 
         else:
             package = self.get_manifest().get('name', None)
 
             if not package:
-                raise ValueError('No package name specified in manifest.json or clickable.json')
+                raise ClickableException('No package name specified in manifest.json or clickable.json')
 
         return package
 
@@ -564,13 +565,13 @@ class Config(object):
             title = root.attrib['name'] if 'name' in root.attrib else None
 
             if not title:
-                raise ValueError('No package title specified in config.xml')
+                raise ClickableException('No package title specified in config.xml')
 
         else:
             title = self.get_manifest().get('title', None)
 
             if not title:
-                raise ValueError(
+                raise ClickableException(
                     'No package title specified in manifest.json or clickable.json')
 
         return title
@@ -589,7 +590,7 @@ class Config(object):
                 app = apps[0]
 
         if not app:
-            raise ValueError('No app name specified in manifest.json or clickable.json')
+            raise ClickableException('No app name specified in manifest.json or clickable.json')
 
         return app
 

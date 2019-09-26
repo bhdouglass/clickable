@@ -1,6 +1,6 @@
 from .make import MakeBuilder
 from clickable.config import Config
-
+from clickable.exceptions import ClickableException
 
 class QMakeBuilder(MakeBuilder):
     name = Config.QMAKE
@@ -21,7 +21,7 @@ class QMakeBuilder(MakeBuilder):
         elif self.config.build_arch == 'amd64':
             command = 'qmake'
         else:
-            raise Exception('{} is not supported by the qmake build yet'.format(self.config.build_arch))
+            raise ClickableException('{} is not supported by the qmake build yet'.format(self.config.build_arch))
 
         if self.config.build_args:
             command = '{} {}'.format(command, ' '.join(self.config.build_args))

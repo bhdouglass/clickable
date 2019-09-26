@@ -5,6 +5,7 @@ from .base import Command
 from clickable.logger import logger
 from clickable.utils import get_builders, run_subprocess_check_call
 from clickable.container import Container
+from clickable.exceptions import ClickableException
 
 
 class LibBuildCommand(Command):
@@ -46,7 +47,7 @@ class LibBuildCommand(Command):
                     run_subprocess_check_call(lib.postbuild, cwd=lib.build_dir, shell=True)
 
         if single_lib and not found:
-            raise ValueError('Cannot build unknown library {}. You may add it to the clickable.json'.format(single_lib))
+            raise ClickableException('Cannot build unknown library {}. You may add it to the clickable.json'.format(single_lib))
 
     def build(self, lib):
         builder_classes = get_builders()

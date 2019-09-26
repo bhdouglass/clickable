@@ -12,6 +12,7 @@ from clickable.commands.base import Command
 from clickable.config import Config
 from clickable.container import Container
 from clickable.logger import logger
+from clickable.exceptions import ClickableException
 
 
 __version__ = '6.2.0'
@@ -223,13 +224,17 @@ def main():
 
     try:
         clickable.run(args.commands, args)
-    except Exception:
+    except ClickableException as e:
+        logger.error(str(e))
+        sys.exit(1)
+    except Exception as e:
         if args.verbose:
-            raise
+            logger.exception('Encountered and unknown error: ' + str(e))
         else:
-            # TODO only show the error message when we know the error, otherwise return a crash message
-            logger.critical(str(sys.exc_info()[1]))
-            sys.exit(1)
+            logger.critical('Encountered and unknown error: ' + str(e))
+
+        logger.critical('If you believe this is a bug, please run clickable again with --verbose and file a report at https://gitlab.com/clickable/clickable/issues')
+        sys.exit(2)
 
 
 if __name__ == '__main__':

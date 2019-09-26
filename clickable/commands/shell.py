@@ -8,6 +8,7 @@ from clickable.utils import (
     run_subprocess_check_output,
 )
 from clickable.logger import logger
+from clickable.exceptions import ClickableException
 
 
 class ShellCommand(Command):
@@ -55,7 +56,7 @@ class ShellCommand(Command):
                     break
 
             if port == 0:
-                raise Exception('Failed to open a port to the device')
+                raise ClickableException('Failed to open a port to the device')
 
             # Purge the device host key so that SSH doesn't print a scary warning about it
             # (it changes every time the device is reflashed and this is expected)
@@ -65,7 +66,7 @@ class ShellCommand(Command):
 
             id_pub = os.path.expanduser('~/.ssh/id_rsa.pub')
             if not os.path.isfile(id_pub):
-                raise Exception('Could not find a ssh public key at "{}", please generate one and try again'.format(id_pub))
+                raise ClickableException('Could not find a ssh public key at "{}", please generate one and try again'.format(id_pub))
 
             with open(id_pub, 'r') as f:
                 public_key = f.read().strip()

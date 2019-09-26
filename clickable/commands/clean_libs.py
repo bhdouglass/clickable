@@ -4,6 +4,7 @@ import sys
 
 from .base import Command
 from clickable.logger import logger
+from clickable.exceptions import ClickableException
 
 
 class CleanLibsCommand(Command):
@@ -34,5 +35,5 @@ class CleanLibsCommand(Command):
                     logger.warning('Nothing to clean. Path does not exist: {}'.format(lib.build_dir))
 
         if single_lib and not found:
-            raise ValueError('Cannot clean unknown library {}. You may add it to the clickable.json'.format(single_lib))
+            raise ClickableException('Cannot clean unknown library {}. You may add it to the clickable.json'.format(single_lib))
 

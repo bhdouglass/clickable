@@ -16,6 +16,7 @@ from clickable.utils import (
 )
 from clickable.logger import logger
 from clickable.config import Config
+from clickable.exceptions import ClickableException
 
 
 class Container(object):
@@ -125,7 +126,7 @@ class Container(object):
             logger.info('Asking for root to add the current user to the docker group')
             subprocess.check_call(shlex.split('sudo usermod -aG docker {}'.format(getpass.getuser())))
 
-            raise Exception('Log out or restart to apply changes')
+            raise ClickableException('Log out or restart to apply changes')
 
     def run_command(self, command, sudo=False, get_output=False, use_dir=True, cwd=None):
         wrapped_command = command
@@ -137,7 +138,7 @@ class Container(object):
             self.check_docker()
 
             if ' ' in cwd or ' ' in self.config.build_dir:
-                raise Exception('There are spaces in the current path, this will cause errors in the build process')
+                raise ClickableException('There are spaces in the current path, this will cause errors in the build process')
 
             if self.config.first_docker_info:
                 logger.debug('Using docker container "{}"'.format(self.docker_image))
