@@ -6,11 +6,12 @@ import inspect
 import glob
 from os.path import dirname, basename, isfile, join
 import subprocess
+import logging
 
 from clickable.commands.base import Command
 from clickable.config import Config
 from clickable.container import Container
-from clickable.utils import print_error
+from clickable.logger import logger
 
 
 __version__ = '6.2.0'
@@ -207,7 +208,7 @@ class Clickable(object):
                 cmd = self.command_classes[command](self.config)
                 cmd.run(command_arg)
             else:
-                print_error('There is no builtin or custom command named "{}"'.format(command))
+                logger.error('There is no builtin or custom command named "{}"'.format(command))
                 self.print_valid_commands()
                 sys.exit(1)
 
@@ -216,13 +217,18 @@ def main():
     clickable = Clickable()
     args = clickable.parse_args()
 
+    if args.verbose:
+        logger.setLevel(logging.DEBUG)
+    logger.debug('Clickable v' + __version__)
+
     try:
         clickable.run(args.commands, args)
     except Exception:
         if args.verbose:
             raise
         else:
-            print_error(str(sys.exc_info()[1]))
+            # TODO only show the error message when we know the error, otherwise return a crash message
+            logger.critical(str(sys.exc_info()[1]))
             sys.exit(1)
 
 

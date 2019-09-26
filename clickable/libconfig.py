@@ -1,7 +1,6 @@
 import os
 
 from clickable.utils import (
-    print_warning,
     merge_make_jobs_into_args,
     flexible_string_to_list,
 )

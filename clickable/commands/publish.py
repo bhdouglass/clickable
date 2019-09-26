@@ -8,12 +8,7 @@ except ImportError:
     requests_available = False
 
 from .base import Command
-from clickable.utils import (
-    print_info,
-    print_warning,
-    print_error,
-    print_success,
-)
+from clickable.logger import logger
 
 
 OPENSTORE_API = 'https://open-store.io'
@@ -49,10 +44,10 @@ class PublishCommand(Command):
         }
         params = {'apikey': self.config.apikey}
 
-        print_info('Uploading version {} of {} for {} to the OpenStore'.format(self.config.find_version(), package_name, channel))
+        logger.info('Uploading version {} of {} for {} to the OpenStore'.format(self.config.find_version(), package_name, channel))
         response = requests.post(url, files=files, data=data, params=params)
         if response.status_code == requests.codes.ok:
-            print_success('Upload successful')
+            logger.info('Upload successful')
         elif response.status_code == requests.codes.not_found:
             title = urllib.parse.quote(self.config.find_package_title())
             raise Exception(

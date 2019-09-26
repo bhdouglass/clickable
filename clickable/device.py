@@ -34,7 +34,7 @@ class Device(object):
 
     def run_command(self, command, cwd=None):
         if self.config.container_mode:
-            print_warning('Skipping device command, running in container mode')
+            logger.debug('Skipping device command, running in container mode')
             return
 
         if not cwd:

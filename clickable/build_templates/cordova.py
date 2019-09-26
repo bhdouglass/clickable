@@ -7,7 +7,6 @@ import os
 from distutils.dir_util import copy_tree
 
 from .cmake import CMakeBuilder
-from clickable.utils import print_error, print_warning
 from clickable.config import Config
 
 

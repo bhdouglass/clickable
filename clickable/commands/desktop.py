@@ -5,11 +5,10 @@ from pathlib import Path
 
 from clickable.utils import (
     check_command,
-    print_warning,
-    print_info,
     makedirs,
     try_find_locale,
 )
+from clickable.logger import logger
 from .base import Command
 from .build import BuildCommand
 from .clean import CleanCommand
@@ -31,8 +30,7 @@ class DesktopCommand(Command):
     def run(self, path_arg=None):
         self.prepare_run(self.config)
         docker_config = self.setup_docker(self.config)
-        self.run_docker_command(docker_config,
-                                verbose_mode=self.config.verbose)
+        self.run_docker_command(docker_config)
 
     def prepare_run(self, config):
         if not config.desktop_skip_build:
@@ -56,7 +54,7 @@ class DesktopCommand(Command):
         if self.is_xhost_installed():
             subprocess.check_call(shlex.split('xhost +local:docker'))
         else:
-            print_warning('xhost not installed, desktop mode may fail')
+            logger.warning('xhost not installed, desktop mode may fail')
 
     def is_xhost_installed(self):
         try:
@@ -201,7 +199,7 @@ class DesktopCommand(Command):
 
         device_home = self.config.desktop_device_home
         makedirs(device_home)
-        print_info("Mounting device home to {}".format(device_home))
+        logger.info("Mounting device home to {}".format(device_home))
 
         return {
             local_working_directory: local_working_directory,
@@ -215,9 +213,8 @@ class DesktopCommand(Command):
         Path(xauth_path).touch()
         return xauth_path
 
-    def run_docker_command(self, docker_config, verbose_mode):
+    def run_docker_command(self, docker_config):
         command = docker_config.render_command()
-        if verbose_mode:
-            print_info(command)
+        logger.debug(command)
 
         subprocess.check_call(shlex.split(command), cwd=docker_config.working_directory)

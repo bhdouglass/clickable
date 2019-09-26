@@ -1,5 +1,5 @@
 from .base import Command
-from clickable.utils import print_warning
+from clickable.logger import logger
 
 
 class LogsCommand(Command):
@@ -9,10 +9,10 @@ class LogsCommand(Command):
 
     def run(self, path_arg=None):
         if self.config.desktop:
-            print_warning('Skipping logs, running in desktop mode')
+            logger.debug('Skipping logs, running in desktop mode')
             return
         elif self.config.container_mode:
-            print_warning('Skipping logs, running in container mode')
+            logger.debug('Skipping logs, running in container mode')
             return
 
         log = '~/.cache/upstart/application-click-{}_{}_{}.log'.format(

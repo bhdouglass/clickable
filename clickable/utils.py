@@ -10,6 +10,7 @@ from os.path import dirname, basename, isfile, join
 import multiprocessing
 
 from clickable.build_templates.base import Builder
+from clickable.logger import logger
 
 # TODO use these subprocess functions everywhere
 
@@ -39,30 +40,6 @@ def run_subprocess_check_call(cmd, shell=False, cwd=None, **args):
 
 def run_subprocess_check_output(cmd, shell=False, **args):
     return subprocess.check_output(prepare_command(cmd, shell), shell=shell, **args).decode()
-
-
-class Colors:
-    INFO = '\033[94m'
-    SUCCESS = '\033[92m'
-    WARNING = '\033[93m'
-    ERROR = '\033[91m'
-    CLEAR = '\033[0m'
-
-
-def print_info(message):
-    print(Colors.INFO + message + Colors.CLEAR)
-
-
-def print_success(message):
-    print(Colors.SUCCESS + message + Colors.CLEAR)
-
-
-def print_warning(message):
-    print(Colors.WARNING + message + Colors.CLEAR)
-
-
-def print_error(message):
-    print(Colors.ERROR + message + Colors.CLEAR)
 
 
 class FileNotFoundException(Exception):
@@ -230,7 +207,7 @@ def validate_clickable_json(config, schema):
         try:
             validate(instance=config, schema=schema)
         except ValidationError as e:
-            print_error("The clickable.json configuration file is invalid!")
+            logger.error("The clickable.json configuration file is invalid!")
             error_message = e.message
             # Lets add the key to the invalid value
             if e.path:
@@ -240,7 +217,7 @@ def validate_clickable_json(config, schema):
                     error_message = "{} (in '{}')".format(error_message, e.path[-1])
             raise ValueError(error_message)
     except ImportError:
-        print_warning("Dependency 'jsonschema' not found. Could not validate clickable.json.")
+        logger.warning("Dependency 'jsonschema' not found. Could not validate clickable.json.")
         pass
 
 def image_exists(image):

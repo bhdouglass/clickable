@@ -2,7 +2,8 @@ import os
 import subprocess
 
 from .base import Command
-from clickable.utils import print_warning, run_subprocess_check_call
+from clickable.utils import run_subprocess_check_call
+from clickable.logger import logger
 
 
 class InstallCommand(Command):
@@ -12,10 +13,10 @@ class InstallCommand(Command):
 
     def run(self, path_arg=None):
         if self.config.desktop:
-            print_warning('Skipping install, running in desktop mode')
+            logger.debug('Skipping install, running in desktop mode')
             return
         elif self.config.container_mode:
-            print_warning('Skipping install, running in container mode')
+            logger.debug('Skipping install, running in container mode')
             return
 
         cwd = '.'

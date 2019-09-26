@@ -1,5 +1,5 @@
 from .base import Command
-from clickable.utils import print_info
+from clickable.logger import logger
 
 cookiecutter_available = True
 try:
@@ -60,7 +60,7 @@ class CreateCommand(Command):
                     app_template = template
 
         if not app_template:
-            print_info('Available app templates:')
+            logger.info('Available app templates:')
             for (index, template) in enumerate(APP_TEMPLATES):
                 print('[{}] {} - {}'.format(index + 1, template['name'], template['display']))
 
@@ -78,7 +78,7 @@ class CreateCommand(Command):
 
             app_template = APP_TEMPLATES[choice - 1]
 
-        print_info('Generating new app from template: {}'.format(app_template['display']))
+        logger.info('Generating new app from template: {}'.format(app_template['display']))
         cookiecutter(app_template['url'], no_input=no_input)
 
-        print_info('Your new app has been generated, go to the app\'s directory and run clickable to get started')
+        logger.info('Your new app has been generated, go to the app\'s directory and run clickable to get started')

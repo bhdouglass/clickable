@@ -6,8 +6,8 @@ from .base import Command
 from clickable.utils import (
     run_subprocess_call,
     run_subprocess_check_output,
-    print_info,
 )
+from clickable.logger import logger
 
 
 class ShellCommand(Command):
@@ -75,7 +75,7 @@ class ShellCommand(Command):
 
             output = run_subprocess_check_output('adb {} shell "grep \\"{}\\" ~/.ssh/authorized_keys"'.format(adb_args, public_key), shell=True).strip()
             if not output or 'No such file or directory' in output:
-                print_info('Inserting ssh public key on the connected device')
+                logger.info('Inserting ssh public key on the connected device')
                 self.device.run_command('echo \"{}\" >>~/.ssh/authorized_keys'.format(public_key), cwd=self.config.cwd)
                 self.device.run_command('chmod 700 ~/.ssh', cwd=self.config.cwd)
                 self.device.run_command('chmod 600 ~/.ssh/authorized_keys', cwd=self.config.cwd)

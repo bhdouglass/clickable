@@ -15,12 +15,11 @@ from .utils import (
     merge_make_jobs_into_args,
     flexible_string_to_list,
     env,
-    print_warning,
-    print_info,
     FileNotFoundException,
     validate_clickable_json,
     make_absolute,
 )
+from .logger import logger
 
 
 class Config(object):
@@ -191,8 +190,7 @@ class Config(object):
             self.build_arch = 'amd64'
             # only turn on nvidia mode in desktop mode
             if NvidiaDriversInstalled().is_met():
-                if self.verbose:
-                    print_info('Turning on nvidia mode.')
+                logger.debug('Turning on nvidia mode.')
                 self.use_nvidia = True
 
         if not self.config['docker_image']:
@@ -338,7 +336,7 @@ class Config(object):
 
         if args.debug_build:
             self.debug_build = True
-            print_warning('"--debug-build" is deprecated, use "--debug" instead!')
+            logger.warning('"--debug-build" is deprecated, use "--debug" instead!')
 
         if args.gdb:
             self.debug_build = True
@@ -451,7 +449,7 @@ class Config(object):
             clickable_version_numbers = [int(n) for n in re.split('\.', self.clickable_version)]
             clickable_required_numbers = [int(n) for n in re.split('\.', self.config['clickable_minimum_required'])]
             if len(clickable_required_numbers) > len(clickable_version_numbers):
-                print_warning('Clickable version number only consists of {} numbers, but {} numbers specified in "clickable_minimum_required". Superfluous numbers will be ignored.'.format(len(clickable_version_numbers), len(clickable_required_numbers)))
+                logger.warning('Clickable version number only consists of {} numbers, but {} numbers specified in "clickable_minimum_required". Superfluous numbers will be ignored.'.format(len(clickable_version_numbers), len(clickable_required_numbers)))
 
             # Compare all numbers until finding an unequal pair
             for req, ver in zip(clickable_required_numbers, clickable_version_numbers):
@@ -464,9 +462,9 @@ class Config(object):
             install_keys = ['install_lib', 'install_bin', 'install_qml']
             for key in install_keys:
                 if self.config[key]:
-                    print_warning("'{}' ({}) marked for install, even though architecture is 'all'.".format("', '".join(self.config[key]), key))
+                    logger.warning("'{}' ({}) marked for install, even though architecture is 'all'.".format("', '".join(self.config[key]), key))
             if self.config['install_qml']:
-                print_warning("Be aware that QML modules are going to be installed to {}, which is not part of 'QML2_IMPORT_PATH' at runtime.".format(self.config['app_qml_dir']))
+                logger.warning("Be aware that QML modules are going to be installed to {}, which is not part of 'QML2_IMPORT_PATH' at runtime.".format(self.config['app_qml_dir']))
 
         if self.debug_gdb and not self.desktop:
             raise ValueError("GDB debugging is only supported in desktop mode! Consider running 'clickable desktop --gdb'")
@@ -522,7 +520,7 @@ class Config(object):
             self.config['template'] = template
             self.cleanup_config()
 
-            print_info('Auto detected template to be "{}"'.format(template))
+            logger.info('Auto detected template to be "{}"'.format(template))
 
         return self.config['template']
 

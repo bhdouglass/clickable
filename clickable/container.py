@@ -11,11 +11,10 @@ import sys
 from clickable.utils import (
     run_subprocess_call,
     run_subprocess_check_output,
-    print_info,
-    print_warning,
     check_command,
     image_exists,
 )
+from clickable.logger import logger
 from clickable.config import Config
 
 
@@ -45,7 +44,7 @@ class Container(object):
             cached_container = f.read().strip()
 
             if not image_exists(cached_container):
-                print_info("Cached container does not exist anymore")
+                logger.warning("Cached container does not exist anymore")
                 return
 
             command_base = 'docker images -q {}'.format(self.base_docker_image)
@@ -55,17 +54,17 @@ class Container(object):
             history_cached = run_subprocess_check_output(command_cached).strip()
 
             if hash_base in history_cached:
-                print_info("Found cached container")
+                logger.debug("Found cached container")
                 self.docker_image = cached_container
             else:
-                print_info("Found outdated container")
+                logger.warning("Found outdated container")
 
     def start_docker(self):
         started = False
         error_code = run_subprocess_call(shlex.split('which systemctl'), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         if error_code == 0:
-            print_info('Asking for root to start docker')
+            logger.info('Asking for root to start docker')
             error_code = run_subprocess_call(shlex.split('sudo systemctl start docker'))
 
             started = (error_code == 0)
@@ -111,19 +110,19 @@ class Container(object):
         )
 
     def setup_docker(self):
-        print_info('Setting up docker')
+        logger.info('Setting up docker')
 
         check_command('docker')
         self.start_docker()
 
         if not self.docker_group_exists():
-            print_info('Asking for root to create docker group')
+            logger.info('Asking for root to create docker group')
             subprocess.check_call(shlex.split('sudo groupadd docker'))
 
         if self.user_part_of_docker_group():
-            print_info('Setup has already been completed')
+            logger.info('Setup has already been completed')
         else:
-            print_info('Asking for root to add the current user to the docker group')
+            logger.info('Asking for root to add the current user to the docker group')
             subprocess.check_call(shlex.split('sudo usermod -aG docker {}'.format(getpass.getuser())))
 
             raise Exception('Log out or restart to apply changes')
@@ -141,7 +140,7 @@ class Container(object):
                 raise Exception('There are spaces in the current path, this will cause errors in the build process')
 
             if self.config.first_docker_info:
-                print_info('Using docker container "{}"'.format(self.docker_image))
+                logger.debug('Using docker container "{}"'.format(self.docker_image))
                 self.config.first_docker_info = False
 
             go_config = ''
@@ -162,7 +161,7 @@ class Container(object):
             rust_config = ''
 
             if self.config.config['template'] == Config.RUST and self.config.cargo_home:
-                print_info("Caching cargo related files in {}".format(self.config.cargo_home))
+                logger.info("Caching cargo related files in {}".format(self.config.cargo_home))
                 cargo_registry = os.path.join(self.config.cargo_home, 'registry')
                 cargo_git = os.path.join(self.config.cargo_home, 'git')
                 cargo_package_cache_lock = os.path.join(self.config.cargo_home, '.package-cache')
@@ -205,7 +204,7 @@ class Container(object):
 
     def setup_dependencies(self, force_build=False):
         if self.config.dependencies_build or self.config.dependencies_target:
-            print_info('Checking dependencies')
+            logger.debug('Checking dependencies')
 
             dependencies = self.config.dependencies_build
             for dep in self.config.dependencies_target:
@@ -233,12 +232,12 @@ class Container(object):
                 if run:
                     self.run_command(command, sudo=True, use_dir=False)
                 else:
-                    print_info('Dependencies already installed')
+                    logger.debug('Dependencies already installed')
             else:
                 self.check_docker()
 
                 if self.config.custom_docker_image:
-                    print_info('Skipping dependency check, using a custom docker image')
+                    logger.warning('Skipping dependency check, using a custom docker image')
                 else:
                     command_ppa = ''
                     if self.config.dependencies_ppa:
@@ -279,14 +278,14 @@ RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} 
                         with open(self.docker_name_file, 'w') as f:
                             f.write(self.docker_image)
 
-                        print_info('Generating new docker image')
+                        logger.debug('Generating new docker image')
                         try:
                             subprocess.check_call(shlex.split('docker build -t {} .'.format(self.docker_image)), cwd=self.clickable_dir)
                         except subprocess.CalledProcessError:
                             self.clean_clickable()
                             raise
                     else:
-                        print_info('Dependencies already setup')
+                        logger.debug('Dependencies already setup')
 
     def clean_clickable(self):
         path = os.path.join(self.config.cwd, self.clickable_dir)
