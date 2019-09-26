@@ -110,7 +110,7 @@ class LibConfig(object):
 
     def prepare_docker_env_vars(self):
         docker_env_vars = []
-        for key, val in self.get_env_vars():
+        for key, val in self.get_env_vars().items():
             docker_env_vars.append('-e {}="{}"'.format(key, val))
         return " ".join(docker_env_vars)
 
