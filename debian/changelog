@@ -1,3 +1,9 @@
+clickable (6.2.1) unstable; urgency=medium
+
+  * Fixed env vars in libs
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Thu, 26 Sep 2019 09:21:00 -0500
+
 clickable (6.2.0) unstable; urgency=medium
 
   * Replaced the --debug argument with --verbose

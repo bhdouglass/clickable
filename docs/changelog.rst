@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.2.1
+-----------------
+
+- Fixed env vars in libs
+
 Changes in v6.2.0
 -----------------
 
