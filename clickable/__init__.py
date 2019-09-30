@@ -229,13 +229,20 @@ def main():
     except ClickableException as e:
         logger.error(str(e))
         sys.exit(1)
+    except subprocess.CalledProcessError as e:
+        logger.debug('Command exited with an error:' + ' '.join(e.cmd), exc_info=e)
+        logger.critical('Command exited with non-zero exit status {}, see above for details. This is most likely not a problem with Clickable.'.format(
+            e.returncode,
+        ))
+
+        sys.exit(2)
     except Exception as e:
-        logger.debug('Encountered and unknown error', exc_info=e)
+        logger.debug('Encountered an unknown error', exc_info=e)
         if not args.verbose:
-            logger.critical('Encountered and unknown error: ' + str(e))
+            logger.critical('Encountered an unknown error: ' + str(e))
 
         logger.critical('If you believe this is a bug, please file a report at https://gitlab.com/clickable/clickable/issues with the log file located at ' + log_file)
-        sys.exit(2)
+        sys.exit(3)
 
 
 if __name__ == '__main__':
