@@ -188,12 +188,12 @@ class DesktopCommand(Command):
 
     def get_docker_path_env(self, working_directory):
         return ':'.join([
-            '/usr/local/nvidia/bin',
-            '/bin',
-            '/usr/bin',
             os.path.join(working_directory, 'bin'),
             os.path.join(working_directory, 'lib/x86_64-linux-gnu/bin'),
             working_directory,
+            '/usr/local/nvidia/bin',
+            '/bin',
+            '/usr/bin',
         ])
 
     def setup_volume_mappings(self, local_working_directory, package_name):
