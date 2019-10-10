@@ -1,4 +1,5 @@
 from .base import Command
+from clickable.exceptions import ClickableException
 
 
 class RunCommand(Command):
@@ -8,7 +9,7 @@ class RunCommand(Command):
 
     def run(self, path_arg=None):
         if not path_arg:
-            raise ValueError('No command supplied for `clickable run`')
+            raise ClickableException('No command supplied for `clickable run`')
 
         self.config.container.setup_dependencies()
         self.config.container.run_command(path_arg, use_dir=False)

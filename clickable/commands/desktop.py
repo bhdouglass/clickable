@@ -5,11 +5,11 @@ from pathlib import Path
 
 from clickable.utils import (
     check_command,
-    print_warning,
-    print_info,
     makedirs,
     try_find_locale,
 )
+from clickable.logger import logger
+from clickable.exceptions import ClickableException
 from .base import Command
 from .build import BuildCommand
 from .clean import CleanCommand
@@ -31,8 +31,7 @@ class DesktopCommand(Command):
     def run(self, path_arg=None):
         self.prepare_run(self.config)
         docker_config = self.setup_docker(self.config)
-        self.run_docker_command(docker_config,
-                                verbose_mode=self.config.verbose)
+        self.run_docker_command(docker_config)
 
     def prepare_run(self, config):
         if not config.desktop_skip_build:
@@ -56,7 +55,7 @@ class DesktopCommand(Command):
         if self.is_xhost_installed():
             subprocess.check_call(shlex.split('xhost +local:docker'))
         else:
-            print_warning('xhost not installed, desktop mode may fail')
+            logger.warning('xhost not installed, desktop mode may fail')
 
     def is_xhost_installed(self):
         try:
@@ -121,21 +120,21 @@ class DesktopCommand(Command):
                     break
 
         if not desktop_path:
-            raise Exception('Could not find desktop file for app "{}"'.format(app))
+            raise ClickableException('Could not find desktop file for app "{}"'.format(app))
 
         # TODO finding the configured desktop entry should be moved to Config
         # We could then proceed here with making it an absolute path and
         # checking if it exists
         desktop_path = os.path.join(config.install_dir, desktop_path)
         if not os.path.exists(desktop_path):
-            raise Exception('Could not determine executable. Desktop file does not exist: "{}"'.format(desktop_path))
+            raise ClickableException('Could not determine executable. Desktop file does not exist: "{}"'.format(desktop_path))
 
         return desktop_path
 
     def determine_executable(self, desktop_path):
         execute = self.find_configured_exec_in_desktop_file(desktop_path)
         if not execute:
-            raise Exception('No "Exec" line found in the desktop file {}'.format(desktop_path))
+            raise ClickableException('No "Exec" line found in the desktop file {}'.format(desktop_path))
 
         return execute.replace('Exec=', '').strip()
 
@@ -201,7 +200,7 @@ class DesktopCommand(Command):
 
         device_home = self.config.desktop_device_home
         makedirs(device_home)
-        print_info("Mounting device home to {}".format(device_home))
+        logger.info("Mounting device home to {}".format(device_home))
 
         return {
             local_working_directory: local_working_directory,
@@ -215,9 +214,8 @@ class DesktopCommand(Command):
         Path(xauth_path).touch()
         return xauth_path
 
-    def run_docker_command(self, docker_config, verbose_mode):
+    def run_docker_command(self, docker_config):
         command = docker_config.render_command()
-        if verbose_mode:
-            print_info(command)
+        logger.debug(command)
 
         subprocess.check_call(shlex.split(command), cwd=docker_config.working_directory)

@@ -1,5 +1,6 @@
 from .base import Command
-from clickable.utils import print_info
+from clickable.logger import logger
+from clickable.exceptions import ClickableException
 
 cookiecutter_available = True
 try:
@@ -51,7 +52,7 @@ class CreateCommand(Command):
 
     def run(self, path_arg=None, no_input=False):
         if not cookiecutter_available:
-            raise Exception('Cookiecutter is not available on your computer, more information can be found here: https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter')
+            raise ClickableException('Cookiecutter is not available on your computer, more information can be found here: https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter')
 
         app_template = None
         if path_arg:
@@ -60,7 +61,7 @@ class CreateCommand(Command):
                     app_template = template
 
         if not app_template:
-            print_info('Available app templates:')
+            logger.info('Available app templates:')
             for (index, template) in enumerate(APP_TEMPLATES):
                 print('[{}] {} - {}'.format(index + 1, template['name'], template['display']))
 
@@ -71,14 +72,14 @@ class CreateCommand(Command):
             try:
                 choice = int(choice)
             except ValueError:
-                raise Exception('Invalid choice')
+                raise ClickableException('Invalid choice')
 
             if choice > len(APP_TEMPLATES) or choice < 1:
-                raise Exception('Invalid choice')
+                raise ClickableException('Invalid choice')
 
             app_template = APP_TEMPLATES[choice - 1]
 
-        print_info('Generating new app from template: {}'.format(app_template['display']))
+        logger.info('Generating new app from template: {}'.format(app_template['display']))
         cookiecutter(app_template['url'], no_input=no_input)
 
-        print_info('Your new app has been generated, go to the app\'s directory and run clickable to get started')
+        logger.info('Your new app has been generated, go to the app\'s directory and run clickable to get started')

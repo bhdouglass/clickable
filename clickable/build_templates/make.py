@@ -4,7 +4,7 @@ import sys
 import os
 
 from .base import Builder
-from clickable.utils import print_warning
+from clickable.logger import logger
 from clickable.config import Config
 
 
@@ -30,9 +30,9 @@ class MakeBuilder(Builder):
         try:
             os.makedirs(self.config.install_dir)
         except FileExistsError:
-            print_warning('Failed to create temp dir, already exists')
+            logger.warning('Failed to create temp dir, already exists')
         except Exception:
-            print_warning('Failed to create temp dir ({}): {}'.format(self.config.install_dir, str(sys.exc_info()[0])))
+            logger.warning('Failed to create temp dir ({}): {}'.format(self.config.install_dir, str(sys.exc_info()[0])))
 
         # The actual make command is implemented in the subclasses
 

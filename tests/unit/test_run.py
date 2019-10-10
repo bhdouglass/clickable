@@ -3,6 +3,7 @@ from unittest.mock import ANY
 
 from clickable.commands.run import RunCommand
 from clickable.container import Container
+from clickable.exceptions import ClickableException
 from ..mocks import ConfigMock, empty_fn
 
 
@@ -21,5 +22,5 @@ class TestRunCommand(TestCase):
         mock_run_command.assert_called_once_with('echo foo', use_dir=False)
 
     def test_run_no_command(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(ClickableException):
             self.command.run()

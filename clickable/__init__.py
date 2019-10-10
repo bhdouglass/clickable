@@ -6,11 +6,13 @@ import inspect
 import glob
 from os.path import dirname, basename, isfile, join
 import subprocess
+import logging
 
 from clickable.commands.base import Command
 from clickable.config import Config
 from clickable.container import Container
-from clickable.utils import print_error
+from clickable.logger import logger, log_file, console_handler
+from clickable.exceptions import ClickableException
 
 
 __version__ = '6.2.1'
@@ -202,12 +204,14 @@ class Clickable(object):
         # This should help clean up the arguments & command_arg
         for command in commands:
             if command in self.config.scripts:
+                logger.debug('Running the "{}" script'.format(command))
                 subprocess.check_call(self.config.scripts[command], cwd=self.config.cwd, shell=True)
             elif command in self.command_names:
+                logger.debug('Running the "{}" command'.format(command))
                 cmd = self.command_classes[command](self.config)
                 cmd.run(command_arg)
             else:
-                print_error('There is no builtin or custom command named "{}"'.format(command))
+                logger.error('There is no builtin or custom command named "{}"'.format(command))
                 self.print_valid_commands()
                 sys.exit(1)
 
@@ -216,14 +220,29 @@ def main():
     clickable = Clickable()
     args = clickable.parse_args()
 
+    if args.verbose:
+        console_handler.setLevel(logging.DEBUG)
+    logger.debug('Clickable v' + __version__)
+
     try:
         clickable.run(args.commands, args)
-    except Exception:
-        if args.verbose:
-            raise
-        else:
-            print_error(str(sys.exc_info()[1]))
-            sys.exit(1)
+    except ClickableException as e:
+        logger.error(str(e))
+        sys.exit(1)
+    except subprocess.CalledProcessError as e:
+        logger.debug('Command exited with an error:' + ' '.join(e.cmd), exc_info=e)
+        logger.critical('Command exited with non-zero exit status {}, see above for details. This is most likely not a problem with Clickable.'.format(
+            e.returncode,
+        ))
+
+        sys.exit(2)
+    except Exception as e:
+        logger.debug('Encountered an unknown error', exc_info=e)
+        if not args.verbose:
+            logger.critical('Encountered an unknown error: ' + str(e))
+
+        logger.critical('If you believe this is a bug, please file a report at https://gitlab.com/clickable/clickable/issues with the log file located at ' + log_file)
+        sys.exit(3)
 
 
 if __name__ == '__main__':

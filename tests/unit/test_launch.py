@@ -24,19 +24,19 @@ class TestLaunchCommand(TestCase):
         self.config.kill = 'foo and bar'
         self.command.kill()
 
-    @mock.patch('clickable.commands.launch.print_warning', side_effect=empty_fn)
-    def test_kill_skips_desktop(self, mock_print_warning):
+    @mock.patch('clickable.commands.launch.logger.debug', side_effect=empty_fn)
+    def test_kill_skips_desktop(self, mock_logger_debug):
         self.config.desktop = True
         self.command.kill()
 
-        mock_print_warning.assert_called_once_with(ANY)
+        mock_logger_debug.assert_called_once_with(ANY)
 
-    @mock.patch('clickable.commands.launch.print_warning', side_effect=empty_fn)
-    def test_kill_skips_container_mode(self, mock_print_warning):
+    @mock.patch('clickable.commands.launch.logger.debug', side_effect=empty_fn)
+    def test_kill_skips_container_mode(self, mock_logger_debug):
         self.config.container_mode = True
         self.command.kill()
 
-        mock_print_warning.assert_called_once_with(ANY)
+        mock_logger_debug.assert_called_once_with(ANY)
 
     @mock.patch('clickable.device.Device.run_command', side_effect=empty_fn)
     def test_launch(self, mock_run_command):
