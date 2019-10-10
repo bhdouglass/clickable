@@ -2,7 +2,6 @@ import os
 import shutil
 
 from .base import Command
-from clickable.utils import print_info
 
 
 class TestCommand(Command):

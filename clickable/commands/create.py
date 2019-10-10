@@ -1,7 +1,7 @@
 import os
 
 from .base import Command
-from clickable.utils import print_info
+from clickable.exceptions import ClickableException
 
 cookiecutter_available = True
 try:
@@ -32,7 +32,7 @@ class CreateCommand(Command):
 
     def run(self, path_arg=None, no_input=False):
         if not cookiecutter_available:
-            raise Exception('Cookiecutter is not available on your computer, more information can be found here: https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter')
+            raise ClickableException('Cookiecutter is not available on your computer, more information can be found here: https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter')
 
         config_file = os.path.expanduser('~/.clickable/cookiecutter_config.yaml')
         if not os.path.isfile(config_file):

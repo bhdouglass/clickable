@@ -6,8 +6,9 @@ from .base import Command
 from clickable.utils import (
     run_subprocess_call,
     run_subprocess_check_output,
-    print_info,
 )
+from clickable.logger import logger
+from clickable.exceptions import ClickableException
 
 
 class ShellCommand(Command):
@@ -55,7 +56,7 @@ class ShellCommand(Command):
                     break
 
             if port == 0:
-                raise Exception('Failed to open a port to the device')
+                raise ClickableException('Failed to open a port to the device')
 
             # Purge the device host key so that SSH doesn't print a scary warning about it
             # (it changes every time the device is reflashed and this is expected)
@@ -65,7 +66,7 @@ class ShellCommand(Command):
 
             id_pub = os.path.expanduser('~/.ssh/id_rsa.pub')
             if not os.path.isfile(id_pub):
-                raise Exception('Could not find a ssh public key at "{}", please generate one and try again'.format(id_pub))
+                raise ClickableException('Could not find a ssh public key at "{}", please generate one and try again'.format(id_pub))
 
             with open(id_pub, 'r') as f:
                 public_key = f.read().strip()
@@ -75,7 +76,7 @@ class ShellCommand(Command):
 
             output = run_subprocess_check_output('adb {} shell "grep \\"{}\\" ~/.ssh/authorized_keys"'.format(adb_args, public_key), shell=True).strip()
             if not output or 'No such file or directory' in output:
-                print_info('Inserting ssh public key on the connected device')
+                logger.info('Inserting ssh public key on the connected device')
                 self.device.run_command('echo \"{}\" >>~/.ssh/authorized_keys'.format(public_key), cwd=self.config.cwd)
                 self.device.run_command('chmod 700 ~/.ssh', cwd=self.config.cwd)
                 self.device.run_command('chmod 600 ~/.ssh/authorized_keys', cwd=self.config.cwd)

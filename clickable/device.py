@@ -2,6 +2,7 @@ import subprocess
 import shlex
 
 from .utils import run_subprocess_check_output
+from .exceptions import ClickableException
 
 
 class Device(object):
@@ -25,16 +26,16 @@ class Device(object):
     def check_any_attached(self):
         devices = self.detect_attached()
         if len(devices) == 0:
-            raise Exception('No devices available via adb')
+            raise ClickableException('No devices available via adb')
 
     def check_multiple_attached(self):
         devices = self.detect_attached()
         if len(devices) > 1 and not self.config.device_serial_number:
-            raise Exception('Multiple devices detected via adb')
+            raise ClickableException('Multiple devices detected via adb')
 
     def run_command(self, command, cwd=None):
         if self.config.container_mode:
-            print_warning('Skipping device command, running in container mode')
+            logger.debug('Skipping device command, running in container mode')
             return
 
         if not cwd:

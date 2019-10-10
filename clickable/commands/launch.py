@@ -1,5 +1,5 @@
 from .base import Command
-from clickable.utils import print_warning
+from clickable.logger import logger
 
 
 class LaunchCommand(Command):
@@ -9,10 +9,10 @@ class LaunchCommand(Command):
 
     def kill(self):
         if self.config.desktop:
-            print_warning('Skipping kill, running in desktop mode')
+            logger.debug('Skipping kill, running in desktop mode')
             return
         elif self.config.container_mode:
-            print_warning('Skipping kill, running in container mode')
+            logger.debug('Skipping kill, running in container mode')
             return
 
         if self.config.kill:

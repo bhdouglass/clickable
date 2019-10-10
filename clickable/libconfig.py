@@ -1,10 +1,11 @@
 import os
 
 from clickable.utils import (
-    print_warning,
     merge_make_jobs_into_args,
     flexible_string_to_list,
 )
+from clickable.exceptions import ClickableException
+from clickable.logger import logger
 
 
 class LibConfig(object):
@@ -95,6 +96,9 @@ class LibConfig(object):
 
         self.check_config_errors()
 
+        for key, value in self.config.items():
+            logger.debug('Lib {} config value {}: {}'.format(name, key, value))
+
     def __getattr__(self, name):
         return self.config[name]
 
@@ -106,7 +110,7 @@ class LibConfig(object):
 
     def prepare_docker_env_vars(self):
         docker_env_vars = []
-        for key, val in self.get_env_vars():
+        for key, val in self.get_env_vars().items():
             docker_env_vars.append('-e {}="{}"'.format(key, val))
         return " ".join(docker_env_vars)
 
@@ -150,4 +154,4 @@ class LibConfig(object):
 
     def check_config_errors(self):
         if self.config['template'] == self.CUSTOM and not self.config['build']:
-            raise ValueError('When using the "custom" template you must specify a "build" in one the lib configs')
+            raise ClickableException('When using the "custom" template you must specify a "build" in one the lib configs')

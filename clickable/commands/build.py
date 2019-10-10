@@ -4,12 +4,11 @@ import shutil
 
 from .base import Command
 from clickable.utils import (
-    print_warning,
-    print_info,
     get_builders,
     run_subprocess_check_call,
     makedirs,
 )
+from clickable.logger import logger
 
 
 class BuildCommand(Command):
@@ -23,7 +22,7 @@ class BuildCommand(Command):
         except FileExistsError:
             pass
         except Exception:
-            print_warning('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
+            logger.warning('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
 
         self.config.container.setup_dependencies()
 
@@ -47,7 +46,7 @@ class BuildCommand(Command):
         builder.build()
 
     def install_files(self, pattern, dest_dir):
-        print_info("Installing {}".format(pattern))
+        logger.info("Installing {}".format(pattern))
         makedirs(dest_dir)
         command = 'cp -r {} {}'.format(pattern, dest_dir)
         self.config.container.run_command(command)
@@ -76,5 +75,5 @@ class BuildCommand(Command):
             if not os.path.exists(self.config.click_output):
                 os.makedirs(self.config.click_output)
 
-            print_info('Click outputted to {}'.format(output_file))
+            logger.debug('Click outputted to {}'.format(output_file))
             shutil.copyfile(click_path, output_file)
