@@ -19,7 +19,7 @@ from .utils import (
     validate_clickable_json,
     make_absolute,
 )
-from .logger import logger
+from .logger import logger, Colors
 from clickable.exceptions import ClickableException
 
 
@@ -431,8 +431,6 @@ class Config(object):
                     desktop = get_desktop(self.cwd)
                 except ClickableException:
                     desktop = None
-                except FileNotFoundException:
-                    desktop = None
 
                 if desktop and 'Exec' in desktop:
                     self.config['kill'] = desktop['Exec'].replace('%u', '').replace('%U', '').strip()
@@ -490,6 +488,12 @@ class Config(object):
 
     def get_template(self):
         if not self.config['template']:
+            choice = input(
+                Colors.INFO + 'No build template was specified, would you like to auto detect the template [y/N]: ' + Colors.CLEAR
+            ).strip().lower()
+            if choice != 'y' and choice != 'yes':
+                raise ClickableException('Not auto detecting build template')
+
             template = None
             directory = os.listdir(os.getcwd())
 
