@@ -1,4 +1,4 @@
-clickable (6.3.0) unstable; urgency=medium
+clickable (6.3.1) unstable; urgency=medium
 
   * Updated `clickable create` to use a new template for a better experience
   * Fixed desktop mode issue when the command already exits in the PATH

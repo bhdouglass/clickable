@@ -3,7 +3,7 @@
 Changelog
 =========
 
-Changes in v6.3.0
+Changes in v6.3.1
 -----------------
 
 - Updated `clickable create` to use a new template for a better experience
