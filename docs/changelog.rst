@@ -3,6 +3,14 @@
 Changelog
 =========
 
+Changes in v6.3.0
+-----------------
+
+- Updated `clickable create` to use a new template for a better experience
+- Fixed desktop mode issue when the command already exits in the PATH
+- Added a prompt for autodetecting the template type
+- Improved Clickable's logging
+
 Changes in v6.2.1
 -----------------
 
