@@ -37,17 +37,20 @@ logger.setLevel(logging.DEBUG)
 console_handler = logging.StreamHandler()
 console_handler.setFormatter(ColorFormatter())
 console_handler.setLevel(logging.INFO)
-
-log_dir = os.path.expanduser('~/.clickable')
-log_file = os.path.join(log_dir, 'clickable.log')
-if not os.path.exists(log_dir):
-    os.makedirs(log_dir)
-
-if os.path.exists(log_file):
-    os.unlink(log_file)
-
-file_handler = logging.FileHandler(log_file)
-file_handler.setLevel(logging.DEBUG)
-
 logger.addHandler(console_handler)
-logger.addHandler(file_handler)
+
+try:
+    log_dir = os.path.expanduser('~/.clickable')
+    log_file = os.path.join(log_dir, 'clickable.log')
+    if not os.path.exists(log_dir):
+        os.makedirs(log_dir)
+
+    if os.path.exists(log_file):
+        os.unlink(log_file)
+
+    file_handler = logging.FileHandler(log_file)
+    file_handler.setLevel(logging.DEBUG)
+    logger.addHandler(file_handler)
+except Exception as e:
+    logger.warning('Failed to setup logging to ~/.clickable/clickable.log', exc_info=e)
+
