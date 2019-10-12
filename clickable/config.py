@@ -431,6 +431,9 @@ class Config(object):
                     desktop = get_desktop(self.cwd)
                 except ClickableException:
                     desktop = None
+                except Exception:
+                    logger.debug('Unable to load or parse desktop file', exc_info=e)
+                    desktop = None
 
                 if desktop and 'Exec' in desktop:
                     self.config['kill'] = desktop['Exec'].replace('%u', '').replace('%U', '').strip()
@@ -504,8 +507,6 @@ class Config(object):
                 try:
                     manifest = get_any_manifest(os.getcwd())
                 except ClickableException:
-                    manifest = None
-                except FileNotFoundException:
                     manifest = None
 
             if not template and 'CMakeLists.txt' in directory:
