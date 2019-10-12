@@ -1,3 +1,10 @@
+clickable (6.3.2) unstable; urgency=medium
+
+  * Fixed issues logging process errors
+  * Fixed issues parsing desktop files
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sat, 12 Oct 2019 00:10:00 -0500
+
 clickable (6.3.1) unstable; urgency=medium
 
   * Updated `clickable create` to use a new template for a better experience

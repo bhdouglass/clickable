@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v6.3.2
+-----------------
+
+- Fixed issues logging process errors
+- Fixed issues parsing desktop files
+
 Changes in v6.3.1
 -----------------
 
