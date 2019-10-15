@@ -148,6 +148,8 @@ class DesktopCommand(Command):
 
     def setup_environment(self, working_directory):
         lib_path = self.get_docker_lib_path_env(working_directory)
+        with open('/etc/timezone') as host_timezone_file:
+            TZ=host_timezone_file.readline().strip()
 
         return {
             'LANG': self.config.desktop_locale,
@@ -165,6 +167,7 @@ class DesktopCommand(Command):
             'LC_MEASUREMENT': self.config.desktop_locale,
             'LC_IDENTIFICATION': self.config.desktop_locale,
             'LC_ALL': self.config.desktop_locale,
+            'TZ': TZ,
             'APP_DIR': self.config.install_dir,
             'TEXTDOMAINDIR': try_find_locale(self.config.install_dir),
             'XAUTHORITY': '/tmp/.docker.xauth',
@@ -207,6 +210,7 @@ class DesktopCommand(Command):
             '/tmp/.X11-unix': '/tmp/.X11-unix',
             xauth_path: xauth_path,
             device_home: '/home/phablet',
+            '/etc/timezone': '/etc/timezone',
         }
 
     def touch_xauth(self):
