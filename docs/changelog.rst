@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.4.0
+-----------------
+
+- Use the system timezone when in desktop mode
+
 Changes in v6.3.2
 -----------------
 
