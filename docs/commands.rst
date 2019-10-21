@@ -39,14 +39,14 @@ The ``--nvidia`` flag lets you manually enforce nvidia mode.
 Depending on your docker version, the docker execution will change and
 you need to provide additional system requirements:
 
-**docker &lt; 19.03 system requirements**
+**docker < 19.03 system requirements**
 
 * nvidia-modprobe
 * nvidia-docker
 
 On Ubuntu, install these requirements using ``apt install nvidia-modprobe nvidia-docker``.
 
-**docker &gt;= 19.03 system requirements**
+**docker >= 19.03 system requirements**
 
 * nvidia-container-toolkit
 
@@ -190,3 +190,8 @@ Runs a custom command specified in the "scripts" config
 
 Runs all builds commands on the current machine and not in a container. This is
 useful from running clickable from within a container.
+
+``clickable <any command> --verbose``
+-------------------------------------
+
+Have Clickable print out debug information about whatever command(s) are being run.
