@@ -11,7 +11,7 @@ _clickable()
     # Basic commands to be completed.
     # -------------------------------
 
-    opts="--container-mode --dirty --verbose build build-libs clean clean-libs create desktop devices install launch log logs no-lock publish review run shell test update writable-image"
+    opts="--apikey --arch --config --container-mode --debug --dirty --docker-image --serial-number --ssh --verbose --version build build-libs clean clean-libs click-build create desktop devices install launch log logs no-lock publish review run screenshots shell test update writable-image"
 
     #  Arguments to some of the basic commands.
     # -----------------------------------------
@@ -20,7 +20,7 @@ _clickable()
 
         # desktop argument
         desktop)
-            desktopOpts="--dark-mode --dirty --lang --nvidia --verbose"
+            desktopOpts="--dark-mode --dirty --gdb --gdbserver --lang --nvidia --skip-build --verbose"
             COMPREPLY=( $(compgen -W "${desktopOpts}" -- ${cur}) )
             return 0
             ;;
