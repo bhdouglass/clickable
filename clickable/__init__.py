@@ -101,12 +101,6 @@ class Clickable(object):
             default=False,
         )
         parser.add_argument(
-            '--nvidia',
-            action='store_true',
-            help='Use docker with --runtime=nvidia and *-nvidia docker image',
-            default=False,
-        )
-        parser.add_argument(
             '--apikey',
             help='Api key for the OpenStore',
         )
@@ -130,6 +124,12 @@ class Clickable(object):
             '--debug',
             action='store_true',
             help='Perform a debug build',
+            default=False,
+        )
+        parser.add_argument(
+            '--nvidia',
+            action='store_true',
+            help='Use docker with --runtime=nvidia and *-nvidia docker image',
             default=False,
         )
         parser.add_argument(
@@ -203,7 +203,21 @@ class Clickable(object):
         # TODO consider removing the ability to string together multiple commands
         # This should help clean up the arguments & command_arg
         for command in commands:
-            if command in self.config.scripts:
+            if command == 'bash-completion':
+                cli_args = [
+                    '--serial-number', '--config', '--ssh', '--arch',
+                    '--verbose', '--container-mode', '--apikey',
+                    '--docker-image', '--dirty', '--debug',
+                ]
+                print(' '.join(sorted(VALID_COMMANDS + cli_args)))
+            elif command == 'bash-completion-desktop':
+                cli_args = [
+                    '--nvidia', '--gdbserver', '--gdb', '--dark-mode',
+                    '--lang', '--skip-build', '--dirty', '--verbose',
+                    '--config'
+                ]
+                print(' '.join(sorted(cli_args)))
+            elif command in self.config.scripts:
                 logger.debug('Running the "{}" script'.format(command))
                 subprocess.check_call(self.config.scripts[command], cwd=self.config.cwd, shell=True)
             elif command in self.command_names:
