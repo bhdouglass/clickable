@@ -3,6 +3,7 @@ import shlex
 
 from .utils import run_subprocess_check_output
 from .exceptions import ClickableException
+from .logger import logger
 
 
 class Device(object):
