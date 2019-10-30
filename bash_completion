@@ -1,0 +1,41 @@
+# Completion for clickable
+# As read in https://debian-administration.org/article/317/An_introduction_to_bash_completion_part_2
+
+_clickable() 
+{
+    local cur prev opts base
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    # Basic commands to be completed.
+    # -------------------------------
+
+    opts="--apikey --arch --config --container-mode --debug --dirty --docker-image --serial-number --ssh --verbose --version build build-libs clean clean-libs click-build create desktop devices install launch log logs no-lock publish review run screenshots shell test update writable-image"
+
+    #  Arguments to some of the basic commands.
+    # -----------------------------------------
+
+    case "${prev}" in
+
+        # desktop argument
+        desktop)
+            desktopOpts="--dark-mode --dirty --gdb --gdbserver --lang --nvidia --skip-build --verbose"
+            COMPREPLY=( $(compgen -W "${desktopOpts}" -- ${cur}) )
+            return 0
+            ;;
+
+        # build argument
+        build)
+            desktopOpts="--output="
+            COMPREPLY=( $(compgen -W "${desktopOpts}" -- ${cur}) )
+            return 0
+            ;;
+        *)
+        ;;
+    esac
+
+   COMPREPLY=($(compgen -W "${opts}" -- ${cur}))  
+   return 0
+}
+complete -F _clickable clickable
