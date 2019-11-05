@@ -10,7 +10,7 @@ Example:
     {
         "template": "cmake",
         "scripts": {
-            "test": "make test"
+            "fetch": "git submodule update --init"
         },
         "dependencies_target": [
             "libpoppler-qt5-dev"
@@ -25,23 +25,23 @@ Placeholders & Environment Variables
 The following placeholders can be used in the clickable.json.
 They are also provided as environment variables during build.
 When passing ``--debug`` to Clickable, ``DEBUG_BUILD=1`` is set
-as an environment variable additionally.
+as an environment variable, additionally.
 
 ======================= ======
 Placeholder             Output
 ======================= ======
-$ARCH_TRIPLET           Target architecture triplet (``arm-linux-gnueabihf``, ``x86_64-linux-gnu`` or ``all``)
+$ARCH_TRIPLET           Target architecture triplet (``arm-linux-gnueabihf``, ``aarch64-linux-gnu``, ``x86_64-linux-gnu`` or ``all``)
 $ROOT                   Value of ``root_dir``
 $BUILD_DIR              Value of ``build_dir``
 $SRC_DIR                Value of ``src_dir``
 $INSTALL_DIR            Value of ``install_dir``
-$CLICK_LD_LIBRARY_PATH  ``$INSTALL_DIR/lib/$ARCH_TRIPLET`` (``$INSTALL_DIR/lib`` for architecture independent apps)
-$CLICK_QML2_IMPORT_PATH ``$INSTALL_DIR/lib/$ARCH_TRIPLET`` (``$INSTALL_DIR/qml`` for architecture independent apps, which is not in ``QML2_IMPORT_PATH`` at runtime)
-$CLICK_PATH             ``$INSTALL_DIR/lib/$ARCH_TRIPLET/bin`` (``$INSTALL_DIR`` for architecture independent apps)
+$CLICK_LD_LIBRARY_PATH  ``$INSTALL_DIR/lib/$ARCH_TRIPLET`` or ``$INSTALL_DIR/lib`` for architecture independent apps (will be in ``LD_LIBRARY_PATH`` on runtime)
+$CLICK_QML2_IMPORT_PATH ``$INSTALL_DIR/lib/$ARCH_TRIPLET`` or ``$INSTALL_DIR/qml`` for architecture independent apps, which is not in ``QML2_IMPORT_PATH`` at runtime (otherwise will be in ``QML2_IMPORT_PATH`` on runtime)
+$CLICK_PATH             ``$INSTALL_DIR/lib/$ARCH_TRIPLET/bin`` or ``$INSTALL_DIR`` for architecture independent apps (will be in ``PATH`` on runtime)
 $<lib>_LIB_INSTALL_DIR  Value of ``install_dir`` from ``<lib>`` (see :ref:`libraries <clickable-json-libraries>`)
 ======================= ======
 
-Parameters accepting placeholders: ``root_dir``, ``build_dir``, ``src_dir``, ``install_dir``, ``gopath``, ``cargo_home``, ``scripts``, ``build``, ``build_args``, ``make_args``, ``postmake``, ``postbuild``, ``prebuild``. This is an ordered list. Parameters that are used as placeholders themselfs accept only predecessors. Ex: ``$ROOT`` can be used in ``src_dir``, but not vice-versa.
+Parameters accepting placeholders: ``root_dir``, ``build_dir``, ``src_dir``, ``install_dir``, ``gopath``, ``cargo_home``, ``scripts``, ``build``, ``build_args``, ``make_args``, ``postmake``, ``postbuild``, ``prebuild``, ``install_qml``, ``install_bin``, ``install_qml``. This is an ordered list. Parameters that are used as placeholders themselfs accept only predecessors. Ex: ``$ROOT`` can be used in ``src_dir``, but not vice-versa.
 
 Example:
 
@@ -63,8 +63,8 @@ Ex: ``"6"`` or ``"5.4.0"``
 arch
 ----
 
-Optional, the default is armhf. You may also specify this as a cli arg
-(ex: ``--arch="armhf"``)
+Optional, the default is armhf. You may better specify this as a cli arg
+(ex: ``--arch arm64``)
 
 .. _clickable-json-template:
 
@@ -78,36 +78,65 @@ If left blank the template will be auto detected.
 prebuild
 --------
 
-Optional, a custom command to run before a build.
+Optional, a custom command to run from the root dir, before a build.
 
 build
 -----
 
-Optional, a custom command to run instead of the default build. If using
-the ``custom`` template this is required.
-
-postbuild
----------
-
-Optional, a custom command to execute after build and before click build.
-
+Optional, a custom command to run from the build dir. This only takes effect if using
+the ``custom`` template. It's even required in that case.
 
 postmake
 ---------
 
-Optional, a custom command to execute after make (during build).
+Optional, a custom command to execute from the build directory, after make (during build).
+
+postbuild
+---------
+
+Optional, a custom command to execute from the build dir, after build and before click packaging.
+
+build_args
+----------
+
+Optional, arguments to pass to qmake or cmake. When using ``--debug``,
+``CONFIG+=debug`` is additionally appended for qmake and
+``-DCMAKE_BUILD_TYPE=Debug`` for cmake and cordova builds. Ex: ``CONFIG+=ubuntu``
+
+Can be specified as a string or a list of strings.
+
+.. _clickable-json-make-args:
+
+make_args
+---------
+
+Optional, arguments to pass to make, e.g. a target name. To avoid configuration
+conflicts, the number of make jobs should not be specified here, but using
+``make_jobs`` instead, so it can be overriden by the according environment variable.
+
+Can be specified as a string or a list of strings.
+
+.. _clickable-json-make-jobs:
+
+make_jobs
+---------
+
+Optional, the number of jobs to use when running make, equivalent to make's ``-j``
+option. If left blank this defaults to the number of CPU cores.
 
 launch
 ------
 
-Optional, a custom command to launch the app.
+Optional, a custom command to launch the app, used by ``clickable launch``.
 
 .. _clickable-json-build_dir:
 
 build_dir
 ---------
 
-Optional, a custom build directory. Defaults to ``$ROOT/build/``
+Optional, a custom build directory. Defaults to ``$ROOT/build/$ARCH_TRIPLET/app``.
+Thanks to the architecture triplet, builds for different architectures can
+exist in parallel.
 
 src_dir
 -------
@@ -124,7 +153,7 @@ Optional, a custom install directory (used to gather data that goes into the cli
 install_lib
 -----------
 
-Optional, additional libraries that should be installed with the app. The destination directory is ``$CLICK_LD_LIBRARY_PATH``. Ex:
+Optional, additional libraries that should be installed with the app and be in ``LD_LIBRARY_PATH`` at runtime. The destination directory is ``$CLICK_LD_LIBRARY_PATH``. Ex:
 
 .. code-block:: javascript
 
@@ -133,12 +162,12 @@ Optional, additional libraries that should be installed with the app. The destin
     ]
 
 Can be specified as a string or a list of strings.
-Supports wildcards as this actually calls ``cp -r <from> <to>`` in a bash.
+Supports wildcards as this actually calls ``cp -r <path> $CLICK_LD_LIBRARY_PATH`` in a bash.
 
 install_qml
 -----------
 
-Optional, additional QML files or directories that should be installed with the app. The destination directory is ``$CLICK_QML2_IMPORT_PATH``. Ex:
+Optional, additional QML files or directories that should be installed with the app and be in ``QML2_IMPORT_PATH`` at runtime. The destination directory is ``$CLICK_QML2_IMPORT_PATH``. Ex:
 
 .. code-block:: javascript
 
@@ -147,12 +176,12 @@ Optional, additional QML files or directories that should be installed with the 
     ]
 
 Can be specified as a string or a list of strings.
-Supports wildcards as this actually calls ``cp -r <from> <to>`` in a bash.
+Supports wildcards as this actually calls ``cp -r <path> $CLICK_QML2_IMPORT_PATH`` in a bash.
 
 install_bin
 -----------
 
-Optional, additional executables that should be installed with the app. The destination directory is ``$CLICK_PATH``. Ex:
+Optional, additional executables that should be installed with the app and be in ``PATH`` at runtime. The destination directory is ``$CLICK_PATH``. Ex:
 
 .. code-block:: javascript
 
@@ -161,13 +190,13 @@ Optional, additional executables that should be installed with the app. The dest
     ]
 
 Can be specified as a string or a list of strings.
-Supports wildcards as this actually calls ``cp -r <from> <to>`` in a bash.
+Supports wildcards as this actually calls ``cp -r <path> $CLICK_PATH`` in a bash.
 
 kill
 ----
 
-Optional, a custom process name to kill (useful for killing the running app,
-then relaunching it). If left blank the process name will be assumed.
+Optional, a custom process name to kill (used by ``clickable launch`` to kill the app before
+relaunching it). If left blank the process name will be assumed.
 
 scripts
 -------
@@ -176,20 +205,32 @@ Optional, an object detailing custom commands to run. For example:
 
 .. code-block:: javascript
 
-    {
-        "test": "make test",
-        "echo": "echo Hello World"
+    "scripts": {
+        "fetch": "git submodule update --init",
+        "echo": "echo $ARCH_TRIPLET"
     }
+
+That enables the use of ``clickable fetch`` and ``clickable echo``.
 
 .. _clickable-json-default:
 
 default
 -------
 
-Optional, a list of space separated sub-commands to run when no sub-commands are
-specified. Defaults to ``clean build install launch``.
+Optional, sub-commands to run when no sub-commands are
+specified (running simply ``clickable``). Defaults to ``clean build install launch``.
+The ``--dirty`` cli argument removes ``clean`` from that list.
 
 Can be specified as a string or a list of strings.
+
+.. _clickable-json-dirty:
+
+dirty
+-----
+
+Optional, whether or not do a dirty build, avoiding to clean the build directory
+before building. You may also specify this as a cli arg (``--dirty``).
+The default is ``false``.
 
 .. _clickable-json-dependencies_build:
 
@@ -208,11 +249,11 @@ dependencies_target
 -------------------
 
 Optional, a list of dependencies that will be installed in the build container.
-These will be assumed to be ``dependency:arch``, unless an architecture specifier
-is already appended. In desktop mode ``dependencies_target`` is handled just
-like ``dependencies_build``.
+These will be assumed to be ``dependency:arch`` (where ``arch`` is the target
+architecture), unless an architecture specifier
+is already appended.
 
-Add dependencies here that your app depends on.
+Add dependencies here that your app actually depends on.
 
 Can be specified as a string or a list of strings.
 
@@ -221,8 +262,7 @@ Can be specified as a string or a list of strings.
 dependencies_ppa
 ----------------
 
-Optional, a list of PPAs, that will be enabled in the build container. This is
-only supported for docker mode. Ex:
+Optional, a list of PPAs, that will be enabled in the build container. Ex:
 
 .. code-block:: javascript
 
@@ -270,70 +310,34 @@ Optional, the gopath on the host machine. If left blank, the ``GOPATH`` env var 
 cargo_home
 ----------
 
-Optional, the Cargo home path on the host machine that is used for caching.
+Optional, the Cargo home path on the host machine that is used for caching (namely its subdirs ``registry``, ``git`` and ``.package-cache``).
 Defaults to ``~/.clickable/cargo``.
 
 .. _clickable-json-build-args:
-
-build_args
-----------
-
-Optional, arguments to pass to qmake or cmake. When using ``--debug``,
-``CONFIG+=debug`` is additionally appended for qmake and
-``-DCMAKE_BUILD_TYPE=Debug`` for cmake and cordova builds. Ex: ``CONFIG+=ubuntu``
-
-Can be specified as a string or a list of strings.
-
-.. _clickable-json-make-args:
-
-make_args
----------
-
-Optional, arguments to pass to make, e.g. a target name. To avoid configuration
-conflicts, the number of make jobs should not be specified here, but using
-``make_jobs`` instead, so it can be overriden by the according environment variable.
-
-Can be specified as a string or a list of strings.
-
-.. _clickable-json-make-jobs:
-
-make_jobs
----------
-
-Optional, the number of jobs to use when running make, equivalent to make's ``-j``
-option. If left blank this defaults to ``-j``, allowing make to execute many
-recipes simultaneously.
-
-.. _clickable-json-dirty:
-
-dirty
------
-
-Optional, whether or not do a dirty build, avoiding to clean the build directory
-before building. You may also specify this as a cli arg (``--dirty``).
-The default is ``false``.
 
 root_dir
 --------
 
 Optional, specify a different root directory for the project. For example,
 if you clickable.json file is in ``platforms/ubuntu_touch`` and you want to include
-code from root of your project you can set ``root_dir: "../.."``.
+code from root of your project you can set ``root_dir: "../.."``. Alternatively you can run
+clickable from the project root in that case via
+``clickable -c platforms/ubuntu_touch/clickable.json``.
 
 .. _clickable-json-test:
 
 test
 ----
 
-Optional, specify a different test command to run when running ``clickable test``.
+Optional, specify a test command to be executed when running ``clickable test``.
 The default is ``qmltestrunner``.
 
 .. _clickable-json-libraries:
 
 libraries
 ---------
-Optional, libraries to be build in the docker container by calling ``clickable build-libs``.
-It's a dictionary of dictionaries basically looking like the clickable.json itself. Example:
+Optional, dependencies to be build by running ``clickable build-libs``.
+It's a dictionary of dictionaries similar to the clickable.json itself. Example:
 
 .. code-block:: javascript
 
@@ -353,10 +357,7 @@ It's a dictionary of dictionaries basically looking like the clickable.json itse
 The keywords ``install_dir``, ``prebuild``, ``build``, ``postbuild``,
 ``postmake``, ``make_jobs``, ``make_args``, ``build_args``, ``docker_image``,
 ``dependencies_build``, ``dependencies_target`` and ``dependencies_ppa``,
-can be used for a library the same way as described above for the app. The
-libraries are compiled for the same architecture as specified for the app itself.
-
-Consider defining a custom build directory for the app itself (Ex: ``build/app``). Otherwise cleaning the app cleans the library, too.
+can be used for a library the same way as described above for the app.
 
 In addition to the :ref:`placeholders <clickable-json-placeholders>` described above, the following placeholders are available:
 
@@ -366,7 +367,7 @@ Placeholder   Output
 $NAME         The library name (key name in the ``libraries`` dictionary)
 ============= ======
 
-A single library can be build by specifying its name as ``clickable build-libs lib1`` to build the library with name ``lib1``.
+A single library can be build by specifying its name as ``clickable build-libs lib1 --arch arm64`` to build the library with name ``lib1`` for the architecture ``arm64``. ``clickable clean-libs lib1 --arch arm64`` cleans the libraries build dir.
 
 template
 ^^^^^^^^
@@ -374,12 +375,11 @@ Required, but only ``cmake``, ``qmake`` and ``custom`` are allowed.
 
 src_dir
 ^^^^^^^
-Optional, library source directory. Must be relative to the project root. It defaults to ``$ROOT/libs/$NAME``
+Optional, library source directory. Must be relative to the project root. Defaults to ``$ROOT/libs/$NAME``
 
 build_dir
 ^^^^^^^^^
-Optional, library build directory. Must be relative to the project root. It
-defaults to ``$ROOT/build/$NAME/$ARCH_TRIPLET``. Thanks to the architecture triplet, builds for different architectures can
+Optional, library build directory. Must be relative to the project root. Defaults to ``$ROOT/build/$ARCH_TRIPLET/$NAME``. Thanks to the architecture triplet, builds for different architectures can
 exist in parallel.
 
 Removed keywords
