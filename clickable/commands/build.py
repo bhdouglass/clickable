@@ -61,6 +61,8 @@ class BuildCommand(Command):
         for p in self.config.install_qml:
             self.install_files(p, os.path.join(self.config.install_dir,
                                                self.config.app_qml_dir))
+        for p, dest in self.config.install_data.items():
+            self.install_files(p, dest)
 
     def click_build(self):
         command = 'click build {} --no-validate'.format(self.config.install_dir)

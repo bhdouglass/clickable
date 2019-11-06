@@ -74,6 +74,10 @@
       "type": ["string","array"],
       "items": {"type": "string"}
     },
+    "install_data": {
+      "type": "object",
+      "additionalProperties": { "type": "string"}
+    },
     "docker_image": {"type": "string"},
     "ignore": {
       "type": ["string","array"],
