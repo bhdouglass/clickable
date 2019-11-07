@@ -41,7 +41,7 @@ $CLICK_PATH             ``$INSTALL_DIR/lib/$ARCH_TRIPLET/bin`` or ``$INSTALL_DIR
 $<lib>_LIB_INSTALL_DIR  Value of ``install_dir`` from ``<lib>`` (see :ref:`libraries <clickable-json-libraries>`)
 ======================= ======
 
-Parameters accepting placeholders: ``root_dir``, ``build_dir``, ``src_dir``, ``install_dir``, ``gopath``, ``cargo_home``, ``scripts``, ``build``, ``build_args``, ``make_args``, ``postmake``, ``postbuild``, ``prebuild``, ``install_qml``, ``install_bin``, ``install_qml``. This is an ordered list. Parameters that are used as placeholders themselfs accept only predecessors. Ex: ``$ROOT`` can be used in ``src_dir``, but not vice-versa.
+Parameters accepting placeholders: ``root_dir``, ``build_dir``, ``src_dir``, ``install_dir``, ``gopath``, ``cargo_home``, ``scripts``, ``build``, ``build_args``, ``make_args``, ``postmake``, ``postbuild``, ``prebuild``, ``install_lib``, ``install_bin``, ``install_qml``, ``install_data``. This is an ordered list. Parameters that are used as placeholders themselfs accept only predecessors. Ex: ``$ROOT`` can be used in ``src_dir``, but not vice-versa.
 
 Example:
 
@@ -191,6 +191,20 @@ Optional, additional executables that should be installed with the app and be in
 
 Can be specified as a string or a list of strings.
 Supports wildcards as this actually calls ``cp -r <path> $CLICK_PATH`` in a bash.
+
+install_data
+------------
+
+Optional, additional files or directories that should be installed with the app. Needs to be specified as a dictionary with absolute source paths as keys and destinations as value. Ex:
+
+.. code-block:: javascript
+
+    "install_data": {
+        "$ROOT/packaging/manifest.json": "$INSTALL_DIR",
+        "$ROOT/packaging/myapp.desktop": "$INSTALL_DIR"
+    },
+
+Supports wildcards as this actually calls ``cp -r <src> <dst>`` in a bash.
 
 kill
 ----

@@ -82,11 +82,12 @@ class Config(object):
                             "build_args", "make_args", "postmake", "postbuild",
                             "prebuild", "app_lib_dir", "app_bin_dir",
                             "install_lib", "install_qml", "install_bin",
-                            "app_qml_dir"]
+                            "install_data", "app_qml_dir"]
 
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
                  'cargo_home', 'gopath', 'app_lib_dir', 'app_bin_dir',
-                 'app_qml_dir', 'install_lib', 'install_bin', 'install_qml']
+                 'app_qml_dir', 'install_lib', 'install_bin', 'install_qml',
+                 'install_data']
     required = ['arch', 'build_dir', 'docker_image']
     flexible_lists = ['dependencies_build', 'dependencies_target',
                       'dependencies_ppa',
@@ -141,6 +142,7 @@ class Config(object):
             'install_lib': [],
             'install_bin': [],
             'install_qml': [],
+            'install_data': {},
             'app_lib_dir': '$INSTALL_DIR/lib/$ARCH_TRIPLET',
             'app_bin_dir': '$INSTALL_DIR/lib/$ARCH_TRIPLET/bin',
             'app_qml_dir': '$INSTALL_DIR/lib/$ARCH_TRIPLET',
