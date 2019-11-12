@@ -78,7 +78,8 @@ class LibConfig(object):
             'docker_image': None,
             'build_args': [],
             'make_args': [],
-            'install_dir': '$BUILD_DIR/install'
+            'install_dir': '$BUILD_DIR/install',
+            'image_setup': {},
         }
 
         self.config.update(json_config)
@@ -155,3 +156,9 @@ class LibConfig(object):
     def check_config_errors(self):
         if self.config['template'] == self.CUSTOM and not self.config['build']:
             raise ClickableException('When using the "custom" template you must specify a "build" in one the lib configs')
+
+        if self.custom_docker_image:
+            if self.dependencies_build or self.dependencies_target or self.dependencies_ppa:
+                logger.warning("Dependencies are ignored when using a custom docker image!")
+            if self.image_setup:
+                logger.warning("Docker image setup is ignored when using a custom docker image!")

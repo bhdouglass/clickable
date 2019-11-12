@@ -156,7 +156,8 @@ class Config(object):
             'dirty': False,
             'libraries': {},
             'test': 'qmltestrunner',
-            'install_dir': '$BUILD_DIR/install'
+            'install_dir': '$BUILD_DIR/install',
+            'image_setup': {},
         }
 
         config_path = args.config if args else ''
@@ -464,6 +465,12 @@ class Config(object):
                     break
                 if req > ver:
                     raise ClickableException('This project requires Clickable version {} ({} is used). Please update Clickable!'.format(self.config['clickable_minimum_required'], self.clickable_version))
+
+        if self.custom_docker_image:
+            if self.dependencies_build or self.dependencies_target or self.dependencies_ppa:
+                logger.warning("Dependencies are ignored when using a custom docker image!")
+            if self.image_setup:
+                logger.warning("Docker image setup is ignored when using a custom docker image!")
 
         if self.config['arch'] == 'all':
             install_keys = ['install_lib', 'install_bin', 'install_qml']

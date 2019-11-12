@@ -272,6 +272,9 @@ RUN {}
                 'apt-get update && apt-get install -y --force-yes --no-install-recommends {} && apt-get clean'.format(
                     ' '.join(dependencies)))
 
+        if self.config.image_setup:
+           commands.extend(self.config.image_setup.get('run', []))
+
         dockerfile_content = self.construct_dockerfile_content(commands)
 
         if self.is_dockerfile_outdated(dockerfile_content):
@@ -302,10 +305,14 @@ RUN {}
             else:
                 logger.debug('Dependencies already installed')
 
+        if self.config.image_setup:
+            for command in self.config.image_setup.get('run', []):
+                self.run_command(command, sudo=True, use_build_dir=False)
+
     def needs_customized_container(self):
         return self.config.dependencies_build \
             or self.config.dependencies_target \
-            or self.config.image
+            or self.config.image_setup
 
     def setup(self):
         if self.config.custom_docker_image:
