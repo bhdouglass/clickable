@@ -288,6 +288,25 @@ Can be specified as a string or a list of strings.
 
 .. _clickable-json-docker-image:
 
+image_setup
+-----------
+Optional, dictionary containing setup configuration for the docker image used.
+The image is based on the default image provided by Clickable.
+
+run
+^^^
+Optional, a list of commands to run on image setup (each added as `RUN <cmd>` to
+the corresponding Dockerfile). Example:
+
+.. code-block:: javascript
+
+    "image_setup": {
+        "run": [
+            "rustup default nightly",
+            "rustup install 1.39.0"
+        ]
+    }
+
 docker_image
 ------------
 
