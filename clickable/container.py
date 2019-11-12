@@ -1,7 +1,6 @@
 import subprocess
 import time
 import shlex
-import json
 import os
 import shutil
 import getpass
@@ -34,13 +33,13 @@ class Container(object):
             self.docker_image = self.config.docker_image
             self.base_docker_image = self.docker_image
 
-            if self.docker_image in self.config.container_list:
-                self.base_docker_image = self.docker_image
-
-                if os.path.exists(self.docker_name_file):
-                    self.restore_cached_container()
+            if self.needs_customized_container():
+                self.restore_cached_container()
 
     def restore_cached_container(self):
+        if not os.path.exists(self.docker_name_file):
+            return
+
         with open(self.docker_name_file, 'r') as f:
             cached_container = f.read().strip()
 
@@ -58,7 +57,7 @@ class Container(object):
                 logger.debug("Found cached container")
                 self.docker_image = cached_container
             else:
-                logger.warning("Found outdated container")
+                logger.warning("Cached container is outdated")
 
     def start_docker(self):
         started = False
@@ -73,7 +72,7 @@ class Container(object):
         return started
 
     def check_docker(self, retries=3):
-        if self.needs_setup():
+        if self.needs_docker_setup():
             self.setup_docker()
 
         try:
@@ -104,7 +103,7 @@ class Container(object):
         # Test for exactly docker in the group list
         return (' docker ' in output or output.endswith(' docker') or output.startswith('docker ') or output == 'docker')
 
-    def needs_setup(self):
+    def needs_docker_setup(self):
         return (
             sys.platform != 'darwin' and
             (not self.docker_group_exists() or not self.user_part_of_docker_group())
@@ -113,7 +112,6 @@ class Container(object):
     def setup_docker(self):
         logger.info('Setting up docker')
 
-        check_command('docker')
         self.start_docker()
 
         if not self.docker_group_exists():
@@ -128,7 +126,7 @@ class Container(object):
 
             raise ClickableException('Log out or restart to apply changes')
 
-    def run_command(self, command, sudo=False, get_output=False, use_dir=True, cwd=None):
+    def run_command(self, command, sudo=False, get_output=False, use_build_dir=True, cwd=None):
         wrapped_command = command
         cwd = cwd if cwd else os.path.abspath(self.config.root_dir)
 
@@ -188,14 +186,14 @@ class Container(object):
                 env_vars,
                 go_config,
                 rust_config,
-                self.config.build_dir if use_dir else cwd,
+                self.config.build_dir if use_build_dir else cwd,
                 os.getuid(),
                 self.docker_image,
                 command,
             )
 
         kwargs = {}
-        if use_dir:
+        if use_build_dir:
             kwargs['cwd'] = self.config.build_dir
 
         if get_output:
@@ -203,90 +201,124 @@ class Container(object):
         else:
             subprocess.check_call(shlex.split(wrapped_command), **kwargs)
 
-    def setup_dependencies(self, force_build=False):
-        if self.config.dependencies_build or self.config.dependencies_target:
-            logger.debug('Checking dependencies')
-
-            dependencies = self.config.dependencies_build
-            for dep in self.config.dependencies_target:
-                if ':' in dep:
-                    dependencies.append(dep)
-                else:
-                    dependencies.append('{}:{}'.format(dep, self.config.arch))
-
-            if self.config.container_mode:
-                self.run_command('apt-get update', sudo=True, use_dir=False)
-
-                command = 'apt-get install -y --force-yes'
-                run = False
-                for dep in dependencies:
-                    exists = ''
-                    try:
-                        exists = self.run_command('dpkg -s {} | grep Status'.format(dep), get_output=True, use_dir=False)
-                    except subprocess.CalledProcessError:
-                        exists = ''
-
-                    if exists.strip() != 'Status: install ok installed':
-                        run = True
-                        command = '{} {}'.format(command, dep)
-
-                if run:
-                    self.run_command(command, sudo=True, use_dir=False)
-                else:
-                    logger.debug('Dependencies already installed')
+    def get_dependency_packages(self):
+        dependencies = self.config.dependencies_build
+        for dep in self.config.dependencies_target:
+            if ':' in dep:
+                dependencies.append(dep)
             else:
-                self.check_docker()
+                dependencies.append('{}:{}'.format(dep, self.config.arch))
+        return dependencies
 
-                if self.config.custom_docker_image:
-                    logger.warning('Skipping dependency check, using a custom docker image')
-                else:
-                    command_ppa = ''
-                    if self.config.dependencies_ppa:
-                        command_ppa = 'RUN add-apt-repository {}'.format(' '.join(self.config.dependencies_ppa))
-                    dockerfile = '''
+    def construct_dockerfile_content(self, commands):
+        return '''
 FROM {}
-RUN echo set debconf/frontend Noninteractive | debconf-communicate && echo set debconf/priority critical | debconf-communicate
-{}
-RUN apt-get update && apt-get install -y --force-yes --no-install-recommends {} && apt-get clean
-                    '''.format(
-                        self.base_docker_image,
-                        command_ppa,
-                        ' '.join(dependencies)
-                    ).strip()
+RUN {}
+        '''.format(
+            self.base_docker_image,
+            '\nRUN '.join(commands)
+        ).strip()
 
-                    build = force_build
+    def create_custom_container(self, dockerfile_content):
+        if not os.path.exists(self.clickable_dir):
+            os.makedirs(self.clickable_dir)
 
-                    if not os.path.exists(self.clickable_dir):
-                        os.makedirs(self.clickable_dir)
+        with open(self.docker_file, 'w') as f:
+            f.write(dockerfile_content)
 
-                    if self.docker_image != self.base_docker_image and os.path.exists(self.docker_file):
-                        with open(self.docker_file, 'r') as f:
-                            if dockerfile.strip() != f.read().strip():
-                                build = True
-                    else:
-                        build = True
+        self.docker_image = '{}-{}'.format(self.base_docker_image, uuid.uuid4())
+        with open(self.docker_name_file, 'w') as f:
+            f.write(self.docker_image)
 
-                    if not build:
-                        command = 'docker images -q {}'.format(self.docker_image)
-                        image_exists = run_subprocess_check_output(command).strip()
-                        build = not image_exists
+        logger.debug('Generating new docker image')
+        try:
+            subprocess.check_call(shlex.split('docker build -t {} .'.format(self.docker_image)), cwd=self.clickable_dir)
+        except subprocess.CalledProcessError:
+            self.clean_clickable()
+            raise
 
-                    if build:
-                        with open(self.docker_file, 'w') as f:
-                            f.write(dockerfile)
+    def is_dockerfile_outdated(self, dockerfile_content):
+        if self.docker_image == self.base_docker_image:
+            return True
 
-                        self.docker_image = '{}-{}'.format(self.base_docker_image, uuid.uuid4())
-                        with open(self.docker_name_file, 'w') as f:
-                            f.write(self.docker_image)
+        if not os.path.exists(self.clickable_dir):
+            return True
 
-                        logger.debug('Generating new docker image')
-                        try:
-                            subprocess.check_call(shlex.split('docker build -t {} .'.format(self.docker_image)), cwd=self.clickable_dir)
-                        except subprocess.CalledProcessError:
-                            self.clean_clickable()
-                            raise
-                    else:
-                        logger.debug('Dependencies already setup')
+        if not os.path.exists(self.docker_file):
+            return True
+
+        with open(self.docker_file, 'r') as f:
+            if dockerfile_content.strip() != f.read().strip():
+                return True
+        
+        command = 'docker images -q {}'.format(self.docker_image)
+        image_exists = run_subprocess_check_output(command).strip()
+        return not image_exists
+
+    def setup_image(self):
+        self.check_docker()
+        
+        commands = []
+        
+        if self.config.dependencies_ppa:
+            commands.append('add-apt-repository {}'.format(
+                ' '.join(self.config.dependencies_ppa)))
+        
+        dependencies = self.get_dependency_packages()
+        if dependencies:
+            commands.append(
+                'echo set debconf/frontend Noninteractive | debconf-communicate && echo set debconf/priority critical | debconf-communicate')
+            commands.append(
+                'apt-get update && apt-get install -y --force-yes --no-install-recommends {} && apt-get clean'.format(
+                    ' '.join(dependencies)))
+
+        dockerfile_content = self.construct_dockerfile_content(commands)
+
+        if self.is_dockerfile_outdated(dockerfile_content):
+            self.create_custom_container(dockerfile_content)
+        else:
+            logger.debug('Image already setup')
+
+    def setup_container_mode(self):
+        dependencies = self.get_dependency_packages()
+        if dependencies:
+            self.run_command('apt-get update', sudo=True, use_build_dir=False)
+
+            command = 'apt-get install -y --force-yes'
+            run = False
+            for dep in dependencies:
+                exists = ''
+                try:
+                    exists = self.run_command('dpkg -s {} | grep Status'.format(dep), get_output=True, use_build_dir=False)
+                except subprocess.CalledProcessError:
+                    exists = ''
+
+                if exists.strip() != 'Status: install ok installed':
+                    run = True
+                    command = '{} {}'.format(command, dep)
+
+            if run:
+                self.run_command(command, sudo=True, use_build_dir=False)
+            else:
+                logger.debug('Dependencies already installed')
+
+    def needs_customized_container(self):
+        return self.config.dependencies_build \
+            or self.config.dependencies_target \
+            or self.config.image
+
+    def setup(self):
+        if self.config.custom_docker_image:
+            return
+        if not self.needs_customized_container():
+            return
+
+        logger.debug('Checking dependencies and container setup')
+
+        if self.config.container_mode:
+            self.setup_container_mode()
+        else:
+            self.setup_image()
 
     def clean_clickable(self):
         path = os.path.join(self.config.cwd, self.clickable_dir)

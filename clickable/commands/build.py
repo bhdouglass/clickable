@@ -24,7 +24,7 @@ class BuildCommand(Command):
         except Exception:
             logger.warning('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
 
-        self.config.container.setup_dependencies()
+        self.config.container.setup()
 
         if self.config.prebuild:
             run_subprocess_check_call(self.config.prebuild, cwd=self.config.cwd, shell=True)
