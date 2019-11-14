@@ -99,6 +99,15 @@
     },
     "dirty": {"type": "boolean"},
     "test": {"type": "string"},
+    "image_setup": {
+      "type": ["object"],
+      "properties": {
+        "run": {
+          "type": "array",
+          "items": {"type": "string"}
+        }
+      }
+    },
     "libraries": {
       "type": ["object"],
       "additionalProperties": {
@@ -143,7 +152,16 @@
           },
           "build_dir": {"type": "string"},
           "src_dir": {"type": "string"},
-          "install_dir": {"type": "string"}
+          "install_dir": {"type": "string"},
+          "image_setup": {
+            "type": ["object"],
+            "properties": {
+              "run": {
+                "type": "array",
+                "items": {"type": "string"}
+              }
+            }
+          }
         },
         "required": ["template"],
         "additionalProperties": false

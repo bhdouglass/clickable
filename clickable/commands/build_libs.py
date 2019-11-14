@@ -29,7 +29,7 @@ class LibBuildCommand(Command):
                 lib.docker_image = self.config.docker_image
                 lib.build_arch = self.config.build_arch
                 lib.container = Container(lib, lib.name)
-                lib.container.setup_dependencies()
+                lib.container.setup()
 
                 try:
                     os.makedirs(lib.build_dir)
