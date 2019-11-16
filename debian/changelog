@@ -1,3 +1,12 @@
+clickable (6.5.0) unstable; urgency=medium
+
+  * New bash completion
+  * Fixed crash when running in container mode
+  * Added install_data configuration to run arbitrary commands to setup the docker image
+  * Added arm64 support for qmake builds
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sat, 16 Nov 2019 12:19:00 -0500
+
 clickable (6.4.0) unstable; urgency=medium
 
   * Use the system timezone when in desktop mode
