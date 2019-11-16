@@ -2,6 +2,12 @@ from .make import MakeBuilder
 from clickable.config import Config
 from clickable.exceptions import ClickableException
 
+qmake_arch_spec_mapping = {
+    'amd64': 'linux-g++',
+    'armhf': 'ubuntu-arm-gnueabihf-g++',
+    'arm64': 'linux-aarch64-gnu-g++'
+}
+
 class QMakeBuilder(MakeBuilder):
     name = Config.QMAKE
 
@@ -11,17 +17,20 @@ class QMakeBuilder(MakeBuilder):
         self.config.container.run_command('make INSTALL_ROOT={} install'.format(self.config.install_dir))
 
     def build(self):
-        command = None
+        command = '/usr/bin/qmake -qt5'
 
-        if self.config.build_arch == 'armhf':
-            if self.config.container_mode and self.config.is_arm:
-                command = 'qmake'
-            else:
-                command = 'qt5-qmake-arm-linux-gnueabihf'
-        elif self.config.build_arch == 'amd64':
-            command = 'qmake'
-        else:
+        if not self.config.build_arch in qmake_arch_spec_mapping:
             raise ClickableException('{} is not supported by the qmake build yet'.format(self.config.build_arch))
+
+        arch_spec = qmake_arch_spec_mapping[self.config.build_arch]
+        arch_triplet = self.config.arch_triplet_mapping[self.config.build_arch]
+        conf_path = '/usr/lib/{}/qt5/qt.conf'.format(arch_triplet)
+        spec_path = '/usr/lib/{}/qt5/mkspecs/{}'.format(arch_triplet, arch_spec)
+
+        command = '{} -- -qtconf {} -spec {}'.format(
+                command,
+                conf_path,
+                spec_path)
 
         if self.config.build_args:
             command = '{} {}'.format(command, ' '.join(self.config.build_args))
