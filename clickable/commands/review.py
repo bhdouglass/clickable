@@ -17,4 +17,5 @@ class ReviewCommand(Command):
             click_path = os.path.join(self.config.build_dir, click)
 
         cwd = os.path.dirname(os.path.realpath(click_path))
-        self.config.container.run_command('click-review {}'.format(click_path), use_dir=False, cwd=cwd)
+        self.config.container.run_command(
+            'click-review {}'.format(click_path), use_build_dir=False, cwd=cwd)
