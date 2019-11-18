@@ -8,7 +8,7 @@ Changes in v6.5.0
 
 - New bash completion, more info `here <https://gitlab.com/clickable/clickable/blob/master/BASH_COMPLETION.md>`__
 - Fixed crash when running in container mode
-- Added ``install_data`` configuration to run arbitrary commands to setup the docker image
+- Added ``image_setup`` configuration to run arbitrary commands to setup the docker image
 - Added arm64 support for qmake builds
 
 Changes in v6.4.0
