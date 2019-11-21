@@ -8,9 +8,6 @@ from .nvidia.nvidia_support_since_docker_version_1903 import NvidiaSupportSinceD
 
 class NvidiaSupport(DockerSupport):
     def update(self, docker_config: DockerConfig):
-        if NvidiaDriversInstalled().is_met():
-            docker_config.use_nvidia = True
-
         if docker_config.use_nvidia:
             docker_config.add_volume_mappings({
                 '/dev/snd/pcmC2D0c': '/dev/snd/pcmC2D0c',

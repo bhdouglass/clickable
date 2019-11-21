@@ -133,6 +133,12 @@ class Clickable(object):
             default=False,
         )
         parser.add_argument(
+            '--no-nvidia',
+            action='store_true',
+            help="Don't use docker with --runtime=nvidia and *-nvidia docker image (disables automatic nvidia detection)",
+            default=False,
+        )
+        parser.add_argument(
             '--gdbserver',
             help='Start gdbserver at the given port to debug the app remotely (only desktop mode)',
         )
@@ -212,9 +218,9 @@ class Clickable(object):
                 print(' '.join(sorted(VALID_COMMANDS + cli_args)))
             elif command == 'bash-completion-desktop':
                 cli_args = [
-                    '--nvidia', '--gdbserver', '--gdb', '--dark-mode',
-                    '--lang', '--skip-build', '--dirty', '--verbose',
-                    '--config'
+                    '--nvidia', '--no-nvidia' '--gdbserver', '--gdb',
+                    '--dark-mode', '--lang', '--skip-build', '--dirty',
+                    '--verbose', '--config',
                 ]
                 print(' '.join(sorted(cli_args)))
             elif command in self.config.scripts:
