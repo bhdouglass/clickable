@@ -33,8 +33,11 @@ Run ``clickable desktop --lang <language code>`` to test using a different langu
 ``clickable desktop --nvidia``
 ------------------------------
 
-``clickable`` checks automatically if nvidia-drivers are installed and turns on nvidia mode.
-The ``--nvidia`` flag lets you manually enforce nvidia mode.
+``clickable`` checks automatically if nvidia-drivers are installed and turns on nvidia
+mode. If ``prime-select`` is installed, it is queried to check whether the nvidia-driver
+is actually in use.
+The ``--nvidia`` flag lets you manually enforce nvidia mode. The ``--no-nvidia``
+flag in contrast lets you disable automatic detection.
 
 Depending on your docker version, the docker execution will change and
 you need to provide additional system requirements:
