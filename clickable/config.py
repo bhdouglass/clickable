@@ -4,7 +4,7 @@ import platform
 import re
 import xml.etree.ElementTree as ElementTree
 
-from clickable.system.queries.nvidia_drivers_installed import NvidiaDriversInstalled
+from clickable.system.queries.nvidia_drivers_in_use import NvidiaDriversInUse
 from .libconfig import LibConfig
 
 from .utils import (
@@ -199,7 +199,7 @@ class Config(object):
             elif self.use_nvidia:
                 logger.debug('Turning on nvidia mode.')
             else:
-                if NvidiaDriversInstalled().is_met():
+                if NvidiaDriversInUse().is_met():
                     logger.debug('Nvidia driver detected, turning on nvidia mode.')
                     self.use_nvidia = True
         else:

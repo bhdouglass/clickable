@@ -1,6 +1,6 @@
 from clickable.commands.docker.docker_config import DockerConfig
 from clickable.system.queries.legacy_docker_version import LegacyDockerVersion
-from clickable.system.queries.nvidia_drivers_installed import NvidiaDriversInstalled
+from clickable.system.queries.nvidia_drivers_in_use import NvidiaDriversInUse
 from .docker_support import DockerSupport
 from .nvidia.legacy_nvidia_support import LegacyNvidiaSupport
 from .nvidia.nvidia_support_since_docker_version_1903 import NvidiaSupportSinceDockerVersion1903
