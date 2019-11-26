@@ -148,8 +148,11 @@ class DesktopCommand(Command):
 
     def setup_environment(self, working_directory):
         lib_path = self.get_docker_lib_path_env(working_directory)
-        with open('/etc/timezone') as host_timezone_file:
-            TZ=host_timezone_file.readline().strip()
+
+        TZ = 'UTC'
+        if os.path.exists('/etc/timezone'):
+            with open('/etc/timezone') as host_timezone_file:
+                TZ = host_timezone_file.readline().strip()
 
         return {
             'LANG': self.config.desktop_locale,
