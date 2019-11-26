@@ -7,6 +7,7 @@ from clickable.utils import (
     check_command,
     makedirs,
     try_find_locale,
+    run_subprocess_check_output,
 )
 from clickable.logger import logger
 from clickable.exceptions import ClickableException
@@ -153,6 +154,17 @@ class DesktopCommand(Command):
         if os.path.exists('/etc/timezone'):
             with open('/etc/timezone') as host_timezone_file:
                 TZ = host_timezone_file.readline().strip()
+        else:
+            try:
+                output = run_subprocess_check_output('timedatectl status')
+                for line in output.split('\n'):
+                    line = line.strip()
+                    if line.startswith('Time zone:'):
+                        start = line.find(':') + 1
+                        end = line.find('(')
+                        TZ = line[start:end].strip()
+            except:
+                pass
 
         return {
             'LANG': self.config.desktop_locale,
