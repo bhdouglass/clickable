@@ -90,6 +90,11 @@ Override the output directory for the resulting click file
 
 Same as :ref:`--nvidia <nvidia>`.
 
+``CLICKABLE_NO_NVIDIA``
+-----------------------
+
+Same as :ref:`--no-nvidia <nvidia>`.
+
 ``CLICKABLE_DIRTY``
 -------------------
 

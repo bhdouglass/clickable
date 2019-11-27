@@ -4,7 +4,7 @@ import platform
 import re
 import xml.etree.ElementTree as ElementTree
 
-from clickable.system.queries.nvidia_drivers_installed import NvidiaDriversInstalled
+from clickable.system.queries.nvidia_drivers_in_use import NvidiaDriversInUse
 from .libconfig import LibConfig
 
 from .utils import (
@@ -103,6 +103,7 @@ class Config(object):
     click_output = None
     container_mode = False
     use_nvidia = False
+    avoid_nvidia = False
     apikey = None
     custom_docker_image = True
     verbose = False
@@ -192,10 +193,18 @@ class Config(object):
 
         if self.desktop:
             self.build_arch = 'amd64'
-            # only turn on nvidia mode in desktop mode
-            if NvidiaDriversInstalled().is_met():
+
+            if self.avoid_nvidia:
+                logger.debug('Skipping nvidia driver detection.')
+            elif self.use_nvidia:
                 logger.debug('Turning on nvidia mode.')
-                self.use_nvidia = True
+            else:
+                if NvidiaDriversInUse().is_met():
+                    logger.debug('Nvidia driver detected, turning on nvidia mode.')
+                    self.use_nvidia = True
+        else:
+            # only turn on nvidia mode in desktop mode
+            self.use_nvidia = False
 
         if not self.config['docker_image']:
             self.custom_docker_image = False
@@ -303,6 +312,9 @@ class Config(object):
         if env('CLICKABLE_NVIDIA'):
             self.use_nvidia = True
 
+        if env('CLICKABLE_NO_NVIDIA'):
+            self.avoid_nvidia = True
+
         if env('CLICKABLE_DEBUG_BUILD'):
             self.debug_build = True
 
@@ -331,6 +343,9 @@ class Config(object):
 
         if args.nvidia:
             self.use_nvidia = True
+
+        if args.no_nvidia:
+            self.avoid_nvidia = True
 
         if args.apikey:
             self.apikey = args.apikey
@@ -493,6 +508,10 @@ class Config(object):
 
         if self.config['template'] and self.config['template'] not in self.templates:
             raise ClickableException('"{}" is not a valid template ({})'.format(self.config['template'], ', '.join(self.templates)))
+
+        if self.desktop:
+            if self.use_nvidia and self.avoid_nvidia:
+                raise ClickableException('Configuration conflict: enforcing and avoiding nvidia mode must not be specified together.')
 
         for key in self.required:
             if key not in self.config:
