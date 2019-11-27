@@ -147,24 +147,31 @@ class DesktopCommand(Command):
 
         return None
 
-    def setup_environment(self, working_directory):
-        lib_path = self.get_docker_lib_path_env(working_directory)
+    def get_time_zone(self):
+        try:
+            return run_subprocess_check_output('timedatectl show -p Timezone --value')
+        except:
+            pass
 
-        TZ = 'UTC'
         if os.path.exists('/etc/timezone'):
             with open('/etc/timezone') as host_timezone_file:
-                TZ = host_timezone_file.readline().strip()
-        else:
-            try:
-                output = run_subprocess_check_output('timedatectl status')
-                for line in output.split('\n'):
-                    line = line.strip()
-                    if line.startswith('Time zone:'):
-                        start = line.find(':') + 1
-                        end = line.find('(')
-                        TZ = line[start:end].strip()
-            except:
-                pass
+                return host_timezone_file.readline().strip()
+
+        try:
+            output = run_subprocess_check_output('timedatectl status')
+            for line in output.splitlines():
+                line = line.strip()
+                if line.startswith('Time zone:'):
+                    start = line.find(':') + 1
+                    end = line.find('(')
+                    return line[start:end].strip()
+        except:
+            pass
+
+        return 'UTC'
+
+    def setup_environment(self, working_directory):
+        lib_path = self.get_docker_lib_path_env(working_directory)
 
         return {
             'LANG': self.config.desktop_locale,
@@ -182,7 +189,7 @@ class DesktopCommand(Command):
             'LC_MEASUREMENT': self.config.desktop_locale,
             'LC_IDENTIFICATION': self.config.desktop_locale,
             'LC_ALL': self.config.desktop_locale,
-            'TZ': TZ,
+            'TZ': self.get_time_zone(),
             'APP_DIR': self.config.install_dir,
             'TEXTDOMAINDIR': try_find_locale(self.config.install_dir),
             'XAUTHORITY': '/tmp/.docker.xauth',
