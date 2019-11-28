@@ -15,5 +15,5 @@ GitLab CI Tutorial
 ------------------
 
 For a full guide to setting up GitLab CI with a Clickable app check out this
-`blog post <https://blog.bhdouglass.com/clickable/tutorial/2019/03/19/publishing-apps-to-the-0penstore-with-gitlab-ci.html>`__.
+`blog post <https://blog.bhdouglass.com/clickable/tutorial/2019/03/18/publishing-apps-to-the-0penstore-with-gitlab-ci.html>`__.
 This method can also be adapted for other CI solutions.
