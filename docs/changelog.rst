@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v6.6.0
+-----------------
+
+- Fixed issue in with timezone detection
+- Added better detection for nvidia mode and added a new --no-nvidia argument
+
 Changes in v6.5.0
 -----------------
 

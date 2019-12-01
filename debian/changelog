@@ -1,3 +1,10 @@
+clickable (6.6.0) unstable; urgency=medium
+
+  * Fixed issue in with timezone detection
+  * Added better detection for nvidia mode and added a new --no-nvidia argument
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sat, 30 Nov 2019 11:34:00 -0500
+
 clickable (6.5.0) unstable; urgency=medium
 
   * New bash completion
