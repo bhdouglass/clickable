@@ -257,6 +257,11 @@ def main():
 
         sys.exit(2)
     except Exception as e:
+        if 'No space left on device' in str(e):
+            logger.critical('No space left on device')
+            sys.exit(4)
+            return
+
         logger.debug('Encountered an unknown error', exc_info=e)
         if not args.verbose:
             logger.critical('Encountered an unknown error: ' + str(e))
