@@ -96,6 +96,17 @@ postbuild
 
 Optional, a custom command to execute from the build dir, after build and before click packaging.
 
+env_vars
+--------
+
+Optional, environment variables to be set in the build container. Ex:
+
+.. code-block:: javascript
+
+    "env_vars": {
+        "TARGET_SYSTEM": "UbuntuTouch"
+    }
+
 build_args
 ----------
 
@@ -377,7 +388,7 @@ It's a dictionary of dictionaries similar to the clickable.json itself. Example:
     "libraries": {
         "opencv": {
             "template": "cmake",
-            "make_jobs": "4",
+            "make_jobs": "1",
             "build_args": [
                 "-DCMAKE_BUILD_TYPE=Release",
                 "-DBUILD_LIST=core,imgproc,highgui,imgcodecs",
@@ -388,7 +399,7 @@ It's a dictionary of dictionaries similar to the clickable.json itself. Example:
     }
 
 The keywords ``install_dir``, ``prebuild``, ``build``, ``postbuild``,
-``postmake``, ``make_jobs``, ``make_args``, ``build_args``, ``docker_image``,
+``postmake``, ``make_jobs``, ``make_args``, ``env_vars``, ``build_args``, ``docker_image``,
 ``dependencies_build``, ``dependencies_target`` and ``dependencies_ppa``,
 can be used for a library the same way as described above for the app.
 
