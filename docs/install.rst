@@ -21,3 +21,9 @@ Install Via AUR (Arch Linux)
 
 * Using your favorite AUR helper, install the `clickable-git package <https://aur.archlinux.org/packages/clickable-git/>`__
 * Example: ``pacaur -S clickable-git``
+
+After install
+=============
+
+* Launch clickable and let it setup docker (it could ask for the sudo password): ``clickable``
+* Log out or restart to apply changes
