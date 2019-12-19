@@ -19,7 +19,12 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 ### Via AUR (Arch Linux)
 
 * Using your favorite AUR helper, install the [clickable package](https://aur.archlinux.org/packages/clickable/)
-* Example: `pacaur -S clickable`
+* Example: `pacaur -S clickable
+
+## After install
+
+* Launch clickable and let it setup docker (it could ask for the sudo password): `clickable`
+* Log out or restart to apply changes
 
 ## Docs
 
