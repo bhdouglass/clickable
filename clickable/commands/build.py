@@ -9,6 +9,7 @@ from clickable.utils import (
     makedirs,
 )
 from clickable.logger import logger
+from clickable.exceptions import ClickableException
 
 
 class BuildCommand(Command):
@@ -64,18 +65,35 @@ class BuildCommand(Command):
         for p, dest in self.config.install_data.items():
             self.install_files(p, dest)
 
-    def click_build(self):
-        command = 'click build {} --no-validate'.format(self.config.install_dir)
+    def set_arch(self):
+        manifest = self.config.get_manifest()
 
+        arch = manifest.get('architecture', None)
+        if arch == '@CLICK_ARCH@':
+            arch = self.config.arch
+            manifest['architecture'] = arch
+            self.config.write_manifest(manifest)
+
+        if arch != self.config.arch:
+            raise ClickableException('Clickable is building for architecture "{}", but "{}" is specified in the manifest. You may set the architecture field to @CLICK_ARCH@ to let Clickable set the architecture field automatically.'.format(
+                self.config.arch, arch))
+
+    def click_build(self):
+        self.set_arch()
+
+        command = 'click build {} --no-validate'.format(self.config.install_dir)
         self.config.container.run_command(command)
 
+        click = self.config.get_click_filename()
+        click_path = os.path.join(self.config.build_dir, click)
+
         if self.config.click_output:
-            click = self.config.get_click_filename()
-            click_path = os.path.join(self.config.build_dir, click)
             output_file = os.path.join(self.config.click_output, click)
 
             if not os.path.exists(self.config.click_output):
                 os.makedirs(self.config.click_output)
 
-            logger.debug('Click outputted to {}'.format(output_file))
             shutil.copyfile(click_path, output_file)
+            click_path = output_file
+
+        logger.debug('Click outputted to {}'.format(click_path))

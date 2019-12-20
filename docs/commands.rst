@@ -94,6 +94,9 @@ Builds the project using the specified template, build dir, and build commands.
 Then it takes the built files and compiles them into a click package (you can
 find it in the build dir).
 
+Set the manifest architecture field to ``@CLICK_ARCH@`` to have Clickable replace
+with the appropriate value.
+
 ``clickable build --output=/path/to/some/diretory``
 ---------------------------------------------------
 

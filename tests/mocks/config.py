@@ -25,6 +25,7 @@ class ConfigMock(Config):
         return {
             'version': '1.2.3',
             'name': 'foo.bar',
+            'architecture': '@CLICK_ARCH@',
             'hooks': {
                 'foo': {
                     'desktop': '/fake/foo.desktop',
