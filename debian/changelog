@@ -1,3 +1,11 @@
+clickable (6.7.0) unstable; urgency=medium
+
+  * New error when there is no space left on the disk
+  * New error when the manifest's architecture does not match the build architecture
+  * New option to use ``@CLICK_ARCH@`` as the architecture in the manifest to allow Clickable to automatically set the architecture
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Fri, 20 Dec 2019 00:48:00 -0500
+
 clickable (6.6.0) unstable; urgency=medium
 
   * Fixed issue in with timezone detection

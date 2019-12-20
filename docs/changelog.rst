@@ -3,6 +3,13 @@
 Changelog
 =========
 
+Changes in v6.7.0
+-----------------
+
+- New error when there is no space left on the disk
+- New error when the manifest's architecture does not match the build architecture
+- New option to use ``@CLICK_ARCH@`` as the architecture in the manifest to allow Clickable to automatically set the architecture
+
 Changes in v6.6.0
 -----------------
 
