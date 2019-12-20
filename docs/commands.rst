@@ -201,3 +201,8 @@ useful from running clickable from within a container.
 -------------------------------------
 
 Have Clickable print out debug information about whatever command(s) are being run.
+
+``clickable <any command> --ssh <ip address>``
+----------------------------------------------
+
+Run a command with a device over ssh rather than the default adb.
