@@ -68,6 +68,7 @@ class Config(object):
     }
 
     placeholders = {
+        "ARCH": "arch",
         "ARCH_TRIPLET": "arch_triplet",
         "ROOT": "root_dir",
         "BUILD_DIR": "build_dir",
