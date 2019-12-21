@@ -124,7 +124,7 @@ class Config(object):
 
         self.config = {
             'clickable_minimum_required': None,
-            'arch': 'armhf',
+            'arch': None,
             'arch_triplet': None,
             'template': None,
             'postmake': None,
@@ -171,12 +171,15 @@ class Config(object):
         self.config.update(env_config)
 
         if args:
+            self.detect_args_conflict(args)
+
             arg_config = self.load_arg_config(args)
             self.config.update(arg_config)
 
         self.host_arch = platform.machine()
         self.is_arm = self.host_arch.startswith('arm')
 
+        self.set_conditional_defaults()
         self.cleanup_config()
 
         if self.config['dirty'] and 'clean' in self.config['default']:
@@ -207,6 +210,21 @@ class Config(object):
 
         for key, value in self.config.items():
             logger.debug('App config value {}: {}'.format(key, value))
+
+    def set_conditional_defaults(self):
+        if self.desktop:
+            if self.config["arch"] and self.config["arch"] != "amd64":
+                raise ClickableException('Desktop mode needs architecture "amd64", but "{}" was specified'.format(self.config["arch"]))
+            self.config["arch"] = "amd64"
+            logger.info('Architecture set to "amd64" because of desktop mode.')
+
+        if not self.config["arch"]:
+            if self.config["template"] in self.arch_agnostic_templates:
+                self.config["arch"] = "all"
+                logger.info('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
+            else:
+                self.config["arch"] = "armhf"
+                logger.info('Architecture set to "armhf" because no architecture was specified')
 
     def use_arch(self, build_arch):
         if self.use_nvidia and not build_arch.endswith('-nvidia'):
@@ -434,6 +452,10 @@ class Config(object):
             self.config[key] = lib.install_dir
             self.placeholders.update({placeholder: key})
 
+    def detect_args_conflict(self, args):
+        if args.arch and self.config['arch'] and args.arch != self.config['arch']:
+            raise ClickableException('Conflicting architectures "{}" (program argument) and "{}" (config) detected.'.format(args.arch, self.config["arch"]))
+
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
 
@@ -442,13 +464,6 @@ class Config(object):
 
         if self.desktop_locale != "C" and "." not in self.desktop_locale:
             self.desktop_locale = "{}.UTF-8".format(self.desktop_locale)
-
-        if self.config['template'] in self.arch_agnostic_templates:
-            self.config['arch'] = 'all'
-            logger.info('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
-        elif self.desktop:
-            self.config['arch'] = 'amd64'
-            logger.info('Architecture set to "amd64" because of desktop mode.')
 
         if not self.config['kill']:
             if self.config['template'] == self.CORDOVA:
