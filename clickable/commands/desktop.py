@@ -5,6 +5,7 @@ from pathlib import Path
 
 from clickable.utils import (
     check_command,
+    is_command,
     makedirs,
     try_find_locale,
     run_subprocess_check_output,
@@ -30,60 +31,40 @@ class DesktopCommand(Command):
     help = 'Run the app on your desktop'
 
     def run(self, path_arg=None):
-        self.prepare_run(self.config)
-        docker_config = self.setup_docker(self.config)
-        self.run_docker_command(docker_config)
+        self.prepare_run()
+        self.run_app()
 
-    def prepare_run(self, config):
-        if not config.desktop_skip_build:
-            self.run_clean_and_build_commands(config)
+    def prepare_run(self):
+        if not self.config.desktop_skip_build:
+            if not self.config.dirty:
+                CleanCommand(self.config).run()
+            BuildCommand(self.config).run()
 
-    def run_clean_and_build_commands(self, config):
-        if not config.dirty:
-            CleanCommand(config).run()
-        BuildCommand(config).run()
-
-    def setup_docker(self, config):
-        self.ensure_docker_daemon_is_setup_and_running(config)
-        self.allow_docker_to_connect_to_xserver()
-        docker_config = self.setup_docker_config(config)
-        return docker_config
-
-    def ensure_docker_daemon_is_setup_and_running(self, config):
-        config.container.check_docker()
-
-    def allow_docker_to_connect_to_xserver(self):
-        if self.is_xhost_installed():
+    def setup_docker(self):
+        self.config.container.check_docker()
+        if is_command('xhost'):
             subprocess.check_call(shlex.split('xhost +local:docker'))
         else:
             logger.warning('xhost not installed, desktop mode may fail')
 
-    def is_xhost_installed(self):
-        try:
-            check_command('xhost')
-            return True
-        except Exception:  # TODO catch a specific Exception
-            return False
+        return self.setup_docker_config()
 
-    def setup_docker_config(self, config):
+    def setup_docker_config(self):
         docker_config = DockerConfig()
 
         docker_config.uid = os.getuid()
-        docker_config.docker_image = config.container.docker_image
-        docker_config.working_directory = config.install_dir
-        docker_config.use_nvidia = config.use_nvidia
+        docker_config.docker_image = self.config.container.docker_image
+        docker_config.working_directory = self.config.install_dir
+        docker_config.use_nvidia = self.config.use_nvidia
 
         docker_config.execute = self.determine_executable(
-            self.determine_path_of_desktop_file(config)
+            self.find_desktop_file()
         )
 
-        package_name = config.find_package_name()
+        package_name = self.config.find_package_name()
 
         docker_config.add_volume_mappings(
-            self.setup_volume_mappings(
-                config.cwd,
-                package_name
-            )
+            self.setup_volume_mappings(package_name)
         )
 
         docker_config.add_environment_variables(
@@ -94,58 +75,52 @@ class DesktopCommand(Command):
 
         WebappSupport(package_name).update(docker_config)
 
-        GoSupport(config).update(docker_config)
+        GoSupport(self.config).update(docker_config)
 
-        RustSupport(config).update(docker_config)
+        RustSupport(self.config).update(docker_config)
 
-        DebugGdbSupport(config).update(docker_config)
+        DebugGdbSupport(self.config).update(docker_config)
 
-        ThemeSupport(config).update(docker_config)
+        ThemeSupport(self.config).update(docker_config)
 
-        MultimediaSupport(config).update(docker_config)
+        MultimediaSupport(self.config).update(docker_config)
 
         return docker_config
 
-    def determine_path_of_desktop_file(self, config):
+    def find_desktop_file(self):
         desktop_path = None
-        hooks = config.get_manifest().get('hooks', {})
-        app = config.find_app_name()
-        if app:
+        hooks = self.config.get_manifest().get('hooks', {})
+        try:
+            app = self.config.find_app_name()
             if app in hooks and 'desktop' in hooks[app]:
                 desktop_path = hooks[app]['desktop']
-        else:
-            # TODO config.find_app_name never returns None. It raises an exception
+        except ClickableException:
             for key, value in hooks.items():
                 if 'desktop' in value:
                     desktop_path = value['desktop']
                     break
 
         if not desktop_path:
-            raise ClickableException('Could not find desktop file for app "{}"'.format(app))
+            raise ClickableException('Could not find desktop file for app')
 
-        # TODO finding the configured desktop entry should be moved to Config
-        # We could then proceed here with making it an absolute path and
-        # checking if it exists
-        desktop_path = os.path.join(config.install_dir, desktop_path)
+        desktop_path = os.path.join(self.config.install_dir, desktop_path)
         if not os.path.exists(desktop_path):
             raise ClickableException('Could not determine executable. Desktop file does not exist: "{}"'.format(desktop_path))
 
         return desktop_path
 
     def determine_executable(self, desktop_path):
-        execute = self.find_configured_exec_in_desktop_file(desktop_path)
-        if not execute:
-            raise ClickableException('No "Exec" line found in the desktop file {}'.format(desktop_path))
-
-        return execute.replace('Exec=', '').strip()
-
-    def find_configured_exec_in_desktop_file(self, desktop_path):
+        execute = None
         with open(desktop_path, 'r') as desktop_file:
             for line in desktop_file.readlines():
                 if line.startswith('Exec='):
-                    return line
+                    execute = line
+                    break
 
-        return None
+        if not execute:
+            raise ClickableException('No "Exec" line found in the desktop file {}'.format(desktop_path))
+
+        return execute[len('Exec='):].strip()
 
     def get_time_zone(self):
         try:
@@ -220,7 +195,7 @@ class DesktopCommand(Command):
             '/usr/bin',
         ])
 
-    def setup_volume_mappings(self, local_working_directory, package_name):
+    def setup_volume_mappings(self, package_name):
         xauth_path = self.touch_xauth()
 
         device_home = self.config.desktop_device_home
@@ -228,7 +203,7 @@ class DesktopCommand(Command):
         logger.info("Mounting device home to {}".format(device_home))
 
         return {
-            local_working_directory: local_working_directory,
+            self.config.cwd: self.config.cwd,
             '/tmp/.X11-unix': '/tmp/.X11-unix',
             xauth_path: xauth_path,
             device_home: '/home/phablet',
@@ -240,7 +215,8 @@ class DesktopCommand(Command):
         Path(xauth_path).touch()
         return xauth_path
 
-    def run_docker_command(self, docker_config):
+    def run_app(self):
+        docker_config = self.setup_docker()
         command = docker_config.render_command()
         logger.debug(command)
 

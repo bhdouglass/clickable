@@ -142,10 +142,15 @@ def get_desktop(cwd, temp_dir=None, build_dir=None):
 
     return desktop
 
-def check_command(command):
+
+def is_command(command):
     error_code = run_subprocess_call(shlex.split('which {}'.format(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    if error_code != 0:
+    return error_code == 0
+
+
+def check_command(command):
+    if not is_command(command):
         raise ClickableException('The command "{}" does not exist on this system, please install it for clickable to work properly"'.format(command))
 
 

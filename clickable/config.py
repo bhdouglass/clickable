@@ -626,7 +626,7 @@ class Config(object):
                 app = apps[0]
 
         if not app:
-            raise ClickableException('No app name specified in manifest.json or clickable.json')
+            raise ClickableException('No app name specified in manifest.json')
 
         return app
 
