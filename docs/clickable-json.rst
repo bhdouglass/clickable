@@ -63,8 +63,9 @@ Ex: ``"6"`` or ``"5.4.0"``
 arch
 ----
 
-Optional, the default is armhf. You may better specify this as a cli arg
-(ex: ``--arch arm64``)
+Optional, specifies an exclusive architecture that this configuration is compatible with. This prevents the app from being build for other architectures and may also prevent the desktop mode.
+
+To specify the architecture for building use the cli argument instead (ex: ``--arch arm64``).
 
 .. _clickable-json-template:
 
