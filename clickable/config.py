@@ -399,9 +399,7 @@ class Config(object):
                 self.config[key] = make_absolute(self.config[key])
 
     def set_build_arch(self):
-        if self.config['arch'] == 'all':
-            self.build_arch = 'armhf'
-        elif self.desktop:
+        if self.desktop or self.config['arch'] == 'all':
             self.build_arch = 'amd64'
         else:
             self.build_arch = self.config['arch']
