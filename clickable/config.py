@@ -438,10 +438,10 @@ class Config(object):
 
         if self.config['template'] in self.arch_agnostic_templates:
             self.config['arch'] = 'all'
-            logger.info('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
+            logger.debug('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
         elif self.desktop:
             self.config['arch'] = 'amd64'
-            logger.info('Architecture set to "amd64" because of desktop mode.')
+            logger.debug('Architecture set to "amd64" because of desktop mode.')
 
         if not self.config['kill']:
             if self.config['template'] == self.CORDOVA:

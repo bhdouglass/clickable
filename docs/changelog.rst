@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.7.2
+-----------------
+
+- Fixed architecture mismatch error for architecture agnostic templates
+
 Changes in v6.7.0
 -----------------
 

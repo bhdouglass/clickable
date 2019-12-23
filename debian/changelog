@@ -1,4 +1,10 @@
-clickable (6.7.0) unstable; urgency=medium
+clickable (6.7.2) unstable; urgency=medium
+
+  * Fixed architecture mismatch error for architecture agnostic templates
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sun, 22 Dec 2019 23:40:00 -0500
+
+clickable (6.7.1) unstable; urgency=medium
 
   * New error when there is no space left on the disk
   * New error when the manifest's architecture does not match the build architecture
