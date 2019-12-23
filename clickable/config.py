@@ -183,30 +183,8 @@ class Config(object):
             self.config['default'].remove('clean')
         self.config['default'] = ' '.join(self.config['default'])
 
-        self.build_arch = self.config['arch']
-        if self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE:
-            self.build_arch = 'armhf'
-
-        if self.config['arch'] == 'all':
-            self.build_arch = 'armhf'
-            self.config['app_lib_dir'] = '$INSTALL_DIR/lib'
-            self.config['app_bin_dir'] = '$INSTALL_DIR'
-            self.config['app_qml_dir'] = '$INSTALL_DIR/qml'
-
-        if self.desktop:
-            self.build_arch = 'amd64'
-
-            if self.avoid_nvidia:
-                logger.debug('Skipping nvidia driver detection.')
-            elif self.use_nvidia:
-                logger.debug('Turning on nvidia mode.')
-            else:
-                if NvidiaDriversInUse().is_met():
-                    logger.debug('Nvidia driver detected, turning on nvidia mode.')
-                    self.use_nvidia = True
-        else:
-            # only turn on nvidia mode in desktop mode
-            self.use_nvidia = False
+        self.set_build_arch()
+        self.check_nvidia()
 
         if not self.config['docker_image']:
             self.custom_docker_image = False
@@ -216,14 +194,7 @@ class Config(object):
             raise ClickableException('There currently is no support for {}'.format(self.config['arch']))
         self.config['arch_triplet'] = self.arch_triplet_mapping[self.config['arch']]
 
-        self.lib_configs = [LibConfig(name, lib, self.config['arch'], self.config['root_dir'], self.debug_build)
-                                    for name, lib in self.config['libraries'].items()]
-
-        for lib in self.lib_configs:
-            key = '{}_lib_install_dir'.format(lib.name)
-            placeholder = '{}_LIB_INSTALL_DIR'.format(lib.name)
-            self.config[key] = lib.install_dir
-            self.placeholders.update({placeholder: key})
+        self.setup_libs()
 
         for key in self.path_keys:
             if key not in self.accepts_placeholders and self.config[key]:
@@ -427,6 +398,42 @@ class Config(object):
             if key in self.path_keys and self.config[key]:
                 self.config[key] = make_absolute(self.config[key])
 
+    def set_build_arch(self):
+        if self.desktop or self.config['arch'] == 'all':
+            self.build_arch = 'amd64'
+        else:
+            self.build_arch = self.config['arch']
+
+    def check_nvidia(self):
+        if self.desktop:
+            if self.avoid_nvidia:
+                logger.debug('Skipping nvidia driver detection.')
+            elif self.use_nvidia:
+                logger.debug('Turning on nvidia mode.')
+            else:
+                if NvidiaDriversInUse().is_met():
+                    logger.debug('Nvidia driver detected, turning on nvidia mode.')
+                    self.use_nvidia = True
+        else:
+            self.use_nvidia = False
+
+    def setup_libs(self):
+        self.lib_configs = [
+            LibConfig(
+                name,
+                lib,
+                self.config['arch'],
+                self.config['root_dir'],
+                self.debug_build
+            ) for name, lib in self.config['libraries'].items()
+        ]
+
+        for lib in self.lib_configs:
+            key = '{}_lib_install_dir'.format(lib.name)
+            placeholder = '{}_LIB_INSTALL_DIR'.format(lib.name)
+            self.config[key] = lib.install_dir
+            self.placeholders.update({placeholder: key})
+
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
 
@@ -465,6 +472,12 @@ class Config(object):
             self.config['dependencies_target'] = []
 
         self.ignore.extend(['.git', '.bzr'])
+
+        if self.config['arch'] == 'all':
+            self.config['app_lib_dir'] = '$INSTALL_DIR/lib'
+            self.config['app_bin_dir'] = '$INSTALL_DIR'
+            self.config['app_qml_dir'] = '$INSTALL_DIR/qml'
+
 
     def check_config_errors(self):
         if self.config['clickable_minimum_required']:
