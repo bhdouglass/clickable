@@ -51,6 +51,9 @@ class Config(object):
     GO = 'go'
     RUST = 'rust'
 
+    templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO, RUST]
+    arch_agnostic_templates = [PURE_QML_QMAKE, PURE_QML_CMAKE, PURE]
+
     container_mapping = {
         ('16.04', 'armhf'): 'clickable/ubuntu-sdk:16.04-armhf',
         ('16.04', 'amd64'): 'clickable/ubuntu-sdk:16.04-amd64',
@@ -95,7 +98,6 @@ class Config(object):
                       'build_args', 'make_args', 'default', 'ignore']
     removed_keywords = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh',
                         'dependencies', 'specificDependencies', 'dir', 'lxd']
-    templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO, RUST]
 
     first_docker_info = True
     device_serial_number = None
@@ -434,10 +436,12 @@ class Config(object):
         if self.desktop_locale != "C" and "." not in self.desktop_locale:
             self.desktop_locale = "{}.UTF-8".format(self.desktop_locale)
 
-        if self.desktop:
-            self.config['arch'] = 'amd64'
-        elif self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE:
+        if self.config['template'] in self.arch_agnostic_templates:
             self.config['arch'] = 'all'
+            logger.info('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
+        elif self.desktop:
+            self.config['arch'] = 'amd64'
+            logger.info('Architecture set to "amd64" because of desktop mode.')
 
         if not self.config['kill']:
             if self.config['template'] == self.CORDOVA:
