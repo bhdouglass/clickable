@@ -89,6 +89,10 @@
       "type": ["string","array"],
       "items": {"type": "string"}
     },
+    "env_vars": {
+      "type": "object",
+      "additionalProperties": { "type": "string"}
+    },
     "make_args": {
       "type": ["string","array"],
       "items": {"type": "string"}
@@ -120,6 +124,10 @@
           "build_args": {
             "type": ["string","array"],
             "items": {"type": "string"}
+          },
+          "env_vars": {
+            "type": "object",
+            "additionalProperties": { "type": "string"}
           },
           "make_args": {
             "type": ["string","array"],

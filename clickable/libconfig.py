@@ -77,6 +77,7 @@ class LibConfig(object):
             'make_jobs': 0,
             'docker_image': None,
             'build_args': [],
+            'env_vars': {},
             'make_args': [],
             'install_dir': '$BUILD_DIR/install',
             'image_setup': {},
@@ -126,6 +127,8 @@ class LibConfig(object):
 
         for key, conf in self.placeholders.items():
             env_vars[key] = self.config[conf]
+
+        env_vars.update(self.config['env_vars'])
 
         return env_vars
 

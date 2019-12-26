@@ -156,6 +156,7 @@ class Config(object):
             'cargo_home': os.path.expanduser('~/.clickable/cargo'),
             'docker_image': None,
             'build_args': [],
+            'env_vars': {},
             'make_args': [],
             'dirty': False,
             'libraries': {},
@@ -368,6 +369,7 @@ class Config(object):
         docker_env_vars = []
         for key, val in self.get_env_vars().items():
             docker_env_vars.append('-e {}="{}"'.format(key, val))
+
         return " ".join(docker_env_vars)
 
     def set_env_vars(self):
@@ -381,6 +383,8 @@ class Config(object):
 
         for key, conf in self.placeholders.items():
             env_vars[key] = self.config[conf]
+
+        env_vars.update(self.config['env_vars'])
 
         return env_vars
 
