@@ -3,6 +3,7 @@ import json
 import platform
 import re
 import xml.etree.ElementTree as ElementTree
+from collections import OrderedDict
 
 from clickable.system.queries.nvidia_drivers_in_use import NvidiaDriversInUse
 from .libconfig import LibConfig
@@ -70,7 +71,7 @@ class Config(object):
         'all': 'all'
     }
 
-    placeholders = {
+    placeholders = OrderedDict({
         "ARCH_TRIPLET": "arch_triplet",
         "ARCH": "arch",  # Must come after ARCH_TRIPLET to avoid breaking it
         "ROOT": "root_dir",
@@ -80,7 +81,7 @@ class Config(object):
         "CLICK_LD_LIBRARY_PATH": "app_lib_dir",
         "CLICK_PATH": "app_bin_dir",
         "CLICK_QML2_IMPORT_PATH": "app_qml_dir",
-    }
+    })
     accepts_placeholders = ["root_dir", "build_dir", "src_dir", "install_dir",
                             "gopath", "cargo_home", "scripts", "build",
                             "build_args", "make_args", "postmake", "postbuild",
