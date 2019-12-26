@@ -1,7 +1,6 @@
-from unittest import TestCase, mock
+from unittest import TestCase
 import os
 import shutil
-import json
 
 from clickable import Clickable
 from clickable.commands.create import CreateCommand
@@ -30,7 +29,7 @@ class TestTemplates(TestCase):
         self.tmp_config_file = '/tmp/cookiecutter_config.yaml'
         self.restore_config = False
         if os.path.exists(self.config_file):
-            os.rename(self.config_file, self.tmp_config_file)
+            shutil.move(self.config_file, self.tmp_config_file)
             self.restore_config = True
 
     def tearDown(self):
@@ -41,7 +40,7 @@ class TestTemplates(TestCase):
         os.environ['CLICKABLE_ARCH'] = ''
 
         if self.restore_config:
-            os.rename(self.tmp_config_file, self.config_file)
+            shutil.move(self.tmp_config_file, self.config_file)
 
     def create_and_run(self, template):
         config = ConfigMock()
@@ -88,23 +87,5 @@ class TestTemplates(TestCase):
     '''
 
     def test_rust(self):
-        # TODO see if the rust template can support automatically changing the arch in the manifest
-
-        config = ConfigMock()
-        config.container = Container(config)
-        command = CreateCommand(config)
-
-        command.run(path_arg='Rust', no_input=True)
-
-        manifest_path = os.path.join(self.app_path, 'manifest.json')
-        with open(manifest_path, 'r') as manifest_reader:
-            manifest = json.load(manifest_reader)
-            manifest['architecture'] = 'amd64'
-
-            with open(manifest_path, 'w') as manifest_writer:
-                json.dump(manifest, manifest_writer, indent=4)
-
-        os.chdir(self.app_path)
-        self.clickable.run(['clean', 'build'])
-
+        self.create_and_run('Rust')
         self.assertClickExists('amd64')
