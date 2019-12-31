@@ -207,7 +207,6 @@ class DesktopCommand(Command):
             '/tmp/.X11-unix': '/tmp/.X11-unix',
             xauth_path: xauth_path,
             device_home: '/home/phablet',
-            '/etc/timezone': '/etc/timezone',
         }
 
     def touch_xauth(self):
