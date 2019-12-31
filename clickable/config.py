@@ -73,7 +73,6 @@ class Config(object):
 
     placeholders = OrderedDict({
         "ARCH_TRIPLET": "arch_triplet",
-        "ARCH": "arch",  # Must come after ARCH_TRIPLET to avoid breaking it
         "ROOT": "root_dir",
         "BUILD_DIR": "build_dir",
         "SRC_DIR": "src_dir",
@@ -120,6 +119,9 @@ class Config(object):
     desktop_skip_build = False
 
     def __init__(self, args=None, clickable_version=None, desktop=False):
+        # Must come after ARCH_TRIPLET to avoid breaking it
+        self.placeholders.update({"ARCH": "arch"})
+
         self.desktop = desktop
         self.clickable_version = clickable_version
         self.cwd = os.getcwd()

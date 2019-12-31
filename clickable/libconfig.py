@@ -6,6 +6,7 @@ from clickable.utils import (
 )
 from clickable.exceptions import ClickableException
 from clickable.logger import logger
+from collections import OrderedDict
 
 
 class LibConfig(object):
@@ -32,14 +33,14 @@ class LibConfig(object):
 
     container_list = list(container_mapping.values())
 
-    placeholders = {
+    placeholders = OrderedDict({
         "ARCH_TRIPLET": "arch_triplet",
         "NAME": "name",
         "ROOT": "root_dir",
         "BUILD_DIR": "build_dir",
         "SRC_DIR": "src_dir",
         "INSTALL_DIR": "install_dir",
-    }
+    })
     accepts_placeholders = ["root_dir", "build_dir", "src_dir", "install_dir",
                             "build", "build_args", "make_args", "postmake",
                             "postbuild", "prebuild"]
@@ -57,6 +58,9 @@ class LibConfig(object):
     gopath = None
 
     def __init__(self, name, json_config, arch, root_dir, debug_build):
+        # Must come after ARCH_TRIPLET to avoid breaking it
+        self.placeholders.update({"ARCH": "arch"})
+
         self.debug_build = debug_build
 
         self.config = {
@@ -139,16 +143,20 @@ class LibConfig(object):
                 rep = self.config[self.placeholders[sub]]
                 if self.config[key]:
                     if isinstance(self.config[key], dict):
-                        self.config[key] = {k: val.replace(substitute, rep) for (k, val) in self.config[key].items()}
+                        self.config[key] = {k: val.replace(substitute, rep) for (
+                            k, val) in self.config[key].items()}
                     elif isinstance(self.config[key], list):
-                        self.config[key] = [val.replace(substitute, rep) for val in self.config[key]]
+                        self.config[key] = [val.replace(
+                            substitute, rep) for val in self.config[key]]
                     else:
-                        self.config[key] = self.config[key].replace(substitute, rep)
+                        self.config[key] = self.config[key].replace(
+                            substitute, rep)
             if key in self.path_keys and self.config[key]:
                 self.config[key] = os.path.abspath(self.config[key])
 
     def cleanup_config(self):
-        self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
+        self.make_args = merge_make_jobs_into_args(
+            make_args=self.make_args, make_jobs=self.make_jobs)
 
         for key in self.flexible_lists:
             self.config[key] = flexible_string_to_list(self.config[key])
@@ -158,10 +166,13 @@ class LibConfig(object):
 
     def check_config_errors(self):
         if self.config['template'] == self.CUSTOM and not self.config['build']:
-            raise ClickableException('When using the "custom" template you must specify a "build" in one the lib configs')
+            raise ClickableException(
+                'When using the "custom" template you must specify a "build" in one the lib configs')
 
         if self.custom_docker_image:
             if self.dependencies_build or self.dependencies_target or self.dependencies_ppa:
-                logger.warning("Dependencies are ignored when using a custom docker image!")
+                logger.warning(
+                    "Dependencies are ignored when using a custom docker image!")
             if self.image_setup:
-                logger.warning("Docker image setup is ignored when using a custom docker image!")
+                logger.warning(
+                    "Docker image setup is ignored when using a custom docker image!")
