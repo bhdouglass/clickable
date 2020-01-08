@@ -221,15 +221,15 @@ class Config(object):
             if self.config["arch"] and self.config["arch"] != "amd64":
                 raise ClickableException('Desktop mode needs architecture "amd64", but "{}" was specified'.format(self.config["arch"]))
             self.config["arch"] = "amd64"
-            logger.info('Architecture set to "amd64" because of desktop mode.')
+            logger.debug('Architecture set to "amd64" because of desktop mode.')
 
         if not self.config["arch"]:
             if self.config["template"] in self.arch_agnostic_templates:
                 self.config["arch"] = "all"
-                logger.info('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
+                logger.debug('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
             else:
                 self.config["arch"] = "armhf"
-                logger.info('Architecture set to "armhf" because no architecture was specified')
+                logger.debug('Architecture set to "armhf" because no architecture was specified')
 
     def use_arch(self, build_arch):
         if self.use_nvidia and not build_arch.endswith('-nvidia'):
@@ -552,6 +552,12 @@ class Config(object):
         if self.desktop:
             if self.use_nvidia and self.avoid_nvidia:
                 raise ClickableException('Configuration conflict: enforcing and avoiding nvidia mode must not be specified together.')
+
+        if self.config['arch'] != 'all' and self.config['template'] in self.arch_agnostic_templates:
+            raise ClickableException('The "{}" build template needs architecture "all", but "{}" was specified'.format(
+                self.config['template'],
+                self.config['arch'],
+            ))
 
         for key in self.required:
             if key not in self.config:

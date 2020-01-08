@@ -23,7 +23,6 @@ class TestTemplates(TestCase):
         os.chdir(self.path)
 
         os.environ['CLICKABLE_DEFAULT'] = 'clean build review'
-        os.environ['CLICKABLE_ARCH'] = 'amd64'
 
         self.config_file = os.path.expanduser('~/.clickable/cookiecutter_config.yaml')
         self.tmp_config_file = '/tmp/cookiecutter_config.yaml'
@@ -42,7 +41,9 @@ class TestTemplates(TestCase):
         if self.restore_config:
             shutil.move(self.tmp_config_file, self.config_file)
 
-    def create_and_run(self, template):
+    def create_and_run(self, template, arch):
+        os.environ['CLICKABLE_ARCH'] = arch
+
         config = ConfigMock()
         config.container = Container(config)
         command = CreateCommand(config)
@@ -60,32 +61,32 @@ class TestTemplates(TestCase):
         self.assertTrue(os.path.exists(click))
 
     def test_qml_only(self):
-        self.create_and_run('QML Only')
+        self.create_and_run('QML Only', 'all')
         self.assertClickExists('all')
 
     def test_cpp_plugin(self):
-        self.create_and_run('C++ (Plugin)')
+        self.create_and_run('C++ (Plugin)', 'amd64')
         self.assertClickExists('amd64')
 
     def test_cpp_binary(self):
-        self.create_and_run('C++ (Binary)')
+        self.create_and_run('C++ (Binary)', 'amd64')
         self.assertClickExists('amd64')
 
     def test_python(self):
-        self.create_and_run('Python')
+        self.create_and_run('Python', 'all')
         self.assertClickExists('all')
 
     def test_html(self):
-        self.create_and_run('HTML')
+        self.create_and_run('HTML', 'all')
         self.assertClickExists('all')
 
     # TODO enable this once the go qt library is fixed
     '''
     def test_go(self):
-        self.create_and_run('Go')
+        self.create_and_run('Go', 'amd64')
         self.assertClickExists('amd64')
     '''
 
     def test_rust(self):
-        self.create_and_run('Rust')
+        self.create_and_run('Rust', 'amd64')
         self.assertClickExists('amd64')
