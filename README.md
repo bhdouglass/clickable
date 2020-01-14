@@ -46,7 +46,7 @@ made by Stefano.
 ### Run clickable
 
 To test clickable, run `clickable-dev` from the repository root directory. To
-enable configuration validation either install **jsonschema** via pip 
+enable configuration validation either install **jsonschema** via pip
 (`pip3 install jsonschema`) or apt (`apt install python3-jsonschema`). If you
 got clickable regularly installed, you already have jsonschema, too.
 
@@ -67,7 +67,7 @@ If you like Clickable, consider giving a small donation over at my
 
 ## License
 
-Copyright (C) 2018 [Brian Douglass](http://bhdouglass.com/)
+Copyright (C) 2020 [Brian Douglass](http://bhdouglass.com/)
 
 This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License version 3, as published
 by the Free Software Foundation.

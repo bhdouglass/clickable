@@ -3,6 +3,15 @@
 Changelog
 =========
 
+Changes in v6.8.0
+-----------------
+
+- Fixed the ``ARCH`` placeholder breaking ``ARCH_TRIPLET`` placeholder
+- Added new ``env_vars`` configuration for passing custom env vars to the build process
+- Fixed errors on systems where /etc/timezone does not exist
+- Added errors to detect conflicting architecture settings
+- Improved multi arch support
+
 Changes in v6.7.2
 -----------------
 

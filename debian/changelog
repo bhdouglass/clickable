@@ -1,3 +1,13 @@
+clickable (6.8.0) unstable; urgency=medium
+
+  * Fixed ARCH placeholder breaking ARCH_TRIPLET placeholder
+  * Added new env_vars configuration for passing custom env vars to the build process
+  * Fixed errors on systems where /etc/timezone does not exist
+  * Added errors to detect conflicting architecture settings
+  * Improved multi arch support
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Tue, 14 Jan 2020 00:46:00 -0500
+
 clickable (6.7.2) unstable; urgency=medium
 
   * Fixed architecture mismatch error for architecture agnostic templates
