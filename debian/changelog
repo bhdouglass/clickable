@@ -1,3 +1,9 @@
+clickable (6.8.1) unstable; urgency=medium
+
+  * Fixed new architecture errors breaking architecture agnostic builds
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Tue, 14 Jan 2020 23:58:00 -0500
+
 clickable (6.8.0) unstable; urgency=medium
 
   * Fixed ARCH placeholder breaking ARCH_TRIPLET placeholder

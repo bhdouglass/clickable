@@ -553,11 +553,11 @@ class Config(object):
             if self.use_nvidia and self.avoid_nvidia:
                 raise ClickableException('Configuration conflict: enforcing and avoiding nvidia mode must not be specified together.')
 
-        if self.config['arch'] != 'all' and self.config['template'] in self.arch_agnostic_templates:
-            raise ClickableException('The "{}" build template needs architecture "all", but "{}" was specified'.format(
-                self.config['template'],
-                self.config['arch'],
-            ))
+        # if self.config['arch'] != 'all' and self.config['template'] in self.arch_agnostic_templates:
+        #     raise ClickableException('The "{}" build template needs architecture "all", but "{}" was specified'.format(
+        #         self.config['template'],
+        #         self.config['arch'],
+        #     ))
 
         for key in self.required:
             if key not in self.config:
