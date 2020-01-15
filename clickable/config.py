@@ -223,13 +223,13 @@ class Config(object):
             self.config["arch"] = "amd64"
             logger.debug('Architecture set to "amd64" because of desktop mode.')
 
+        if self.config["template"] in self.arch_agnostic_templates:
+            self.config["arch"] = "all"
+            logger.debug('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
+
         if not self.config["arch"]:
-            if self.config["template"] in self.arch_agnostic_templates:
-                self.config["arch"] = "all"
-                logger.debug('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
-            else:
-                self.config["arch"] = "armhf"
-                logger.debug('Architecture set to "armhf" because no architecture was specified')
+            self.config["arch"] = "armhf"
+            logger.debug('Architecture set to "armhf" because no architecture was specified')
 
     def use_arch(self, build_arch):
         if self.use_nvidia and not build_arch.endswith('-nvidia'):

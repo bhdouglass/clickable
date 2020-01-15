@@ -1,3 +1,9 @@
+clickable (6.8.2) unstable; urgency=medium
+
+  * Fixed broken architecture agnostic builds
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 15 Jan 2020 11:07:00 -0500
+
 clickable (6.8.1) unstable; urgency=medium
 
   * Fixed new architecture errors breaking architecture agnostic builds

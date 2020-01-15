@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.8.2
+-----------------
+
+- Fixed broken architecture agnostic builds
+
 Changes in v6.8.1
 -----------------
 
