@@ -172,12 +172,13 @@ class Config(object):
         json_config = self.load_json_config(config_path)
         self.config.update(json_config)
 
+        if args:
+            self.detect_args_conflict(args)
+
         env_config = self.load_env_config()
         self.config.update(env_config)
 
         if args:
-            self.detect_args_conflict(args)
-
             arg_config = self.load_arg_config(args)
             self.config.update(arg_config)
 
