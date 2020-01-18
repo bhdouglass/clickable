@@ -3,6 +3,7 @@ import os
 from clickable.utils import (
     merge_make_jobs_into_args,
     flexible_string_to_list,
+    make_absolute,
 )
 from clickable.exceptions import ClickableException
 from clickable.logger import logger
@@ -72,8 +73,8 @@ class LibConfig(object):
             'prebuild': None,
             'build': None,
             'postbuild': None,
-            'build_dir': '$ROOT/build/$ARCH_TRIPLET/$NAME',
-            'src_dir': '$ROOT/libs/$NAME',
+            'build_dir': '${ROOT}/build/${ARCH_TRIPLET}/${NAME}',
+            'src_dir': '${ROOT}/libs/${NAME}',
             'root_dir': root_dir,
             'dependencies_build': [],
             'dependencies_target': [],
@@ -83,7 +84,7 @@ class LibConfig(object):
             'build_args': [],
             'env_vars': {},
             'make_args': [],
-            'install_dir': '$BUILD_DIR/install',
+            'install_dir': '${BUILD_DIR}/install',
             'image_setup': {},
         }
 
@@ -136,23 +137,24 @@ class LibConfig(object):
 
         return env_vars
 
+    def substitute(self, sub, rep, key):
+        if self.config[key]:
+            if isinstance(self.config[key], dict):
+                self.config[key] = {k: val.replace(sub, rep) for (k, val) in self.config[key].items()}
+            elif isinstance(self.config[key], list):
+                self.config[key] = [val.replace(sub, rep) for val in self.config[key]]
+            else:
+                self.config[key] = self.config[key].replace(sub, rep)
+
     def substitute_placeholders(self):
         for key in self.accepts_placeholders:
             for sub in self.placeholders:
-                substitute = "$"+sub
                 rep = self.config[self.placeholders[sub]]
-                if self.config[key]:
-                    if isinstance(self.config[key], dict):
-                        self.config[key] = {k: val.replace(substitute, rep) for (
-                            k, val) in self.config[key].items()}
-                    elif isinstance(self.config[key], list):
-                        self.config[key] = [val.replace(
-                            substitute, rep) for val in self.config[key]]
-                    else:
-                        self.config[key] = self.config[key].replace(
-                            substitute, rep)
+                self.substitute("${"+sub+"}", rep, key)
+                # TODO remove deprecated syntax $VAR
+                self.substitute("$"+sub, rep, key)
             if key in self.path_keys and self.config[key]:
-                self.config[key] = os.path.abspath(self.config[key])
+                self.config[key] = make_absolute(self.config[key])
 
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(

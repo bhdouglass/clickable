@@ -136,8 +136,8 @@ class Config(object):
             'build': None,
             'postbuild': None,
             'launch': None,
-            'build_dir': '$ROOT/build/$ARCH_TRIPLET/app',
-            'src_dir': '$ROOT',
+            'build_dir': '${ROOT}/build/${ARCH_TRIPLET}/app',
+            'src_dir': '${ROOT}',
             'root_dir': self.cwd,
             'kill': None,
             'scripts': {},
@@ -150,9 +150,9 @@ class Config(object):
             'install_bin': [],
             'install_qml': [],
             'install_data': {},
-            'app_lib_dir': '$INSTALL_DIR/lib/$ARCH_TRIPLET',
-            'app_bin_dir': '$INSTALL_DIR/lib/$ARCH_TRIPLET/bin',
-            'app_qml_dir': '$INSTALL_DIR/lib/$ARCH_TRIPLET',
+            'app_lib_dir': '${INSTALL_DIR}/lib/${ARCH_TRIPLET}',
+            'app_bin_dir': '${INSTALL_DIR}/lib/${ARCH_TRIPLET}/bin',
+            'app_qml_dir': '${INSTALL_DIR}/lib/${ARCH_TRIPLET}',
             'ignore': [],
             'make_jobs': 0,
             'gopath': None,
@@ -164,7 +164,7 @@ class Config(object):
             'dirty': False,
             'libraries': {},
             'test': 'qmltestrunner',
-            'install_dir': '$BUILD_DIR/install',
+            'install_dir': '${BUILD_DIR}/install',
             'image_setup': {},
         }
 
@@ -410,18 +410,22 @@ class Config(object):
 
         return env_vars
 
+    def substitute(self, sub, rep, key):
+        if self.config[key]:
+            if isinstance(self.config[key], dict):
+                self.config[key] = {k: val.replace(sub, rep) for (k, val) in self.config[key].items()}
+            elif isinstance(self.config[key], list):
+                self.config[key] = [val.replace(sub, rep) for val in self.config[key]]
+            else:
+                self.config[key] = self.config[key].replace(sub, rep)
+
     def substitute_placeholders(self):
         for key in self.accepts_placeholders:
             for sub in self.placeholders:
-                substitute = "$"+sub
                 rep = self.config[self.placeholders[sub]]
-                if self.config[key]:
-                    if isinstance(self.config[key], dict):
-                        self.config[key] = {k: val.replace(substitute, rep) for (k, val) in self.config[key].items()}
-                    elif isinstance(self.config[key], list):
-                        self.config[key] = [val.replace(substitute, rep) for val in self.config[key]]
-                    else:
-                        self.config[key] = self.config[key].replace(substitute, rep)
+                self.substitute("${"+sub+"}", rep, key)
+                # TODO remove deprecated syntax $VAR
+                self.substitute("$"+sub, rep, key)
             if key in self.path_keys and self.config[key]:
                 self.config[key] = make_absolute(self.config[key])
 
@@ -498,9 +502,9 @@ class Config(object):
         self.ignore.extend(['.git', '.bzr'])
 
         if self.config['arch'] == 'all':
-            self.config['app_lib_dir'] = '$INSTALL_DIR/lib'
-            self.config['app_bin_dir'] = '$INSTALL_DIR'
-            self.config['app_qml_dir'] = '$INSTALL_DIR/qml'
+            self.config['app_lib_dir'] = '${INSTALL_DIR}/lib'
+            self.config['app_bin_dir'] = '${INSTALL_DIR}'
+            self.config['app_qml_dir'] = '${INSTALL_DIR}/qml'
 
 
     def check_config_errors(self):
