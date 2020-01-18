@@ -86,7 +86,7 @@ class Config(object):
                             "build_args", "make_args", "postmake", "postbuild",
                             "prebuild", "app_lib_dir", "app_bin_dir",
                             "install_lib", "install_qml", "install_bin",
-                            "install_data", "app_qml_dir"]
+                            "install_data", "app_qml_dir", "env_vars"]
 
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
                  'cargo_home', 'gopath', 'app_lib_dir', 'app_bin_dir',
