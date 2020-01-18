@@ -93,8 +93,8 @@ class Config(object):
                  'app_qml_dir', 'install_lib', 'install_bin', 'install_qml',
                  'install_data']
     required = ['arch', 'build_dir', 'docker_image']
-    flexible_lists = ['dependencies_build', 'dependencies_target',
-                      'dependencies_ppa',
+    flexible_lists = ['dependencies_host', 'dependencies_target',
+                      'dependencies_ppa', 'dependencies_build',
                       'install_lib', 'install_bin', 'install_qml',
                       'build_args', 'make_args', 'default', 'ignore']
     removed_keywords = ['chroot', 'sdk', 'package', 'app', 'premake', 'ssh',
@@ -144,6 +144,7 @@ class Config(object):
             'default': 'clean build install launch',
             'log': None,
             'dependencies_build': [],
+            'dependencies_host': [],
             'dependencies_target': [],
             'dependencies_ppa': [],
             'install_lib': [],
@@ -468,6 +469,11 @@ class Config(object):
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
 
+        if self.config['dependencies_build']:
+            self.config['dependencies_host'] += self.config['dependencies_build']
+            self.config['dependencies_build'] = []
+            logger.warning('"dependencies_build" is deprecated. Use "dependencies_host" instead!')
+
         for key in self.flexible_lists:
             self.config[key] = flexible_string_to_list(self.config[key])
 
@@ -492,7 +498,7 @@ class Config(object):
                     self.config['kill'] = desktop['Exec'].replace('%u', '').replace('%U', '').strip()
 
         if self.desktop:
-            self.config['dependencies_build'] += self.config['dependencies_target']
+            self.config['dependencies_host'] += self.config['dependencies_target']
             self.config['dependencies_target'] = []
 
         self.ignore.extend(['.git', '.bzr'])
@@ -523,7 +529,7 @@ class Config(object):
                     raise ClickableException('This project requires Clickable version {} ({} is used). Please update Clickable!'.format(self.config['clickable_minimum_required'], self.clickable_version))
 
         if self.custom_docker_image:
-            if self.dependencies_build or self.dependencies_target or self.dependencies_ppa:
+            if self.dependencies_host or self.dependencies_target or self.dependencies_ppa:
                 logger.warning("Dependencies are ignored when using a custom docker image!")
             if self.image_setup:
                 logger.warning("Docker image setup is ignored when using a custom docker image!")

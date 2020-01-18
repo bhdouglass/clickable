@@ -47,7 +47,8 @@ class LibConfig(object):
 
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir']
     required = ['template']
-    flexible_lists = ['dependencies_target', 'dependencies_ppa',
+    flexible_lists = ['dependencies_host', 'dependencies_target',
+                      'dependencies_ppa', 'dependencies_build',
                       'build_args', 'make_args']
     templates = [QMAKE, CMAKE, CUSTOM]
 
@@ -76,6 +77,7 @@ class LibConfig(object):
             'src_dir': '$ROOT/libs/$NAME',
             'root_dir': root_dir,
             'dependencies_build': [],
+            'dependencies_host': [],
             'dependencies_target': [],
             'dependencies_ppa': [],
             'make_jobs': 0,
@@ -158,6 +160,11 @@ class LibConfig(object):
         self.make_args = merge_make_jobs_into_args(
             make_args=self.make_args, make_jobs=self.make_jobs)
 
+        if self.config['dependencies_build']:
+            self.config['dependencies_host'] += self.config['dependencies_build']
+            self.config['dependencies_build'] = []
+            logger.warning('"dependencies_build" is deprecated. Use "dependencies_host" instead!')
+
         for key in self.flexible_lists:
             self.config[key] = flexible_string_to_list(self.config[key])
 
@@ -170,7 +177,7 @@ class LibConfig(object):
                 'When using the "custom" template you must specify a "build" in one the lib configs')
 
         if self.custom_docker_image:
-            if self.dependencies_build or self.dependencies_target or self.dependencies_ppa:
+            if self.dependencies_host or self.dependencies_target or self.dependencies_ppa:
                 logger.warning(
                     "Dependencies are ignored when using a custom docker image!")
             if self.image_setup:

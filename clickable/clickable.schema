@@ -52,6 +52,10 @@
       "type": ["string","array"],
       "items": {"type": "string"}
     },
+    "dependencies_host": {
+      "type": ["string","array"],
+      "items": {"type": "string"}
+    },
     "dependencies_build": {
       "type": ["string","array"],
       "items": {"type": "string"}
@@ -141,6 +145,10 @@
           },
           "docker_image": {"type": "string"},
           "dependencies_build": {
+            "type": ["string","array"],
+            "items": {"type": "string"}
+          },
+          "dependencies_host": {
             "type": ["string","array"],
             "items": {"type": "string"}
           },
