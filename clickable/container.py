@@ -202,7 +202,7 @@ class Container(object):
             subprocess.check_call(shlex.split(wrapped_command), **kwargs)
 
     def get_dependency_packages(self):
-        dependencies = self.config.dependencies_build
+        dependencies = self.config.dependencies_host
         for dep in self.config.dependencies_target:
             if ':' in dep:
                 dependencies.append(dep)
@@ -310,7 +310,7 @@ RUN {}
                 self.run_command(command, sudo=True, use_build_dir=False)
 
     def needs_customized_container(self):
-        return self.config.dependencies_build \
+        return self.config.dependencies_host \
             or self.config.dependencies_target \
             or self.config.image_setup
 

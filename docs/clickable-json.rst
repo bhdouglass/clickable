@@ -258,16 +258,21 @@ Optional, whether or not do a dirty build, avoiding to clean the build directory
 before building. You may also specify this as a cli arg (``--dirty``).
 The default is ``false``.
 
-.. _clickable-json-dependencies_build:
+.. _clickable-json-dependencies_host:
+
+dependencies_host
+-----------------
+
+Optional, a list of dependencies that will be installed in the build container.
+
+Add tools here that are part of your build tool chain.
+
+Can be specified as a string or a list of strings.
 
 dependencies_build
 ------------------
 
-Optional, a list of dependencies that will be installed in the build container.
-
-Add dependencies here that are part of your build tool chain.
-
-Can be specified as a string or a list of strings.
+Deprecated, use :ref:`dependencies_host <clickable-json-dependencies_host>` instead.
 
 .. _clickable-json-dependencies_target:
 
@@ -279,7 +284,7 @@ These will be assumed to be ``dependency:arch`` (where ``arch`` is the target
 architecture), unless an architecture specifier
 is already appended.
 
-Add dependencies here that your app actually depends on.
+Add dependencies here that your app depends on.
 
 Can be specified as a string or a list of strings.
 
@@ -401,7 +406,7 @@ It's a dictionary of dictionaries similar to the clickable.json itself. Example:
 
 The keywords ``install_dir``, ``prebuild``, ``build``, ``postbuild``,
 ``postmake``, ``make_jobs``, ``make_args``, ``env_vars``, ``build_args``, ``docker_image``,
-``dependencies_build``, ``dependencies_target`` and ``dependencies_ppa``,
+``dependencies_host``, ``dependencies_target`` and ``dependencies_ppa``,
 can be used for a library the same way as described above for the app.
 
 In addition to the :ref:`placeholders <clickable-json-placeholders>` described above, the following placeholders are available:
@@ -431,7 +436,7 @@ Removed keywords
 ----------------
 The following keywords are no longer supported:
 
-- ``dependencies`` (use ``dependencies_target`` and ``dependencies_build`` instead)
+- ``dependencies`` (use ``dependencies_target`` and ``dependencies_host`` instead)
 - ``specificDependencies``
 - ``dir`` (use ``build_dir`` instead)
 - ``lxd``
