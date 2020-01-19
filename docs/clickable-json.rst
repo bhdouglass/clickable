@@ -43,10 +43,16 @@ CLICK_PATH              ``${INSTALL_DIR}/lib/${ARCH_TRIPLET}/bin`` or ``${INSTAL
 <lib>_LIB_INSTALL_DIR   Value of ``install_dir`` from ``<lib>`` (see :ref:`libraries <clickable-json-libraries>`)
 ======================= ======
 
-Parameters accepting placeholders: ``root_dir``, ``build_dir``, ``src_dir``, ``install_dir``,
-``gopath``, ``cargo_home``, ``scripts``, ``build``, ``build_args``, ``make_args``, ``postmake``,
-``postbuild``, ``prebuild``, ``install_lib``, ``install_bin``, ``install_qml``, ``install_data``.
-This is an ordered list. Parameters that are used as placeholders themselfs accept only predecessors.
+Parameters accepting placeholders:
+``root_dir``, ``build_dir``, ``src_dir``, ``install_dir``,
+``app_lib_dir``, ``app_bin_dir``, ``app_qml_dir``,
+``gopath``, ``cargo_home``, ``scripts``, ``build``,
+``build_args``, ``make_args``, ``postmake``, ``postbuild``,
+``prebuild``,
+``install_lib``, ``install_qml``, ``install_bin``,
+``install_data`` and ``env_vars``.
+
+This is an ordered list. Parameters that are used as placeholders themselves accept only predecessors.
 Ex: ``${ROOT}`` can be used in ``src_dir``, but not vice-versa.
 
 Example:
