@@ -1,5 +1,6 @@
 import itertools
 import subprocess
+import re
 import json
 import os
 import shlex
@@ -241,3 +242,7 @@ def make_absolute(path):
             abs_dict[key] = make_absolute(path[key])
         return abs_dict
     return os.path.abspath(path)
+
+
+def make_env_var_conform(name):
+    return re.sub("[^A-Z0-9_]", "_", name.upper())
