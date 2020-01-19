@@ -403,6 +403,10 @@ class Config(object):
         if self.debug_build:
             env_vars['DEBUG_BUILD'] = '1'
 
+        if self.lib_configs:
+            install_dirs = [lib.install_dir for lib in self.lib_configs]
+            env_vars['CMAKE_PREFIX_PATH'] = ':'.join(install_dirs)
+
         for key, conf in self.placeholders.items():
             env_vars[key] = self.config[conf]
 
