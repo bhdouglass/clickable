@@ -82,11 +82,12 @@ class Config(object):
         "CLICK_QML2_IMPORT_PATH": "app_qml_dir",
     })
     accepts_placeholders = ["root_dir", "build_dir", "src_dir", "install_dir",
+                            "app_lib_dir", "app_bin_dir", "app_qml_dir",
                             "gopath", "cargo_home", "scripts", "build",
                             "build_args", "make_args", "postmake", "postbuild",
-                            "prebuild", "app_lib_dir", "app_bin_dir",
+                            "prebuild",
                             "install_lib", "install_qml", "install_bin",
-                            "install_data", "app_qml_dir", "env_vars"]
+                            "install_data", "env_vars"]
 
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
                  'cargo_home', 'gopath', 'app_lib_dir', 'app_bin_dir',
