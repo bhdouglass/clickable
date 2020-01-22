@@ -19,6 +19,7 @@ from .utils import (
     FileNotFoundException,
     validate_clickable_json,
     make_absolute,
+    make_env_var_conform,
 )
 from .logger import logger, Colors
 from clickable.exceptions import ClickableException
@@ -466,10 +467,16 @@ class Config(object):
         ]
 
         for lib in self.lib_configs:
-            key = '{}_lib_install_dir'.format(lib.name)
-            placeholder = '{}_LIB_INSTALL_DIR'.format(lib.name)
+            name_conform = make_env_var_conform(lib.name)
+            key = '{}_lib_install_dir'.format(name_conform)
+            placeholder = '{}_LIB_INSTALL_DIR'.format(name_conform)
             self.config[key] = lib.install_dir
             self.placeholders.update({placeholder: key})
+
+            # TODO deprecated env var name
+            if name_conform != lib.name:
+                placeholder = '{}_LIB_INSTALL_DIR'.format(lib.name)
+                self.placeholders.update({placeholder: key})
 
     def detect_args_conflict(self, args):
         if args.arch and self.config['arch'] and args.arch != self.config['arch']:
