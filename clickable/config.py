@@ -52,8 +52,9 @@ class Config(object):
     PYTHON = 'python'
     GO = 'go'
     RUST = 'rust'
+    PRECOMPILED = 'precompiled'
 
-    templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO, RUST]
+    templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO, RUST, PRECOMPILED]
     arch_agnostic_templates = [PURE_QML_QMAKE, PURE_QML_CMAKE, PURE]
 
     container_mapping = {
