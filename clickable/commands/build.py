@@ -47,10 +47,16 @@ class BuildCommand(Command):
         builder.build()
 
     def install_files(self, pattern, dest_dir):
-        logger.info("Installing {}".format(pattern))
         makedirs(dest_dir)
-        command = 'cp -r {} {}'.format(pattern, dest_dir)
-        self.config.container.run_command(command)
+        if '"' in pattern:
+            # Make sure one cannot run random bash code through the "ls" command
+            raise ClickableException("install_* patterns must not contain any '\"' quotation character.")
+
+        command = 'ls -d "{}"'.format(pattern)
+        files = self.config.container.run_command(command, get_output=True).split()
+
+        logger.info("Installing {}".format(", ".join(files)))
+        self.config.container.pull_files(files, dest_dir)
 
     def install_additional_files(self):
         for p in self.config.install_lib:
