@@ -192,8 +192,8 @@ The destination directory is ``${CLICK_LD_LIBRARY_PATH}``. Ex:
         "/usr/lib/${ARCH_TRIPLET}/libasound.so*"
     ]
 
-Can be specified as a string or a list of strings.
-Supports wildcards as this actually calls ``cp -r <path> ${CLICK_LD_LIBRARY_PATH}`` in a bash.
+Can be specified as a string or a list of strings. Paths must not contain ``"`` characters.
+Supports wildcards as this actually calls ``ls "<path>"`` in a bash.
 
 install_qml
 -----------
@@ -207,8 +207,8 @@ Optional, additional QML files or directories that should be installed with the 
         "/usr/lib/${ARCH_TRIPLET}/qt5/qml/QtGraphicalEffects"
     ]
 
-Can be specified as a string or a list of strings.
-Supports wildcards as this actually calls ``cp -r <path> ${CLICK_QML2_IMPORT_PATH}`` in a bash.
+Can be specified as a string or a list of strings. Paths must not contain ``"`` characters.
+Supports wildcards as this actually calls ``ls "<path>"`` in a bash.
 
 install_bin
 -----------
@@ -222,8 +222,8 @@ The destination directory is ``${CLICK_PATH}``. Ex:
         "/usr/bin/htop"
     ]
 
-Can be specified as a string or a list of strings.
-Supports wildcards as this actually calls ``cp -r <path> ${CLICK_PATH}`` in a bash.
+Can be specified as a string or a list of strings. Paths must not contain ``"`` characters.
+Supports wildcards as this actually calls ``ls "<path>"`` in a bash.
 
 install_data
 ------------
@@ -238,7 +238,8 @@ Needs to be specified as a dictionary with absolute source paths as keys and des
         "${ROOT}/packaging/myapp.desktop": "${INSTALL_DIR}"
     },
 
-Supports wildcards as this actually calls ``cp -r <src> <dst>`` in a bash.
+Can be specified as a string or a list of strings. Paths must not contain ``"`` characters.
+Supports wildcards as this actually calls ``ls "<src>"`` in a bash.
 
 kill
 ----
