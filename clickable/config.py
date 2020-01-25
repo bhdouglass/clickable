@@ -222,15 +222,20 @@ class Config(object):
             logger.debug('App config value {}: {}'.format(key, value))
 
     def set_conditional_defaults(self):
+        if self.config["template"] in self.arch_agnostic_templates:
+            if self.config["arch"] and self.config["arch"] != "all":
+                raise ClickableException('The "{}" build template needs architecture "all", but "{}" was specified'.format(
+                    self.config['template'],
+                    self.config['arch'],
+                ))
+            self.config["arch"] = "all"
+            logger.debug('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
+
         if self.desktop and self.config["arch"] != "all":
             if self.config["arch"] and self.config["arch"] != "amd64":
                 raise ClickableException('Desktop mode needs architecture "amd64", but "{}" was specified'.format(self.config["arch"]))
             self.config["arch"] = "amd64"
             logger.debug('Architecture set to "amd64" because of desktop mode.')
-
-        if self.config["template"] in self.arch_agnostic_templates:
-            self.config["arch"] = "all"
-            logger.debug('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
 
         if not self.config["arch"]:
             self.config["arch"] = "armhf"
@@ -576,12 +581,6 @@ class Config(object):
         if self.desktop:
             if self.use_nvidia and self.avoid_nvidia:
                 raise ClickableException('Configuration conflict: enforcing and avoiding nvidia mode must not be specified together.')
-
-        # if self.config['arch'] != 'all' and self.config['template'] in self.arch_agnostic_templates:
-        #     raise ClickableException('The "{}" build template needs architecture "all", but "{}" was specified'.format(
-        #         self.config['template'],
-        #         self.config['arch'],
-        #     ))
 
         for key in self.required:
             if key not in self.config:
