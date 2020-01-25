@@ -222,7 +222,7 @@ class Config(object):
             logger.debug('App config value {}: {}'.format(key, value))
 
     def set_conditional_defaults(self):
-        if self.desktop:
+        if self.desktop and self.config["arch"] != "all":
             if self.config["arch"] and self.config["arch"] != "amd64":
                 raise ClickableException('Desktop mode needs architecture "amd64", but "{}" was specified'.format(self.config["arch"]))
             self.config["arch"] = "amd64"
