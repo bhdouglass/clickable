@@ -525,10 +525,6 @@ class Config(object):
                 if desktop and 'Exec' in desktop:
                     self.config['kill'] = desktop['Exec'].replace('%u', '').replace('%U', '').strip()
 
-        if self.desktop:
-            self.config['dependencies_host'] += self.config['dependencies_target']
-            self.config['dependencies_target'] = []
-
         self.ignore.extend(['.git', '.bzr', '.clickable'])
 
         if self.config['arch'] == 'all':
