@@ -9,6 +9,15 @@
       "type": "string",
       "pattern": "^\\d+(\\.\\d+)*$"
     },
+    "restrict_arch": {
+      "type": "string",
+      "enum": [
+        "armhf",
+        "arm64",
+        "amd64",
+        "all"
+      ]
+    },
     "arch": {
       "type": "string",
       "enum": [
