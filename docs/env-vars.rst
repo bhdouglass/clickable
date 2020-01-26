@@ -13,7 +13,7 @@ Clickable to be used during build.
 ``CLICKABLE_ARCH``
 ------------------
 
-Overrides the clickable.json's :ref:`arch <clickable-json-arch>`.
+Restricts build commands (``build``, ``build-libs``, ``desktop``) to the specified architecture. Architecture agnostic builds (``all``) are not affected. Useful in container mode.
 
 ``CLICKABLE_TEMPLATE``
 ----------------------
