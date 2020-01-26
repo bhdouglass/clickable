@@ -38,10 +38,17 @@ pure
 
 A project that does not need to be compiled. All files in the project root will be copied into the click.
 
+precompiled
+-----------
+
+A project that does not need to be compiled. All files in the project root will be copied into the click.
+There may be precompiled binaries or libraries included in apps build with this template.
+Specifying the :ref:`arch <clickable-json-arch>` in the clickable.json file can be useful with this template.
+
 python
 ------
 
-A project that uses python and does not need to be compiled.
+Deprecated, use "precompiled" instead.
 
 go
 --
