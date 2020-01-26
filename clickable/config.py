@@ -121,11 +121,12 @@ class Config(object):
     desktop_locale = os.getenv('LANG', 'C')
     desktop_skip_build = False
 
-    def __init__(self, args=None, clickable_version=None, desktop=False):
+    def __init__(self, args=None, clickable_version=None, desktop=False, is_build_cmd=False):
         # Must come after ARCH_TRIPLET to avoid breaking it
         self.placeholders.update({"ARCH": "arch"})
 
         self.desktop = desktop
+        self.is_build_cmd = is_build_cmd
         self.clickable_version = clickable_version
         self.cwd = os.getcwd()
 
@@ -571,7 +572,7 @@ class Config(object):
         if self.config['restrict_arch'] and self.config['restrict_arch'] != self.config['arch']:
             raise ClickableException('Cannot build app for architecture "{}" as it is restricted to "{}" in the clickable.json.'.format(self.config["arch"], self.config['restrict_arch']))
 
-        if self.config['restrict_arch_env'] and self.config['restrict_arch_env'] != self.config['arch'] and self.config['arch'] != 'all':
+        if self.config['restrict_arch_env'] and self.config['restrict_arch_env'] != self.config['arch'] and self.config['arch'] != 'all' and self.is_build_cmd:
             raise ClickableException('Cannot build app for architecture "{}" as the environment is restricted to "{}".'.format(self.config["arch"], self.config['restrict_arch_env']))
 
         if self.custom_docker_image:

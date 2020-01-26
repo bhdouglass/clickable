@@ -177,6 +177,7 @@ class Clickable(object):
             args=args,
             clickable_version=__version__,
             desktop=('desktop' in commands or 'test' in commands),
+            is_build_cmd=('build' in commands or 'build-libs' in commands or 'desktop' in commands),
         )
         self.config.container = Container(self.config)
 
