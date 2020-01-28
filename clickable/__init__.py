@@ -57,11 +57,11 @@ class Clickable(object):
     def print_valid_commands(self):
         print(self.show_valid_commands())
 
-    def parse_args(self):
+    def create_parser(help_msg):
         parser = argparse.ArgumentParser(description='clickable')
         parser.add_argument('--version', '-v', action='version',
                             version='%(prog)s ' + __version__)
-        parser.add_argument('commands', nargs='*', help=self.show_valid_commands())
+        parser.add_argument('commands', nargs='*', help=help_msg)
         parser.add_argument(
             '--serial-number',
             '-s',
@@ -164,7 +164,10 @@ class Clickable(object):
             help='Start app without building it first (only desktop mode)',
             default=False,
         )
+        return parser
 
+    def parse_args(self):
+        parser = Clickable.create_parser(self.show_valid_commands())
         args = parser.parse_args()
         if 'help' in args.commands:
             parser.print_help()
