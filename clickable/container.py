@@ -204,16 +204,16 @@ class Container(object):
 
             env_vars = self.config.prepare_docker_env_vars()
 
-            wrapped_command = 'docker run -v {}:{}:Z {} {} {} -w {} -u {} -e HOME=/tmp --rm -i {} bash -c "{}"'.format(
-                cwd,
-                cwd,
-                env_vars,
-                go_config,
-                rust_config,
-                self.config.build_dir if use_build_dir else cwd,
-                os.getuid(),
-                self.docker_image,
-                command,
+            wrapped_command = 'docker run -v {project}:{project}:Z -v {home}:{home}:Z {env} {go} {rust} -w {cwd} -u {uid} --rm -i {image} bash -c "{cmd}"'.format(
+                project=cwd,
+                home=self.config.build_home,
+                env=env_vars,
+                go=go_config,
+                rust=rust_config,
+                cwd=self.config.build_dir if use_build_dir else cwd,
+                uid=os.getuid(),
+                image=self.docker_image,
+                cmd=command,
             )
 
         kwargs = {}
