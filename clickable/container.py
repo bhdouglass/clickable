@@ -9,6 +9,7 @@ import sys
 
 from clickable.utils import (
     run_subprocess_call,
+    run_subprocess_check_call,
     run_subprocess_check_output,
     check_command,
     image_exists,
@@ -125,6 +126,29 @@ class Container(object):
             subprocess.check_call(shlex.split('sudo usermod -aG docker {}'.format(getpass.getuser())))
 
             raise ClickableException('Log out or restart to apply changes')
+
+    def pull_files(self, files, dst_local):
+        if self.config.container_mode:
+            for f in files:
+                shutil.copy(f, dst_local, follow_symlinks=False)
+        else:  # Docker
+            command_create = 'docker create -v {}:{}:Z {}'.format(
+                    self.config.root_dir,
+                    self.config.root_dir,
+                    self.docker_image
+            )
+            container = run_subprocess_check_output(command_create).strip()
+
+            for f in files:
+                command_copy = 'docker cp {}:{} {}'.format(
+                    container,
+                    f,
+                    dst_local
+                )
+                run_subprocess_check_call(command_copy)
+
+            command_remove = 'docker rm {}'.format(container)
+            run_subprocess_check_call(command_remove, stdout=subprocess.DEVNULL)
 
     def run_command(self, command, sudo=False, get_output=False, use_build_dir=True, cwd=None):
         wrapped_command = command
