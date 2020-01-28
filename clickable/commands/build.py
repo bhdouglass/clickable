@@ -19,11 +19,14 @@ class BuildCommand(Command):
 
     def run(self, path_arg=None):
         try:
-            os.makedirs(self.config.build_dir)
-        except FileExistsError:
-            pass
+            os.makedirs(self.config.build_dir, exist_ok=True)
         except Exception:
             logger.warning('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
+
+        try:
+            os.makedirs(self.config.build_home, exist_ok=True)
+        except Exception:
+            logger.warning('Failed to create the build home directory: {}'.format(str(sys.exc_info()[0])))
 
         self.config.container.setup()
 

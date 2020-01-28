@@ -172,7 +172,7 @@ class DesktopCommand(Command):
             'QML2_IMPORT_PATH': lib_path,
             'LD_LIBRARY_PATH': lib_path,
             'PATH': self.get_docker_path_env(working_directory),
-            'HOME': '/home/phablet',
+            'HOME': self.config.device_home,
             'OXIDE_NO_SANDBOX': '1',
             'UBUNTU_APP_LAUNCH_ARCH': 'x86_64-linux-gnu',
         }

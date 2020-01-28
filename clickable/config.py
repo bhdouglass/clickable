@@ -89,12 +89,12 @@ class Config(object):
                             "build_args", "make_args", "postmake", "postbuild",
                             "prebuild",
                             "install_lib", "install_qml", "install_bin",
-                            "install_data", "env_vars"]
+                            "install_data", "env_vars", "build_home"]
 
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
                  'cargo_home', 'gopath', 'app_lib_dir', 'app_bin_dir',
                  'app_qml_dir', 'install_lib', 'install_bin', 'install_qml',
-                 'install_data']
+                 'install_data', 'build_home']
     required = ['arch', 'build_dir', 'docker_image']
     flexible_lists = ['dependencies_host', 'dependencies_target',
                       'dependencies_ppa', 'dependencies_build',
@@ -118,6 +118,7 @@ class Config(object):
     debug_gdb_port = None
     dark_mode = False
     desktop_device_home = os.path.expanduser('~/.clickable/home')
+    device_home = '/home/phablet'
     desktop_locale = os.getenv('LANG', 'C')
     desktop_skip_build = False
 
@@ -140,6 +141,7 @@ class Config(object):
             'postbuild': None,
             'launch': None,
             'build_dir': '${ROOT}/build/${ARCH_TRIPLET}/app',
+            'build_home': '${BUILD_DIR}/.clickable/home',
             'src_dir': '${ROOT}',
             'root_dir': self.cwd,
             'kill': None,
@@ -393,7 +395,11 @@ class Config(object):
 
     def prepare_docker_env_vars(self):
         docker_env_vars = []
-        for key, val in self.get_env_vars().items():
+        env_dict = self.get_env_vars()
+
+        env_dict["HOME"] = self.config["build_home"]
+
+        for key, val in env_dict.items():
             docker_env_vars.append('-e {}="{}"'.format(key, val))
 
         return " ".join(docker_env_vars)
