@@ -227,33 +227,15 @@ class Config(object):
         for key, value in self.config.items():
             logger.debug('App config value {}: {}'.format(key, value))
 
-    def check_arch_restrictions(self):
-        if self.config["template"] in self.arch_agnostic_templates:
-            if self.config["arch"] and self.config["arch"] != "all":
-                raise ClickableException('The "{}" build template needs architecture "all", but "{}" was specified'.format(
-                    self.config['template'],
-                    self.config['arch'],
-                ))
-        else:
-            if self.desktop:
-                if self.config["arch"] and self.config["arch"] != "amd64":
-                    raise ClickableException('Desktop mode needs architecture "amd64", but "{}" was specified'.format(self.config["arch"]))
-
     def set_conditional_defaults(self):
-        self.check_arch_restrictions()
-
-        if self.config["template"] in self.arch_agnostic_templates:
-            if self.config["arch"] != "all":
+        if not self.config["arch"]:
+            if self.is_arch_agnostic():
                 self.config["arch"] = "all"
                 logger.debug('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
-        else:
-            if self.desktop:
-                if self.config["arch"] != "amd64":
-                    self.config["arch"] = "amd64"
-                    logger.debug('Architecture set to "amd64" because of desktop mode.')
-
-        if not self.config["arch"]:
-            if self.config["restrict_arch"]:
+            elif self.desktop:
+                self.config["arch"] = "amd64"
+                logger.debug('Architecture set to "amd64" because of desktop mode.')
+            elif self.config["restrict_arch"]:
                 self.config["arch"] = self.config["restrict_arch"]
             elif self.config["restrict_arch_env"]:
                 self.config["arch"] = self.config["restrict_arch_env"]
@@ -261,7 +243,6 @@ class Config(object):
             else:
                 self.config["arch"] = "armhf"
                 logger.debug('Architecture set to "armhf" because no architecture was specified')
-            self.check_arch_restrictions()
 
     def set_image(self, build_arch):
         if self.use_nvidia and not build_arch.endswith('-nvidia'):
@@ -549,6 +530,25 @@ class Config(object):
             self.config['app_bin_dir'] = '${INSTALL_DIR}'
             self.config['app_qml_dir'] = '${INSTALL_DIR}/qml'
 
+    def is_arch_agnostic(self):
+        return self.config["template"] in self.arch_agnostic_templates
+
+    def check_arch_restrictions(self):
+        if self.is_arch_agnostic():
+            if self.config["arch"] != "all":
+                raise ClickableException('The "{}" build template needs architecture "all", but "{}" was specified'.format(
+                    self.config['template'],
+                    self.config['arch'],
+                ))
+        elif self.desktop:
+            if self.config["arch"] != "amd64":
+                raise ClickableException('Desktop mode needs architecture "amd64", but "{}" was specified'.format(self.config["arch"]))
+
+        if self.config['restrict_arch'] and self.config['restrict_arch'] != self.config['arch']:
+            raise ClickableException('Cannot build app for architecture "{}" as it is restricted to "{}" in the clickable.json.'.format(self.config["arch"], self.config['restrict_arch']))
+
+        if self.config['restrict_arch_env'] and self.config['restrict_arch_env'] != self.config['arch'] and self.config['arch'] != 'all' and self.is_build_cmd:
+            raise ClickableException('Cannot build app for architecture "{}" as the environment is restricted to "{}".'.format(self.config["arch"], self.config['restrict_arch_env']))
 
     def check_config_errors(self):
         if self.config['clickable_minimum_required']:
@@ -569,11 +569,7 @@ class Config(object):
                 if req > ver:
                     raise ClickableException('This project requires Clickable version {} ({} is used). Please update Clickable!'.format(self.config['clickable_minimum_required'], self.clickable_version))
 
-        if self.config['restrict_arch'] and self.config['restrict_arch'] != self.config['arch']:
-            raise ClickableException('Cannot build app for architecture "{}" as it is restricted to "{}" in the clickable.json.'.format(self.config["arch"], self.config['restrict_arch']))
-
-        if self.config['restrict_arch_env'] and self.config['restrict_arch_env'] != self.config['arch'] and self.config['arch'] != 'all' and self.is_build_cmd:
-            raise ClickableException('Cannot build app for architecture "{}" as the environment is restricted to "{}".'.format(self.config["arch"], self.config['restrict_arch_env']))
+        self.check_arch_restrictions()
 
         if self.custom_docker_image:
             if self.dependencies_host or self.dependencies_target or self.dependencies_ppa:
