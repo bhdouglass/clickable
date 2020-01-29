@@ -204,9 +204,12 @@ Optional, additional QML files or directories that should be installed with the 
 .. code-block:: javascript
 
     "install_qml": [
-        "/usr/lib/${ARCH_TRIPLET}/qt5/qml/QtGraphicalEffects"
+        "/usr/lib/${ARCH_TRIPLET}/qt5/qml/Qt/labs/calendar"
     ]
 
+QML modules will be installed to the correct directory based on the name of the module.
+In the above example it will be installed to ``lib/${ARCH_TRIPLET}/Qt/labs/calendar``
+because the module specified in the qmldir file is ``Qt.labs.calendar``.
 Can be specified as a string or a list of strings. Paths must not contain ``"`` characters.
 Supports wildcards as this actually calls ``ls "<path>"`` in a bash.
 
