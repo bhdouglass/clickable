@@ -61,6 +61,24 @@ class BuildCommand(Command):
         logger.info("Installing {}".format(", ".join(files)))
         self.config.container.pull_files(files, dest_dir)
 
+    def install_qml_files(self, pattern, dest_dir):
+        if '*' in pattern:
+            self.install_files(pattern, dest_dir)
+        else:
+            command = 'cat {}'.format(os.path.join(pattern, 'qmldir'))
+            qmldir = self.config.container.run_command(command, get_output=True)
+            module = None
+            for line in qmldir.split('\n'):
+                if line.startswith('module'):
+                    module = line.split(' ')[1]
+
+            if module:
+                self.install_files(pattern, os.path.join(
+                    dest_dir, *module.split('.')[:-1])
+                )
+            else:
+                self.install_files(pattern, dest_dir)
+
     def install_additional_files(self):
         for p in self.config.install_lib:
             self.install_files(p, os.path.join(self.config.install_dir,
@@ -69,7 +87,7 @@ class BuildCommand(Command):
             self.install_files(p, os.path.join(self.config.install_dir,
                                                self.config.app_bin_dir))
         for p in self.config.install_qml:
-            self.install_files(p, os.path.join(self.config.install_dir,
+            self.install_qml_files(p, os.path.join(self.config.install_dir,
                                                self.config.app_qml_dir))
         for p, dest in self.config.install_data.items():
             self.install_files(p, dest)
