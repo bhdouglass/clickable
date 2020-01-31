@@ -57,6 +57,7 @@ class Clickable(object):
     def print_valid_commands(self):
         print(self.show_valid_commands())
 
+    @staticmethod
     def create_parser(help_msg):
         parser = argparse.ArgumentParser(description='clickable')
         parser.add_argument('--version', '-v', action='version',
