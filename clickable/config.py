@@ -29,7 +29,7 @@ class Config(object):
     config = {}
 
     ENV_MAP = {
-        'CLICKABLE_ARCH': 'arch',
+        'CLICKABLE_ARCH': 'restrict_arch_env',
         'CLICKABLE_TEMPLATE': 'template',
         'CLICKABLE_BUILD_DIR': 'build_dir',
         'CLICKABLE_DEFAULT': 'default',
@@ -122,17 +122,20 @@ class Config(object):
     desktop_locale = os.getenv('LANG', 'C')
     desktop_skip_build = False
 
-    def __init__(self, args=None, clickable_version=None, desktop=False):
+    def __init__(self, args=None, clickable_version=None, desktop=False, is_build_cmd=False):
         # Must come after ARCH_TRIPLET to avoid breaking it
         self.placeholders.update({"ARCH": "arch"})
 
         self.desktop = desktop
+        self.is_build_cmd = is_build_cmd
         self.clickable_version = clickable_version
         self.cwd = os.getcwd()
 
         self.config = {
             'clickable_minimum_required': None,
             'arch': None,
+            'restrict_arch_env': None,
+            'restrict_arch': None,
             'arch_triplet': None,
             'template': None,
             'postmake': None,
@@ -176,11 +179,14 @@ class Config(object):
 
         config_path = args.config if args else ''
         json_config = self.load_json_config(config_path)
+
+        # TODO remove support for deprecated "arch" in clickable.json
+        if json_config.get("arch", None):
+            logger.warning('Parameter "arch" is deprecated in clickable.json. Use "restricted_arch" instead.')
+            json_config["restrict_arch"] = json_config["arch"]
+            json_config["arch"] = None
+
         self.config.update(json_config)
-
-        if args:
-            self.detect_args_conflict(args)
-
         env_config = self.load_env_config()
         self.config.update(env_config)
 
@@ -203,7 +209,7 @@ class Config(object):
 
         if not self.config['docker_image']:
             self.custom_docker_image = False
-            self.use_arch(self.build_arch)
+            self.set_image(self.build_arch)
 
         if self.config['arch'] not in self.arch_triplet_mapping:
             raise ClickableException('There currently is no support for {}'.format(self.config['arch']))
@@ -224,21 +230,23 @@ class Config(object):
             logger.debug('App config value {}: {}'.format(key, value))
 
     def set_conditional_defaults(self):
-        if self.desktop:
-            if self.config["arch"] and self.config["arch"] != "amd64":
-                raise ClickableException('Desktop mode needs architecture "amd64", but "{}" was specified'.format(self.config["arch"]))
-            self.config["arch"] = "amd64"
-            logger.debug('Architecture set to "amd64" because of desktop mode.')
-
-        if self.config["template"] in self.arch_agnostic_templates:
-            self.config["arch"] = "all"
-            logger.debug('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
-
         if not self.config["arch"]:
-            self.config["arch"] = "armhf"
-            logger.debug('Architecture set to "armhf" because no architecture was specified')
+            if self.is_arch_agnostic():
+                self.config["arch"] = "all"
+                logger.debug('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
+            elif self.desktop:
+                self.config["arch"] = "amd64"
+                logger.debug('Architecture set to "amd64" because of desktop mode.')
+            elif self.config["restrict_arch"]:
+                self.config["arch"] = self.config["restrict_arch"]
+            elif self.config["restrict_arch_env"]:
+                self.config["arch"] = self.config["restrict_arch_env"]
+                logger.debug('Architecture set to "{}" due to environment restriction'.format(self.config["arch"]))
+            else:
+                self.config["arch"] = "armhf"
+                logger.debug('Architecture set to "armhf" because no architecture was specified')
 
-    def use_arch(self, build_arch):
+    def set_image(self, build_arch):
         if self.use_nvidia and not build_arch.endswith('-nvidia'):
             build_arch = "{}-nvidia".format(build_arch)
 
@@ -480,18 +488,15 @@ class Config(object):
             self.config[key] = lib.install_dir
             self.placeholders.update({placeholder: key})
 
-            # TODO deprecated env var name
+            # TODO remove deprecated env var name
             if name_conform != lib.name:
                 placeholder = '{}_LIB_INSTALL_DIR'.format(lib.name)
                 self.placeholders.update({placeholder: key})
 
-    def detect_args_conflict(self, args):
-        if args.arch and self.config['arch'] and args.arch != self.config['arch']:
-            raise ClickableException('Conflicting architectures "{}" (program argument) and "{}" (config) detected.'.format(args.arch, self.config["arch"]))
-
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
 
+        # TODO remove deprecated "dependencies_build"
         if self.config['dependencies_build']:
             self.config['dependencies_host'] += self.config['dependencies_build']
             self.config['dependencies_build'] = []
@@ -524,13 +529,32 @@ class Config(object):
             self.config['dependencies_host'] += self.config['dependencies_target']
             self.config['dependencies_target'] = []
 
-        self.ignore.extend(['.git', '.bzr'])
+        self.ignore.extend(['.git', '.bzr', '.clickable'])
 
         if self.config['arch'] == 'all':
             self.config['app_lib_dir'] = '${INSTALL_DIR}/lib'
             self.config['app_bin_dir'] = '${INSTALL_DIR}'
             self.config['app_qml_dir'] = '${INSTALL_DIR}/qml'
 
+    def is_arch_agnostic(self):
+        return self.config["template"] in self.arch_agnostic_templates
+
+    def check_arch_restrictions(self):
+        if self.is_arch_agnostic():
+            if self.config["arch"] != "all":
+                raise ClickableException('The "{}" build template needs architecture "all", but "{}" was specified'.format(
+                    self.config['template'],
+                    self.config['arch'],
+                ))
+        elif self.desktop:
+            if self.config["arch"] != "amd64":
+                raise ClickableException('Desktop mode needs architecture "amd64", but "{}" was specified'.format(self.config["arch"]))
+
+        if self.config['restrict_arch'] and self.config['restrict_arch'] != self.config['arch']:
+            raise ClickableException('Cannot build app for architecture "{}" as it is restricted to "{}" in the clickable.json.'.format(self.config["arch"], self.config['restrict_arch']))
+
+        if self.config['restrict_arch_env'] and self.config['restrict_arch_env'] != self.config['arch'] and self.config['arch'] != 'all' and self.is_build_cmd:
+            raise ClickableException('Cannot build app for architecture "{}" as the environment is restricted to "{}".'.format(self.config["arch"], self.config['restrict_arch_env']))
 
     def check_config_errors(self):
         if self.config['clickable_minimum_required']:
@@ -550,6 +574,8 @@ class Config(object):
                     break
                 if req > ver:
                     raise ClickableException('This project requires Clickable version {} ({} is used). Please update Clickable!'.format(self.config['clickable_minimum_required'], self.clickable_version))
+
+        self.check_arch_restrictions()
 
         if self.custom_docker_image:
             if self.dependencies_host or self.dependencies_target or self.dependencies_ppa:
@@ -582,12 +608,6 @@ class Config(object):
         if self.desktop:
             if self.use_nvidia and self.avoid_nvidia:
                 raise ClickableException('Configuration conflict: enforcing and avoiding nvidia mode must not be specified together.')
-
-        # if self.config['arch'] != 'all' and self.config['template'] in self.arch_agnostic_templates:
-        #     raise ClickableException('The "{}" build template needs architecture "all", but "{}" was specified'.format(
-        #         self.config['template'],
-        #         self.config['arch'],
-        #     ))
 
         for key in self.required:
             if key not in self.config:

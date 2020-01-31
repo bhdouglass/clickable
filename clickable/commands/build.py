@@ -101,8 +101,8 @@ class BuildCommand(Command):
             manifest['architecture'] = arch
             self.config.write_manifest(manifest)
 
-        if arch != self.config.arch and arch != 'all':
-            raise ClickableException('Clickable is building for architecture "{}", but "{}" is specified in the manifest. You may set the architecture field to @CLICK_ARCH@ to let Clickable set the architecture field automatically.'.format(
+        if arch != self.config.arch:
+            raise ClickableException('Clickable is building for architecture "{}", but "{}" is specified in the manifest. You can set the architecture field to @CLICK_ARCH@ to let Clickable set the architecture field automatically.'.format(
                 self.config.arch, arch))
 
     def click_build(self):

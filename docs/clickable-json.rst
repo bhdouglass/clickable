@@ -70,15 +70,20 @@ clickable_minimum_required
 Optional, a minimum Clickable version number required to build the project.
 Ex: ``"6"`` or ``"5.4.0"``
 
-.. _clickable-json-arch:
+.. _clickable-json-restrict_arch:
 
-arch
-----
+restrict_arch
+-------------
 
 Optional, specifies an exclusive architecture that this configuration is compatible with.
 This prevents the app from being build for other architectures and may also prevent the desktop mode.
 
 To specify the architecture for building use the cli argument instead (ex: ``--arch arm64``).
+
+arch
+----
+
+Deprecated, use ``restricted_arch`` instead.
 
 .. _clickable-json-template:
 
