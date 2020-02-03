@@ -1,3 +1,17 @@
+clickable (6.9.0) unstable; urgency=medium
+
+  * Placeholders are now allowed in env vars
+  * Changed placeholder syntax to ${PLACEHOLDER}, the old syntax is now deprecated
+  * Replaced dependencies_host with dependencies_build to avoid confusion about the name, dependencies_build is now deprecated
+  * Normalized env var names
+  * Added new precompiled build template to replace the now deprecated python build template
+  * Fixed issues using the install_* configuration options
+  * install_qml will now install qml modules to the correct nested path
+  * A per project home directory gets mounted during the build process
+  * Cleaned up arch handling and improved conflict detection
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Fri, 31 Jan 2020 13:37:00 -0500
+
 clickable (6.8.2) unstable; urgency=medium
 
   * Fixed broken architecture agnostic builds
@@ -30,7 +44,7 @@ clickable (6.7.1) unstable; urgency=medium
 
   * New error when there is no space left on the disk
   * New error when the manifest's architecture does not match the build architecture
-  * New option to use ``@CLICK_ARCH@`` as the architecture in the manifest to allow Clickable to automatically set the architecture
+  * New option to use @CLICK_ARCH@ as the architecture in the manifest to allow Clickable to automatically set the architecture
 
  -- Brian Douglass <bhdouglass@gmail.com>  Fri, 20 Dec 2019 00:48:00 -0500
 
