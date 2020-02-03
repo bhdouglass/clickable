@@ -3,6 +3,20 @@
 Changelog
 =========
 
+Changes in v6.9.0
+=================
+
+- Placeholders are now allowed in env vars
+- Changed placeholder syntax to ``${PLACEHOLDER}``, the old syntax is now deprecated
+- Replaced ``dependencies_host`` with ``dependencies_build`` to avoid confusion about the name, ``dependencies_build`` is now deprecated
+- Normalized env var names
+- Added new ``precompiled`` build template to replace the now deprecated ``python`` build template
+- Fixed issues using the ``install_*`` configuration options
+- ``install_qml`` will now install qml modules to the correct nested path
+- A per project home directory gets mounted during the build process
+- Cleaned up arch handling and improved conflict detection
+
+
 Changes in v6.8.2
 -----------------
 
