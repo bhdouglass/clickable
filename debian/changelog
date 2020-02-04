@@ -1,3 +1,9 @@
+clickable (6.9.1) unstable; urgency=medium
+
+  * Fixed broken lib builds
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Tue, 04 Feb 2020 01:01:00 -0500
+
 clickable (6.9.0) unstable; urgency=medium
 
   * Placeholders are now allowed in env vars

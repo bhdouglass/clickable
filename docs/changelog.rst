@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.9.1
+=================
+
+- Fixed broken lib builds
+
 Changes in v6.9.0
 =================
 
@@ -15,7 +20,6 @@ Changes in v6.9.0
 - ``install_qml`` will now install qml modules to the correct nested path
 - A per project home directory gets mounted during the build process
 - Cleaned up arch handling and improved conflict detection
-
 
 Changes in v6.8.2
 -----------------
