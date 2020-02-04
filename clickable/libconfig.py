@@ -43,10 +43,13 @@ class LibConfig(object):
         "INSTALL_DIR": "install_dir",
     })
     accepts_placeholders = ["root_dir", "build_dir", "src_dir", "install_dir",
-                            "build", "build_args", "make_args", "postmake",
-                            "postbuild", "prebuild"]
+                            "build",
+                            "build_args", "make_args", "postmake", "postbuild",
+                            "prebuild",
+                            "env_vars", "build_home"]
 
-    path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir']
+    path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
+                 'build_home']
     required = ['template']
     flexible_lists = ['dependencies_host', 'dependencies_target',
                       'dependencies_ppa', 'dependencies_build',
@@ -75,6 +78,7 @@ class LibConfig(object):
             'build': None,
             'postbuild': None,
             'build_dir': '${ROOT}/build/${ARCH_TRIPLET}/${NAME}',
+            'build_home': '${BUILD_DIR}/.clickable/home',
             'src_dir': '${ROOT}/libs/${NAME}',
             'root_dir': root_dir,
             'dependencies_build': [],
@@ -119,8 +123,13 @@ class LibConfig(object):
 
     def prepare_docker_env_vars(self):
         docker_env_vars = []
-        for key, val in self.get_env_vars().items():
+        env_dict = self.get_env_vars()
+
+        env_dict["HOME"] = self.config["build_home"]
+
+        for key, val in env_dict.items():
             docker_env_vars.append('-e {}="{}"'.format(key, val))
+
         return " ".join(docker_env_vars)
 
     def set_env_vars(self):
