@@ -4,12 +4,12 @@ Changelog
 =========
 
 Changes in v6.9.1
-=================
+-----------------
 
 - Fixed broken lib builds
 
 Changes in v6.9.0
-=================
+-----------------
 
 - Placeholders are now allowed in env vars
 - Changed placeholder syntax to ``${PLACEHOLDER}``, the old syntax is now deprecated
