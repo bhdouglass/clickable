@@ -7,6 +7,13 @@ from clickable.config import Config
 from clickable.exceptions import ClickableException
 
 
+rust_arch_target_mapping = {
+    'amd64': 'x86_64-unknown-linux-gnu',
+    'armhf': 'armv7-unknown-linux-gnueabihf',
+    'arm64': 'aarch64-unknown-linux-gnu',
+}
+
+
 class RustBuilder(Builder):
     name = Config.RUST
 
@@ -26,16 +33,18 @@ class RustBuilder(Builder):
 
     @property
     def _cargo_target(self):
-        if self.config.build_arch == 'armhf':
-            return 'armv7-unknown-linux-gnueabihf'
-        elif self.config.build_arch == 'amd64':
-            return 'x86_64-unknown-linux-gnu'
-        raise ClickableException('Arch {} unsupported by rust template'.format(self.config.build_arch))
+        if self.config.build_arch not in rust_arch_target_mapping:
+            raise ClickableException(
+                'Arch {} unsupported by rust template'.format(self.config.build_arch))
+        return rust_arch_target_mapping[self.config.build_arch]
 
     def _find_click_assets(self):
-        assets = glob.glob('{}/**/manifest.json'.format(self.config.cwd), recursive=True)
-        assets.extend(glob.glob('{}/**/*.apparmor'.format(self.config.cwd), recursive=True))
-        assets.extend(glob.glob('{}/**/*.desktop'.format(self.config.cwd), recursive=True))
+        assets = glob.glob(
+            '{}/**/manifest.json'.format(self.config.cwd), recursive=True)
+        assets.extend(
+            glob.glob('{}/**/*.apparmor'.format(self.config.cwd), recursive=True))
+        assets.extend(
+            glob.glob('{}/**/*.desktop'.format(self.config.cwd), recursive=True))
         return assets
 
     def _ignore(self, path, contents):
@@ -43,9 +52,9 @@ class RustBuilder(Builder):
         for content in contents:
             abs_path = os.path.abspath(os.path.join(path, content))
             if (
-                abs_path in self.paths_to_ignore or
-                content in self.paths_to_ignore or
-                os.path.splitext(content)[1] == '.rs'
+                abs_path in self.paths_to_ignore
+                or content in self.paths_to_ignore
+                or os.path.splitext(content)[1] == '.rs'
             ):
                 ignored += [content]
         return ignored
@@ -56,13 +65,13 @@ class RustBuilder(Builder):
             shutil.rmtree(self.config.install_dir)
 
         # Copy project assets
-        shutil.copytree(self.config.cwd, self.config.install_dir, ignore=self._ignore)
+        shutil.copytree(self.config.cwd,
+                        self.config.install_dir, ignore=self._ignore)
 
         # Copy click assets
-        if self.config.build_arch == 'armhf':
-            target_dir = self.config.install_dir + '/lib/arm-linux-gnueabihf/bin/'
-        else:
-            target_dir = self.config.install_dir
+        target_dir = self.config.app_bin_dir
+
+
         os.makedirs(target_dir, exist_ok=True)
         assets = self._find_click_assets()
         for asset in assets:
