@@ -7,6 +7,7 @@ from clickable.utils import (
     get_builders,
     run_subprocess_check_call,
     makedirs,
+    is_sub_dir,
 )
 from clickable.logger import logger
 from clickable.exceptions import ClickableException
@@ -50,6 +51,9 @@ class BuildCommand(Command):
         builder.build()
 
     def install_files(self, pattern, dest_dir):
+        if not is_sub_dir(dest_dir, self.config.install_dir):
+            dest_dir = os.path.abspath(self.config.install_dir + "/" + dest_dir)
+
         makedirs(dest_dir)
         if '"' in pattern:
             # Make sure one cannot run random bash code through the "ls" command

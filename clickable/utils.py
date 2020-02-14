@@ -246,3 +246,9 @@ def make_absolute(path):
 
 def make_env_var_conform(name):
     return re.sub("[^A-Z0-9_]", "_", name.upper())
+
+
+def is_sub_dir(path, parent):
+    p1 = os.path.abspath(path)
+    p2 = os.path.abspath(parent)
+    return os.path.commonpath([p1, p2]).startswith(p2)
