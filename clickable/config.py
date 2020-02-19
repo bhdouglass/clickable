@@ -93,8 +93,7 @@ class Config(object):
 
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
                  'cargo_home', 'gopath', 'app_lib_dir', 'app_bin_dir',
-                 'app_qml_dir', 'install_lib', 'install_bin', 'install_qml',
-                 'install_data', 'build_home']
+                 'app_qml_dir', 'build_home']
     required = ['arch', 'build_dir', 'docker_image']
     flexible_lists = ['dependencies_host', 'dependencies_target',
                       'dependencies_ppa', 'dependencies_build',

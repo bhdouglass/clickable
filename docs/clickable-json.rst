@@ -247,7 +247,8 @@ Needs to be specified as a dictionary with absolute source paths as keys and des
     },
 
 Can be specified as a string or a list of strings. Paths must not contain ``"`` characters.
-Supports wildcards as this actually calls ``ls "<src>"`` in a bash.
+Supports wildcards as this actually calls ``ls "<src>"`` in a bash. ``${INSTALL_DIR}`` is
+added as prefix if path is not relative to the install dir.
 
 kill
 ----
