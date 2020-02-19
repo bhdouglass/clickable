@@ -5,6 +5,7 @@ import shutil
 from .base import Builder
 from clickable.config import Config
 from clickable.exceptions import ClickableException
+from clickable.utils import find
 
 
 rust_arch_target_mapping = {
@@ -19,11 +20,17 @@ class RustBuilder(Builder):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+        base_build_dir = self.config.build_dir
+        if self.config.arch_triplet in base_build_dir:
+            base_build_dir = base_build_dir.split(self.config.arch_triplet)[0]
+
         self.paths_to_ignore = self._find_click_assets()
         self.paths_to_ignore.extend([
             # Click stuff
             os.path.abspath(self.config.install_dir),
             os.path.abspath(self.config.build_dir),
+            os.path.abspath(base_build_dir),
             'clickable.json',
             os.path.abspath(os.path.join(self.config.cwd, 'Cargo.toml')),
             os.path.abspath(os.path.join(self.config.cwd, 'Cargo.lock')),
@@ -39,13 +46,11 @@ class RustBuilder(Builder):
         return rust_arch_target_mapping[self.config.build_arch]
 
     def _find_click_assets(self):
-        assets = glob.glob(
-            '{}/**/manifest.json'.format(self.config.cwd), recursive=True)
-        assets.extend(
-            glob.glob('{}/**/*.apparmor'.format(self.config.cwd), recursive=True))
-        assets.extend(
-            glob.glob('{}/**/*.desktop'.format(self.config.cwd), recursive=True))
-        return assets
+        return [
+            find(['manifest.json'], self.config.cwd, build_dir=self.config.build_dir),
+            find(['.apparmor'], self.config.cwd, build_dir=self.config.build_dir, extensions_only=True),
+            find(['.desktop'], self.config.cwd, build_dir=self.config.build_dir, extensions_only=True),
+        ]
 
     def _ignore(self, path, contents):
         ignored = []
