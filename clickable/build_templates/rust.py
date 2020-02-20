@@ -21,22 +21,26 @@ class RustBuilder(Builder):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        base_build_dir = self.config.build_dir
-        if self.config.arch_triplet in base_build_dir:
-            base_build_dir = base_build_dir.split(self.config.arch_triplet)[0]
-
         self.paths_to_ignore = self._find_click_assets()
         self.paths_to_ignore.extend([
             # Click stuff
             os.path.abspath(self.config.install_dir),
             os.path.abspath(self.config.build_dir),
-            os.path.abspath(base_build_dir),
+            os.path.abspath(self._get_base_build_dir()),
             'clickable.json',
             os.path.abspath(os.path.join(self.config.cwd, 'Cargo.toml')),
             os.path.abspath(os.path.join(self.config.cwd, 'Cargo.lock')),
             os.path.abspath(os.path.join(self.config.cwd, 'target')),
         ])
         self.paths_to_ignore.extend(self.config.ignore)
+
+    def _get_base_build_dir(self):
+        base_build_dir = self.config.build_dir
+
+        if self.config.arch_triplet in base_build_dir:
+            base_build_dir = base_build_dir.split(self.config.arch_triplet)[0]
+
+        return base_build_dir
 
     @property
     def _cargo_target(self):
@@ -47,9 +51,9 @@ class RustBuilder(Builder):
 
     def _find_click_assets(self):
         return [
-            find(['manifest.json'], self.config.cwd, build_dir=self.config.build_dir),
-            find(['.apparmor'], self.config.cwd, build_dir=self.config.build_dir, extensions_only=True),
-            find(['.desktop'], self.config.cwd, build_dir=self.config.build_dir, extensions_only=True),
+            find(['manifest.json'], self.config.cwd, ignore_dir=self._get_base_build_dir()),
+            find(['.apparmor'], self.config.cwd, ignore_dir=self._get_base_build_dir(), extensions_only=True),
+            find(['.desktop'], self.config.cwd, ignore_dir=self._get_base_build_dir(), extensions_only=True),
         ]
 
     def _ignore(self, path, contents):
