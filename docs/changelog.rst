@@ -3,6 +3,14 @@
 Changelog
 =========
 
+Changes in v6.10.0
+------------------
+
+- Fix containers being rebuilt when switching between desktop mode and building for amd64
+- Enabled compiling rust apps into arm64
+- Make ``install_data`` paths relative to the install dir
+- Fixed the ``clickable create`` command when using an older version of git
+
 Changes in v6.9.1
 -----------------
 

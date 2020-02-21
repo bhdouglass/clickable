@@ -15,7 +15,7 @@ from clickable.logger import logger, log_file, console_handler
 from clickable.exceptions import ClickableException
 
 
-__version__ = '6.9.1'
+__version__ = '6.10.0'
 
 
 class Clickable(object):

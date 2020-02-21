@@ -1,3 +1,12 @@
+clickable (6.10.0) unstable; urgency=medium
+
+  * Fix containers being rebuilt when switching between desktop mode and building for amd64
+  * Enabled compiling rust apps into arm64
+  * Make ``install_data`` paths relative to the install dir
+  * Fixed the ``clickable create`` command when using an older version of git
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Fri, 21 Feb 2020 14:05:00 -0500
+
 clickable (6.9.1) unstable; urgency=medium
 
   * Fixed broken lib builds
