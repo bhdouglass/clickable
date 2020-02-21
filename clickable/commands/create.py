@@ -10,7 +10,7 @@ except ImportError:
     cookiecutter_available = False
 
 
-COOKIECUTTER_URL = 'https://gitlab.com/clickable/ut-app-meta-template'
+COOKIECUTTER_URL = 'https://gitlab.com/clickable/ut-app-meta-template.git'
 
 
 # Map old template names to new template names
