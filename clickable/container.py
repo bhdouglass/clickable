@@ -279,6 +279,10 @@ RUN {}
         image_exists = run_subprocess_check_output(command).strip()
         return not image_exists
 
+    def get_apt_install_cmd(self, dependencies):
+        return 'apt-get install -y --force-yes --no-install-recommends {}'.format(
+                ' '.join(dependencies))
+
     def setup_image(self):
         self.check_docker()
         
@@ -293,8 +297,8 @@ RUN {}
             commands.append(
                 'echo set debconf/frontend Noninteractive | debconf-communicate && echo set debconf/priority critical | debconf-communicate')
             commands.append(
-                'apt-get update && apt-get install -y --force-yes --no-install-recommends {} && apt-get clean'.format(
-                    ' '.join(dependencies)))
+                'apt-get update && {} && apt-get clean'.format(
+                    self.get_apt_install_cmd(dependencies)))
 
         if self.config.image_setup:
            commands.extend(self.config.image_setup.get('run', []))
@@ -311,7 +315,6 @@ RUN {}
         if dependencies:
             self.run_command('apt-get update', sudo=True, use_build_dir=False)
 
-            command = 'apt-get install -y --force-yes'
             run = False
             for dep in dependencies:
                 exists = ''
@@ -322,10 +325,12 @@ RUN {}
 
                 if exists.strip() != 'Status: install ok installed':
                     run = True
-                    command = '{} {}'.format(command, dep)
+                    break
 
             if run:
-                self.run_command(command, sudo=True, use_build_dir=False)
+                self.run_command(self.get_apt_install_cmd(dependencies),
+                        sudo=True,
+                        use_build_dir=False)
             else:
                 logger.debug('Dependencies already installed')
 
