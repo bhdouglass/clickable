@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.10.1
+------------------
+
+- Fixed issues installing dependencies when in container mode
+
 Changes in v6.10.0
 ------------------
 

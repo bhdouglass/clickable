@@ -1,3 +1,9 @@
+clickable (6.10.1) unstable; urgency=medium
+
+  * Fixed issues installing dependencies when in container mode
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Tue, 25 Feb 2020 00:25:00 -0500
+
 clickable (6.10.0) unstable; urgency=medium
 
   * Fix containers being rebuilt when switching between desktop mode and building for amd64
