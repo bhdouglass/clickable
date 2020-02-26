@@ -127,10 +127,18 @@ class Container(object):
 
             raise ClickableException('Log out or restart to apply changes')
 
-    def pull_files(self, files, dst_local):
+    def pull_files(self, files, dst_parent):
         if self.config.container_mode:
             for f in files:
-                shutil.copy(f, dst_local, follow_symlinks=False)
+                dst_path = os.path.join(dst_parent, os.path.basename(f))
+                if os.path.isdir(f):
+                    if os.path.exists(dst_path):
+                        shutil.rmtree(dst_path)
+                    shutil.copytree(f, dst_path)
+                else:
+                    if os.path.exists(dst_path):
+                        os.remove(dst_path)
+                    shutil.copy(f, dst_parent, follow_symlinks=False)
         else:  # Docker
             command_create = 'docker create -v {}:{}:Z {}'.format(
                     self.config.root_dir,
@@ -143,7 +151,7 @@ class Container(object):
                 command_copy = 'docker cp {}:{} {}'.format(
                     container,
                     f,
-                    dst_local
+                    dst_parent
                 )
                 run_subprocess_check_call(command_copy)
 
