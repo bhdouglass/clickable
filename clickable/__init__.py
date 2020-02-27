@@ -189,6 +189,8 @@ class Clickable(object):
 
         if len(commands) == 0:
             commands = self.config.default.split(' ')
+        elif len(commands) > 1:
+            logger.warning('Chaining multiple commands is deprecated and will be rejected in a future version of Clickable.')
 
         '''
         Detect senarios when an argument is passed to a command. For example:
