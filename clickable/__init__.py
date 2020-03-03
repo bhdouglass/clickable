@@ -189,8 +189,6 @@ class Clickable(object):
 
         if len(commands) == 0:
             commands = self.config.default.split(' ')
-        elif len(commands) > 1:
-            logger.warning('Chaining multiple commands is deprecated and will be rejected in a future version of Clickable.')
 
         '''
         Detect senarios when an argument is passed to a command. For example:
@@ -199,7 +197,7 @@ class Clickable(object):
         been limited to just the case when we have 2 values in args.commands as
         stringing together multiple commands and a command with an argument is
         unlikely to occur.
-        TODO determine if there is a better way to do this.
+        TODO remove chaining and clean this up
         '''
         command_arg = ''
         if len(commands) == 2 and commands[1] not in VALID_COMMANDS:
@@ -207,14 +205,14 @@ class Clickable(object):
             commands = commands[:1]
 
         commands = [self.command_aliases[command] if command in self.command_aliases else command for command in commands]
+        if len(commands) > 1:
+            logger.warning('Chaining multiple commands is deprecated and will be rejected in a future version of Clickable.')
 
         for command in commands:
             if command in self.command_names:
                 cmd = self.command_classes[command](self.config)
                 cmd.preprocess(command_arg)
 
-        # TODO consider removing the ability to string together multiple commands
-        # This should help clean up the arguments & command_arg
         for command in commands:
             if command == 'bash-completion':
                 cli_args = [
