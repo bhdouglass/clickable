@@ -8,6 +8,7 @@ from clickable.utils import (
 from clickable.exceptions import ClickableException
 from clickable.logger import logger
 from collections import OrderedDict
+import platform
 
 
 class LibConfig(object):
@@ -26,13 +27,15 @@ class LibConfig(object):
     }
 
     container_mapping = {
-        ('16.04', 'armhf'): 'clickable/ubuntu-sdk:16.04-armhf',
-        ('16.04', 'amd64'): 'clickable/ubuntu-sdk:16.04-amd64',
-        ('16.04', 'amd64-nvidia'): 'clickable/ubuntu-sdk:16.04-amd64-nvidia',
-        ('16.04', 'arm64'): 'clickable/ubuntu-sdk:16.04-arm64',
+        "x86_64": {
+            ('16.04', 'armhf'): 'clickable/ubuntu-sdk:16.04-armhf',
+            ('16.04', 'amd64'): 'clickable/ubuntu-sdk:16.04-amd64',
+            ('16.04', 'amd64-nvidia'): 'clickable/ubuntu-sdk:16.04-amd64-nvidia',
+            ('16.04', 'arm64'): 'clickable/ubuntu-sdk:16.04-arm64',
+        }
     }
-
-    container_list = list(container_mapping.values())
+    host_arch = platform.machine()
+    container_list = list(container_mapping[host_arch].values())
 
     placeholders = OrderedDict({
         "ARCH_TRIPLET": "arch_triplet",
