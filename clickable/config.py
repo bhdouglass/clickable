@@ -58,13 +58,13 @@ class Config(object):
     arch_agnostic_templates = [PURE_QML_QMAKE, PURE_QML_CMAKE, PURE]
 
     container_mapping = {
-        ('16.04', 'armhf'): 'clickable/ubuntu-sdk:16.04-armhf',
-        ('16.04', 'amd64'): 'clickable/ubuntu-sdk:16.04-amd64',
-        ('16.04', 'amd64-nvidia'): 'clickable/ubuntu-sdk:16.04-amd64-nvidia',
-        ('16.04', 'arm64'): 'clickable/ubuntu-sdk:16.04-arm64',
+        "x86_64": {
+            ('16.04', 'armhf'): 'clickable/ubuntu-sdk:16.04-armhf',
+            ('16.04', 'amd64'): 'clickable/ubuntu-sdk:16.04-amd64',
+            ('16.04', 'amd64-nvidia'): 'clickable/ubuntu-sdk:16.04-amd64-nvidia',
+            ('16.04', 'arm64'): 'clickable/ubuntu-sdk:16.04-arm64',
+        }
     }
-
-    container_list = list(container_mapping.values())
 
     arch_triplet_mapping = {
         'armhf': 'arm-linux-gnueabihf',
@@ -249,9 +249,14 @@ class Config(object):
         if self.use_nvidia and not build_arch.endswith('-nvidia'):
             build_arch = "{}-nvidia".format(build_arch)
 
-        if ('16.04', build_arch) not in self.container_mapping:
+        if self.host_arch not in self.container_mapping:
+            raise ClickableException('Clickable currently does not have docker images for your host architecture "{}"'.format(self.host_arch))
+
+        container_mapping_host = self.container_mapping[self.host_arch]
+        if ('16.04', build_arch) not in container_mapping_host:
             raise ClickableException('There is currently no docker image for 16.04/{}'.format(build_arch))
-        self.config['docker_image'] = self.container_mapping[('16.04', build_arch)]
+        self.config['docker_image'] = container_mapping_host[('16.04', build_arch)]
+        self.container_list = list(container_mapping_host.values())
 
     def __getattr__(self, name):
         return self.config[name]
