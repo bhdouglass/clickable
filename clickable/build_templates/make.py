@@ -5,7 +5,7 @@ import os
 
 from .base import Builder
 from clickable.logger import logger
-from clickable.config import Config
+from clickable.config.config import Config
 
 
 class MakeBuilder(Builder):

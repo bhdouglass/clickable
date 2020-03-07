@@ -3,11 +3,12 @@ import shutil
 import os
 
 from .base import Builder
-from clickable.config import Config
+from clickable.config.config import Config
+from clickable.config.constants import Constants
 
 
 class GoBuilder(Builder):
-    name = Config.GO
+    name = Constants.GO
 
     def _ignore(self, path, contents):
         ignored = []

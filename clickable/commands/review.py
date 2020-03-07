@@ -13,7 +13,7 @@ class ReviewCommand(Command):
             click = os.path.basename(path_arg)
             click_path = path_arg
         else:
-            click = self.config.get_click_filename()
+            click = self.config.install_files.get_click_filename()
             click_path = os.path.join(self.config.build_dir, click)
 
         cwd = os.path.dirname(os.path.realpath(click_path))

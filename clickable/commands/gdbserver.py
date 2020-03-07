@@ -6,7 +6,6 @@ from .base import Command
 from clickable.utils import (
     run_subprocess_call,
     run_subprocess_check_output,
-    get_desktop,
 )
 from clickable.logger import logger
 from clickable.exceptions import ClickableException
@@ -33,7 +32,7 @@ class GdbserverCommand(Command):
                 self.config.find_version())
 
     def get_app_exec(self):
-        desktop = get_desktop(self.config.install_dir)
+        desktop = self.config.install_files.get_desktop(self.config.install_dir)
         return desktop["Exec"]
 
     def get_app_exec_full_path(self):

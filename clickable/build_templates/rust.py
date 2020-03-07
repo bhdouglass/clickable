@@ -3,7 +3,8 @@ import glob
 import shutil
 
 from .base import Builder
-from clickable.config import Config
+from clickable.config.config import Config
+from clickable.config.constants import Constants
 from clickable.exceptions import ClickableException
 from clickable.utils import find
 
@@ -16,7 +17,7 @@ rust_arch_target_mapping = {
 
 
 class RustBuilder(Builder):
-    name = Config.RUST
+    name = Constants.RUST
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

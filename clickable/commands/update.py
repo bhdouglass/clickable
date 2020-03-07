@@ -8,7 +8,6 @@ from clickable.utils import (
     image_exists,
 )
 
-
 def update_image(image):
     if image_exists(image):
         command = 'docker pull {}'.format(image)

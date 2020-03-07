@@ -44,10 +44,8 @@ class BuildCommand(Command):
         self.click_build()
 
     def build(self):
-        template = self.config.get_template()
-
         builder_classes = get_builders()
-        builder = builder_classes[template](self.config, self.device)
+        builder = builder_classes[self.config.template](self.config, self.device)
         builder.build()
 
     def install_files(self, pattern, dest_dir):
@@ -97,13 +95,13 @@ class BuildCommand(Command):
             self.install_files(p, dest)
 
     def set_arch(self):
-        manifest = self.config.get_manifest()
+        manifest = self.config.install_files.get_manifest()
 
         arch = manifest.get('architecture', None)
         if arch == '@CLICK_ARCH@':
             arch = self.config.arch
             manifest['architecture'] = arch
-            self.config.write_manifest(manifest)
+            self.config.install_files.write_manifest(manifest)
 
         if arch != self.config.arch:
             raise ClickableException('Clickable is building for architecture "{}", but "{}" is specified in the manifest. You can set the architecture field to @CLICK_ARCH@ to let Clickable set the architecture field automatically.'.format(
@@ -115,7 +113,7 @@ class BuildCommand(Command):
         command = 'click build {} --no-validate'.format(self.config.install_dir)
         self.config.container.run_command(command)
 
-        click = self.config.get_click_filename()
+        click = self.config.install_files.get_click_filename()
         click_path = os.path.join(self.config.build_dir, click)
 
         if self.config.click_output:

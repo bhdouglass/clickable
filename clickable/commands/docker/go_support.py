@@ -1,4 +1,5 @@
 from clickable import Config
+from clickable.config.constants import Constants
 from clickable.commands.docker.docker_config import DockerConfig
 from .docker_support import DockerSupport
 
@@ -12,7 +13,7 @@ class GoSupport(DockerSupport):
     def update(self, docker_config: DockerConfig):
         template = self.config.config['template']
 
-        if template == Config.GO:
+        if template == Constants.GO:
             go_paths = list(map(
                 lambda gopath:
                 '/gopath/path{}'.format(gopath),

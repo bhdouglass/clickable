@@ -1,7 +1,8 @@
 import os
 
 from clickable.commands.docker.docker_config import DockerConfig
-from clickable.config import Config
+from clickable.config.config import Config
+from clickable.config.constants import Constants
 from .docker_support import DockerSupport
 
 
@@ -14,7 +15,7 @@ class RustSupport(DockerSupport):
     def update(self, docker_config: DockerConfig):
         template = self.config.config['template']
 
-        if template == Config.RUST:
+        if template == Constants.RUST:
             cargo_home = self.config.cargo_home
             cargo_registry = os.path.join(cargo_home, 'registry')
             cargo_git = os.path.join(cargo_home, 'git')

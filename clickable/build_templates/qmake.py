@@ -1,5 +1,6 @@
 from .make import MakeBuilder
-from clickable.config import Config
+from clickable.config.config import Config
+from clickable.config.constants import Constants
 from clickable.exceptions import ClickableException
 
 qmake_arch_spec_mapping = {
@@ -9,7 +10,7 @@ qmake_arch_spec_mapping = {
 }
 
 class QMakeBuilder(MakeBuilder):
-    name = Config.QMAKE
+    name = Constants.QMAKE
 
     def make_install(self):
         super().make_install()
