@@ -1,15 +1,14 @@
-from unittest import TestCase, mock
+from unittest import mock
 from unittest.mock import ANY
 
 from clickable.commands.log import LogCommand
-from clickable.container import Container
-from ..mocks import ConfigMock, true_fn, empty_fn
+from ..mocks import empty_fn, true_fn
+from .base_test import UnitTest
 
 
-class TestLogCommand(TestCase):
+class TestLogCommand(UnitTest):
     def setUp(self):
-        self.config = ConfigMock()
-        self.config.container = Container(self.config)
+        self.setUpConfig()
         self.command = LogCommand(self.config)
 
     @mock.patch('clickable.device.Device.run_command', side_effect=empty_fn)
@@ -25,7 +24,7 @@ class TestLogCommand(TestCase):
 
         mock_run_command.assert_called_once_with('cat foo.log')
 
-    @mock.patch('clickable.config.Config.is_desktop_mode', side_effect=true_fn)
+    @mock.patch('clickable.config.config.Config.is_desktop_mode', side_effect=true_fn)
     @mock.patch('clickable.commands.log.logger.debug', side_effect=empty_fn)
     def test_no_desktop_mode_log(self, mock_logger_debug, mock_desktop_mode):
         self.command.run()

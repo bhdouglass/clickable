@@ -1,9 +1,9 @@
-from unittest import TestCase, mock
+from unittest import mock
 from unittest.mock import ANY
 
 from clickable.commands.clean import CleanCommand
-from clickable.container import Container
-from ..mocks import ConfigMock, empty_fn, true_fn
+from ..mocks import empty_fn, true_fn
+from .base_test import UnitTest
 
 
 def no_file_dir(path):
@@ -12,7 +12,7 @@ def no_file_dir(path):
 
 
 def no_file_temp(path):
-    if path == '/tmp/build/tmp':
+    if path == '/tmp/build/install':
         raise OSError('No such file or directory')
 
 
@@ -22,14 +22,13 @@ def dir_exception(path):
 
 
 def temp_exception(path):
-    if path == '/tmp/build/tmp':
+    if path == '/tmp/build/install':
         raise Exception('bad')
 
 
-class TestCleanCommand(TestCase):
+class TestCleanCommand(UnitTest):
     def setUp(self):
-        self.config = ConfigMock()
-        self.config.container = Container(self.config)
+        self.setUpWithTmpBuildDir()
         self.command = CleanCommand(self.config)
 
     @mock.patch('shutil.rmtree', side_effect=empty_fn)

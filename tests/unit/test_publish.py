@@ -1,14 +1,12 @@
-from unittest import TestCase, mock
+from unittest import mock
 
 from clickable.commands.publish import PublishCommand
-from clickable.container import Container
-from ..mocks import ConfigMock
+from .base_test import UnitTest
 
 
-class TestPublishCommand(TestCase):
+class TestPublishCommand(UnitTest):
     def setUp(self):
-        self.config = ConfigMock()
-        self.config.container = Container(self.config)
+        self.setUpConfig()
         self.command = PublishCommand(self.config)
 
 
