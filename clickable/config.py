@@ -194,7 +194,6 @@ class Config(object):
             self.config.update(arg_config)
 
         self.host_arch = platform.machine()
-        self.is_arm = self.host_arch.startswith('arm')
 
         self.set_conditional_defaults()
         self.cleanup_config()
@@ -242,8 +241,12 @@ class Config(object):
                 self.config["arch"] = self.config["restrict_arch_env"]
                 logger.debug('Architecture set to "{}" due to environment restriction'.format(self.config["arch"]))
             else:
-                self.config["arch"] = "armhf"
-                logger.debug('Architecture set to "armhf" because no architecture was specified')
+                if self.host_arch == 'aarch64' and self.container_mode:
+                    self.config['arch'] = 'arm64'
+                else:
+                    self.config['arch'] = 'armhf'
+
+                logger.debug('Architecture set to "{}" because no architecture was specified'.format(self.config['arch']))
 
     def set_image(self, build_arch):
         if self.use_nvidia and not build_arch.endswith('-nvidia'):
