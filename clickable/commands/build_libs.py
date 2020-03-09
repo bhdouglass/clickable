@@ -32,11 +32,14 @@ class LibBuildCommand(Command):
                 lib.container.setup()
 
                 try:
-                    os.makedirs(lib.build_dir)
-                except FileExistsError:
-                    pass
+                    os.makedirs(lib.build_dir, exist_ok=True)
                 except Exception:
                     logger.warning('Failed to create the build directory: {}'.format(str(sys.exc_info()[0])))
+
+                try:
+                    os.makedirs(lib.build_home, exist_ok=True)
+                except Exception:
+                    logger.warning('Failed to create the build home directory: {}'.format(str(sys.exc_info()[0])))
 
                 if lib.prebuild:
                     run_subprocess_check_call(lib.prebuild, cwd=self.config.cwd, shell=True)
