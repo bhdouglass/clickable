@@ -73,6 +73,12 @@ class Config(object):
         'all': 'all'
     }
 
+    host_arch_mapping = {
+        'x86_64': 'amd64',
+        'aarch64': 'arm64',
+        'armv7l': 'armhf',
+    }
+
     placeholders = OrderedDict({
         "ARCH_TRIPLET": "arch_triplet",
         "ROOT": "root_dir",
@@ -241,8 +247,8 @@ class Config(object):
                 self.config["arch"] = self.config["restrict_arch_env"]
                 logger.debug('Architecture set to "{}" due to environment restriction'.format(self.config["arch"]))
             else:
-                if self.host_arch == 'aarch64' and self.container_mode:
-                    self.config['arch'] = 'arm64'
+                if self.container_mode:
+                    self.config['arch'] = self.host_arch_mapping[self.host_arch]
                 else:
                     self.config['arch'] = 'armhf'
 
