@@ -159,7 +159,7 @@ class Container(object):
             run_subprocess_check_call(command_remove, stdout=subprocess.DEVNULL)
 
     def run_command(self, command, sudo=False, get_output=False,
-            use_build_dir=True, cwd=None, tty=False):
+            use_build_dir=True, cwd=None, tty=False, localhost=False):
         wrapped_command = command
         cwd = cwd if cwd else os.path.abspath(self.config.root_dir)
 
@@ -213,7 +213,7 @@ class Container(object):
 
             env_vars = self.config.prepare_docker_env_vars()
 
-            wrapped_command = 'docker run -v {project}:{project}:Z -v {home}:{home}:Z {env} {go} {rust} -w {cwd} -u {uid} --rm {tty} -i {image} bash -c "{cmd}"'.format(
+            wrapped_command = 'docker run -v {project}:{project}:Z -v {home}:{home}:Z {env} {go} {rust} -w {cwd} -u {uid} --rm {tty} {network} -i {image} bash -c "{cmd}"'.format(
                 project=cwd,
                 home=self.config.build_home,
                 env=env_vars,
@@ -223,7 +223,8 @@ class Container(object):
                 uid=os.getuid(),
                 image=self.docker_image,
                 cmd=command,
-                tty="-t" if tty else ""
+                tty="-t" if tty else "",
+                network='--network="host"' if localhost else "",
             )
 
         kwargs = {}
