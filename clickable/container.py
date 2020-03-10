@@ -128,6 +128,8 @@ class Container(object):
             raise ClickableException('Log out or restart to apply changes')
 
     def pull_files(self, files, dst_parent):
+        os.makedirs(dst_parent, exist_ok=True)
+
         if self.config.container_mode:
             for f in files:
                 dst_path = os.path.join(dst_parent, os.path.basename(f))
