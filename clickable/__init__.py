@@ -187,7 +187,9 @@ class Clickable(object):
 
         VALID_COMMANDS = self.command_names + list(self.config.scripts.keys())
 
-        if len(commands) == 0:
+        is_default = False
+        if not commands:
+            is_default = True
             commands = self.config.default.split(' ')
 
         '''
@@ -205,7 +207,7 @@ class Clickable(object):
             commands = commands[:1]
 
         commands = [self.command_aliases[command] if command in self.command_aliases else command for command in commands]
-        if len(commands) > 1:
+        if len(commands) > 1 and not is_default:
             logger.warning('Chaining multiple commands is deprecated and will be rejected in a future version of Clickable.')
 
         for command in commands:
