@@ -19,7 +19,8 @@ class TestRunCommand(TestCase):
         self.command.run('echo foo')
 
         mock_setup.assert_called_once_with()
-        mock_run_command.assert_called_once_with('echo foo', use_build_dir=False, tty=True)
+        mock_run_command.assert_called_once_with('echo foo',
+                use_build_dir=False, tty=True, localhost=True)
 
     def test_run_no_command(self):
         with self.assertRaises(ClickableException):
