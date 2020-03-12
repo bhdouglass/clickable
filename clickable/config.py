@@ -247,15 +247,17 @@ class Config(object):
             elif self.config["restrict_arch_env"]:
                 self.config["arch"] = self.config["restrict_arch_env"]
                 logger.debug('Architecture set to "{}" due to environment restriction'.format(self.config["arch"]))
+            elif self.container_mode:
+                self.config['arch'] = self.host_arch_mapping[self.host_arch]
+                logger.debug('Architecture set to "{}" due to container mode'.format(self.config['arch']))
             else:
-                if self.container_mode:
-                    self.config['arch'] = self.host_arch_mapping[self.host_arch]
-                else:
-                    self.config['arch'] = 'armhf'
-
+                self.config['arch'] = 'armhf'
                 logger.debug('Architecture set to "{}" because no architecture was specified'.format(self.config['arch']))
 
     def set_image(self, build_arch):
+        if not self.needs_docker_image():
+            return
+
         if self.use_nvidia and not build_arch.endswith('-nvidia'):
             build_arch = "{}-nvidia".format(build_arch)
 
@@ -557,6 +559,12 @@ class Config(object):
         return (self.is_desktop_mode() or 
                 set(['build', 'build-libs']).intersection(self.commands))
 
+    def needs_docker_image(self):
+        return (not self.custom_docker_image and 
+                not self.container_mode and
+                (self.is_build_cmd() or 
+                    set(['update']).intersection(self.commands)))
+
     def check_arch_restrictions(self):
         if self.is_arch_agnostic():
             if self.config["arch"] != "all":
@@ -595,7 +603,7 @@ class Config(object):
 
         self.check_arch_restrictions()
 
-        if self.custom_docker_image:
+        if self.needs_docker_image():
             if self.dependencies_host or self.dependencies_target or self.dependencies_ppa:
                 logger.warning("Dependencies are ignored when using a custom docker image!")
             if self.image_setup:
