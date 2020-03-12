@@ -16,6 +16,7 @@ from clickable.exceptions import ClickableException
 
 
 __version__ = '6.11.1'
+__container_minimum_required__ = 0
 
 
 class Clickable(object):
@@ -178,7 +179,8 @@ class Clickable(object):
 
     def run(self, arg_commands=[], args=None):
         self.config = Config(args, __version__, arg_commands)
-        self.config.container = Container(self.config)
+        self.config.container = Container(self.config,
+                minimum_version=__container_minimum_required__)
         commands = self.config.commands
 
         VALID_COMMANDS = self.command_names + list(self.config.scripts.keys())

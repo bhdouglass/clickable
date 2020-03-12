@@ -20,9 +20,10 @@ from clickable.exceptions import ClickableException
 
 
 class Container(object):
-    def __init__(self, config, name=None):
+    def __init__(self, config, name=None, minimum_version=None):
         self.config = config
         self.docker_mode = self.config.needs_docker_image()
+        self.minimum_version = minimum_version
 
         if self.docker_mode:
             check_command('docker')
@@ -361,9 +362,29 @@ RUN {}
             or self.config.dependencies_target \
             or self.config.image_setup
 
+    def check_base_image_version(self):
+        if not self.minimum_version:
+            return
+
+        version = 0
+        try:
+            version_string = self.run_command("cat /image_version",
+                    get_output=True).strip()
+            version = int(version_string)
+        except Exception as e:
+            logger.warn("Could not read the image version from the container")
+            pass
+
+        if version < self.minimum_version:
+            raise ClickableException('This version of Clickable requires a newer version of the docker images than installed. Please run "clickable update" to update your local images.')
+
+
     def setup(self):
         if self.config.custom_docker_image:
             return
+
+        self.check_base_image_version()
+
         if not self.needs_customized_container():
             return
 
