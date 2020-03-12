@@ -34,8 +34,6 @@ class LibConfig(object):
             ('16.04', 'arm64'): 'clickable/ubuntu-sdk:16.04-arm64',
         }
     }
-    host_arch = platform.machine()
-    container_list = list(container_mapping[host_arch].values())
 
     placeholders = OrderedDict({
         "ARCH_TRIPLET": "arch_triplet",
@@ -70,6 +68,9 @@ class LibConfig(object):
         self.placeholders.update({"ARCH": "arch"})
 
         self.debug_build = debug_build
+
+        self.host_arch = platform.machine()
+        self.container_list = list(self.container_mapping[self.host_arch].values())
 
         self.config = {
             'name': name,
