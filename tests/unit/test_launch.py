@@ -3,7 +3,7 @@ from unittest.mock import ANY
 
 from clickable.commands.launch import LaunchCommand
 from clickable.container import Container
-from ..mocks import ConfigMock, empty_fn, exception_fn
+from ..mocks import ConfigMock, true_fn, empty_fn, exception_fn
 
 
 class TestLaunchCommand(TestCase):
@@ -24,12 +24,13 @@ class TestLaunchCommand(TestCase):
         self.config.kill = 'foo and bar'
         self.command.kill()
 
+    @mock.patch('clickable.config.Config.is_desktop_mode', side_effect=true_fn)
     @mock.patch('clickable.commands.launch.logger.debug', side_effect=empty_fn)
-    def test_kill_skips_desktop(self, mock_logger_debug):
-        self.config.desktop = True
+    def test_kill_skips_desktop(self, mock_logger_debug, mock_desktop_mode):
         self.command.kill()
 
         mock_logger_debug.assert_called_once_with(ANY)
+        mock_desktop_mode.assert_called_once_with()
 
     @mock.patch('clickable.commands.launch.logger.debug', side_effect=empty_fn)
     def test_kill_skips_container_mode(self, mock_logger_debug):

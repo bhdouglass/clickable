@@ -8,7 +8,7 @@ class LogCommand(Command):
     help = 'Outputs the app\'s log from the device'
 
     def run(self, path_arg=None):
-        if self.config.desktop:
+        if self.config.is_desktop_mode():
             logger.debug('Skipping log, running in desktop mode')
             return
         elif self.config.container_mode:

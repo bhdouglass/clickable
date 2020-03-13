@@ -8,7 +8,7 @@ class LaunchCommand(Command):
     help = 'Launches the app on a device'
 
     def kill(self):
-        if self.config.desktop:
+        if self.config.is_desktop_mode():
             logger.debug('Skipping kill, running in desktop mode')
             return
         elif self.config.container_mode:

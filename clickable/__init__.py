@@ -176,21 +176,14 @@ class Clickable(object):
 
         return args
 
-    def run(self, commands=[], args=None):
-        self.config = Config(
-            args=args,
-            clickable_version=__version__,
-            desktop=('desktop' in commands or 'test' in commands),
-            is_build_cmd=('build' in commands or 'build-libs' in commands or 'desktop' in commands),
-        )
+    def run(self, arg_commands=[], args=None):
+        self.config = Config(args, __version__, arg_commands)
         self.config.container = Container(self.config)
+        commands = self.config.commands
 
         VALID_COMMANDS = self.command_names + list(self.config.scripts.keys())
 
-        is_default = False
-        if not commands:
-            is_default = True
-            commands = self.config.default.split(' ')
+        is_default = not arg_commands
 
         '''
         Detect senarios when an argument is passed to a command. For example:

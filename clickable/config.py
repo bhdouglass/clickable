@@ -127,12 +127,10 @@ class Config(object):
     desktop_locale = os.getenv('LANG', 'C')
     desktop_skip_build = False
 
-    def __init__(self, args=None, clickable_version=None, desktop=False, is_build_cmd=False):
+    def __init__(self, args=None, clickable_version=None, commands=[]):
         # Must come after ARCH_TRIPLET to avoid breaking it
         self.placeholders.update({"ARCH": "arch"})
 
-        self.desktop = desktop
-        self.is_build_cmd = is_build_cmd
         self.clickable_version = clickable_version
         self.cwd = os.getcwd()
 
@@ -199,14 +197,16 @@ class Config(object):
             arg_config = self.load_arg_config(args)
             self.config.update(arg_config)
 
+        self.config['default'] = flexible_string_to_list(self.config['default'])
+        if self.config['dirty'] and 'clean' in self.config['default']:
+            self.config['default'].remove('clean')
+
+        self.commands = commands if commands else self.config['default']
+
         self.host_arch = platform.machine()
 
         self.set_conditional_defaults()
         self.cleanup_config()
-
-        if self.config['dirty'] and 'clean' in self.config['default']:
-            self.config['default'].remove('clean')
-        self.config['default'] = ' '.join(self.config['default'])
 
         self.set_build_arch()
         self.check_nvidia()
@@ -238,7 +238,7 @@ class Config(object):
             if self.is_arch_agnostic():
                 self.config["arch"] = "all"
                 logger.debug('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
-            elif self.desktop:
+            elif self.is_desktop_mode():
                 self.config["arch"] = "amd64"
                 logger.debug('Architecture set to "amd64" because of desktop mode.')
             elif self.config["restrict_arch"]:
@@ -465,13 +465,13 @@ class Config(object):
                 self.config[key] = make_absolute(self.config[key])
 
     def set_build_arch(self):
-        if self.desktop or self.config['arch'] == 'all':
+        if self.is_desktop_mode() or self.config['arch'] == 'all':
             self.build_arch = 'amd64'
         else:
             self.build_arch = self.config['arch']
 
     def check_nvidia(self):
-        if self.desktop:
+        if self.is_desktop_mode():
             if self.avoid_nvidia:
                 logger.debug('Skipping nvidia driver detection.')
             elif self.use_nvidia:
@@ -548,6 +548,13 @@ class Config(object):
     def is_arch_agnostic(self):
         return self.config["template"] in self.arch_agnostic_templates
 
+    def is_desktop_mode(self):
+        return bool(set(['desktop', 'test']).intersection(self.commands))
+
+    def is_build_cmd(self):
+        return (self.is_desktop_mode() or 
+                set(['build', 'build-libs']).intersection(self.commands))
+
     def check_arch_restrictions(self):
         if self.is_arch_agnostic():
             if self.config["arch"] != "all":
@@ -555,14 +562,14 @@ class Config(object):
                     self.config['template'],
                     self.config['arch'],
                 ))
-        elif self.desktop:
+        elif self.is_desktop_mode():
             if self.config["arch"] != "amd64":
                 raise ClickableException('Desktop mode needs architecture "amd64", but "{}" was specified'.format(self.config["arch"]))
 
         if self.config['restrict_arch'] and self.config['restrict_arch'] != self.config['arch']:
             raise ClickableException('Cannot build app for architecture "{}" as it is restricted to "{}" in the clickable.json.'.format(self.config["arch"], self.config['restrict_arch']))
 
-        if self.config['restrict_arch_env'] and self.config['restrict_arch_env'] != self.config['arch'] and self.config['arch'] != 'all' and self.is_build_cmd:
+        if self.config['restrict_arch_env'] and self.config['restrict_arch_env'] != self.config['arch'] and self.config['arch'] != 'all' and self.is_build_cmd():
             raise ClickableException('Cannot build app for architecture "{}" as the environment is restricted to "{}".'.format(self.config["arch"], self.config['restrict_arch_env']))
 
     def check_config_errors(self):
@@ -600,7 +607,7 @@ class Config(object):
             if self.config['install_qml']:
                 logger.warning("Be aware that QML modules are going to be installed to {}, which is not part of 'QML2_IMPORT_PATH' at runtime.".format(self.config['app_qml_dir']))
 
-        if self.debug_gdb and not self.desktop:
+        if self.debug_gdb and not self.is_desktop_mode():
             raise ClickableException("GDB debugging is only supported in desktop mode! Consider running 'clickable desktop --gdb'")
 
         if self.config['template'] == self.CUSTOM and not self.config['build']:
@@ -614,7 +621,7 @@ class Config(object):
         if self.config['template'] and self.config['template'] not in self.templates:
             raise ClickableException('"{}" is not a valid template ({})'.format(self.config['template'], ', '.join(self.templates)))
 
-        if self.desktop:
+        if self.is_desktop_mode():
             if self.use_nvidia and self.avoid_nvidia:
                 raise ClickableException('Configuration conflict: enforcing and avoiding nvidia mode must not be specified together.')
 

@@ -3,7 +3,7 @@ from unittest.mock import ANY
 
 from clickable.commands.install import InstallCommand
 from clickable.container import Container
-from ..mocks import ConfigMock, empty_fn
+from ..mocks import ConfigMock, true_fn, empty_fn
 
 
 class TestInstallCommand(TestCase):
@@ -56,12 +56,13 @@ class TestInstallCommand(TestCase):
         mock_run_subprocess_check_call.assert_called_once_with('adb push /foo/bar.click /home/phablet/', cwd='.', shell=True)
         mock_run_command.assert_called_with(ANY, cwd='.')
 
+    @mock.patch('clickable.config.Config.is_desktop_mode', side_effect=true_fn)
     @mock.patch('clickable.commands.install.logger.debug', side_effect=empty_fn)
-    def test_skip_desktop_mode(self, mock_logger_debug):
-        self.config.desktop = True
+    def test_skip_desktop_mode(self, mock_logger_debug, mock_desktop_mode):
         self.command.run()
 
         mock_logger_debug.assert_called_once_with(ANY)
+        mock_desktop_mode.assert_called_once_with()
 
     @mock.patch('clickable.commands.install.logger.debug', side_effect=empty_fn)
     def test_skip_container_mode(self, mock_logger_debug):
