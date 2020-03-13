@@ -40,7 +40,9 @@ INSTALL_DIR             Value of ``install_dir``
 CLICK_LD_LIBRARY_PATH   ``${INSTALL_DIR}/lib/${ARCH_TRIPLET}`` or ``${INSTALL_DIR}/lib`` for architecture independent apps (will be in ``LD_LIBRARY_PATH`` on runtime)
 CLICK_QML2_IMPORT_PATH  ``${INSTALL_DIR}/lib/${ARCH_TRIPLET}`` or ``${INSTALL_DIR}/qml`` for architecture independent apps, which is not in ``QML2_IMPORT_PATH`` at runtime (otherwise will be in ``QML2_IMPORT_PATH`` on runtime)
 CLICK_PATH              ``${INSTALL_DIR}/lib/${ARCH_TRIPLET}/bin`` or ``${INSTALL_DIR}`` for architecture independent apps (will be in ``PATH`` on runtime)
-<lib>_LIB_INSTALL_DIR   Value of ``install_dir`` from library with name ``<lib>`` (see :ref:`libraries <clickable-json-libraries>`), where the library name consists solely of capital letters (e.g. from lib name ``my-libC++`` this env var would be ``MY_LIBC___LIB_INSTALL_DIR``)
+<lib>_LIB_BUILD_DIR     Value of ``build_dir`` from library with name ``<lib>`` (see :ref:`libraries <clickable-json-libraries>`), where the library name consists solely of capital letters (e.g. from lib name ``my-libC++`` this env var would be ``MY_LIBC___LIB_BUILD_DIR``)
+<lib>_LIB_INSTALL_DIR   Value of ``install_dir`` from library with name ``<lib>`` (e.g. ``OPENCV_LIB_INSTALL_DIR``)
+<lib>_LIB_SRC_DIR       Value of ``src_dir`` from library with name ``<lib>`` (e.g. ``OPENCV_LIB_SRC_DIR``)
 ======================= ======
 
 Parameters accepting placeholders:

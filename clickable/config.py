@@ -89,6 +89,7 @@ class Config(object):
         "CLICK_PATH": "app_bin_dir",
         "CLICK_QML2_IMPORT_PATH": "app_qml_dir",
     })
+    libs_placeholders = ["install_dir", "build_dir", "src_dir"]
     accepts_placeholders = ["root_dir", "build_dir", "src_dir", "install_dir",
                             "app_lib_dir", "app_bin_dir", "app_qml_dir",
                             "gopath", "cargo_home", "scripts", "build",
@@ -496,15 +497,16 @@ class Config(object):
 
         for lib in self.lib_configs:
             name_conform = make_env_var_conform(lib.name)
-            key = '{}_lib_install_dir'.format(name_conform)
-            placeholder = '{}_LIB_INSTALL_DIR'.format(name_conform)
-            self.config[key] = lib.install_dir
-            self.placeholders.update({placeholder: key})
 
-            # TODO remove deprecated env var name
-            if name_conform != lib.name:
-                placeholder = '{}_LIB_INSTALL_DIR'.format(lib.name)
-                self.placeholders.update({placeholder: key})
+            for lp in self.libs_placeholders:
+                key = '{}_LIB_{}'.format(lib.name, lp)
+                placeholder = make_env_var_conform(key)
+                self.placeholders[placeholder] = key
+                self.config[key] = lib.config[lp]
+
+                # TODO remove deprecated env var name
+                placeholder_old = '{}_LIB_{}'.format(lib.name, make_env_var_conform(lp))
+                self.placeholders[placeholder_old] = key
 
     def cleanup_config(self):
         self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
