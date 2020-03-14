@@ -102,6 +102,12 @@ with the appropriate value.
 Takes the built files and compiles them into a click package, outputting the
 compiled click to the directory specified by ``--output``.
 
+``clickable clean-build``
+-------------------------
+
+Cleans out the build dir before building the project as outlined in the
+``clickable build`` docs.
+
 ``clickable review``
 --------------------
 
