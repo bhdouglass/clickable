@@ -20,6 +20,7 @@ Using Clickable
     install
     getting-started
     usage
+    debugging
     commands
     clickable-json
     env-vars
