@@ -1,7 +1,7 @@
-import subprocess
-import shlex
-
-from .utils import run_subprocess_check_output
+from .utils import (
+    run_subprocess_check_output,
+    run_subprocess_check_call,
+)
 from .exceptions import ClickableException
 from .logger import logger
 
@@ -11,7 +11,7 @@ class Device(object):
         self.config = config
 
     def detect_attached(self):
-        output = run_subprocess_check_output(shlex.split('adb devices -l')).strip()
+        output = run_subprocess_check_output('adb devices -l').strip()
         devices = []
         for line in output.split('\n'):
             if 'device' in line and 'devices' not in line:
@@ -34,7 +34,28 @@ class Device(object):
         if len(devices) > 1 and not self.config.device_serial_number:
             raise ClickableException('Multiple devices detected via adb')
 
-    def run_command(self, command, cwd=None):
+    def get_adb_args(self):
+        self.check_any_attached()
+        if self.config.device_serial_number:
+            return '-s {}'.format(self.config.device_serial_number)
+        else:
+            self.check_multiple_attached()
+            return ''
+
+    def forward_port_adb(self, port, adb_args):
+        command = 'adb {0} forward tcp:{1} tcp:{1}'.format(adb_args, port)
+        run_subprocess_check_call(command)
+
+    def push_file(self, src, dst):
+        if self.config.ssh:
+            command = 'scp {} phablet@{}:{}'.format(src, self.config.ssh, dst)
+        else:
+            adb_args = self.get_adb_args()
+            command = 'adb {} push {} {}'.format(adb_args, src, dst)
+
+        run_subprocess_check_call(command, shell=True)
+
+    def run_command(self, command, cwd=None, get_output=False, forward_port=None):
         if self.config.container_mode:
             logger.debug('Skipping device command, running in container mode')
             return
@@ -44,14 +65,28 @@ class Device(object):
 
         wrapped_command = ''
         if self.config.ssh:
-            wrapped_command = 'echo "{}" | ssh phablet@{}'.format(command, self.config.ssh)
+            ssh_args = ""
+
+            if forward_port:
+                ssh_args = "{0} -L {1}:localhost:{1}".format(ssh_args, forward_port)
+
+            if isinstance(command, list):
+                command = " && ".join(command)
+
+            wrapped_command = 'echo "{}" | ssh {} phablet@{}'.format(
+                command, ssh_args, self.config.ssh)
         else:
-            self.check_any_attached()
+            adb_args = self.get_adb_args()
 
-            if self.config.device_serial_number:
-                wrapped_command = 'adb -s {} shell "{}"'.format(self.config.device_serial_number, command)
-            else:
-                self.check_multiple_attached()
-                wrapped_command = 'adb shell "{}"'.format(command)
+            if forward_port:
+                self.forward_port_adb(forward_port, adb_args)
 
-        subprocess.check_call(wrapped_command, cwd=cwd, shell=True)
+            if isinstance(command, list):
+                command = ";".join(command)
+
+            wrapped_command = 'adb {} shell "{}"'.format(adb_args, command)
+
+        if get_output:
+            return run_subprocess_check_output(wrapped_command, cwd=cwd, shell=True)
+        else:
+            run_subprocess_check_call(wrapped_command, cwd=cwd, shell=True)
