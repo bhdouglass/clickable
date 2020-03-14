@@ -3,7 +3,7 @@ from unittest.mock import ANY
 
 from clickable.commands.logs import LogsCommand
 from clickable.container import Container
-from ..mocks import ConfigMock, empty_fn
+from ..mocks import ConfigMock, true_fn, empty_fn
 
 
 class TestLogsCommand(TestCase):
@@ -25,12 +25,13 @@ class TestLogsCommand(TestCase):
 
         mock_run_command.assert_called_once_with('tail -f foo.log')
 
+    @mock.patch('clickable.config.Config.is_desktop_mode', side_effect=true_fn)
     @mock.patch('clickable.commands.logs.logger.debug', side_effect=empty_fn)
-    def test_no_desktop_mode_logs(self, mock_logger_debug):
-        self.config.desktop = True
+    def test_no_desktop_mode_logs(self, mock_logger_debug, mock_desktop_mode):
         self.command.run()
 
         mock_logger_debug.assert_called_once_with(ANY)
+        mock_desktop_mode.assert_called_once_with()
 
     @mock.patch('clickable.commands.logs.logger.debug', side_effect=empty_fn)
     def test_no_container_mode_logs(self, mock_logger_debug):
