@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 from .base import Command
 from clickable.exceptions import ClickableException
@@ -38,7 +39,9 @@ class CreateCommand(Command):
         if not os.path.isfile(config_file):
             config_file = None
 
-        extra_context = {}
+        extra_context = {
+            'Copyright Year': datetime.now().year
+        }
         if path_arg:
             if path_arg in TEMPLATE_MAP:
                 extra_context['Template'] = TEMPLATE_MAP[path_arg]
