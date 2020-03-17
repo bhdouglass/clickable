@@ -603,7 +603,7 @@ class Config(object):
 
         self.check_arch_restrictions()
 
-        if self.needs_docker_image():
+        if self.custom_docker_image:
             if self.dependencies_host or self.dependencies_target or self.dependencies_ppa:
                 logger.warning("Dependencies are ignored when using a custom docker image!")
             if self.image_setup:
