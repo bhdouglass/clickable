@@ -22,14 +22,16 @@ from clickable.exceptions import ClickableException
 class Container(object):
     def __init__(self, config, name=None):
         self.config = config
-        self.clickable_dir = '.clickable/{}'.format(self.config.build_arch)
-        if name:
-            self.clickable_dir = '{}/{}'.format(self.clickable_dir, name)
-        self.docker_name_file = '{}/name.txt'.format(self.clickable_dir)
-        self.docker_file = '{}/Dockerfile'.format(self.clickable_dir)
+        self.docker_mode = self.config.needs_docker_image()
 
-        if not self.config.container_mode:
+        if self.docker_mode:
             check_command('docker')
+
+            self.clickable_dir = '.clickable/{}'.format(self.config.build_arch)
+            if name:
+                self.clickable_dir = '{}/{}'.format(self.clickable_dir, name)
+            self.docker_name_file = '{}/name.txt'.format(self.clickable_dir)
+            self.docker_file = '{}/Dockerfile'.format(self.clickable_dir)
 
             self.docker_image = self.config.docker_image
             self.base_docker_image = self.docker_image
@@ -73,6 +75,9 @@ class Container(object):
         return started
 
     def check_docker(self, retries=3):
+        if not self.docker_mode:
+            raise ClickableException("Container was not initialized with Container Mode. This seems to be a bug in Clickable.")
+
         if self.needs_docker_setup():
             self.setup_docker()
 
@@ -128,6 +133,8 @@ class Container(object):
             raise ClickableException('Log out or restart to apply changes')
 
     def pull_files(self, files, dst_parent):
+        os.makedirs(dst_parent, exist_ok=True)
+
         if self.config.container_mode:
             for f in files:
                 dst_path = os.path.join(dst_parent, os.path.basename(f))

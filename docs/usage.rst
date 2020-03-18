@@ -50,15 +50,3 @@ computer via adb. If you have multiple devices attached to your computer you
 can specify which device to install/launch/etc on by using the flag
 ``--serial-number`` or ``-s`` for short. You can get the serial number
 by running ``clickable devices``.
-
-.. _debugging-with-gdb:
-
-Debugging
----------
-
-GDB Debugging via Clickable is only available in desktop mode and can be started by running ``clickable desktop --gdb``.
-
-Alternatively a GDB Server can be started with ``clickable desktop --gdbserver <port>``
-(just choose any port, e.g. ``3333``). Check for an option to do GDB Remote Debugging in your IDE
-and connect to ``localhost:<port>``. To connect a GDB Client run
-``gdb <app-binary> -ex 'target remote localhost:<port>'``.

@@ -214,7 +214,7 @@ class Config(object):
 
         if not self.config['docker_image']:
             self.custom_docker_image = False
-            self.set_image(self.build_arch)
+            self.set_image()
 
         if self.config['arch'] not in self.arch_triplet_mapping:
             raise ClickableException('There currently is no support for {}'.format(self.config['arch']))
@@ -254,20 +254,20 @@ class Config(object):
                 self.config['arch'] = 'armhf'
                 logger.debug('Architecture set to "{}" because no architecture was specified'.format(self.config['arch']))
 
-    def set_image(self, build_arch):
+    def set_image(self):
         if not self.needs_docker_image():
             return
 
-        if self.use_nvidia and not build_arch.endswith('-nvidia'):
-            build_arch = "{}-nvidia".format(build_arch)
+        if self.use_nvidia and not self.build_arch.endswith('-nvidia'):
+            self.build_arch = "{}-nvidia".format(self.build_arch)
 
         if self.host_arch not in self.container_mapping:
             raise ClickableException('Clickable currently does not have docker images for your host architecture "{}"'.format(self.host_arch))
 
         container_mapping_host = self.container_mapping[self.host_arch]
-        if ('16.04', build_arch) not in container_mapping_host:
-            raise ClickableException('There is currently no docker image for 16.04/{}'.format(build_arch))
-        self.config['docker_image'] = container_mapping_host[('16.04', build_arch)]
+        if ('16.04', self.build_arch) not in container_mapping_host:
+            raise ClickableException('There is currently no docker image for 16.04/{}'.format(self.build_arch))
+        self.config['docker_image'] = container_mapping_host[('16.04', self.build_arch)]
         self.container_list = list(container_mapping_host.values())
 
     def __getattr__(self, name):
@@ -563,7 +563,7 @@ class Config(object):
         return (not self.custom_docker_image and 
                 not self.container_mode and
                 (self.is_build_cmd() or 
-                    set(['update']).intersection(self.commands)))
+                    set(['update', 'gdb', 'gdbserver']).intersection(self.commands)))
 
     def check_arch_restrictions(self):
         if self.is_arch_agnostic():
@@ -603,7 +603,7 @@ class Config(object):
 
         self.check_arch_restrictions()
 
-        if self.needs_docker_image():
+        if self.custom_docker_image:
             if self.dependencies_host or self.dependencies_target or self.dependencies_ppa:
                 logger.warning("Dependencies are ignored when using a custom docker image!")
             if self.image_setup:

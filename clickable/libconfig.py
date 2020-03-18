@@ -198,3 +198,6 @@ class LibConfig(object):
             if self.image_setup:
                 logger.warning(
                     "Docker image setup is ignored when using a custom docker image!")
+
+    def needs_docker_image(self):
+        return True
