@@ -14,6 +14,8 @@ Alternatively a GDB Server can be started with ``clickable desktop --gdbserver <
 and connect to ``localhost:<port>``. To connect a GDB Client run
 ``gdb <app-binary> -ex 'target remote localhost:<port>'``.
 
+.. _on-device-debugging:
+
 On Device
 ---------
 

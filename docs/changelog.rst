@@ -3,6 +3,21 @@
 Changelog
 =========
 
+Changes in v6.11.0
+------------------
+
+- Added :ref:`on device debugging with gdb <on-device-debugging>`.
+- Deprecated chaining commands (this will be removed in the next major release)
+- Fixed the build home directory for libraries
+- Added error when trying to use docker images on unsupported host architectures
+- Use the host architecture as the default when building in container mode
+- Enable localhost access and pseudo-tty in run command
+- When using CMake a Release build will be created unless ``--debug`` is specified
+- Added new library placeholders
+- Added new ``clean-build`` command
+- Fixed issues with ``clickable create`` on older versions of Ubuntu
+- Various minor bug fixes and code improvements
+
 Changes in v6.10.1
 ------------------
 
