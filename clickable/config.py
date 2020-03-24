@@ -563,7 +563,7 @@ class Config(object):
         return (not self.custom_docker_image and 
                 not self.container_mode and
                 (self.is_build_cmd() or 
-                    set(['update', 'gdb', 'gdbserver']).intersection(self.commands)))
+                    set(['run', 'update', 'gdb', 'gdbserver']).intersection(self.commands)))
 
     def check_arch_restrictions(self):
         if self.is_arch_agnostic():
