@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.11.1
+------------------
+
+- Fixed the ``run`` command not working
+
 Changes in v6.11.0
 ------------------
 
