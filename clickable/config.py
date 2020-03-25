@@ -556,14 +556,14 @@ class Config(object):
         return bool(set(['desktop', 'test']).intersection(self.commands))
 
     def is_build_cmd(self):
-        return (self.is_desktop_mode() or 
-                set(['build', 'build-libs']).intersection(self.commands))
+        return (self.is_desktop_mode() or
+                set(['build', 'build-libs', 'clean-build']).intersection(self.commands))
 
     def needs_docker_image(self):
-        return (not self.custom_docker_image and 
+        return (not self.custom_docker_image and
                 not self.container_mode and
-                (self.is_build_cmd() or 
-                    set(['run', 'update', 'gdb', 'gdbserver']).intersection(self.commands)))
+                (self.is_build_cmd() or
+                    set(['run', 'update', 'gdb', 'gdbserver', 'review']).intersection(self.commands)))
 
     def check_arch_restrictions(self):
         if self.is_arch_agnostic():
