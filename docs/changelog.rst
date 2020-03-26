@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.11.2
+------------------
+
+- Fixed the ``review`` and ``clean-build`` commands not working
+
 Changes in v6.11.1
 ------------------
 
