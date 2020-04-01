@@ -7,7 +7,7 @@ from .make import MakeBuilder
 from .cmake import CMakeBuilder
 from .qmake import QMakeBuilder
 from clickable.logger import logger
-from clickable.config.config import Config
+from clickable.config.project import ProjectConfig
 from clickable.config.constants import Constants
 from clickable.exceptions import ClickableException
 

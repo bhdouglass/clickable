@@ -1,5 +1,5 @@
 from .make import MakeBuilder
-from clickable.config.config import Config
+from clickable.config.project import ProjectConfig
 from clickable.config.constants import Constants
 from clickable.exceptions import ClickableException
 

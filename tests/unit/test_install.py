@@ -55,7 +55,7 @@ class TestInstallCommand(UnitTest):
         mock_run_subprocess_check_call.assert_called_once_with('adb push /foo/bar.click /home/phablet/', cwd='.', shell=True)
         mock_run_command.assert_called_with(ANY, cwd='.')
 
-    @mock.patch('clickable.config.config.Config.is_desktop_mode', side_effect=true_fn)
+    @mock.patch('clickable.config.project.ProjectConfig.is_desktop_mode', side_effect=true_fn)
     @mock.patch('clickable.commands.install.logger.debug', side_effect=empty_fn)
     def test_skip_desktop_mode(self, mock_logger_debug, mock_desktop_mode):
         self.command.run()

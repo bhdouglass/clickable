@@ -23,7 +23,7 @@ class TestLaunchCommand(UnitTest):
         self.config.kill = 'foo and bar'
         self.command.kill()
 
-    @mock.patch('clickable.config.config.Config.is_desktop_mode', side_effect=true_fn)
+    @mock.patch('clickable.config.project.ProjectConfig.is_desktop_mode', side_effect=true_fn)
     @mock.patch('clickable.commands.launch.logger.debug', side_effect=empty_fn)
     def test_kill_skips_desktop(self, mock_logger_debug, mock_desktop_mode):
         self.command.kill()

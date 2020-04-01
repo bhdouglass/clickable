@@ -24,7 +24,7 @@ class TestLogCommand(UnitTest):
 
         mock_run_command.assert_called_once_with('cat foo.log')
 
-    @mock.patch('clickable.config.config.Config.is_desktop_mode', side_effect=true_fn)
+    @mock.patch('clickable.config.project.ProjectConfig.is_desktop_mode', side_effect=true_fn)
     @mock.patch('clickable.commands.log.logger.debug', side_effect=empty_fn)
     def test_no_desktop_mode_log(self, mock_logger_debug, mock_desktop_mode):
         self.command.run()

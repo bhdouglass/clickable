@@ -15,7 +15,7 @@ from clickable.utils import (
     image_exists,
 )
 from clickable.logger import logger
-from clickable.config.config import Config
+from clickable.config.project import ProjectConfig
 from clickable.config.constants import Constants
 from clickable.exceptions import ClickableException
 
@@ -201,7 +201,7 @@ class Container(object):
 
             rust_config = ''
 
-            if self.config.config['template'] == Constants.RUST and self.config.cargo_home:
+            if self.config.template == Constants.RUST and self.config.cargo_home:
                 logger.info("Caching cargo related files in {}".format(self.config.cargo_home))
                 cargo_registry = os.path.join(self.config.cargo_home, 'registry')
                 cargo_git = os.path.join(self.config.cargo_home, 'git')

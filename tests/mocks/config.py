@@ -1,4 +1,4 @@
-from clickable.config.config import Config
+from clickable.config.project import ProjectConfig
 from clickable.config.constants import Constants
 from clickable.config.file_helpers import InstallFiles
 from unittest.mock import Mock
@@ -21,7 +21,7 @@ class InstallFilesMock(InstallFiles):
         }
 
 
-class ConfigMock(Config):
+class ConfigMock(ProjectConfig):
     def __init__(self,
                  mock_config_json=None,
                  mock_config_env=None,

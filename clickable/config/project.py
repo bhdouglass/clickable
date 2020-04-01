@@ -23,7 +23,7 @@ from ..logger import logger, Colors
 from clickable.exceptions import ClickableException
 
 
-class Config(object):
+class ProjectConfig(object):
     config = {}
 
     ENV_MAP = {
@@ -88,7 +88,7 @@ class Config(object):
     def __init__(self, args=None, clickable_version=None, commands=[],
             cwd=None):
         self.placeholders = {}
-        self.placeholders.update(Config.static_placeholders)
+        self.placeholders.update(ProjectConfig.static_placeholders)
         # TODO move to static_placeholders after removing deprecated $VAR syntax
         self.placeholders.update({"ARCH": "arch"})
 
@@ -667,7 +667,7 @@ class Config(object):
         directory = os.listdir(os.getcwd())
 
         if 'config.xml' in directory:
-            template = Config.CORDOVA
+            template = ProjectConfig.CORDOVA
 
         if not template:
             try:
@@ -676,21 +676,21 @@ class Config(object):
                 manifest = None
 
         if not template and 'CMakeLists.txt' in directory:
-            template = Config.CMAKE
+            template = ProjectConfig.CMAKE
 
             if manifest and manifest.get('architecture', None) == 'all':
-                template = Config.PURE_QML_CMAKE
+                template = ProjectConfig.PURE_QML_CMAKE
 
         pro_files = [f for f in directory if f.endswith('.pro')]
 
         if pro_files:
-            template = Config.QMAKE
+            template = ProjectConfig.QMAKE
 
             if manifest and manifest.get('architecture', None) == 'all':
-                template = Config.PURE_QML_QMAKE
+                template = ProjectConfig.PURE_QML_QMAKE
 
         if not template:
-            template = Config.PURE
+            template = ProjectConfig.PURE
 
         self.config['template'] = template
 

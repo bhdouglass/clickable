@@ -1,4 +1,4 @@
-from clickable import Config
+from clickable import ProjectConfig
 from clickable.config.constants import Constants
 from clickable.commands.docker.docker_config import DockerConfig
 from .docker_support import DockerSupport
@@ -7,11 +7,11 @@ from .docker_support import DockerSupport
 class GoSupport(DockerSupport):
     config = None
 
-    def __init__(self, config: Config):
+    def __init__(self, config: ProjectConfig):
         self.config = config
 
     def update(self, docker_config: DockerConfig):
-        template = self.config.config['template']
+        template = self.config.template
 
         if template == Constants.GO:
             go_paths = list(map(

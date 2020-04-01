@@ -3,7 +3,7 @@ from unittest.mock import ANY
 
 from clickable.commands.clean import CleanCommand
 from clickable.container import Container
-from clickable.config.config import Constants
+from clickable.config.project import Constants
 from ..mocks import ConfigMock, empty_fn, true_fn
 
 
@@ -31,7 +31,7 @@ class TestConfigCommand(TestCase):
         self.config.set_conditional_defaults()
         self.assertEqual(self.config.arch, 'all')
 
-    @mock.patch('clickable.config.config.Config.is_desktop_mode', side_effect=true_fn)
+    @mock.patch('clickable.config.project.ProjectConfig.is_desktop_mode', side_effect=true_fn)
     def test_set_conditional_defaults_arch_desktop(self, mock_desktop_mode):
         self.config.set_conditional_defaults()
         self.assertEqual(self.config.arch, 'amd64')

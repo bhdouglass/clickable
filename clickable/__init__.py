@@ -9,7 +9,7 @@ import subprocess
 import logging
 
 from clickable.commands.base import Command
-from clickable.config.config import Config
+from clickable.config.project import ProjectConfig
 from clickable.container import Container
 from clickable.logger import logger, log_file, console_handler
 from clickable.exceptions import ClickableException
@@ -178,7 +178,7 @@ class Clickable(object):
         return args
 
     def setup_config(self, args, is_build_cmd, is_desktop_mode, is_template_required):
-        self.config = Config(
+        self.config = ProjectConfig(
             args=args,
             clickable_version=__version__,
             desktop=is_desktop_mode,
@@ -187,7 +187,7 @@ class Clickable(object):
         )
 
     def run(self, arg_commands=[], args=None):
-        self.config = Config(args, __version__, arg_commands)
+        self.config = ProjectConfig(args, __version__, arg_commands)
         self.config.container = Container(self.config,
                 minimum_version=__container_minimum_required__)
         commands = self.config.commands

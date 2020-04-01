@@ -3,7 +3,7 @@ import shutil
 import os
 
 from .base import Builder
-from clickable.config.config import Config
+from clickable.config.project import ProjectConfig
 from clickable.config.constants import Constants
 
 

@@ -7,7 +7,7 @@ import os
 from distutils.dir_util import copy_tree
 
 from .cmake import CMakeBuilder
-from clickable.config.config import Config
+from clickable.config.project import ProjectConfig
 from clickable.config.constants import Constants
 
 
