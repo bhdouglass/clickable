@@ -7,12 +7,10 @@ from collections import OrderedDict
 
 from clickable.system.queries.nvidia_drivers_in_use import NvidiaDriversInUse
 from .libconfig import LibConfig
+from .file_helpers import InstallFiles, ProjectFiles
+from .constants import Constants
 
-from .utils import (
-    write_manifest,
-    get_manifest,
-    get_any_manifest,
-    get_desktop,
+from ..utils import (
     merge_make_jobs_into_args,
     flexible_string_to_list,
     env,
@@ -21,11 +19,11 @@ from .utils import (
     make_absolute,
     make_env_var_conform,
 )
-from .logger import logger, Colors
+from ..logger import logger, Colors
 from clickable.exceptions import ClickableException
 
 
-class Config(object):
+class ProjectConfig(object):
     config = {}
 
     ENV_MAP = {
@@ -42,44 +40,7 @@ class Config(object):
         'CLICKABLE_TEST': 'test',
     }
 
-    PURE_QML_QMAKE = 'pure-qml-qmake'
-    QMAKE = 'qmake'
-    PURE_QML_CMAKE = 'pure-qml-cmake'
-    CMAKE = 'cmake'
-    CUSTOM = 'custom'
-    CORDOVA = 'cordova'
-    PURE = 'pure'
-    PYTHON = 'python'
-    GO = 'go'
-    RUST = 'rust'
-    PRECOMPILED = 'precompiled'
-
-    templates = [PURE_QML_QMAKE, QMAKE, PURE_QML_CMAKE, CMAKE, CUSTOM, CORDOVA, PURE, PYTHON, GO, RUST, PRECOMPILED]
-    arch_agnostic_templates = [PURE_QML_QMAKE, PURE_QML_CMAKE, PURE]
-
-    container_mapping = {
-        "x86_64": {
-            ('16.04', 'armhf'): 'clickable/ubuntu-sdk:16.04-armhf',
-            ('16.04', 'amd64'): 'clickable/ubuntu-sdk:16.04-amd64',
-            ('16.04', 'amd64-nvidia'): 'clickable/ubuntu-sdk:16.04-amd64-nvidia',
-            ('16.04', 'arm64'): 'clickable/ubuntu-sdk:16.04-arm64',
-        }
-    }
-
-    arch_triplet_mapping = {
-        'armhf': 'arm-linux-gnueabihf',
-        'arm64': 'aarch64-linux-gnu',
-        'amd64': 'x86_64-linux-gnu',
-        'all': 'all'
-    }
-
-    host_arch_mapping = {
-        'x86_64': 'amd64',
-        'aarch64': 'arm64',
-        'armv7l': 'armhf',
-    }
-
-    placeholders = OrderedDict({
+    static_placeholders = OrderedDict({
         "ARCH_TRIPLET": "arch_triplet",
         "ROOT": "root_dir",
         "BUILD_DIR": "build_dir",
@@ -101,7 +62,6 @@ class Config(object):
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
                  'cargo_home', 'gopath', 'app_lib_dir', 'app_bin_dir',
                  'app_qml_dir', 'build_home']
-    required = ['arch', 'build_dir', 'docker_image']
     flexible_lists = ['dependencies_host', 'dependencies_target',
                       'dependencies_ppa', 'dependencies_build',
                       'install_lib', 'install_bin', 'install_qml',
@@ -117,24 +77,33 @@ class Config(object):
     use_nvidia = False
     avoid_nvidia = False
     apikey = None
-    custom_docker_image = True
     verbose = False
     debug_build = False
     debug_gdb = False
     debug_gdb_port = None
     dark_mode = False
-    desktop_device_home = os.path.expanduser('~/.clickable/home')
-    device_home = '/home/phablet'
     desktop_locale = os.getenv('LANG', 'C')
     desktop_skip_build = False
 
-    def __init__(self, args=None, clickable_version=None, commands=[]):
-        # Must come after ARCH_TRIPLET to avoid breaking it
+    def __init__(self, args=None, clickable_version=None, commands=[],
+            cwd=None):
+        self.placeholders = {}
+        self.placeholders.update(ProjectConfig.static_placeholders)
+        # TODO move to static_placeholders after removing deprecated $VAR syntax
         self.placeholders.update({"ARCH": "arch"})
 
         self.clickable_version = clickable_version
-        self.cwd = os.getcwd()
+        self.host_arch = platform.machine()
+        self.cwd = cwd if cwd else os.getcwd()
+        self.project_files = ProjectFiles(self.cwd)
 
+        self.set_default_config()
+        self.parse_configs(args, commands)
+        self.set_conditional_defaults()
+        self.setup()
+        self.check_config_errors()
+
+    def set_default_config(self):
         self.config = {
             'clickable_minimum_required': None,
             'arch': None,
@@ -181,7 +150,8 @@ class Config(object):
             'image_setup': {},
         }
 
-        config_path = args.config if args else ''
+    def parse_configs(self, args, commands):
+        config_path = args.config if args else None
         json_config = self.load_json_config(config_path)
 
         # TODO remove support for deprecated "arch" in clickable.json
@@ -204,37 +174,25 @@ class Config(object):
 
         self.commands = commands if commands else self.config['default']
 
-        self.host_arch = platform.machine()
-
-        self.set_conditional_defaults()
+    def setup(self):
         self.cleanup_config()
 
-        self.set_build_arch()
-        self.check_nvidia()
-
-        if not self.config['docker_image']:
-            self.custom_docker_image = False
-            self.set_image()
-
-        if self.config['arch'] not in self.arch_triplet_mapping:
-            raise ClickableException('There currently is no support for {}'.format(self.config['arch']))
-        self.config['arch_triplet'] = self.arch_triplet_mapping[self.config['arch']]
-
+        self.setup_image()
         self.setup_libs()
+        self.handle_path_keys_and_placeholders()
 
-        for key in self.path_keys:
-            if key not in self.accepts_placeholders and self.config[key]:
-                self.config[key] = make_absolute(self.config[key])
-
-        self.substitute_placeholders()
+        self.setup_helpers()
         self.set_env_vars()
-
-        self.check_config_errors()
 
         for key, value in self.config.items():
             logger.debug('App config value {}: {}'.format(key, value))
 
     def set_conditional_defaults(self):
+        if self.config["docker_image"]:
+            self.is_custom_docker_image = True
+        else:
+            self.is_custom_docker_image = False
+
         if not self.config["arch"]:
             if self.is_arch_agnostic():
                 self.config["arch"] = "all"
@@ -248,27 +206,64 @@ class Config(object):
                 self.config["arch"] = self.config["restrict_arch_env"]
                 logger.debug('Architecture set to "{}" due to environment restriction'.format(self.config["arch"]))
             elif self.container_mode:
-                self.config['arch'] = self.host_arch_mapping[self.host_arch]
+                self.config['arch'] = Constants.host_arch_mapping[self.host_arch]
                 logger.debug('Architecture set to "{}" due to container mode'.format(self.config['arch']))
             else:
                 self.config['arch'] = 'armhf'
                 logger.debug('Architecture set to "{}" because no architecture was specified'.format(self.config['arch']))
 
-    def set_image(self):
-        if not self.needs_docker_image():
-            return
+        if self.config['arch'] == 'all':
+            self.config['app_lib_dir'] = '${INSTALL_DIR}/lib'
+            self.config['app_bin_dir'] = '${INSTALL_DIR}'
+            self.config['app_qml_dir'] = '${INSTALL_DIR}/qml'
 
-        if self.use_nvidia and not self.build_arch.endswith('-nvidia'):
-            self.build_arch = "{}-nvidia".format(self.build_arch)
+        if self.config['arch'] not in Constants.arch_triplet_mapping:
+            raise ClickableException('There is currently no support for architecture  "{}"'.format(self.config['arch']))
+        self.config['arch_triplet'] = Constants.arch_triplet_mapping[self.config['arch']]
 
-        if self.host_arch not in self.container_mapping:
+        if self.host_arch not in Constants.container_mapping:
             raise ClickableException('Clickable currently does not have docker images for your host architecture "{}"'.format(self.host_arch))
 
-        container_mapping_host = self.container_mapping[self.host_arch]
-        if ('16.04', self.build_arch) not in container_mapping_host:
-            raise ClickableException('There is currently no docker image for 16.04/{}'.format(self.build_arch))
-        self.config['docker_image'] = container_mapping_host[('16.04', self.build_arch)]
-        self.container_list = list(container_mapping_host.values())
+        if not self.config['kill']:
+            if self.config['template'] == Constants.CORDOVA:
+                self.config['kill'] = 'cordova-ubuntu'
+            elif self.config['template'] == Constants.PURE_QML_CMAKE or self.config['template'] == Constants.PURE_QML_QMAKE or self.config['template'] == Constants.PURE:
+                self.config['kill'] = 'qmlscene'
+            else:
+                try:
+                    desktop = self.project_files.find_any_desktop(self.cwd)
+                except ClickableException:
+                    desktop = None
+                except Exception as e:
+                    logger.debug('Unable to load or parse desktop file', exc_info=e)
+                    desktop = None
+
+                if desktop and 'Exec' in desktop:
+                    self.config['kill'] = desktop['Exec'].replace('%u', '').replace('%U', '').strip()
+
+    def setup_image(self):
+        self.set_build_arch()
+
+        if self.needs_docker_image():
+            self.check_nvidia_mode()
+
+            if self.use_nvidia and not self.build_arch.endswith('-nvidia'):
+                self.build_arch = "{}-nvidia".format(self.build_arch)
+
+            container_mapping_host = Constants.container_mapping[self.host_arch]
+            if ('16.04', self.build_arch) not in container_mapping_host:
+                raise ClickableException('There is currently no docker image for 16.04/{}'.format(self.build_arch))
+            self.config['docker_image'] = container_mapping_host[('16.04', self.build_arch)]
+            self.container_list = list(container_mapping_host.values())
+
+    def setup_helpers(self):
+        self.install_files = InstallFiles(
+                self.config['install_dir'],
+                self.config['template'],
+                self.config['arch'])
+
+    def is_arch_agnostic(self):
+        return self.config["template"] in Constants.arch_agnostic_templates
 
     def __getattr__(self, name):
         return self.config[name]
@@ -321,39 +316,42 @@ class Config(object):
         return config
 
     def load_env_config(self):
-        if env('OPENSTORE_API_KEY'):
-            self.apikey = env('OPENSTORE_API_KEY')
+        if self.get_env_var('OPENSTORE_API_KEY'):
+            self.apikey = self.get_env_var('OPENSTORE_API_KEY')
 
-        if env('CLICKABLE_CONTAINER_MODE'):
+        if self.get_env_var('CLICKABLE_CONTAINER_MODE'):
             self.container_mode = True
 
-        if env('CLICKABLE_SERIAL_NUMBER'):
-            self.device_serial_number = env('CLICKABLE_SERIAL_NUMBER')
+        if self.get_env_var('CLICKABLE_SERIAL_NUMBER'):
+            self.device_serial_number = self.get_env_var('CLICKABLE_SERIAL_NUMBER')
 
-        if env('CLICKABLE_SSH'):
-            self.ssh = env('CLICKABLE_SSH')
+        if self.get_env_var('CLICKABLE_SSH'):
+            self.ssh = self.get_env_var('CLICKABLE_SSH')
 
-        if env('CLICKABLE_OUTPUT'):
-            self.click_output = env('CLICKABLE_OUTPUT')
+        if self.get_env_var('CLICKABLE_OUTPUT'):
+            self.click_output = self.get_env_var('CLICKABLE_OUTPUT')
 
-        if env('CLICKABLE_NVIDIA'):
+        if self.get_env_var('CLICKABLE_NVIDIA'):
             self.use_nvidia = True
 
-        if env('CLICKABLE_NO_NVIDIA'):
+        if self.get_env_var('CLICKABLE_NO_NVIDIA'):
             self.avoid_nvidia = True
 
-        if env('CLICKABLE_DEBUG_BUILD'):
+        if self.get_env_var('CLICKABLE_DEBUG_BUILD'):
             self.debug_build = True
 
-        if env('CLICKABLE_DARK_MODE'):
+        if self.get_env_var('CLICKABLE_DARK_MODE'):
             self.dark_mode = True
 
         config = {}
         for var, name in self.ENV_MAP.items():
-            if env(var):
-                config[name] = env(var)
+            if self.get_env_var(var):
+                config[name] = self.get_env_var(var)
 
         return config
+
+    def get_env_var(self, key):
+        return env(key)
 
     def load_arg_config(self, args):
         if args.serial_number:
@@ -457,7 +455,11 @@ class Config(object):
             else:
                 self.config[key] = self.config[key].replace(sub, rep)
 
-    def substitute_placeholders(self):
+    def handle_path_keys_and_placeholders(self):
+        for key in self.path_keys:
+            if key not in self.accepts_placeholders and self.config[key]:
+                self.config[key] = make_absolute(self.config[key])
+
         for key in self.accepts_placeholders:
             for sub in self.placeholders:
                 rep = self.config[self.placeholders[sub]]
@@ -473,7 +475,7 @@ class Config(object):
         else:
             self.build_arch = self.config['arch']
 
-    def check_nvidia(self):
+    def check_nvidia_mode(self):
         if self.is_desktop_mode():
             if self.avoid_nvidia:
                 logger.debug('Skipping nvidia driver detection.')
@@ -499,6 +501,10 @@ class Config(object):
 
         for lib in self.lib_configs:
             name_conform = make_env_var_conform(lib.name)
+            key = '{}_lib_install_dir'.format(name_conform)
+            placeholder = '{}_LIB_INSTALL_DIR'.format(name_conform)
+            self.config[key] = lib.install_dir
+            self.placeholders.update({placeholder: key})
 
             for lp in self.libs_placeholders:
                 key = '{}_LIB_{}'.format(lib.name, lp)
@@ -511,7 +517,20 @@ class Config(object):
                 self.placeholders[placeholder_old] = key
 
     def cleanup_config(self):
-        self.make_args = merge_make_jobs_into_args(make_args=self.make_args, make_jobs=self.make_jobs)
+        self.make_args = merge_make_jobs_into_args(
+                make_args=self.make_args, make_jobs=self.make_jobs)
+
+        for key in self.flexible_lists:
+            self.config[key] = flexible_string_to_list(self.config[key])
+
+        self.ignore.extend(['.git', '.bzr', '.clickable'])
+
+        if self.desktop_locale != "C" and "." not in self.desktop_locale:
+            self.desktop_locale = "{}.UTF-8".format(self.desktop_locale)
+
+        if self.config['dirty'] and 'clean' in self.config['default']:
+            self.config['default'].remove('clean')
+        self.config['default'] = ' '.join(self.config['default'])
 
         # TODO remove deprecated "dependencies_build"
         if self.config['dependencies_build']:
@@ -519,38 +538,8 @@ class Config(object):
             self.config['dependencies_build'] = []
             logger.warning('"dependencies_build" is deprecated. Use "dependencies_host" instead!')
 
-        for key in self.flexible_lists:
-            self.config[key] = flexible_string_to_list(self.config[key])
-
-        if self.desktop_locale != "C" and "." not in self.desktop_locale:
-            self.desktop_locale = "{}.UTF-8".format(self.desktop_locale)
-
-        if not self.config['kill']:
-            if self.config['template'] == self.CORDOVA:
-                self.config['kill'] = 'cordova-ubuntu'
-            elif self.config['template'] == self.PURE_QML_CMAKE or self.config['template'] == self.PURE_QML_QMAKE or self.config['template'] == self.PURE:
-                self.config['kill'] = 'qmlscene'
-            else:
-                try:
-                    desktop = get_desktop(self.cwd)
-                except ClickableException:
-                    desktop = None
-                except Exception:
-                    logger.debug('Unable to load or parse desktop file', exc_info=e)
-                    desktop = None
-
-                if desktop and 'Exec' in desktop:
-                    self.config['kill'] = desktop['Exec'].replace('%u', '').replace('%U', '').strip()
-
-        self.ignore.extend(['.git', '.bzr', '.clickable'])
-
-        if self.config['arch'] == 'all':
-            self.config['app_lib_dir'] = '${INSTALL_DIR}/lib'
-            self.config['app_bin_dir'] = '${INSTALL_DIR}'
-            self.config['app_qml_dir'] = '${INSTALL_DIR}/qml'
-
     def is_arch_agnostic(self):
-        return self.config["template"] in self.arch_agnostic_templates
+        return self.config["template"] in Constants.arch_agnostic_templates
 
     def is_desktop_mode(self):
         return bool(set(['desktop', 'test']).intersection(self.commands))
@@ -559,30 +548,17 @@ class Config(object):
         return (self.is_desktop_mode() or
                 set(['build', 'build-libs', 'clean-build']).intersection(self.commands))
 
+    def needs_template(self):
+        return (self.is_build_cmd() or 
+                set(['install', 'publish', 'review']).intersection(self.commands))
+
     def needs_docker_image(self):
-        return (not self.custom_docker_image and
+        return (not self.is_custom_docker_image and
                 not self.container_mode and
                 (self.is_build_cmd() or
                     set(['run', 'update', 'gdb', 'gdbserver', 'review']).intersection(self.commands)))
 
-    def check_arch_restrictions(self):
-        if self.is_arch_agnostic():
-            if self.config["arch"] != "all":
-                raise ClickableException('The "{}" build template needs architecture "all", but "{}" was specified'.format(
-                    self.config['template'],
-                    self.config['arch'],
-                ))
-        elif self.is_desktop_mode():
-            if self.config["arch"] != "amd64":
-                raise ClickableException('Desktop mode needs architecture "amd64", but "{}" was specified'.format(self.config["arch"]))
-
-        if self.config['restrict_arch'] and self.config['restrict_arch'] != self.config['arch']:
-            raise ClickableException('Cannot build app for architecture "{}" as it is restricted to "{}" in the clickable.json.'.format(self.config["arch"], self.config['restrict_arch']))
-
-        if self.config['restrict_arch_env'] and self.config['restrict_arch_env'] != self.config['arch'] and self.config['arch'] != 'all' and self.is_build_cmd():
-            raise ClickableException('Cannot build app for architecture "{}" as the environment is restricted to "{}".'.format(self.config["arch"], self.config['restrict_arch_env']))
-
-    def check_config_errors(self):
+    def check_clickable_version(self):
         if self.config['clickable_minimum_required']:
             # Check if specified version string is valid
             if not re.fullmatch("\d+(\.\d+)*", self.config['clickable_minimum_required']):
@@ -601,13 +577,33 @@ class Config(object):
                 if req > ver:
                     raise ClickableException('This project requires Clickable version {} ({} is used). Please update Clickable!'.format(self.config['clickable_minimum_required'], self.clickable_version))
 
-        self.check_arch_restrictions()
+    def check_arch_restrictions(self):
+        if self.is_arch_agnostic():
+            if self.config["arch"] != "all":
+                raise ClickableException('The "{}" build template needs architecture "all", but "{}" was specified'.format(
+                    self.config['template'],
+                    self.config['arch'],
+                ))
+            if (self.config["restrict_arch"] and
+                    self.config["restrict_arch"] != "all"):
+                raise ClickableException('The "{}" build template needs architecture "all", but "restrict_arch" was set to "{}"'.format(
+                    self.config['template'],
+                    self.config['restrict_arch'],
+                ))
+        else:
+            if self.is_desktop_mode():
+                if self.config["arch"] != "amd64":
+                    raise ClickableException('Desktop mode needs architecture "amd64", but "{}" was specified'.format(self.config["arch"]))
 
-        if self.custom_docker_image:
-            if self.dependencies_host or self.dependencies_target or self.dependencies_ppa:
-                logger.warning("Dependencies are ignored when using a custom docker image!")
-            if self.image_setup:
-                logger.warning("Docker image setup is ignored when using a custom docker image!")
+        if (self.config['restrict_arch'] and
+                self.config['restrict_arch'] != self.config['arch']):
+            raise ClickableException('Cannot build app for architecture "{}" as it is restricted to "{}" in the clickable.json.'.format(self.config["arch"], self.config['restrict_arch']))
+
+        if (self.config['restrict_arch_env'] and
+                self.config['restrict_arch_env'] != self.config['arch'] and
+                self.config['arch'] != 'all' and
+                self.is_build_cmd()):
+            raise ClickableException('Cannot build app for architecture "{}" as the environment is restricted to "{}".'.format(self.config["arch"], self.config['restrict_arch_env']))
 
         if self.config['arch'] == 'all':
             install_keys = ['install_lib', 'install_bin', 'install_qml']
@@ -617,142 +613,85 @@ class Config(object):
             if self.config['install_qml']:
                 logger.warning("Be aware that QML modules are going to be installed to {}, which is not part of 'QML2_IMPORT_PATH' at runtime.".format(self.config['app_qml_dir']))
 
-        if self.debug_gdb and not self.is_desktop_mode():
-            raise ClickableException("GDB debugging is only supported in desktop mode! Consider running 'clickable desktop --gdb'")
+    def check_template_rules(self):
+        if not self.needs_template():
+            return
 
-        if self.config['template'] == self.CUSTOM and not self.config['build']:
+        if self.config['template'] == Constants.CUSTOM and not self.config['build']:
             raise ClickableException('When using the "custom" template you must specify a "build" in the config')
-        if self.config['template'] == self.GO and not self.config['gopath']:
+        if self.config['template'] == Constants.GO and not self.config['gopath']:
             raise ClickableException('When using the "go" template you must specify a "gopath" in the config or use the '
                              '"GOPATH"env variable')
-        if self.config['template'] == self.RUST and not self.config['cargo_home']:
+        if self.config['template'] == Constants.RUST and not self.config['cargo_home']:
             raise ClickableException('When using the "rust" template you must specify a "cargo_home" in the config')
 
-        if self.config['template'] and self.config['template'] not in self.templates:
-            raise ClickableException('"{}" is not a valid template ({})'.format(self.config['template'], ', '.join(self.templates)))
+        if self.config['template'] and self.config['template'] not in Constants.templates:
+            raise ClickableException('"{}" is not a valid template ({})'.format(self.config['template'], ', '.join(Constants.templates)))
+
+    def check_docker_configs(self):
+        if self.is_custom_docker_image:
+            if self.dependencies_host or self.dependencies_target or self.dependencies_ppa:
+                logger.warning("Dependencies are ignored when using a custom docker image!")
+            if self.image_setup:
+                logger.warning("Docker image setup is ignored when using a custom docker image!")
+
+    def check_desktop_configs(self):
+        if self.debug_gdb and not self.is_desktop_mode():
+            raise ClickableException("GDB debugging is only supported in desktop mode! Consider running 'clickable desktop --gdb'")
 
         if self.is_desktop_mode():
             if self.use_nvidia and self.avoid_nvidia:
                 raise ClickableException('Configuration conflict: enforcing and avoiding nvidia mode must not be specified together.')
 
-        for key in self.required:
-            if key not in self.config:
-                raise ClickableException('"{}" is empty in the config file'.format(key))
+            if self.container_mode:
+                raise ClickableException('Desktop Mode in Container Mode is not supported.')
 
-    def get_template(self):
-        if not self.config['template']:
-            choice = input(
-                Colors.INFO + 'No build template was specified, would you like to auto detect the template [y/N]: ' + Colors.CLEAR
-            ).strip().lower()
-            if choice != 'y' and choice != 'yes':
-                raise ClickableException('Not auto detecting build template')
+    def check_config_errors(self):
+        self.check_clickable_version()
+        self.check_arch_restrictions()
+        self.check_template_rules()
+        self.check_docker_configs()
+        self.check_desktop_configs()
 
-            template = None
-            directory = os.listdir(os.getcwd())
+    def set_template_interactive(self):
+        if self.config['template']:
+            return
 
-            if 'config.xml' in directory:
-                template = Config.CORDOVA
+        choice = input(
+            Colors.INFO + 'No build template was specified, would you like to auto detect the template [y/N]: ' + Colors.CLEAR
+        ).strip().lower()
+        if choice != 'y' and choice != 'yes':
+            raise ClickableException('Not auto detecting build template')
 
-            if not template:
-                try:
-                    manifest = get_any_manifest(os.getcwd())
-                except ClickableException:
-                    manifest = None
+        template = None
+        directory = os.listdir(os.getcwd())
 
-            if not template and 'CMakeLists.txt' in directory:
-                template = Config.CMAKE
+        if 'config.xml' in directory:
+            template = ProjectConfig.CORDOVA
 
-                if manifest and manifest.get('architecture', None) == 'all':
-                    template = Config.PURE_QML_CMAKE
+        if not template:
+            try:
+                manifest = get_any_manifest(os.getcwd())
+            except ClickableException:
+                manifest = None
 
-            pro_files = [f for f in directory if f.endswith('.pro')]
+        if not template and 'CMakeLists.txt' in directory:
+            template = ProjectConfig.CMAKE
 
-            if pro_files:
-                template = Config.QMAKE
+            if manifest and manifest.get('architecture', None) == 'all':
+                template = ProjectConfig.PURE_QML_CMAKE
 
-                if manifest and manifest.get('architecture', None) == 'all':
-                    template = Config.PURE_QML_QMAKE
+        pro_files = [f for f in directory if f.endswith('.pro')]
 
-            if not template:
-                template = Config.PURE
+        if pro_files:
+            template = ProjectConfig.QMAKE
 
-            self.config['template'] = template
-            self.cleanup_config()
+            if manifest and manifest.get('architecture', None) == 'all':
+                template = ProjectConfig.PURE_QML_QMAKE
 
-            logger.info('Auto detected template to be "{}"'.format(template))
+        if not template:
+            template = ProjectConfig.PURE
 
-        return self.config['template']
+        self.config['template'] = template
 
-    def write_manifest(self, manifest):
-        return write_manifest(self.install_dir, manifest)
-
-    def get_manifest(self):
-        return get_manifest(self.install_dir)
-
-    def find_version(self):
-        if self.config['template'] == Config.CORDOVA:
-            tree = ElementTree.parse('config.xml')
-            root = tree.getroot()
-            version = root.attrib['version'] if 'version' in root.attrib else '1.0.0'
-        else:
-            version = self.get_manifest().get('version', '1.0')
-
-        return version
-
-    def find_package_name(self):
-        if self.config['template'] == Config.CORDOVA:
-            tree = ElementTree.parse('config.xml')
-            root = tree.getroot()
-            package = root.attrib['id'] if 'id' in root.attrib else None
-
-            if not package:
-                raise ClickableException('No package name specified in config.xml')
-
-        else:
-            package = self.get_manifest().get('name', None)
-
-            if not package:
-                raise ClickableException('No package name specified in manifest.json or clickable.json')
-
-        return package
-
-    def find_package_title(self):
-        if self.config['template'] == Config.CORDOVA:
-            tree = ElementTree.parse('config.xml')
-            root = tree.getroot()
-            title = root.attrib['name'] if 'name' in root.attrib else None
-
-            if not title:
-                raise ClickableException('No package title specified in config.xml')
-
-        else:
-            title = self.get_manifest().get('title', None)
-
-            if not title:
-                raise ClickableException(
-                    'No package title specified in manifest.json or clickable.json')
-
-        return title
-
-    def find_app_name(self):
-        app = None
-        hooks = self.get_manifest().get('hooks', {})
-        for key, value in hooks.items():
-            if 'desktop' in value:
-                app = key
-                break
-
-        if not app:  # If we don't find an app with a desktop file just find the first one
-            apps = list(hooks.keys())
-            if len(apps) > 0:
-                app = apps[0]
-
-        if not app:
-            raise ClickableException('No app name specified in manifest.json')
-
-        return app
-
-    def get_click_filename(self):
-        self.get_template()
-
-        return '{}_{}_{}.click'.format(self.find_package_name(), self.find_version(), self.config['arch'])
+        logger.info('Auto detected template to be "{}"'.format(template))

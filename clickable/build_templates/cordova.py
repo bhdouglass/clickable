@@ -7,11 +7,12 @@ import os
 from distutils.dir_util import copy_tree
 
 from .cmake import CMakeBuilder
-from clickable.config import Config
+from clickable.config.project import ProjectConfig
+from clickable.config.constants import Constants
 
 
 class CordovaBuilder(CMakeBuilder):
-    name = Config.CORDOVA
+    name = Constants.CORDOVA
 
     # Lots of this code was based off of this:
     # https://github.com/apache/cordova-ubuntu/blob/28cd3c1b53c1558baed4c66cb2deba597f05b3c6/bin/templates/project/cordova/lib/build.js#L59-L131
@@ -55,10 +56,10 @@ class CordovaBuilder(CMakeBuilder):
 
         # Modify default files with updated settings
         # taken straing from cordova build.js
-        manifest = self.config.get_manifest()
+        manifest = self.config.install_files.get_manifest()
         manifest['architecture'] = self.config.build_arch
         manifest['framework'] = self.sdk
-        self.config.write_manifest(manifest)
+        self.config.install_files.write_manifest(manifest)
 
         apparmor_file = os.path.join(self.config.install_dir, 'apparmor.json')
         with open(apparmor_file, 'r') as apparmor_reader:

@@ -1,26 +1,31 @@
-from unittest import TestCase, mock
+from unittest import mock
 from unittest.mock import ANY
 
 from clickable.commands.build_libs import LibBuildCommand
-from clickable.container import Container
-from ..mocks import LibConfigMock, ConfigMock, empty_fn, false_fn
+from .base_test import UnitTest
+from ..mocks import empty_fn, false_fn
 
 
-class TestLibBuildCommand(TestCase):
+class TestLibBuildCommand(UnitTest):
     def setUp(self):
         self.custom_cmd = 'echo "Building lib"'
-        self.config = ConfigMock()
-        self.config.lib_configs = [LibConfigMock({
-            'template': 'custom',
-            'build': self.custom_cmd,
-        })]
-        self.config.container = Container(self.config)
+
+        config_json = {}
+        config_json["libraries"] = {
+            "testlib": {
+                'template': 'custom',
+                'build': self.custom_cmd,
+            }
+        }
+        self.setUpConfig(mock_config_json = config_json)
         self.command = LibBuildCommand(self.config)
 
     @mock.patch('clickable.container.Container.run_command', side_effect=empty_fn)
-    def test_click_build(self, mock_run_command):
+    @mock.patch('os.makedirs', side_effect=empty_fn)
+    def test_click_build(self, mock_makedirs, mock_run_command):
         self.command.run()
 
         mock_run_command.assert_called_once_with(self.custom_cmd)
+        mock_makedirs.assert_called_with(ANY, exist_ok=True)
 
 # TODO implement more

@@ -4,7 +4,6 @@ from .base import Command
 from clickable.exceptions import ClickableException
 
 from clickable.utils import (
-    get_desktop,
     run_subprocess_check_call,
 )
 
@@ -34,7 +33,7 @@ class GdbCommand(Command):
         return None
 
     def find_binary_path(self):
-        desktop = get_desktop(self.config.install_dir)
+        desktop = self.config.install_files.get_desktop(self.config.install_dir)
         exec_list = desktop["Exec"].split()
         binary = None
 

@@ -1,4 +1,4 @@
-from clickable import Config
+from clickable import ProjectConfig
 from clickable.commands.docker.docker_config import DockerConfig
 from .docker_support import DockerSupport
 import os
@@ -7,7 +7,7 @@ import getpass
 class MultimediaSupport(DockerSupport):
     config = None
 
-    def __init__(self, config: Config):
+    def __init__(self, config: ProjectConfig):
         self.config = config
 
     def update(self, docker_config: DockerConfig):

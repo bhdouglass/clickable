@@ -50,7 +50,7 @@ class LibBuildCommand(Command):
                     run_subprocess_check_call(lib.postbuild, cwd=lib.build_dir, shell=True)
 
         if single_lib and not found:
-            raise ClickableException('Cannot build unknown library {}. You may add it to the clickable.json'.format(single_lib))
+            raise ClickableException('Cannot build unknown library {}, which is not in your clickable.json'.format(single_lib))
 
     def build(self, lib):
         builder_classes = get_builders()

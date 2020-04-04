@@ -1,14 +1,13 @@
-from unittest import TestCase, mock
+from unittest import mock
 
 from clickable.commands.review import ReviewCommand
-from clickable.container import Container
-from ..mocks import ConfigMock, empty_fn
+from ..mocks import empty_fn
+from .base_test import UnitTest
 
 
-class TestReviewCommand(TestCase):
+class TestReviewCommand(UnitTest):
     def setUp(self):
-        self.config = ConfigMock()
-        self.config.container = Container(self.config)
+        self.setUpWithTmpBuildDir()
         self.command = ReviewCommand(self.config)
 
     @mock.patch('clickable.container.Container.run_command', side_effect=empty_fn)

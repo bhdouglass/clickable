@@ -103,47 +103,6 @@ def find(names, cwd, temp_dir=None, build_dir=None, ignore_dir=None, extensions_
     return file
 
 
-def write_manifest(install_dir, manifest):
-    with open(os.path.join(install_dir, "manifest.json"), 'w') as writer:
-        json.dump(manifest, writer, indent=4)
-
-
-def load_manifest(manifest_path):
-    manifest = {}
-    with open(manifest_path, 'r') as f:
-        try:
-            manifest = json.load(f)
-        except ValueError:
-            raise ClickableException(
-                'Failed reading "manifest.json", it is not valid json')
-
-    return manifest
-
-def get_manifest(install_dir):
-    return load_manifest(os.path.join(install_dir, "manifest.json"))
-
-def get_any_manifest(cwd, temp_dir=None, build_dir=None, ignore_dir=None):
-    return load_manifest(find(['manifest.json'], cwd, temp_dir, build_dir, ignore_dir))
-
-def try_find_locale(install_dir):
-    return ':'.join(glob.glob("{}/**/locale".format(install_dir), recursive=True))
-
-def get_desktop(cwd, temp_dir=None, build_dir=None):
-    desktop = {}
-
-    desktop_file = find(['.desktop', '.desktop.in'], cwd, temp_dir, build_dir, extensions_only=True, depth=3)
-
-    if desktop_file:
-        with open(desktop_file, 'r') as f:
-            # Not using configparser here since it has issues with %U that many apps have
-            for line in f.readlines():
-                if '=' in line:
-                    pos = line.find('=')
-                    desktop[line[:pos]] = line[(pos + 1):].strip()
-
-    return desktop
-
-
 def is_command(command):
     error_code = run_subprocess_call(shlex.split('which {}'.format(command)), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 

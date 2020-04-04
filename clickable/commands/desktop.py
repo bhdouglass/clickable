@@ -7,9 +7,9 @@ from clickable.utils import (
     check_command,
     is_command,
     makedirs,
-    try_find_locale,
     run_subprocess_check_output,
 )
+from clickable.config.constants import Constants
 from clickable.logger import logger
 from clickable.exceptions import ClickableException
 from .base import Command
@@ -61,7 +61,7 @@ class DesktopCommand(Command):
             self.find_desktop_file()
         )
 
-        package_name = self.config.find_package_name()
+        package_name = self.config.install_files.find_package_name()
 
         docker_config.add_volume_mappings(
             self.setup_volume_mappings(package_name)
@@ -89,9 +89,9 @@ class DesktopCommand(Command):
 
     def find_desktop_file(self):
         desktop_path = None
-        hooks = self.config.get_manifest().get('hooks', {})
+        hooks = self.config.install_files.get_manifest().get('hooks', {})
         try:
-            app = self.config.find_app_name()
+            app = self.config.install_files.find_app_name()
             if app in hooks and 'desktop' in hooks[app]:
                 desktop_path = hooks[app]['desktop']
         except ClickableException:
@@ -166,13 +166,13 @@ class DesktopCommand(Command):
             'LC_ALL': self.config.desktop_locale,
             'TZ': self.get_time_zone(),
             'APP_DIR': self.config.install_dir,
-            'TEXTDOMAINDIR': try_find_locale(self.config.install_dir),
+            'TEXTDOMAINDIR': self.config.install_files.try_find_locale(),
             'XAUTHORITY': '/tmp/.docker.xauth',
             'DISPLAY': os.environ['DISPLAY'],
             'QML2_IMPORT_PATH': lib_path,
             'LD_LIBRARY_PATH': lib_path,
             'PATH': self.get_docker_path_env(working_directory),
-            'HOME': self.config.device_home,
+            'HOME': Constants.device_home,
             'OXIDE_NO_SANDBOX': '1',
             'UBUNTU_APP_LAUNCH_ARCH': 'x86_64-linux-gnu',
         }
@@ -198,7 +198,7 @@ class DesktopCommand(Command):
     def setup_volume_mappings(self, package_name):
         xauth_path = self.touch_xauth()
 
-        device_home = self.config.desktop_device_home
+        device_home = Constants.desktop_device_home
         makedirs(device_home)
         logger.info("Mounting device home to {}".format(device_home))
 

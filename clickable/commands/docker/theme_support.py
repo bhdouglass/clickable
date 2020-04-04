@@ -2,6 +2,7 @@ import os
 
 from clickable.commands.docker.docker_config import DockerConfig
 from clickable.utils import makedirs
+from clickable.config.constants import Constants
 from .docker_support import DockerSupport
 
 
@@ -13,9 +14,9 @@ class ThemeSupport(DockerSupport):
         self.config = config
 
     def update(self, docker_config: DockerConfig):
-        package_name = self.config.find_package_name()
+        package_name = self.config.install_files.find_package_name()
 
-        config_path = makedirs(os.path.join(self.config.desktop_device_home, '.config/ubuntu-ui-toolkit'))
+        config_path = makedirs(os.path.join(Constants.desktop_device_home, '.config/ubuntu-ui-toolkit'))
 
         theme = 'Ubuntu.Components.Themes.Ambiance'
         if self.config.dark_mode:

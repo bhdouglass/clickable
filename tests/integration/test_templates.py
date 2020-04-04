@@ -6,23 +6,17 @@ from clickable import Clickable
 from clickable.commands.create import CreateCommand
 from clickable.container import Container
 from ..mocks import ConfigMock
+from .base_test import IntegrationTest
 
 
-class TestTemplates(TestCase):
+class TestTemplates(IntegrationTest):
     def setUp(self):
-        self.clickable = Clickable()
+        super().setUp()
         self.original_path = os.getcwd()
+        self.app_path = os.path.abspath(os.path.join(self.test_dir, 'appname'))
 
-        self.path = os.path.join(os.path.dirname(__file__), 'tmp')
-        self.app_path = os.path.join(self.path, 'appname')
-
-        if os.path.exists(self.path):
-            shutil.rmtree(self.path)
-
-        os.makedirs(self.path)
-        os.chdir(self.path)
-
-        os.environ['CLICKABLE_DEFAULT'] = 'clean build review'
+        os.makedirs(self.test_dir)
+        os.chdir(self.test_dir)
 
         self.config_file = os.path.expanduser('~/.clickable/cookiecutter_config.yaml')
         self.tmp_config_file = '/tmp/cookiecutter_config.yaml'
@@ -32,26 +26,22 @@ class TestTemplates(TestCase):
             self.restore_config = True
 
     def tearDown(self):
-        shutil.rmtree(self.path)
+        super().tearDown()
         os.chdir(self.original_path)
-
-        os.environ['CLICKABLE_DEFAULT'] = ''
-        os.environ['CLICKABLE_ARCH'] = ''
 
         if self.restore_config:
             shutil.move(self.tmp_config_file, self.config_file)
 
     def create_and_run(self, template, arch):
-        os.environ['CLICKABLE_ARCH'] = arch
-
-        config = ConfigMock()
-        config.container = Container(config)
-        command = CreateCommand(config)
-
+        create_config = {}
+        command = CreateCommand(create_config)
         command.run(path_arg=template, no_input=True)
-
         os.chdir(self.app_path)
-        self.clickable.run(['clean', 'build'])
+
+        super().run_clickable(
+            cli_args=['clean', 'build', 'review', '--arch', arch],
+            config_env={}
+        )
 
     def assertClickExists(self, arch):
         click = os.path.join(self.app_path, 'build/x86_64-linux-gnu/app/appname.yourname_1.0.0_amd64.click')
