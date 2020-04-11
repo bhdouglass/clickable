@@ -79,6 +79,7 @@ class ProjectConfig(object):
     apikey = None
     verbose = False
     debug_build = False
+    debug_valgrind = False
     debug_gdb = False
     debug_gdb_port = None
     dark_mode = False
@@ -385,6 +386,10 @@ class ProjectConfig(object):
             self.debug_build = True
             logger.warning('"--debug-build" is deprecated, use "--debug" instead!')
 
+        if args.valgrind:
+            self.debug_build = True
+            self.debug_valgrind = True
+
         if args.gdb:
             self.debug_build = True
             self.debug_gdb = True
@@ -636,6 +641,12 @@ class ProjectConfig(object):
                 logger.warning("Docker image setup is ignored when using a custom docker image!")
 
     def check_desktop_configs(self):
+        if self.debug_valgrind and self.debug_gdb:
+            raise ClickableException("Valgrind (--valgrind) and GDB (--gdb or --gdbserver) can not be combined.")
+
+        if self.debug_valgrind and not self.is_desktop_mode():
+            raise ClickableException("Valgrind debugging is only supported in desktop mode! Consider running 'clickable desktop --valgrind'")
+
         if self.debug_gdb and not self.is_desktop_mode():
             raise ClickableException("GDB debugging is only supported in desktop mode! Consider running 'clickable desktop --gdb'")
 
