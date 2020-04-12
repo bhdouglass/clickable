@@ -63,7 +63,7 @@ class DockerConfig(object):
 
     def render_command_string(self, volumes_string, environment_string, extra_options_string):
         return (
-            '{docker} run --privileged {volumes} {env} {extra_options} -w {working_dir} --user={uid} '
+            '{docker} run --privileged --net=host {volumes} {env} {extra_options} -w {working_dir} --user={uid} '
             '--rm -it {docker_image} bash -c "{executable}"'
         ).format(
             docker=self.docker_executable,

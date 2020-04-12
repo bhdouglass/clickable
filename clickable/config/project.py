@@ -542,7 +542,7 @@ class ProjectConfig(object):
         return self.config["template"] in Constants.arch_agnostic_templates
 
     def is_desktop_mode(self):
-        return bool(set(['desktop', 'test']).intersection(self.commands))
+        return bool(set(['desktop', 'ide', 'test']).intersection(self.commands))
 
     def is_build_cmd(self):
         return (self.is_desktop_mode() or
@@ -556,7 +556,7 @@ class ProjectConfig(object):
         return (not self.is_custom_docker_image and
                 not self.container_mode and
                 (self.is_build_cmd() or
-                    set(['run', 'update', 'gdb', 'gdbserver', 'review']).intersection(self.commands)))
+                    set(['run', 'ide', 'update', 'gdb', 'gdbserver', 'review']).intersection(self.commands)))
 
     def check_clickable_version(self):
         if self.config['clickable_minimum_required']:
