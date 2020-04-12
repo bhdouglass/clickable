@@ -56,13 +56,12 @@ On Ubuntu, install these requirements using ``apt install nvidia-container-toolk
 
 Run clickable with the ``--verbose`` flag to see the executed command for your system.
 
-``clickable desktop <custom_command>``
+``clickable ide <custom_command>``
 --------------------------------------
 
 The desktop mode allows to run abritary programs in the docker container, such as an IDE.
 Add the dependency to the :ref:`clickable.json <_clickable-json-dependencies_host>` and
-append the command, e.g. by running ``clickable desktop qtcreator``. Command line arguments
-need to be prepended to the ``desktop``, e.g. ``clickable --skip-build desktop qtcreator``.
+append the command, e.g. by running ``clickable ide qtcreator``.
 
 ``clickable create``
 --------------------
