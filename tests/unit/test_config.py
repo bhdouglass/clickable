@@ -9,7 +9,7 @@ from ..mocks import ConfigMock, empty_fn, true_fn
 
 class TestConfigCommand(TestCase):
     def setUp(self):
-        self.config = ConfigMock()
+        self.config = ConfigMock(mock_config_env={})
         self.config.arch = None
 
     def test_set_conditional_defaults_default(self):

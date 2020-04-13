@@ -16,7 +16,7 @@ from clickable.exceptions import ClickableException
 
 
 __version__ = '6.11.2'
-__container_minimum_required__ = 0
+__container_minimum_required__ = 2
 
 
 class Clickable(object):
@@ -148,6 +148,12 @@ class Clickable(object):
             '--gdb',
             action='store_true',
             help='Start gdb to debug the app (only desktop mode)',
+            default=False,
+        )
+        parser.add_argument(
+            '--valgrind',
+            action='store_true',
+            help='Start valgrind to debug the app (only desktop mode)',
             default=False,
         )
         parser.add_argument(

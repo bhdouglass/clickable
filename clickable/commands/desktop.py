@@ -16,6 +16,7 @@ from .base import Command
 from .build import BuildCommand
 from .clean import CleanCommand
 from .docker.debug_gdb_support import DebugGdbSupport
+from .docker.debug_valgrind_support import DebugValgrindSupport
 from .docker.docker_config import DockerConfig
 from .docker.go_support import GoSupport
 from .docker.nvidia_support import NvidiaSupport
@@ -73,7 +74,9 @@ class DesktopCommand(Command):
 
             WebappSupport(self.config.install_files.find_package_name()).update(docker_config)
             ThemeSupport(self.config).update(docker_config)
+
             DebugGdbSupport(self.config).update(docker_config)
+            DebugValgrindSupport(self.config).update(docker_config)
 
         docker_config.add_volume_mappings(self.setup_volume_mappings())
 
@@ -82,12 +85,10 @@ class DesktopCommand(Command):
         )
 
         NvidiaSupport().update(docker_config)
+        MultimediaSupport(self.config).update(docker_config)
 
         GoSupport(self.config).update(docker_config)
-
         RustSupport(self.config).update(docker_config)
-
-        MultimediaSupport(self.config).update(docker_config)
 
         return docker_config
 
