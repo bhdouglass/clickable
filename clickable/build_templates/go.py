@@ -33,6 +33,6 @@ class GoBuilder(Builder):
         gocommand = '/usr/local/go/bin/go build -pkgdir {cwd}/.clickable/go -i -o {install_dir}/{app_name} ../../..'.format(
             cwd=self.config.cwd,
             install_dir=self.config.install_dir,
-            app_name=self.config.find_app_name(),
+            app_name=self.config.install_files.find_app_name(),
         )
         self.config.container.run_command(gocommand)
