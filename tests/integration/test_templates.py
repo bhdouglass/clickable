@@ -70,12 +70,9 @@ class TestTemplates(IntegrationTest):
         self.create_and_run('HTML', 'all')
         self.assertClickExists('all')
 
-    # TODO enable this once the go qt library is fixed
-    '''
     def test_go(self):
         self.create_and_run('Go', 'amd64')
         self.assertClickExists('amd64')
-    '''
 
     def test_rust(self):
         self.create_and_run('Rust', 'amd64')
