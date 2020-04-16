@@ -38,9 +38,11 @@ class TestTemplates(IntegrationTest):
         command.run(path_arg=template, no_input=True)
         os.chdir(self.app_path)
 
-        super().run_clickable(
+        self.run_clickable(
             cli_args=['clean', 'build', 'review', '--arch', arch],
-            config_env={}
+            config_env={
+                'GOPATH': '/tmp',
+            },
         )
 
     def assertClickExists(self, arch):
