@@ -437,6 +437,9 @@ class ProjectConfig(object):
     def get_env_vars(self):
         env_vars = {}
 
+        if self.config['gopath']:
+            env_vars['GOPATH'] = self.config['gopath']
+
         if self.debug_build:
             env_vars['DEBUG_BUILD'] = '1'
 

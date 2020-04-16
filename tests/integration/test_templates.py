@@ -4,7 +4,7 @@ import shutil
 
 from clickable import Clickable
 from clickable.commands.create import CreateCommand
-from clickable.container import Container
+from clickable.utils import run_subprocess_call
 from ..mocks import ConfigMock
 from .base_test import IntegrationTest
 
@@ -38,10 +38,13 @@ class TestTemplates(IntegrationTest):
         command.run(path_arg=template, no_input=True)
         os.chdir(self.app_path)
 
+        if template == 'Go':
+            run_subprocess_call('GOPATH=/tmp/gopath /usr/local/go/bin/go get', cwd=self.app_path, shell=True)
+
         self.run_clickable(
             cli_args=['clean', 'build', 'review', '--arch', arch],
             config_env={
-                'GOPATH': '/tmp',
+                'GOPATH': '/tmp/gopath',
             },
         )
 
