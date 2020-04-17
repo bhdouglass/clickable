@@ -294,7 +294,7 @@ RUN {}
         with open(self.docker_file, 'r') as f:
             if dockerfile_content.strip() != f.read().strip():
                 return True
-        
+
         command = 'docker images -q {}'.format(self.docker_image)
         image_exists = run_subprocess_check_output(command).strip()
         return not image_exists
@@ -305,13 +305,13 @@ RUN {}
 
     def setup_image(self):
         self.check_docker()
-        
+
         commands = []
-        
+
         if self.config.dependencies_ppa:
             commands.append('add-apt-repository {}'.format(
                 ' '.join(self.config.dependencies_ppa)))
-        
+
         dependencies = self.get_dependency_packages()
         if dependencies:
             commands.append(

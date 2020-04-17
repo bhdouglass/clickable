@@ -4,7 +4,7 @@ import shutil
 
 from clickable import Clickable
 from clickable.commands.create import CreateCommand
-from clickable.container import Container
+from clickable.utils import run_subprocess_call
 from ..mocks import ConfigMock
 from .base_test import IntegrationTest
 
@@ -38,9 +38,14 @@ class TestTemplates(IntegrationTest):
         command.run(path_arg=template, no_input=True)
         os.chdir(self.app_path)
 
-        super().run_clickable(
+        if template == 'Go':
+            run_subprocess_call('GOPATH=/tmp/gopath /usr/local/go/bin/go get', cwd=self.app_path, shell=True)
+
+        self.run_clickable(
             cli_args=['clean', 'build', 'review', '--arch', arch],
-            config_env={}
+            config_env={
+                'GOPATH': '/tmp/gopath',
+            },
         )
 
     def assertClickExists(self, arch):
@@ -70,12 +75,9 @@ class TestTemplates(IntegrationTest):
         self.create_and_run('HTML', 'all')
         self.assertClickExists('all')
 
-    # TODO enable this once the go qt library is fixed
-    '''
     def test_go(self):
         self.create_and_run('Go', 'amd64')
         self.assertClickExists('amd64')
-    '''
 
     def test_rust(self):
         self.create_and_run('Rust', 'amd64')

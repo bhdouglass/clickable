@@ -12,18 +12,17 @@ class ClickableMock(Clickable):
         self.mock_install_files = mock_install_files
         super().__init__()
 
-    def setup_config(self, args, is_build_cmd, is_desktop_mode, is_template_required):
+    def setup_config(self, args, commands):
         container_mode_key = "CLICKABLE_CONTAINER_MODE"
 
         if (self.mock_config_env is not None and
                 not container_mode_key in self.mock_config_env and
                 container_mode_key in os.environ):
             self.mock_config_env[container_mode_key] = os.environ[container_mode_key]
-        self.config = ConfigMock(
+
+        return ConfigMock(
             args=args,
-            desktop=is_desktop_mode,
-            is_build_cmd=is_build_cmd,
-            is_template_required=is_template_required,
+            commands=commands,
             mock_config_json=self.mock_config_json,
             mock_config_env=self.mock_config_env,
             mock_install_files=self.mock_install_files,

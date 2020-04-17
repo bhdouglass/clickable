@@ -437,6 +437,9 @@ class ProjectConfig(object):
     def get_env_vars(self):
         env_vars = {}
 
+        if self.config['gopath']:
+            env_vars['GOPATH'] = self.config['gopath']
+
         if self.debug_build:
             env_vars['DEBUG_BUILD'] = '1'
 
@@ -554,7 +557,7 @@ class ProjectConfig(object):
                 set(['build', 'build-libs', 'clean-build']).intersection(self.commands))
 
     def needs_template(self):
-        return (self.is_build_cmd() or 
+        return (self.is_build_cmd() or
                 set(['install', 'publish', 'review']).intersection(self.commands))
 
     def needs_docker_image(self):
@@ -626,7 +629,7 @@ class ProjectConfig(object):
             raise ClickableException('When using the "custom" template you must specify a "build" in the config')
         if self.config['template'] == Constants.GO and not self.config['gopath']:
             raise ClickableException('When using the "go" template you must specify a "gopath" in the config or use the '
-                             '"GOPATH"env variable')
+                             '"GOPATH" env variable')
         if self.config['template'] == Constants.RUST and not self.config['cargo_home']:
             raise ClickableException('When using the "rust" template you must specify a "cargo_home" in the config')
 
