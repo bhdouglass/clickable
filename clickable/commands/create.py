@@ -6,7 +6,7 @@ from clickable.exceptions import ClickableException
 
 cookiecutter_available = True
 try:
-    from cookiecutter.main import cookiecutter
+    import cookiecutter.main
 except ImportError:
     cookiecutter_available = False
 
@@ -48,7 +48,7 @@ class CreateCommand(Command):
             else:
                 extra_context['Template'] = path_arg
 
-        cookiecutter(
+        cookiecutter.main.cookiecutter(
             COOKIECUTTER_URL,
             extra_context=extra_context,
             no_input=no_input,

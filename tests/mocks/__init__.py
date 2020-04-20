@@ -1,5 +1,5 @@
 from .config import ConfigMock
-from .libconfig import LibConfigMock
+from .clickable import ClickableMock
 
 
 def empty_fn(*args, **kwargs):

@@ -9,13 +9,14 @@ import subprocess
 import logging
 
 from clickable.commands.base import Command
-from clickable.config import Config
+from clickable.config.project import ProjectConfig
 from clickable.container import Container
 from clickable.logger import logger, log_file, console_handler
 from clickable.exceptions import ClickableException
 
 
-__version__ = '6.11.2'
+__version__ = '6.12.0'
+__container_minimum_required__ = 2
 
 
 class Clickable(object):
@@ -150,6 +151,12 @@ class Clickable(object):
             default=False,
         )
         parser.add_argument(
+            '--valgrind',
+            action='store_true',
+            help='Start valgrind to debug the app (only desktop mode)',
+            default=False,
+        )
+        parser.add_argument(
             '--dark-mode',
             action='store_true',
             help='Use the dark theme when running apps (only desktop mode)',
@@ -176,9 +183,17 @@ class Clickable(object):
 
         return args
 
+    def setup_config(self, args, commands):
+        return ProjectConfig(
+            args=args,
+            clickable_version=__version__,
+            commands=commands,
+        )
+
     def run(self, arg_commands=[], args=None):
-        self.config = Config(args, __version__, arg_commands)
-        self.config.container = Container(self.config)
+        self.config = self.setup_config(args, arg_commands)
+        self.config.container = Container(self.config,
+                minimum_version=__container_minimum_required__)
         commands = self.config.commands
 
         VALID_COMMANDS = self.command_names + list(self.config.scripts.keys())

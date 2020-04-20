@@ -1,15 +1,14 @@
-from unittest import TestCase, mock
+from unittest import mock
 from unittest.mock import ANY
 
 from clickable.commands.no_lock import NoLockCommand
-from clickable.container import Container
-from ..mocks import ConfigMock, empty_fn
+from ..mocks import empty_fn
+from .base_test import UnitTest
 
 
-class TestNoLockCommand(TestCase):
+class TestNoLockCommand(UnitTest):
     def setUp(self):
-        self.config = ConfigMock()
-        self.config.container = Container(self.config)
+        self.setUpConfig()
         self.command = NoLockCommand(self.config)
 
     @mock.patch('clickable.device.Device.run_command', side_effect=empty_fn)

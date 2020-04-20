@@ -7,7 +7,8 @@ from .make import MakeBuilder
 from .cmake import CMakeBuilder
 from .qmake import QMakeBuilder
 from clickable.logger import logger
-from clickable.config import Config
+from clickable.config.project import ProjectConfig
+from clickable.config.constants import Constants
 from clickable.exceptions import ClickableException
 
 
@@ -15,21 +16,21 @@ class PureQMLMakeBuilder(MakeBuilder):
     def post_make_install(self):
         super().post_make_install()
 
-        manifest = self.config.get_manifest()
+        manifest = self.config.install_files.get_manifest()
         manifest['architecture'] = 'all'
-        self.config.write_manifest(manifest)
+        self.config.install_files.write_manifest(manifest)
 
 
 class PureQMLQMakeBuilder(PureQMLMakeBuilder, QMakeBuilder):
-    name = Config.PURE_QML_QMAKE
+    name = Constants.PURE_QML_QMAKE
 
 
 class PureQMLCMakeBuilder(PureQMLMakeBuilder, CMakeBuilder):
-    name = Config.PURE_QML_CMAKE
+    name = Constants.PURE_QML_CMAKE
 
 
 class PureBuilder(Builder):
-    name = Config.PURE
+    name = Constants.PURE
 
     def _ignore(self, path, contents):
         ignored = []
@@ -55,7 +56,7 @@ class PureBuilder(Builder):
 
 class PythonBuilder(PureBuilder):
     # The only difference between this and the Pure template is that this doesn't force the "all" arch
-    name = Config.PYTHON
+    name = Constants.PYTHON
 
     def build(self):
         logger.warn('The "python" build template is deprecated, please use "precompiled" instead')
@@ -64,4 +65,4 @@ class PythonBuilder(PureBuilder):
 
 class PrecompiledBuilder(PureBuilder):
     # The only difference between this and the Pure template is that this doesn't force the "all" arch
-    name = Config.PRECOMPILED
+    name = Constants.PRECOMPILED

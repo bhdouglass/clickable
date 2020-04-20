@@ -1,15 +1,14 @@
-from unittest import TestCase, mock
+from unittest import mock
 from unittest.mock import ANY
 
 from clickable.commands.install import InstallCommand
-from clickable.container import Container
-from ..mocks import ConfigMock, true_fn, empty_fn
+from ..mocks import empty_fn, true_fn
+from .base_test import UnitTest
 
 
-class TestInstallCommand(TestCase):
+class TestInstallCommand(UnitTest):
     def setUp(self):
-        self.config = ConfigMock()
-        self.config.container = Container(self.config)
+        self.setUpWithTmpBuildDir()
         self.command = InstallCommand(self.config)
 
     @mock.patch('clickable.device.Device.check_any_attached', side_effect=empty_fn)
@@ -56,7 +55,7 @@ class TestInstallCommand(TestCase):
         mock_run_subprocess_check_call.assert_called_once_with('adb push /foo/bar.click /home/phablet/', cwd='.', shell=True)
         mock_run_command.assert_called_with(ANY, cwd='.')
 
-    @mock.patch('clickable.config.Config.is_desktop_mode', side_effect=true_fn)
+    @mock.patch('clickable.config.project.ProjectConfig.is_desktop_mode', side_effect=true_fn)
     @mock.patch('clickable.commands.install.logger.debug', side_effect=empty_fn)
     def test_skip_desktop_mode(self, mock_logger_debug, mock_desktop_mode):
         self.command.run()

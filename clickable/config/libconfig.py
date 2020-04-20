@@ -60,7 +60,6 @@ class LibConfig(object):
     first_docker_info = True
     container_mode = False
     use_nvidia = False
-    custom_docker_image = False
     gopath = None
 
     def __init__(self, name, json_config, arch, root_dir, debug_build):
@@ -99,6 +98,10 @@ class LibConfig(object):
         }
 
         self.config.update(json_config)
+        if self.config["docker_image"]:
+            self.is_custom_docker_image = True
+        else:
+            self.is_custom_docker_image = False
 
         self.cleanup_config()
 
@@ -183,15 +186,12 @@ class LibConfig(object):
         for key in self.flexible_lists:
             self.config[key] = flexible_string_to_list(self.config[key])
 
-        if self.config['docker_image']:
-            self.custom_docker_image = True
-
     def check_config_errors(self):
         if self.config['template'] == self.CUSTOM and not self.config['build']:
             raise ClickableException(
                 'When using the "custom" template you must specify a "build" in one the lib configs')
 
-        if self.custom_docker_image:
+        if self.is_custom_docker_image:
             if self.dependencies_host or self.dependencies_target or self.dependencies_ppa:
                 logger.warning(
                     "Dependencies are ignored when using a custom docker image!")

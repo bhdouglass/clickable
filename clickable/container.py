@@ -15,14 +15,16 @@ from clickable.utils import (
     image_exists,
 )
 from clickable.logger import logger
-from clickable.config import Config
+from clickable.config.project import ProjectConfig
+from clickable.config.constants import Constants
 from clickable.exceptions import ClickableException
 
 
 class Container(object):
-    def __init__(self, config, name=None):
+    def __init__(self, config, name=None, minimum_version=None):
         self.config = config
         self.docker_mode = self.config.needs_docker_image()
+        self.minimum_version = minimum_version
 
         if self.docker_mode:
             check_command('docker')
@@ -199,7 +201,7 @@ class Container(object):
 
             rust_config = ''
 
-            if self.config.config['template'] == Config.RUST and self.config.cargo_home:
+            if self.config.template == Constants.RUST and self.config.cargo_home:
                 logger.info("Caching cargo related files in {}".format(self.config.cargo_home))
                 cargo_registry = os.path.join(self.config.cargo_home, 'registry')
                 cargo_git = os.path.join(self.config.cargo_home, 'git')
@@ -292,7 +294,7 @@ RUN {}
         with open(self.docker_file, 'r') as f:
             if dockerfile_content.strip() != f.read().strip():
                 return True
-        
+
         command = 'docker images -q {}'.format(self.docker_image)
         image_exists = run_subprocess_check_output(command).strip()
         return not image_exists
@@ -303,13 +305,13 @@ RUN {}
 
     def setup_image(self):
         self.check_docker()
-        
+
         commands = []
-        
+
         if self.config.dependencies_ppa:
             commands.append('add-apt-repository {}'.format(
                 ' '.join(self.config.dependencies_ppa)))
-        
+
         dependencies = self.get_dependency_packages()
         if dependencies:
             commands.append(
@@ -361,9 +363,29 @@ RUN {}
             or self.config.dependencies_target \
             or self.config.image_setup
 
-    def setup(self):
-        if self.config.custom_docker_image:
+    def check_base_image_version(self):
+        if not self.minimum_version:
             return
+
+        version = 0
+        try:
+            version_string = self.run_command("cat /image_version",
+                    get_output=True).strip()
+            version = int(version_string)
+        except Exception as e:
+            logger.warn("Could not read the image version from the container")
+            pass
+
+        if version < self.minimum_version:
+            raise ClickableException('This version of Clickable requires a newer version of the docker images than installed. Please run "clickable update" to update your local images.')
+
+
+    def setup(self):
+        if self.config.is_custom_docker_image:
+            return
+
+        self.check_base_image_version()
+
         if not self.needs_customized_container():
             return
 

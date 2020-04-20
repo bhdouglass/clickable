@@ -1,15 +1,14 @@
-from unittest import TestCase, mock
+from unittest import mock
 from unittest.mock import ANY
 
 from clickable.commands.launch import LaunchCommand
-from clickable.container import Container
-from ..mocks import ConfigMock, true_fn, empty_fn, exception_fn
+from ..mocks import empty_fn, exception_fn, true_fn
+from .base_test import UnitTest
 
 
-class TestLaunchCommand(TestCase):
+class TestLaunchCommand(UnitTest):
     def setUp(self):
-        self.config = ConfigMock()
-        self.config.container = Container(self.config)
+        self.setUpWithTmpBuildDir()
         self.command = LaunchCommand(self.config)
 
     @mock.patch('clickable.device.Device.run_command', side_effect=empty_fn)
@@ -24,7 +23,7 @@ class TestLaunchCommand(TestCase):
         self.config.kill = 'foo and bar'
         self.command.kill()
 
-    @mock.patch('clickable.config.Config.is_desktop_mode', side_effect=true_fn)
+    @mock.patch('clickable.config.project.ProjectConfig.is_desktop_mode', side_effect=true_fn)
     @mock.patch('clickable.commands.launch.logger.debug', side_effect=empty_fn)
     def test_kill_skips_desktop(self, mock_logger_debug, mock_desktop_mode):
         self.command.kill()

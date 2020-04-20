@@ -3,11 +3,12 @@ import shutil
 import os
 
 from .base import Builder
-from clickable.config import Config
+from clickable.config.project import ProjectConfig
+from clickable.config.constants import Constants
 
 
 class GoBuilder(Builder):
-    name = Config.GO
+    name = Constants.GO
 
     def _ignore(self, path, contents):
         ignored = []
@@ -32,6 +33,6 @@ class GoBuilder(Builder):
         gocommand = '/usr/local/go/bin/go build -pkgdir {cwd}/.clickable/go -i -o {install_dir}/{app_name} ../../..'.format(
             cwd=self.config.cwd,
             install_dir=self.config.install_dir,
-            app_name=self.config.find_app_name(),
+            app_name=self.config.install_files.find_app_name(),
         )
         self.config.container.run_command(gocommand)

@@ -11,7 +11,6 @@ class WebappSupport(DockerSupport):
     def update(self, docker_config: DockerConfig):
         # changes docker config if Exec=webapp-container
         if self.is_executable_webapp_container(docker_config):
-            docker_config.add_volume_mappings({'/etc/passwd': '/etc/passwd'})
             docker_config.add_environment_variables({'APP_ID': self.package_name})
 
     def is_executable_webapp_container(self, docker_config):

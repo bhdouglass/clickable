@@ -1,3 +1,12 @@
+clickable (6.12.0) unstable; urgency=medium
+
+  * Added new feature for debugging via valgrind
+  * Added new ide command to allow running arbitrary graphical apps like qtcreator
+  * Code improvements
+  * Added versioning to the docker images to allow Clickable to depend on certain features in the image
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sun, 19 Apr 2020 10:41:00 -0500
+
 clickable (6.11.2) unstable; urgency=medium
 
   * Fixed the review and clean-build commands not working

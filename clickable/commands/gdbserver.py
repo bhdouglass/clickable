@@ -6,7 +6,6 @@ from .base import Command
 from clickable.utils import (
     run_subprocess_call,
     run_subprocess_check_output,
-    get_desktop,
 )
 from clickable.logger import logger
 from clickable.exceptions import ClickableException
@@ -24,16 +23,18 @@ class GdbserverCommand(Command):
 
     def get_app_dir(self):
         return "/opt/click.ubuntu.com/{}/current".format(
-                self.config.find_package_name())
+            self.config.install_files.find_package_name(),
+        )
 
     def get_app_id(self):
         return "{}_{}_{}".format(
-                self.config.find_package_name(),
-                self.config.find_app_name(),
-                self.config.find_version())
+            self.config.install_files.find_package_name(),
+            self.config.install_files.find_app_name(),
+            self.config.install_files.find_version(),
+        )
 
     def get_app_exec(self):
-        desktop = get_desktop(self.config.install_dir)
+        desktop = self.config.install_files.get_desktop(self.config.install_dir)
         return desktop["Exec"]
 
     def get_app_exec_full_path(self):
@@ -53,8 +54,8 @@ class GdbserverCommand(Command):
         return " ".join(app_exec)
 
     def get_app_env(self):
-        package_name = self.config.find_package_name()
-        app_name = self.config.find_app_name()
+        package_name = self.config.install_files.find_package_name()
+        app_name = self.config.install_files.find_app_name()
         app_id = self.get_app_id()
 
         environ = {

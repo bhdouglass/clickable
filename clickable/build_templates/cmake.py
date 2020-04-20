@@ -1,9 +1,10 @@
 from .make import MakeBuilder
-from clickable.config import Config
+from clickable.config.project import ProjectConfig
+from clickable.config.constants import Constants
 
 
 class CMakeBuilder(MakeBuilder):
-    name = Config.CMAKE
+    name = Constants.CMAKE
 
     def make_install(self):
         super().make_install()
