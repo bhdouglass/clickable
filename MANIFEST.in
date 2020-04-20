@@ -4,10 +4,12 @@ include clickable/clickable.schema
 
 recursive-include debian *
 recursive-include docs *
-recursive-include scripts *
 recursive-include clickable/build_templates *
 recursive-include clickable/commands *
 recursive-include clickable/system *
+recursive-include clickable/config *
+
+recursive-exclude scripts *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
 recursive-exclude tests *
