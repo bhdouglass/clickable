@@ -7,7 +7,7 @@ Changes in v6.12.0
 ------------------
 
 - Added new feature for debugging via :ref:`valgrind <debugging-with-gdb>`
-- Added new :ref:`ide <commands-ide>` command to allow runing arbitrary graphical apps like qtcreator
+- Added new :ref:`ide <commands-ide>` command to allow running arbitrary graphical apps like qtcreator
 - Code improvements
 - Added versioning to the docker images to allow Clickable to depend on certain features in the image
 
