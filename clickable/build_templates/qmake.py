@@ -24,7 +24,7 @@ class QMakeBuilder(MakeBuilder):
             raise ClickableException('{} is not supported by the qmake build yet'.format(self.config.build_arch))
 
         arch_spec = qmake_arch_spec_mapping[self.config.build_arch]
-        arch_triplet = self.config.arch_triplet_mapping[self.config.build_arch]
+        arch_triplet = Constants.arch_triplet_mapping[self.config.build_arch]
         conf_path = '/usr/lib/{}/qt5/qt.conf'.format(arch_triplet)
         spec_path = '/usr/lib/{}/qt5/mkspecs/{}'.format(arch_triplet, arch_spec)
 
