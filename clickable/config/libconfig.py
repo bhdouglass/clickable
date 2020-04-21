@@ -7,6 +7,7 @@ from clickable.utils import (
 )
 from clickable.exceptions import ClickableException
 from clickable.logger import logger
+from .constants import Constants
 from collections import OrderedDict
 import platform
 
@@ -14,26 +15,6 @@ import platform
 class LibConfig(object):
     cwd = os.getcwd()
     config = {}
-
-    QMAKE = 'qmake'
-    CMAKE = 'cmake'
-    CUSTOM = 'custom'
-
-    arch_triplet_mapping = {
-        'armhf': 'arm-linux-gnueabihf',
-        'arm64': 'aarch64-linux-gnu',
-        'amd64': 'x86_64-linux-gnu',
-        'all': 'all'
-    }
-
-    container_mapping = {
-        "x86_64": {
-            ('16.04', 'armhf'): 'clickable/ubuntu-sdk:16.04-armhf',
-            ('16.04', 'amd64'): 'clickable/ubuntu-sdk:16.04-amd64',
-            ('16.04', 'amd64-nvidia'): 'clickable/ubuntu-sdk:16.04-amd64-nvidia',
-            ('16.04', 'arm64'): 'clickable/ubuntu-sdk:16.04-arm64',
-        }
-    }
 
     placeholders = OrderedDict({
         "ARCH_TRIPLET": "arch_triplet",
@@ -55,7 +36,7 @@ class LibConfig(object):
     flexible_lists = ['dependencies_host', 'dependencies_target',
                       'dependencies_ppa', 'dependencies_build',
                       'build_args', 'make_args']
-    templates = [QMAKE, CMAKE, CUSTOM]
+    templates = [Constants.QMAKE, Constants.CMAKE, Constants.CUSTOM]
 
     first_docker_info = True
     container_mode = False
@@ -69,7 +50,7 @@ class LibConfig(object):
         self.debug_build = debug_build
 
         self.host_arch = platform.machine()
-        self.container_list = list(self.container_mapping[self.host_arch].values())
+        self.container_list = list(Constants.container_mapping[self.host_arch].values())
 
         self.config = {
             'name': name,
@@ -105,7 +86,7 @@ class LibConfig(object):
 
         self.cleanup_config()
 
-        self.config['arch_triplet'] = self.arch_triplet_mapping[self.config['arch']]
+        self.config['arch_triplet'] = Constants.arch_triplet_mapping[self.config['arch']]
 
         for key in self.path_keys:
             if key not in self.accepts_placeholders and self.config[key]:
@@ -187,7 +168,7 @@ class LibConfig(object):
             self.config[key] = flexible_string_to_list(self.config[key])
 
     def check_config_errors(self):
-        if self.config['template'] == self.CUSTOM and not self.config['build']:
+        if self.config['template'] == Constants.CUSTOM and not self.config['build']:
             raise ClickableException(
                 'When using the "custom" template you must specify a "build" in one the lib configs')
 
