@@ -669,7 +669,7 @@ class ProjectConfig(object):
         self.check_desktop_configs()
 
     def set_template_interactive(self):
-        if self.config['template']:
+        if self.config['template'] or not self.needs_template():
             return
 
         choice = input(

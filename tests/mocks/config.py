@@ -46,7 +46,7 @@ class ConfigMock(ProjectConfig):
             return self.mock_config_env.get(key, None)
 
     def set_template_interactive(self):
-        if not self.config['template']:
+        if not self.config['template'] and not self.needs_template():
             self.config["template"] = Constants.PURE
 
     def setup_helpers(self):
