@@ -124,9 +124,6 @@ class InstallFiles(object):
     def get_manifest(self):
         return self.load_manifest(os.path.join(self.install_dir, "manifest.json"))
 
-    def get_any_manifest(self, cwd, temp_dir=None, build_dir=None, ignore_dir=None):
-        return self.load_manifest(find(['manifest.json'], cwd, temp_dir, build_dir, ignore_dir))
-
     def try_find_locale(self):
         return ':'.join(glob.glob("{}/**/locale".format(self.install_dir), recursive=True))
 

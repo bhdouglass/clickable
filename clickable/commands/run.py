@@ -12,5 +12,8 @@ class RunCommand(Command):
             raise ClickableException('No command supplied for `clickable run`')
 
         self.config.container.setup()
-        self.config.container.run_command(path_arg, use_build_dir=False,
-                tty=True, localhost=True)
+        self.config.container.run_command(path_arg,
+            use_build_dir=False,
+            tty=True,
+            localhost=True,
+        )
