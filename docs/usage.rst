@@ -6,22 +6,31 @@ Usage
 Getting Started
 ---------------
 
+At this point it is assumed that you have completed the :ref:`installation 
+process <install>`
+
 You can get started with using clickable with an existing Ubuntu Touch app.
 You can use clickable with apps generated from the old Ubuntu Touch SDK IDE
-or you can start fresh by running ``clickable create``.
+or you can start fresh by running ``clickable create`` which is outlined in more 
+detail on the previous :ref:`getting started <getting-started>` page.
 
 To run the default set of sub-commands, simply run ``clickable`` in the root directory
 of your app's code. Clickable will attempt to auto detect the
-:ref:`build template <build-templates>` and other configuration options.
+:ref:`build template <build-templates>` and other configuration options. Note: 
+this command will error out if you have not first run ``clickable create`` (see 
+above).
 
 Running the default sub-commands will:
 
 1) Clean the build directory (by default the build directory is ``./build/``)
 2) Compile the app
 3) Build the click package (can be found in the build directory)
-4) Install the app on your phone (By default this uses adb, see below if you want to use ssh)
+4) Install the app on your phone (By default this uses adb, see below if you want 
+to use ssh)
 5) Kill the running app on the phone
 6) Launch the app on your phone
+
+Note: ensure your device is in developer mode for above steps 4, 5, and 6 to work.
 
 Configuration
 -------------
