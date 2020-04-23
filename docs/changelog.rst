@@ -3,6 +3,13 @@
 Changelog
 =========
 
+Changes in v6.12.1
+------------------
+
+- Bug fixes
+- Display nicer error messages when a template fails to be created
+- Fixed auto detecting the build template
+
 Changes in v6.12.0
 ------------------
 
