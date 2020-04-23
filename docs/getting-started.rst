@@ -12,7 +12,7 @@ Getting Started
 Getting Logs
 ------------
 
-To get logs from you app simply run `clickable logs`. This will give you output
+To get logs from your app simply run `clickable logs`. This will give you output
 from C++ (``QDebug() << "message"``) or from QML (``console.log("message")``)
 in addition to any errors or warnings.
 
@@ -46,7 +46,7 @@ container (no need to install it on your computer).
 
 .. _publishing:
 
-Handling dependencies
+Handling Dependencies
 ---------------------
 For more information about compiling, using and deploying app dependencies, check out the
 `docs over at UBports <https://docs.ubports.com/en/latest/appdev/guides/dependencies.html>`__.
