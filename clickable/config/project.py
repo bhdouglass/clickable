@@ -100,6 +100,7 @@ class ProjectConfig(object):
 
         self.set_default_config()
         self.parse_configs(args, commands)
+        self.set_template_interactive()
         self.set_conditional_defaults()
         self.setup()
         self.check_config_errors()
@@ -668,7 +669,7 @@ class ProjectConfig(object):
         self.check_desktop_configs()
 
     def set_template_interactive(self):
-        if self.config['template']:
+        if self.config['template'] or not self.needs_template():
             return
 
         choice = input(
@@ -681,30 +682,17 @@ class ProjectConfig(object):
         directory = os.listdir(os.getcwd())
 
         if 'config.xml' in directory:
-            template = ProjectConfig.CORDOVA
-
-        if not template:
-            try:
-                manifest = get_any_manifest(os.getcwd())
-            except ClickableException:
-                manifest = None
+            template = Constants.CORDOVA
 
         if not template and 'CMakeLists.txt' in directory:
-            template = ProjectConfig.CMAKE
-
-            if manifest and manifest.get('architecture', None) == 'all':
-                template = ProjectConfig.PURE_QML_CMAKE
+            template = Constants.CMAKE
 
         pro_files = [f for f in directory if f.endswith('.pro')]
-
         if pro_files:
-            template = ProjectConfig.QMAKE
-
-            if manifest and manifest.get('architecture', None) == 'all':
-                template = ProjectConfig.PURE_QML_QMAKE
+            template = Constants.QMAKE
 
         if not template:
-            template = ProjectConfig.PURE
+            template = Constants.PURE
 
         self.config['template'] = template
 

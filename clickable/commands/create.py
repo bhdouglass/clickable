@@ -48,9 +48,12 @@ class CreateCommand(Command):
             else:
                 extra_context['Template'] = path_arg
 
-        cookiecutter.main.cookiecutter(
-            COOKIECUTTER_URL,
-            extra_context=extra_context,
-            no_input=no_input,
-            config_file=config_file,
-        )
+        try:
+            cookiecutter.main.cookiecutter(
+                COOKIECUTTER_URL,
+                extra_context=extra_context,
+                no_input=no_input,
+                config_file=config_file,
+            )
+        except cookiecutter.exceptions.FailedHookException as err:
+            raise ClickableException('Failed to create app, see logs above')

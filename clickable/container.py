@@ -369,10 +369,14 @@ RUN {}
 
         version = 0
         try:
-            version_string = self.run_command("cat /image_version",
-                    get_output=True).strip()
+            version_string = self.run_command(
+                "cat /image_version",
+                get_output=True,
+                use_build_dir=False,
+            ).strip()
             version = int(version_string)
         except Exception as e:
+            raise e
             logger.warn("Could not read the image version from the container")
             pass
 
