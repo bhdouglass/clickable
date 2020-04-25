@@ -25,7 +25,7 @@ Using Clickable
     clickable-json
     env-vars
     app-templates
-    build-templates
+    builders
     continuous-integration
     changelog
 

@@ -27,6 +27,22 @@
         "all"
       ]
     },
+    "builder": {
+      "type": "string",
+      "enum": [
+        "pure-qml-qmake",
+        "qmake",
+        "pure-qml-cmake",
+        "cmake",
+        "custom",
+        "cordova",
+        "pure",
+        "python",
+        "go",
+        "rust",
+        "precompiled"
+      ]
+    },
     "template": {
       "type": "string",
       "enum": [
@@ -170,6 +186,14 @@
             "type": ["string","array"],
             "items": {"type": "string"}
           },
+          "builder": {
+            "type": "string",
+            "enum":  [
+              "cmake",
+              "qmake",
+              "custom"
+            ]
+          },
           "template": {
             "type": "string",
             "enum":  [
@@ -191,7 +215,6 @@
             }
           }
         },
-        "required": ["template"],
         "additionalProperties": false
       }
     }

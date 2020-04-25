@@ -45,14 +45,14 @@ class ConfigMock(ProjectConfig):
         else:
             return self.mock_config_env.get(key, None)
 
-    def set_template_interactive(self):
-        if not self.config['template'] and not self.needs_template():
-            self.config["template"] = Constants.PURE
+    def set_builder_interactive(self):
+        if not self.config['builder'] and not self.needs_builder():
+            self.config["builder"] = Constants.PURE
 
     def setup_helpers(self):
         super().setup_helpers()
         if self.mock_install_files:
             self.install_files = InstallFilesMock(
                     self.config['install_dir'],
-                    self.config['template'],
+                    self.config['builder'],
                     self.config['arch'])

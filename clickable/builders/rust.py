@@ -47,7 +47,7 @@ class RustBuilder(Builder):
     def _cargo_target(self):
         if self.config.build_arch not in rust_arch_target_mapping:
             raise ClickableException(
-                'Arch {} unsupported by rust template'.format(self.config.build_arch))
+                'Arch {} unsupported by rust builder'.format(self.config.build_arch))
         return rust_arch_target_mapping[self.config.build_arch]
 
     def _find_click_assets(self):

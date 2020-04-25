@@ -32,11 +32,11 @@ class LibConfig(object):
 
     path_keys = ['root_dir', 'build_dir', 'src_dir', 'install_dir',
                  'build_home']
-    required = ['template']
+    required = ['builder']
     flexible_lists = ['dependencies_host', 'dependencies_target',
                       'dependencies_ppa', 'dependencies_build',
                       'build_args', 'make_args']
-    templates = [Constants.QMAKE, Constants.CMAKE, Constants.CUSTOM]
+    builders = [Constants.QMAKE, Constants.CMAKE, Constants.CUSTOM]
 
     first_docker_info = True
     container_mode = False
@@ -57,6 +57,7 @@ class LibConfig(object):
             'arch': arch,
             'arch_triplet': None,
             'template': None,
+            'builder': None,
             'postmake': None,
             'prebuild': None,
             'build': None,
@@ -77,6 +78,12 @@ class LibConfig(object):
             'install_dir': '${BUILD_DIR}/install',
             'image_setup': {},
         }
+
+        # TODO remove support for deprecated "template" in clickable.json
+        if "template" in json_config:
+            logger.warning('Parameter "template" is deprecated in clickable.json. Use "builder" as drop-in replacement instead.')
+            json_config["builder"] = json_config["template"]
+            json_config["template"] = None
 
         self.config.update(json_config)
         if self.config["docker_image"]:
@@ -168,9 +175,13 @@ class LibConfig(object):
             self.config[key] = flexible_string_to_list(self.config[key])
 
     def check_config_errors(self):
-        if self.config['template'] == Constants.CUSTOM and not self.config['build']:
+        if not self.config['builder']:
             raise ClickableException(
-                'When using the "custom" template you must specify a "build" in one the lib configs')
+                'The clickable.json is missing a "builder" in library "{}".'.format(self.config["name"]))
+
+        if self.config['builder'] == Constants.CUSTOM and not self.config['build']:
+            raise ClickableException(
+                'When using the "custom" builder you must specify a "build" in one the lib configs')
 
         if self.is_custom_docker_image:
             if self.dependencies_host or self.dependencies_target or self.dependencies_ppa:

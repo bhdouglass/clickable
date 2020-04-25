@@ -8,7 +8,7 @@ Example:
 .. code-block:: javascript
 
     {
-        "template": "cmake",
+        "builder": "cmake",
         "scripts": {
             "fetch": "git submodule update --init"
         },
@@ -62,7 +62,7 @@ Example:
 .. code-block:: javascript
 
     {
-        "template": "cmake",
+        "builder": "cmake",
         "build_dir": "${ROOT}/build/${ARCH_TRIPLET}/myApp"
     }
 
@@ -87,14 +87,17 @@ arch
 
 Deprecated, use ``restricted_arch`` instead.
 
-.. _clickable-json-template:
+.. _clickable-json-builder:
+
+builder
+-------
+
+Optional, see :ref:`builders <builders>` for the full list of options.
 
 template
 --------
 
-Optional, see :ref:`build template <build-templates>` for the full list of options.
-If left blank the template will be auto detected.
-
+Deprecated, use :ref:`builder <_clickable-json-builder>` instead.
 
 prebuild
 --------
@@ -104,8 +107,8 @@ Optional, a custom command to run from the root dir, before a build.
 build
 -----
 
-Optional, a custom command to run from the build dir. This only takes effect if using
-the ``custom`` template. It's even required in that case.
+A custom command to run from the build dir. Required if using the ``custom``
+builder, ignored otherwise.
 
 postmake
 ---------
@@ -368,7 +371,7 @@ on `Docker Hub <https://hub.docker.com/r/clickable/ubuntu-sdk/tags/>`__.
 ignore
 ------
 
-Optional, a list of files to ignore when building a ``pure`` template
+Optional, a list of files to ignore when building with ``pure`` builder
 Example:
 
 .. code-block:: javascript
@@ -428,7 +431,7 @@ It's a dictionary of dictionaries similar to the clickable.json itself. Example:
 
     "libraries": {
         "opencv": {
-            "template": "cmake",
+            "builder": "cmake",
             "make_jobs": "1",
             "build_args": [
                 "-DCMAKE_BUILD_TYPE=Release",
@@ -457,8 +460,8 @@ A single library can be build by specifying its name as ``clickable build-libs l
 to build the library with name ``lib1`` for the architecture ``arm64``.
 ``clickable clean-libs lib1 --arch arm64`` cleans the libraries build dir.
 
-template
-^^^^^^^^
+builder
+^^^^^^^
 Required, but only ``cmake``, ``qmake`` and ``custom`` are allowed.
 
 src_dir
