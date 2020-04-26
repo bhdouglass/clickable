@@ -376,7 +376,6 @@ RUN {}
             ).strip()
             version = int(version_string)
         except Exception as e:
-            raise e
             logger.warn("Could not read the image version from the container")
             pass
 
