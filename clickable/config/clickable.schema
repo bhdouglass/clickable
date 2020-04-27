@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "http://clickable.bhdouglass.com/clickable.schema",
+  "$id": "https://clickable-ut.dev/clickable.schema",
   "title": "clickable.json",
   "description": "The Clickable configuration file",
   "type": "object",

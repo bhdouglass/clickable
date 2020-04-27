@@ -28,12 +28,12 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 
 ## Docs
 
-- [Getting Started](http://clickable.bhdouglass.com/en/latest/getting-started.html)
-- [Usage](http://clickable.bhdouglass.com/en/latest/usage.html)
-- [Commands](http://clickable.bhdouglass.com/en/latest/commands.html)
-- [clickable.json Format](http://clickable.bhdouglass.com/en/latest/clickable-json.html)
-- [App Templates](http://clickable.bhdouglass.com/en/latest/app-templates.html)
-- [Build Templates](http://clickable.bhdouglass.com/en/latest/build-templates.html)
+- [Getting Started](https://clickable-ut.dev/en/latest/getting-started.html)
+- [Usage](https://clickable-ut.dev/en/latest/usage.html)
+- [Commands](https://clickable-ut.dev/en/latest/commands.html)
+- [clickable.json Format](https://clickable-ut.dev/en/latest/clickable-json.html)
+- [App Templates](https://clickable-ut.dev/en/latest/app-templates.html)
+- [Build Templates](https://clickable-ut.dev/en/latest/build-templates.html)
 
 ## Code Editor Integrations
 
