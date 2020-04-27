@@ -28,14 +28,14 @@ class PublishCommand(Command):
         if not self.config.apikey:
             raise ClickableException('No api key specified, use OPENSTORE_API_KEY or --apikey')
 
-        click = self.config.get_click_filename()
+        click = self.config.install_files.get_click_filename()
         click_path = os.path.join(self.config.build_dir, click)
 
         url = OPENSTORE_API
         if 'OPENSTORE_API' in os.environ and os.environ['OPENSTORE_API']:
             url = os.environ['OPENSTORE_API']
 
-        package_name = self.config.find_package_name()
+        package_name = self.config.install_files.find_package_name()
         url = url + OPENSTORE_API_PATH.format(package_name)
         channel = 'xenial'
         files = {'file': open(click_path, 'rb')}
@@ -46,7 +46,7 @@ class PublishCommand(Command):
         params = {'apikey': self.config.apikey}
 
         logger.info('Uploading version {} of {} for {}/{} to the OpenStore'.format(
-            self.config.find_version(),
+            self.config.install_files.find_version(),
             package_name,
             channel,
             self.config.arch,
@@ -55,7 +55,7 @@ class PublishCommand(Command):
         if response.status_code == requests.codes.ok:
             logger.info('Upload successful')
         elif response.status_code == requests.codes.not_found:
-            title = urllib.parse.quote(self.config.find_package_title())
+            title = urllib.parse.quote(self.config.install_files.find_package_title())
             raise ClickableException(
                 'App needs to be created in the OpenStore before you can publish it. Visit {}/submit?appId={}&name={}'.format(
                     OPENSTORE_API,
