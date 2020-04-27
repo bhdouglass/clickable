@@ -13,7 +13,7 @@ class TestLibBuildCommand(UnitTest):
         config_json = {}
         config_json["libraries"] = {
             "testlib": {
-                'template': 'custom',
+                'builder': 'custom',
                 'build': self.custom_cmd,
             }
         }

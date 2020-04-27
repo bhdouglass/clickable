@@ -13,9 +13,9 @@ class RustSupport(DockerSupport):
         self.config = config
 
     def update(self, docker_config: DockerConfig):
-        template = self.config.template
+        builder = self.config.builder
 
-        if template == Constants.RUST:
+        if builder == Constants.RUST:
             cargo_home = self.config.cargo_home
             cargo_registry = os.path.join(cargo_home, 'registry')
             cargo_git = os.path.join(cargo_home, 'git')

@@ -28,7 +28,7 @@ class ProjectConfig(object):
 
     ENV_MAP = {
         'CLICKABLE_ARCH': 'restrict_arch_env',
-        'CLICKABLE_TEMPLATE': 'template',
+        'CLICKABLE_BUILDER': 'builder',
         'CLICKABLE_BUILD_DIR': 'build_dir',
         'CLICKABLE_DEFAULT': 'default',
         'CLICKABLE_MAKE_JOBS': 'make_jobs',
@@ -100,7 +100,7 @@ class ProjectConfig(object):
 
         self.set_default_config()
         self.parse_configs(args, commands)
-        self.set_template_interactive()
+        self.set_builder_interactive()
         self.set_conditional_defaults()
         self.setup()
         self.check_config_errors()
@@ -113,6 +113,7 @@ class ProjectConfig(object):
             'restrict_arch': None,
             'arch_triplet': None,
             'template': None,
+            'builder': None,
             'postmake': None,
             'prebuild': None,
             'build': None,
@@ -157,10 +158,16 @@ class ProjectConfig(object):
         json_config = self.load_json_config(config_path)
 
         # TODO remove support for deprecated "arch" in clickable.json
-        if json_config.get("arch", None):
+        if "arch" in json_config:
             logger.warning('Parameter "arch" is deprecated in clickable.json. Use "restricted_arch" instead.')
             json_config["restrict_arch"] = json_config["arch"]
             json_config["arch"] = None
+
+        # TODO remove support for deprecated "template" in clickable.json
+        if "template" in json_config:
+            logger.warning('Parameter "template" is deprecated in clickable.json. Use "builder" as drop-in replacement instead.')
+            json_config["builder"] = json_config["template"]
+            json_config["template"] = None
 
         self.config.update(json_config)
         env_config = self.load_env_config()
@@ -198,7 +205,7 @@ class ProjectConfig(object):
         if not self.config["arch"]:
             if self.is_arch_agnostic():
                 self.config["arch"] = "all"
-                logger.debug('Architecture set to "all" because template "{}" is architecture agnostic'.format(self.config['template']))
+                logger.debug('Architecture set to "all" because builder "{}" is architecture agnostic'.format(self.config['builder']))
             elif self.is_desktop_mode():
                 self.config["arch"] = "amd64"
                 logger.debug('Architecture set to "amd64" because of desktop mode.')
@@ -227,9 +234,9 @@ class ProjectConfig(object):
             raise ClickableException('Clickable currently does not have docker images for your host architecture "{}"'.format(self.host_arch))
 
         if not self.config['kill']:
-            if self.config['template'] == Constants.CORDOVA:
+            if self.config['builder'] == Constants.CORDOVA:
                 self.config['kill'] = 'cordova-ubuntu'
-            elif self.config['template'] == Constants.PURE_QML_CMAKE or self.config['template'] == Constants.PURE_QML_QMAKE or self.config['template'] == Constants.PURE:
+            elif self.config['builder'] == Constants.PURE_QML_CMAKE or self.config['builder'] == Constants.PURE_QML_QMAKE or self.config['builder'] == Constants.PURE:
                 self.config['kill'] = 'qmlscene'
             else:
                 try:
@@ -261,11 +268,11 @@ class ProjectConfig(object):
     def setup_helpers(self):
         self.install_files = InstallFiles(
                 self.config['install_dir'],
-                self.config['template'],
+                self.config['builder'],
                 self.config['arch'])
 
     def is_arch_agnostic(self):
-        return self.config["template"] in Constants.arch_agnostic_templates
+        return self.config["builder"] in Constants.arch_agnostic_builders
 
     def __getattr__(self, name):
         return self.config[name]
@@ -548,7 +555,7 @@ class ProjectConfig(object):
             logger.warning('"dependencies_build" is deprecated. Use "dependencies_host" instead!')
 
     def is_arch_agnostic(self):
-        return self.config["template"] in Constants.arch_agnostic_templates
+        return self.config["builder"] in Constants.arch_agnostic_builders
 
     def is_desktop_mode(self):
         return bool(set(['desktop', 'ide', 'test']).intersection(self.commands))
@@ -557,7 +564,7 @@ class ProjectConfig(object):
         return (self.is_desktop_mode() or
                 set(['build', 'build-libs', 'clean-build']).intersection(self.commands))
 
-    def needs_template(self):
+    def needs_builder(self):
         return (self.is_build_cmd() or
                 set(['install', 'publish', 'review']).intersection(self.commands))
 
@@ -589,14 +596,14 @@ class ProjectConfig(object):
     def check_arch_restrictions(self):
         if self.is_arch_agnostic():
             if self.config["arch"] != "all":
-                raise ClickableException('The "{}" build template needs architecture "all", but "{}" was specified'.format(
-                    self.config['template'],
+                raise ClickableException('The "{}" builder needs architecture "all", but "{}" was specified'.format(
+                    self.config['builder'],
                     self.config['arch'],
                 ))
             if (self.config["restrict_arch"] and
                     self.config["restrict_arch"] != "all"):
-                raise ClickableException('The "{}" build template needs architecture "all", but "restrict_arch" was set to "{}"'.format(
-                    self.config['template'],
+                raise ClickableException('The "{}" builder needs architecture "all", but "restrict_arch" was set to "{}"'.format(
+                    self.config['builder'],
                     self.config['restrict_arch'],
                 ))
         else:
@@ -622,20 +629,20 @@ class ProjectConfig(object):
             if self.config['install_qml']:
                 logger.warning("Be aware that QML modules are going to be installed to {}, which is not part of 'QML2_IMPORT_PATH' at runtime.".format(self.config['app_qml_dir']))
 
-    def check_template_rules(self):
-        if not self.needs_template():
+    def check_builder_rules(self):
+        if not self.needs_builder():
             return
 
-        if self.config['template'] == Constants.CUSTOM and not self.config['build']:
-            raise ClickableException('When using the "custom" template you must specify a "build" in the config')
-        if self.config['template'] == Constants.GO and not self.config['gopath']:
-            raise ClickableException('When using the "go" template you must specify a "gopath" in the config or use the '
+        if self.config['builder'] == Constants.CUSTOM and not self.config['build']:
+            raise ClickableException('When using the "custom" builder you must specify a "build" in the config')
+        if self.config['builder'] == Constants.GO and not self.config['gopath']:
+            raise ClickableException('When using the "go" builder you must specify a "gopath" in the config or use the '
                              '"GOPATH" env variable')
-        if self.config['template'] == Constants.RUST and not self.config['cargo_home']:
-            raise ClickableException('When using the "rust" template you must specify a "cargo_home" in the config')
+        if self.config['builder'] == Constants.RUST and not self.config['cargo_home']:
+            raise ClickableException('When using the "rust" builder you must specify a "cargo_home" in the config')
 
-        if self.config['template'] and self.config['template'] not in Constants.templates:
-            raise ClickableException('"{}" is not a valid template ({})'.format(self.config['template'], ', '.join(Constants.templates)))
+        if self.config['builder'] and self.config['builder'] not in Constants.builders:
+            raise ClickableException('"{}" is not a valid builder ({})'.format(self.config['builder'], ', '.join(Constants.builders)))
 
     def check_docker_configs(self):
         if self.is_custom_docker_image:
@@ -664,36 +671,36 @@ class ProjectConfig(object):
     def check_config_errors(self):
         self.check_clickable_version()
         self.check_arch_restrictions()
-        self.check_template_rules()
+        self.check_builder_rules()
         self.check_docker_configs()
         self.check_desktop_configs()
 
-    def set_template_interactive(self):
-        if self.config['template'] or not self.needs_template():
+    def set_builder_interactive(self):
+        if self.config['builder'] or not self.needs_builder():
             return
 
         choice = input(
-            Colors.INFO + 'No build template was specified, would you like to auto detect the template [y/N]: ' + Colors.CLEAR
+            Colors.INFO + 'No builder was specified, would you like to auto detect the builder [y/N]: ' + Colors.CLEAR
         ).strip().lower()
         if choice != 'y' and choice != 'yes':
-            raise ClickableException('Not auto detecting build template')
+            raise ClickableException('Not auto detecting builder')
 
-        template = None
+        builder = None
         directory = os.listdir(os.getcwd())
 
         if 'config.xml' in directory:
-            template = Constants.CORDOVA
+            builder = Constants.CORDOVA
 
-        if not template and 'CMakeLists.txt' in directory:
-            template = Constants.CMAKE
+        if not builder and 'CMakeLists.txt' in directory:
+            builder = Constants.CMAKE
 
         pro_files = [f for f in directory if f.endswith('.pro')]
         if pro_files:
-            template = Constants.QMAKE
+            builder = Constants.QMAKE
 
-        if not template:
-            template = Constants.PURE
+        if not builder:
+            builder = Constants.PURE
 
-        self.config['template'] = template
+        self.config['builder'] = builder
 
-        logger.info('Auto detected template to be "{}"'.format(template))
+        logger.info('Auto detected builder to be "{}"'.format(builder))

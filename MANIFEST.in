@@ -4,7 +4,7 @@ include clickable/clickable.schema
 
 recursive-include debian *
 recursive-include docs *
-recursive-include clickable/build_templates *
+recursive-include clickable/builders *
 recursive-include clickable/commands *
 recursive-include clickable/system *
 recursive-include clickable/config *

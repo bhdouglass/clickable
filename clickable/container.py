@@ -201,7 +201,7 @@ class Container(object):
 
             rust_config = ''
 
-            if self.config.template == Constants.RUST and self.config.cargo_home:
+            if self.config.builder == Constants.RUST and self.config.cargo_home:
                 logger.info("Caching cargo related files in {}".format(self.config.cargo_home))
                 cargo_registry = os.path.join(self.config.cargo_home, 'registry')
                 cargo_git = os.path.join(self.config.cargo_home, 'git')
@@ -376,7 +376,6 @@ RUN {}
             ).strip()
             version = int(version_string)
         except Exception as e:
-            raise e
             logger.warn("Could not read the image version from the container")
             pass
 

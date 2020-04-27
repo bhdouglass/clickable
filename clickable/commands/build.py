@@ -45,7 +45,7 @@ class BuildCommand(Command):
 
     def build(self):
         builder_classes = get_builders()
-        builder = builder_classes[self.config.template](self.config, self.device)
+        builder = builder_classes[self.config.builder](self.config, self.device)
         builder.build()
 
     def install_files(self, pattern, dest_dir):
