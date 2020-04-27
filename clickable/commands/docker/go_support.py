@@ -11,9 +11,9 @@ class GoSupport(DockerSupport):
         self.config = config
 
     def update(self, docker_config: DockerConfig):
-        template = self.config.template
+        builder = self.config.builder
 
-        if template == Constants.GO:
+        if builder == Constants.GO:
             go_paths = list(map(
                 lambda gopath:
                 '/gopath/path{}'.format(gopath),

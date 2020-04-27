@@ -55,14 +55,14 @@ class PureBuilder(Builder):
 
 
 class PythonBuilder(PureBuilder):
-    # The only difference between this and the Pure template is that this doesn't force the "all" arch
+    # The only difference between this and the Pure builder is that this doesn't force the "all" arch
     name = Constants.PYTHON
 
     def build(self):
-        logger.warn('The "python" build template is deprecated, please use "precompiled" instead')
+        logger.warn('The "python" builder is deprecated, please use "precompiled" instead')
         super().build()
 
 
 class PrecompiledBuilder(PureBuilder):
-    # The only difference between this and the Pure template is that this doesn't force the "all" arch
+    # The only difference between this and the Pure builder is that this doesn't force the "all" arch
     name = Constants.PRECOMPILED

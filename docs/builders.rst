@@ -1,7 +1,8 @@
-.. _build-templates:
+.. _builders:
 
-Build Templates
-===============
+Builders
+========
+Builders have been called Build Templates in the early days of Clickable.
 
 pure-qml-qmake
 --------------
@@ -41,9 +42,11 @@ A project that does not need to be compiled. All files in the project root will 
 precompiled
 -----------
 
-A project that does not need to be compiled. All files in the project root will be copied into the click.
-There may be precompiled binaries or libraries included in apps build with this template.
-Specifying the :ref:`restrict_arch <clickable-json-restrict_arch>` in the clickable.json file can be useful with this template.
+A project that does not need to be compiled. All files in the project root will
+be copied into the click. There may be precompiled binaries or libraries
+included in apps build with this builder. Specifying the
+:ref:`restrict_arch <clickable-json-restrict_arch>` in the clickable.json file
+can be useful with this builder.
 
 python
 ------

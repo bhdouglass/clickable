@@ -3,6 +3,13 @@
 Changelog
 =========
 
+Changes in v6.12.2
+------------------
+
+- Fixed bug checking docker image version
+- Renamed build template to builder
+- Fixed the publish command
+
 Changes in v6.12.1
 ------------------
 
