@@ -54,5 +54,5 @@ class LibBuildCommand(Command):
 
     def build(self, lib):
         builder_classes = get_builders()
-        builder = builder_classes[lib.template](lib, None)
+        builder = builder_classes[lib.builder](lib, None)
         builder.build()

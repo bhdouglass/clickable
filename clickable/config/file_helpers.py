@@ -28,13 +28,13 @@ class ProjectFiles(object):
         return desktop
 
 class InstallFiles(object):
-    def __init__(self, install_dir, template, arch):
+    def __init__(self, install_dir, builder, arch):
         self.install_dir = install_dir
-        self.template = template
+        self.builder = builder
         self.arch = arch
 
     def find_version(self):
-        if self.template == Constants.CORDOVA:
+        if self.builder == Constants.CORDOVA:
             tree = ElementTree.parse('config.xml')
             root = tree.getroot()
             version = root.attrib['version'] if 'version' in root.attrib else '1.0.0'
@@ -44,7 +44,7 @@ class InstallFiles(object):
         return version
 
     def find_package_name(self):
-        if self.template == Constants.CORDOVA:
+        if self.builder == Constants.CORDOVA:
             tree = ElementTree.parse('config.xml')
             root = tree.getroot()
             package = root.attrib['id'] if 'id' in root.attrib else None
@@ -61,7 +61,7 @@ class InstallFiles(object):
         return package
 
     def find_package_title(self):
-        if self.template == Constants.CORDOVA:
+        if self.builder == Constants.CORDOVA:
             tree = ElementTree.parse('config.xml')
             root = tree.getroot()
             title = root.attrib['name'] if 'name' in root.attrib else None

@@ -26,7 +26,7 @@ class TestConfigCommand(TestCase):
         self.assertEqual(self.config.arch, 'amd64')
 
     def test_set_conditional_defaults_arch_agnostic(self):
-        self.config.template = Constants.PURE_QML_CMAKE
+        self.config.builder = Constants.PURE_QML_CMAKE
 
         self.config.set_conditional_defaults()
         self.assertEqual(self.config.arch, 'all')

@@ -98,12 +98,12 @@ Cleans out the build dir.
 ``clickable build``
 -------------------
 
-Builds the project using the specified template, build dir, and build commands.
+Builds the project using the specified builder, build dir, and build commands.
 Then it takes the built files and compiles them into a click package (you can
 find it in the build dir).
 
 Set the manifest architecture field to ``@CLICK_ARCH@`` to have Clickable replace
-with the appropriate value.
+it with the appropriate value.
 
 ``clickable build --output=/path/to/some/diretory``
 ---------------------------------------------------
