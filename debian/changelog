@@ -1,4 +1,4 @@
-clickable (6.12.2) unstable; urgency=medium
+clickable (6.12.2b) unstable; urgency=medium
 
   * Fixed bug checking docker image version
   * Renamed build template to builder
