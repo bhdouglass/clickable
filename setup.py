@@ -20,15 +20,15 @@ with open('clickable/__init__.py', 'rb') as f:
 requirements = [
     'cookiecutter',
     'requests',
-    'jsonschema'
+    'jsonschema',
 ]
 
 test_requirements = [
-    "ipdb",
+    'ipdb',
 ]
 
 setup(
-    name='clickable',
+    name='clickable-ut',
     version=version,
     description='Compile, build, and deploy Ubuntu Touch click packages all'
                 'from the command line.',
@@ -38,7 +38,7 @@ setup(
     packages=['clickable'],
     include_package_data=True,
     install_requires=requirements,
-    license="GPL3",
+    license='GPL3',
     zip_safe=False,
     keywords='click ubuntu touch ubports',
     classifiers=[
@@ -46,17 +46,16 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.8',
     ],
     tests_require=test_requirements,
     entry_points={
-        "console_scripts": [
-            "clickable = clickable:main",
+        'console_scripts': [
+            'clickable = clickable:main',
         ],
     }
 )

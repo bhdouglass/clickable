@@ -33,5 +33,8 @@ function publish {
 #publish precise
 #publish trusty
 #publish xenial
+#publish artful
 publish bionic
-#publish cosmic
+#publish eoan
+#publish focal
+#publish groovy
