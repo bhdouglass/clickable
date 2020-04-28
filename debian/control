@@ -9,8 +9,7 @@ Build-Depends: debhelper (>= 9),
                python3 (>= 3.3),
                python3-cookiecutter,
                python3-jsonschema,
-               python3-ipdb,
-               python3-stdeb
+               python3-setuptools
 Standards-Version: 4.1.4
 Homepage: https://gitlab.com/clickable/clickable
 X-Python3-Version: >= 3.3

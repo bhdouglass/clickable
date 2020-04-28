@@ -23,10 +23,6 @@ requirements = [
     'jsonschema',
 ]
 
-test_requirements = [
-    'ipdb',
-]
-
 setup(
     name='clickable-ut',
     version=version,
@@ -52,7 +48,6 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.8',
     ],
-    tests_require=test_requirements,
     entry_points={
         'console_scripts': [
             'clickable = clickable:main',
