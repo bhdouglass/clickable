@@ -6,7 +6,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 
 ### Via Pip (Recommended)
 
-* Install docker, adb, and pip3:
+* Install docker, adb, python3, and pip3:
   * On Ubuntu: `sudo apt-get install docker.io adb python3-pip`
 * Run (may need sudo): `pip3 install git+https://gitlab.com/clickable/clickable.git`
 
