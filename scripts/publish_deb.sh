@@ -22,7 +22,7 @@ function publish {
     sed -i "s/) unstable/~$1) $1/g" debian/changelog
     #sed -i "s/unstable/$1/g" debian/changelog
     docker_run "debuild -S"
-    docker_run "dput ppa:bhdouglass/clickable-playground ../clickable_*_source.changes"
+    docker_run "dput ppa:bhdouglass/clickable ../clickable_*_source.changes"
 
     # Clean up
     docker_run "dh_clean"
@@ -30,10 +30,8 @@ function publish {
     sed -i "s/~$1) $1/) unstable/g" debian/changelog
 }
 
-publish precise
 publish trusty
 publish xenial
-publish artful
 publish bionic
 publish eoan
 publish focal
