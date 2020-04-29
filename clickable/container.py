@@ -88,7 +88,7 @@ class Container(object):
         except subprocess.CalledProcessError as e:
             retries -= 1
             if retries <= 0:
-                raise e
+                raise ClickableException("Couldn't check docker. If you just installed Clickable you may need to reboot once.")
 
             self.start_docker()
 
