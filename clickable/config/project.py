@@ -565,8 +565,7 @@ class ProjectConfig(object):
                 set(['build', 'build-libs', 'clean-build']).intersection(self.commands))
 
     def needs_builder(self):
-        return (self.is_build_cmd() or
-                set(['install', 'publish', 'review']).intersection(self.commands))
+        return self.is_build_cmd()
 
     def needs_docker_image(self):
         return (not self.is_custom_docker_image and
