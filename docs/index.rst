@@ -33,7 +33,7 @@ Install Via Pip (Recommended)
 -----------------------------
 
 * Install docker, adb, python3 and pip3
-* Run (may need sudo): ``pip3 install git+https://gitlab.com/clickable/clickable.git``
+* Run (may need sudo): ``pip3 install clickable-ut``
 
 Install Via PPA (Ubuntu)
 ------------------------

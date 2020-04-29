@@ -1,4 +1,4 @@
-# Clickable
+# [Clickable](https://clickable-ut.dev/en/latest/)
 
 Compile, build, and deploy Ubuntu Touch click packages all from the command line.
 
@@ -7,8 +7,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 ### Via Pip (Recommended)
 
 * Install docker, adb, python3, and pip3:
-  * On Ubuntu: `sudo apt-get install docker.io adb python3-pip`
-* Run (may need sudo): `pip3 install git+https://gitlab.com/clickable/clickable.git`
+* Run (may need sudo): `pip3 install clickable-ut`
 
 ### Via PPA (Ubuntu)
 
@@ -33,7 +32,7 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 - [Commands](https://clickable-ut.dev/en/latest/commands.html)
 - [clickable.json Format](https://clickable-ut.dev/en/latest/clickable-json.html)
 - [App Templates](https://clickable-ut.dev/en/latest/app-templates.html)
-- [Build Templates](https://clickable-ut.dev/en/latest/build-templates.html)
+- [Builders](https://clickable-ut.dev/en/latest/builders.html)
 
 ## Code Editor Integrations
 
