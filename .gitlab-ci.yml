@@ -1,9 +1,23 @@
+stages:
+  - test
+  - publish
+
 integration-test:
+  stage: test
   image: clickable/testing
   script:
     - nosetests tests/integration
 
 unit-test:
+  stage: test
   image: clickable/testing
   script:
     - nosetests tests/unit
+
+publish-pypi:
+  stage: publish
+  only:
+    - tags
+  script:
+    - python3 setup.py sdist bdist_wheel
+    - python3 -m twine upload dist/*
