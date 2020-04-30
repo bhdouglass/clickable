@@ -11,7 +11,8 @@ override_dh_install:
 	# Install the manpage
 	mkdir -p $(PKGDIR)/usr/share/man/man1/
 
-	PYTHONPATH=$(PKGDIR)/usr/lib/python3.6/dist-packages/ help2man $(PKGDIR)/usr/bin/clickable \
+	PYTHONPATH=$(PKGDIR)/usr/lib/$(shell ls $(PKGDIR)/usr/lib/)/dist-packages/ \
+		help2man $(PKGDIR)/usr/bin/clickable \
 		--no-info \
 		--help-option="--help" \
 		--version-string=$(DEB_VERSION_UPSTREAM) \
