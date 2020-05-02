@@ -1,6 +1,7 @@
 from clickable.config.project import ProjectConfig
 from clickable.config.constants import Constants
 from clickable.config.file_helpers import InstallFiles
+from clickable import __version__
 from unittest.mock import Mock
 
 
@@ -30,7 +31,7 @@ class ConfigMock(ProjectConfig):
         self.mock_config_json = mock_config_json
         self.mock_config_env = mock_config_env
         self.mock_install_files = mock_install_files
-        super().__init__(clickable_version='0.0.0', *args, **kwargs)
+        super().__init__(clickable_version=__version__, *args, **kwargs)
 
     def load_json_config(self, config_path):
         if self.mock_config_json is None:
