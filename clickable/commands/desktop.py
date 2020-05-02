@@ -41,8 +41,9 @@ class DesktopCommand(Command):
         self.run_app()
 
     def prepare_run(self):
-        if not (self.config.desktop_skip_build
-                or self.custom_mode):
+        if self.config.desktop_skip_build or self.custom_mode:
+            self.config.container.setup()
+        else:
             if not self.config.dirty:
                 CleanCommand(self.config).run()
             BuildCommand(self.config).run()
