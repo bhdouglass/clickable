@@ -129,7 +129,7 @@ class DesktopCommand(Command):
 
     def get_time_zone(self):
         try:
-            return run_subprocess_check_output('timedatectl show -p Timezone --value')
+            return run_subprocess_check_output('timedatectl show -p Timezone --value 2>/dev/null')
         except:
             pass
 
@@ -146,6 +146,7 @@ class DesktopCommand(Command):
                     end = line.find('(')
                     return line[start:end].strip()
         except:
+            logger.debug("Failed to set timezone from host in desktop mode. Falling back to UTC.")
             pass
 
         return 'UTC'
