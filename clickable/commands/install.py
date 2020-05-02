@@ -11,6 +11,20 @@ class InstallCommand(Command):
     name = 'install'
     help = 'Takes a built click package and installs it on a device'
 
+    def try_find_installed_version(self, package_name):
+        try:
+            response = self.device.run_command('readlink /opt/click.ubuntu.com/{}/current'.format(package_name), get_output=True)
+            return response.splitlines()[-1]
+        except:
+            return None
+
+    def try_uninstall(self):
+        package_name = self.config.install_files.find_package_name()
+        version = self.try_find_installed_version(package_name)
+
+        if version:
+            self.device.run_command('pkcon remove \\"{};{};all;local:click\\"'.format(package_name, version))
+
     def run(self, path_arg=None):
         if self.config.is_desktop_mode():
             logger.debug('Skipping install, running in desktop mode')
@@ -42,6 +56,11 @@ class InstallCommand(Command):
                 command = 'adb push {} /home/phablet/'.format(click_path)
 
             run_subprocess_check_call(command, cwd=cwd, shell=True)
+
+        if path_arg:
+            logger.info("Skipping uninstall step, because you specified a click package.")
+        else:
+            self.try_uninstall()
 
         self.device.run_command('pkcon install-local --allow-untrusted /home/phablet/{}'.format(click), cwd=cwd)
         self.device.run_command('rm /home/phablet/{}'.format(click), cwd=cwd)
