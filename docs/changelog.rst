@@ -3,6 +3,15 @@
 Changelog
 =========
 
+Changes in v6.13.0
+------------------
+
+- Fixed packaging issues and published to pypi
+- Fixed the builder auto detect showing up when it wasn't needed
+- Added better errors when the current user is not part of the docker group
+- Remove apps before installing them to avoid apparmor issues
+- Various bug fixes
+
 Changes in v6.12.2
 ------------------
 
