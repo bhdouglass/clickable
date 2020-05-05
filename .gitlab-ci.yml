@@ -16,6 +16,7 @@ unit-test:
 
 publish-pypi:
   stage: publish
+  image: clickable/testing
   only:
     - tags
   script:
