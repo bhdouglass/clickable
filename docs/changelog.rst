@@ -11,6 +11,7 @@ Changes in v6.13.0
 - Added better errors when the current user is not part of the docker group
 - Remove apps before installing them to avoid apparmor issues
 - Various bug fixes
+- Added optional git tag versioning in cmake based templates
 
 Changes in v6.12.2
 ------------------

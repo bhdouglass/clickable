@@ -4,7 +4,8 @@ clickable (6.13.0) unstable; urgency=medium
   * Fixed the builder auto detect showing up when it wasn't needed
   * Added better errors when the current user is not part of the docker group
   * Remove apps before installing them to avoid apparmor issues
-  * Various bug fixes
+  * Various bug
+  * Added optional git tag versioning in cmake based templates
 
  -- Brian Douglass <bhdouglass@gmail.com>  Mon, 03 May 2020 23:12:00 -0500
 
