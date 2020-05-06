@@ -16,7 +16,7 @@ unit-test:
 
 publish-pypi:
   stage: publish
-  image: clickable/testing
+  image: clickable/build-deb:focal
   only:
     - tags
   script:
