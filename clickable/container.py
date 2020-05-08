@@ -308,9 +308,8 @@ RUN {}
 
         commands = []
 
-        if self.config.dependencies_ppa:
-            commands.append('add-apt-repository {}'.format(
-                ' '.join(self.config.dependencies_ppa)))
+        for ppa in self.config.dependencies_ppa:
+            commands.append('add-apt-repository {}'.format(ppa))
 
         dependencies = self.get_dependency_packages()
         if dependencies:
