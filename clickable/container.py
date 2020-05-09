@@ -308,8 +308,11 @@ RUN {}
 
         commands = []
 
-        for ppa in self.config.dependencies_ppa:
-            commands.append('add-apt-repository {}'.format(ppa))
+        if self.config.dependencies_ppa:
+            ppa_commands = [
+                'add-apt-repository {}'.format(ppa) for ppa in self.config.dependencies_ppa
+            ]
+            commands.append(' && '.join(ppa_commands))
 
         dependencies = self.get_dependency_packages()
         if dependencies:
@@ -360,6 +363,7 @@ RUN {}
     def needs_customized_container(self):
         return self.config.dependencies_host \
             or self.config.dependencies_target \
+            or self.config.dependencies_ppa \
             or self.config.image_setup
 
     def check_base_image_version(self):
