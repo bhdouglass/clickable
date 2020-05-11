@@ -21,11 +21,9 @@ To analyze errors in memory access run ``clickable desktop --valgrind``.
 On Device
 ---------
 
-Note: SSH is not yet support in debugging on the device.
-
 Two terminals are required to do debugging on the device, one to start the ``gdbserver``
 and the other one to start ``gdb``. In the first terminal run ``clickable gdbserver``
-and in the second one ``clickable gdb path/to/binary``. This method is limited to
+and in the second one ``clickable gdb``. This method is limited to
 apps that are started via their own binary file.
 
 The ``clickable gdbserver`` command provides the server at ``localhost:3333``. In theory
