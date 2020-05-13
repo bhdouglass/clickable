@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v6.13.1
+------------------
+
+- Fixed issue with an error showing the wrong message
+- Fixed multiple ppas in ``dependencies_ppa``
+
 Changes in v6.13.0
 ------------------
 
