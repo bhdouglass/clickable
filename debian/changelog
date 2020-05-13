@@ -1,3 +1,10 @@
+clickable (6.13.1) unstable; urgency=medium
+
+  - Fixed issue with an error showing the wrong message
+  - Fixed multiple ppas in dependencies_ppa
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 13 May 2020 00:38:00 -0500
+
 clickable (6.13.0) unstable; urgency=medium
 
   * Fixed packaging issues and published to pypi
