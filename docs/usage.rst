@@ -34,7 +34,8 @@ Running the default sub-commands will:
 6) Launch the app on your phone
 
 Note: ensure your device is in `developer mode <http://docs.ubports.com/en/latest/userguide/advanceduse/adb.html?highlight=mode#enable-developer-mode>`__
-for the app to be installed.
+for the app to be installed when using adb or `enable ssh <http://docs.ubports.com/en/latest/userguide/advanceduse/ssh.html>`__
+when using ssh.
 
 Configuration
 -------------
@@ -53,7 +54,8 @@ Connecting to a device over ssh
 By default the device is connected to via adb.
 If you want to access a device over ssh you need to either specify the device
 IP address or hostname on the command line (ex: ``clickable logs --ssh 192.168.1.10`` ) or you
-can use the ``CLICKABLE_SSH`` env var.
+can use the ``CLICKABLE_SSH`` env var. Make sure to `enable ssh <http://docs.ubports.com/en/latest/userguide/advanceduse/ssh.html>`__
+on your device for this to work.
 
 .. _multiple-devices:
 
