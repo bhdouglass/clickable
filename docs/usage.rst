@@ -12,12 +12,13 @@ or you can start fresh by running ``clickable create``.
 
 To run the default set of sub-commands, simply run ``clickable`` in the root directory
 of your app's code. Clickable will attempt to auto detect the
-:ref:`build template <build-templates>` and other configuration options.  
+:ref:`build template <build-templates>` and other configuration options.
 
-Note: The first time you run ``clickable`` in your app directory, behind the 
-scenes it will download a new Docker container which is about 1GB in size - so 
-plan your time and data transfer environment accordingly.  Subsequently, when you 
-update your app, this process this will not be required.
+Note: The first time you run ``clickable`` in your app directory, behind the
+scenes it will download a new Docker container which is about 1GB in size - so
+plan your time and data transfer environment accordingly. This will only happen
+the first time you build your app for a specific architecture and when you run
+``clickable update``.
 
 Running the default sub-commands will:
 
