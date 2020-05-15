@@ -3,6 +3,7 @@ import glob
 import json
 import xml.etree.ElementTree as ElementTree
 
+from clickable.exceptions import ClickableException
 from .constants import Constants
 from ..utils import (
     find
