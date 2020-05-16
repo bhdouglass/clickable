@@ -571,7 +571,7 @@ class ProjectConfig(object):
         return (not self.is_custom_docker_image and
                 not self.container_mode and
                 (self.is_build_cmd() or
-                    set(['run', 'ide', 'update', 'gdb', 'gdbserver', 'review']).intersection(self.commands)))
+                    set(['setup', 'run', 'ide', 'update', 'gdb', 'gdbserver', 'review']).intersection(self.commands)))
 
     def check_clickable_version(self):
         if self.config['clickable_minimum_required']:
