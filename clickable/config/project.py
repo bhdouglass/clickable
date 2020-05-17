@@ -100,6 +100,7 @@ class ProjectConfig(object):
 
         self.set_default_config()
         self.parse_configs(args, commands)
+        self.check_home()
         self.set_builder_interactive()
         self.set_conditional_defaults()
         self.setup()
@@ -627,6 +628,13 @@ class ProjectConfig(object):
                     logger.warning("'{}' ({}) marked for install, even though architecture is 'all'.".format("', '".join(self.config[key]), key))
             if self.config['install_qml']:
                 logger.warning("Be aware that QML modules are going to be installed to {}, which is not part of 'QML2_IMPORT_PATH' at runtime.".format(self.config['app_qml_dir']))
+
+    def check_home(self):
+        if not self.is_build_cmd():
+            return
+
+        if os.path.normpath(self.cwd) == os.path.normpath(os.path.expanduser('~')):
+            raise ClickableException('Your are running a build command in your home directory.\nPlease navigate to an existing project or run "clickable create".')
 
     def check_builder_rules(self):
         if not self.needs_builder():
