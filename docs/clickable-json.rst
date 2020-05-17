@@ -97,7 +97,7 @@ Optional, see :ref:`builders <builders>` for the full list of options.
 template
 --------
 
-Deprecated, use :ref:`builder <_clickable-json-builder>` instead.
+Deprecated, use :ref:`builder <clickable-json-builder>` instead.
 
 prebuild
 --------

@@ -6,12 +6,23 @@ Usage
 Getting Started
 ---------------
 
+At this point it is assumed that you have completed the :ref:`installation
+process <install>`
+
 You can get started with using clickable with an existing Ubuntu Touch app.
 You can use clickable with apps generated from the old Ubuntu Touch SDK IDE
-or you can start fresh by running ``clickable create``.
+or you can start fresh by running ``clickable create`` which is outlined in more
+detail on the previous :ref:`getting started <getting-started>` page.
 
 To run the default set of sub-commands, simply run ``clickable`` in the root directory
-of your app's code.
+of your app's code. Clickable will attempt to auto detect the
+:ref:`build template <builders>` and other configuration options.
+
+Note: The first time you run ``clickable`` in your app directory, behind the
+scenes it will download a new Docker container which is about 1GB in size - so
+plan your time and data transfer environment accordingly. This will only happen
+the first time you build your app for a specific architecture and when you run
+``clickable update``.
 
 Running the default sub-commands will:
 
@@ -21,6 +32,10 @@ Running the default sub-commands will:
 4) Install the app on your phone (By default this uses adb, see below if you want to use ssh)
 5) Kill the running app on the phone
 6) Launch the app on your phone
+
+Note: ensure your device is in `developer mode <http://docs.ubports.com/en/latest/userguide/advanceduse/adb.html?highlight=mode#enable-developer-mode>`__
+for the app to be installed when using adb or `enable ssh <http://docs.ubports.com/en/latest/userguide/advanceduse/ssh.html>`__
+when using ssh.
 
 Configuration
 -------------
@@ -39,7 +54,8 @@ Connecting to a device over ssh
 By default the device is connected to via adb.
 If you want to access a device over ssh you need to either specify the device
 IP address or hostname on the command line (ex: ``clickable logs --ssh 192.168.1.10`` ) or you
-can use the ``CLICKABLE_SSH`` env var.
+can use the ``CLICKABLE_SSH`` env var. Make sure to `enable ssh <http://docs.ubports.com/en/latest/userguide/advanceduse/ssh.html>`__
+on your device for this to work.
 
 .. _multiple-devices:
 
