@@ -1,7 +1,14 @@
+clickable (6.14.0) unstable; urgency=medium
+
+  * Added new setup command to help during initial setup of Clickable
+  * Prevent building in home directory that isn't a click app
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 20 May 2020 00:30:00 -0500
+
 clickable (6.13.1) unstable; urgency=medium
 
-  - Fixed issue with an error showing the wrong message
-  - Fixed multiple ppas in dependencies_ppa
+  * Fixed issue with an error showing the wrong message
+  * Fixed multiple ppas in dependencies_ppa
 
  -- Brian Douglass <bhdouglass@gmail.com>  Wed, 13 May 2020 00:38:00 -0500
 
