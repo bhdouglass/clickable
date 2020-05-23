@@ -28,5 +28,5 @@ Install Via AUR (Arch Linux)
 After install
 =============
 
-* Launch clickable and let it setup docker (it could ask for the sudo password): ``clickable``
+* Let Clickable setup docker (it could ask for the sudo password): ``clickable setup``
 * Log out or restart to apply changes
