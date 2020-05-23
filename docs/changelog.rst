@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v6.14.0
+------------------
+
+- Added new setup command to help during initial setup of Clickable
+- Prevent building in home directory that isn't a click app
+
 Changes in v6.13.1
 ------------------
 
