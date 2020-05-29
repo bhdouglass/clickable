@@ -59,10 +59,10 @@ Run clickable with the ``--verbose`` flag to see the executed command for your s
 .. _commands-ide:
 
 
-``clickable ide <program>``
---------------------------------------
+``clickable ide <custom_command>``
+----------------------------------
 
-Will load ``program`` container wrapper if exist and run  ``program`` inside it.
+Will run ``custom_command`` inside ide container wrapper.
 e.g. Launch qtcreator: ``clickable ide qtcreator``.
 
 ``clickable create``
