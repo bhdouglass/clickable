@@ -59,12 +59,11 @@ Run clickable with the ``--verbose`` flag to see the executed command for your s
 .. _commands-ide:
 
 
-``clickable ide <custom_command>``
+``clickable ide <program>``
 --------------------------------------
 
-The desktop mode allows to run abritary programs in the docker container, such as an IDE.
-Add the dependency to the :ref:`clickable.json <clickable-json-dependencies_host>` and
-append the command, e.g. by running ``clickable ide qtcreator``.
+Will load ``program`` container wrapper if exist and run  ``program`` inside it.
+e.g. Launch qtcreator: ``clickable ide qtcreator``.
 
 ``clickable create``
 --------------------
