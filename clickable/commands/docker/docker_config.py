@@ -3,6 +3,7 @@ class DockerConfig(object):
     volumes = {}
     environment = {}
     extra_options = {}
+    extra_flags = []
 
     execute = None
 
@@ -19,6 +20,9 @@ class DockerConfig(object):
     def add_environment_variables(self, environment_variables_dict):
         self.environment.update(environment_variables_dict)
 
+    def add_extra_flags(self, extra_flags_list):
+        self.extra_flags += extra_flags_list
+
     def add_extra_options(self, extra_options_dict):
         self.extra_options.update(extra_options_dict)
 
@@ -26,11 +30,13 @@ class DockerConfig(object):
         volume_mapping_string = self.render_volume_mapping_string()
         environment_string = self.render_environment_string()
         extra_options_string = self.render_extra_options_string()
+        extra_flags_string = self.render_extra_flags_string()
 
         return self.render_command_string(
             volume_mapping_string,
             environment_string,
-            extra_options_string
+            extra_options_string,
+            extra_flags_string,
         )
 
     def render_volume_mapping_string(self):
@@ -61,15 +67,22 @@ class DockerConfig(object):
         # --my-option=value --my-other-option=test
         return self.render_dictionary_as_variables(self.extra_options)
 
-    def render_command_string(self, volumes_string, environment_string, extra_options_string):
+    def render_extra_flags_string(self):
+        # ['--my-flag', '--my-other-flag']
+        # --my-flag --my-other-flag
+        return ' '.join(self.extra_flags)
+
+    def render_command_string(self, volumes_string, environment_string,
+            extra_options_string, extra_flags_string):
         return (
-            '{docker} run --privileged --net=host {volumes} {env} {extra_options} -w {working_dir} --user={uid} '
-            '--rm -it {docker_image} bash -c "{executable}"'
+            '{docker} run --privileged --net=host {volumes} {env} {extra_options} {extra_flags} -w {working_dir} --user={uid} '
+            '--rm -i {docker_image} bash -c "{executable}"'
         ).format(
             docker=self.docker_executable,
             volumes=volumes_string,
             env=environment_string,
             extra_options=extra_options_string,
+            extra_flags=extra_flags_string,
             working_dir=self.working_directory,
             uid=self.uid,
             docker_image=self.docker_image,
