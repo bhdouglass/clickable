@@ -60,11 +60,7 @@ class TestTemplates(IntegrationTest):
         self.assertClickExists('all')
 
     def test_cpp_plugin(self):
-        self.create_and_run('C++ (Plugin)', 'amd64')
-        self.assertClickExists('amd64')
-
-    def test_cpp_binary(self):
-        self.create_and_run('C++ (Binary)', 'amd64')
+        self.create_and_run('C++', 'amd64')
         self.assertClickExists('amd64')
 
     def test_python(self):
