@@ -67,6 +67,7 @@ class DesktopCommand(Command):
         if self.custom_mode:
             docker_config.execute = self.command
             docker_config.working_directory = self.config.root_dir
+            docker_config.add_extra_flags({'--tty'})
         else:
             docker_config.execute = self.determine_executable(
                 self.find_desktop_file()
