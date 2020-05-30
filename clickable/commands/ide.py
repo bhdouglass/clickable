@@ -1,5 +1,6 @@
 from .desktop import DesktopCommand
 from clickable.logger import logger
+from clickable.exceptions import ClickableException
 
 
 class IdeCommand(DesktopCommand):
