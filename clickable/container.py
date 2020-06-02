@@ -222,9 +222,8 @@ class Container(object):
 
             env_vars = self.config.prepare_docker_env_vars()
 
-            wrapped_command = 'docker run -v {project}:{project}:Z -v {home}:{home}:Z {env} {go} {rust} -w {cwd} -u {uid} --rm {tty} {network} -i {image} bash -c "{cmd}"'.format(
+            wrapped_command = 'docker run -v {project}:{project}:Z {env} {go} {rust} -w {cwd} -u {uid} --rm {tty} {network} -i {image} bash -c "{cmd}"'.format(
                 project=cwd,
-                home=self.config.build_home,
                 env=env_vars,
                 go=go_config,
                 rust=rust_config,
