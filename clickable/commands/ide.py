@@ -1,3 +1,4 @@
+import os
 from .desktop import DesktopCommand
 from clickable.logger import logger
 
@@ -15,5 +16,5 @@ class IdeCommand(DesktopCommand):
         if not path_arg:
             raise ClickableException('No command supplied for `clickable ide`')
 
-        self.command = path_arg
+        self.command = path_arg + ' ' + os.getcwd()
         super().run()
