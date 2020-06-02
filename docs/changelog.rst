@@ -3,6 +3,13 @@
 Changelog
 =========
 
+Changes in v6.14.1
+------------------
+
+- Fixed issue when using the Atom editor extension
+- Merged the C++ templates into one and included qrc compiling
+- Minor bug fixes
+
 Changes in v6.14.0
 ------------------
 
