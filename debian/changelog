@@ -1,3 +1,11 @@
+clickable (6.14.1) unstable; urgency=medium
+
+  * Fixed issue when using the Atom editor extension
+  * Merged the C++ templates into one and included qrc compiling
+  * Minor bug fixes
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Tue, 02 Jun 2020 00:20:00 -0500
+
 clickable (6.14.0) unstable; urgency=medium
 
   * Added new setup command to help during initial setup of Clickable
