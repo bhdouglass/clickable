@@ -260,6 +260,9 @@ class ProjectConfig(object):
             if self.use_nvidia and not self.build_arch.endswith('-nvidia'):
                 self.build_arch = "{}-nvidia".format(self.build_arch)
 
+            if self.is_ide_command():
+                self.build_arch = "{}-{}".format(self.build_arch, 'ide')
+
             container_mapping_host = Constants.container_mapping[self.host_arch]
             if ('16.04', self.build_arch) not in container_mapping_host:
                 raise ClickableException('There is currently no docker image for 16.04/{}'.format(self.build_arch))
@@ -560,6 +563,9 @@ class ProjectConfig(object):
 
     def is_desktop_mode(self):
         return bool(set(['desktop', 'ide', 'test']).intersection(self.commands))
+
+    def is_ide_command(self):
+        return "ide" in self.commands
 
     def is_build_cmd(self):
         return (self.is_desktop_mode() or

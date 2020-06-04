@@ -21,6 +21,7 @@ class Constants(object):
             ('16.04', 'armhf'): 'clickable/ubuntu-sdk:16.04-armhf',
             ('16.04', 'amd64'): 'clickable/ubuntu-sdk:16.04-amd64',
             ('16.04', 'amd64-nvidia'): 'clickable/ubuntu-sdk:16.04-amd64-nvidia',
+            ('16.04', 'amd64-ide'): 'clickable/ubuntu-sdk:16.04-amd64-ide',
             ('16.04', 'arm64'): 'clickable/ubuntu-sdk:16.04-arm64',
         }
     }
