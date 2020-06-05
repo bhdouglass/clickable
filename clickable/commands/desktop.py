@@ -68,6 +68,15 @@ class DesktopCommand(Command):
             docker_config.execute = self.command
             docker_config.working_directory = self.config.root_dir
             docker_config.add_extra_flags({'--tty'})
+
+            executable = self.config.project_files.find_any_executable()
+            exec_args = self.config.project_files.find_any_exec_args()
+            if executable:
+                docker_config.add_environment_variables(
+                    {
+                        "CLICK_EXEC": executable,
+                        "CLICK_EXEC_PARAMS": " ".join(exec_args),
+                    })
         else:
             docker_config.execute = self.determine_executable(
                 self.find_desktop_file()
