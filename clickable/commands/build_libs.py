@@ -31,6 +31,10 @@ class LibBuildCommand(Command):
                 lib.container = Container(lib, lib.name)
                 lib.container.setup()
 
+                # This is a workaround for lib env vars being overwritten by
+                # project env vars, especially affecting Container Mode.
+                lib.set_env_vars()
+
                 try:
                     os.makedirs(lib.build_dir, exist_ok=True)
                 except Exception:
