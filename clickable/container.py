@@ -389,7 +389,8 @@ RUN {}
         if self.config.is_custom_docker_image:
             return
 
-        self.check_base_image_version()
+        if not self.config.container_mode:
+            self.check_base_image_version()
 
         if not self.needs_customized_container():
             return
