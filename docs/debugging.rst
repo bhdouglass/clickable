@@ -30,3 +30,5 @@ The ``clickable gdbserver`` command provides the server at ``localhost:3333``. I
 one could connect to that one from within any IDE. But to actually make it work, one needs
 to provide the corresponding libc6 debug symbols. Otherwise the App won't start due to a
 segfault.
+
+For detailed instructions on how to use gdb check out `gdb documentation <https://sourceware.org/gdb/current/onlinedocs/gdb/>`__.
