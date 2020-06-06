@@ -377,9 +377,10 @@ RUN {}
                 use_build_dir=False,
             ).strip()
             version = int(version_string)
+        except ClickableException as e:
+            raise e
         except Exception as e:
             logger.warn("Could not read the image version from the container")
-            pass
 
         if version < self.minimum_version:
             raise ClickableException('This version of Clickable requires a newer version of the docker images than installed. Please run "clickable update" to update your local images.')
