@@ -12,11 +12,16 @@ from ..utils import (
 class ProjectFiles(object):
     def __init__(self, project_dir):
         self.project_dir = project_dir
+        self.desktop = None
 
     def find_any_desktop(self, temp_dir=None, build_dir=None):
-        desktop = {}
+        if self.desktop is not None:
+            return self.desktop
 
-        desktop_file = find(['.desktop', '.desktop.in'], self.project_dir, temp_dir, build_dir, extensions_only=True, depth=3)
+        self.desktop = {}
+
+        desktop_file = find(['.desktop', '.desktop.in', '.desktop.in.in'],
+                self.project_dir, temp_dir, build_dir, extensions_only=True, depth=3)
 
         if desktop_file:
             with open(desktop_file, 'r') as f:
@@ -24,9 +29,47 @@ class ProjectFiles(object):
                 for line in f.readlines():
                     if '=' in line:
                         pos = line.find('=')
-                        desktop[line[:pos]] = line[(pos + 1):].strip()
+                        self.desktop[line[:pos]] = line[(pos + 1):].strip()
 
-        return desktop
+        return self.desktop
+
+    def find_any_exec_line(self):
+        desktop = self.find_any_desktop()
+
+        exec_line = None
+        if desktop and "Exec" in desktop:
+            exec_line = desktop["Exec"]
+
+        return exec_line
+
+    def find_any_executable(self):
+        exec_line = self.find_any_exec_line()
+
+        executable = None
+        if exec_line:
+            exec_list = exec_line.split()
+
+            for arg in exec_list:
+                if "=" not in arg:
+                    executable = arg
+                    break
+
+        return executable
+
+    def find_any_exec_args(self, remove_proc_U=True):
+        exec_line = self.find_any_exec_line()
+        executable = self.find_any_executable()
+
+        exec_args = None
+        if exec_line and executable:
+            exec_list = exec_line.split()
+            pos = exec_list.index(executable)
+            exec_args = exec_list[pos+1:]
+
+            if '%U' in exec_args and remove_proc_U:
+                exec_args.remove('%U')
+
+            return exec_args
 
 class InstallFiles(object):
     def __init__(self, install_dir, builder, arch):
