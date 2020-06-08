@@ -32,7 +32,7 @@ class QtCreatorDelegate(IdeCommandDelegate):
             #shutil.copytree(self.init_settings_path, self.target_settings_path)
 
 
-        if self.is_cmake_project() and not os.path.isfile(os.path.join(self.project_path, './CMakeLists.txt.user')):
+        if self.is_cmake_project() and not os.path.isfile(os.path.join(self.project_path, 'CMakeLists.txt.user')):
             self.init_cmake_project(docker_config)
 
 
