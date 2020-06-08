@@ -29,7 +29,7 @@ class TestIdeQtCreatorCommand(UnitTest):
         self.idedelegate.project_path = '/tmp/tests/qmlproject'
         self.idedelegate.target_settings_path = os.path.join(self.idedelegate.clickable_dir ,'QtProject')
 
-        os.mkdir(self.idedelegate.project_path)
+        os.makedirs(self.idedelegate.project_path)
 
 
     def test_command_overrided(self):
