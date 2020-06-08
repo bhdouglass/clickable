@@ -11,10 +11,19 @@ class TestIdeQtCreatorCommand(UnitTest):
 
     def setUp(self):
         self.setUpConfig()
-        self.command = IdeCommand(self.config)
-        self.command.prepare_run()
-        self.docker_config = self.command.setup_docker()
-
+        self.docker_config = DockerConfig()
+        self.docker_config.add_environment_variables(
+            {
+                "CLICK_EXEC": "qmlscene",
+                "CLICK_EXEC_PARAMS": "qml/Main.qml",
+                "INSTALL_DIR": "/tmp/fake/qmlproject",
+                "BUILD_DIR": "/tmp/fake/qmlproject/build/app",
+                "LD_LIBRARY_PATH":"/usr/bin",
+                "CLICK_LD_LIBRARY_PATH":"/tmp/fake/qmlproject/build/app/install",
+                "QML2_IMPORT_PATH":"/tmp/qmllibs",
+                "CLICK_QML2_IMPORT_PATH":"/tmp/fake/qmlproject/build/app/install"
+            }
+        )
         self.idedelegate = QtCreatorDelegate()
         self.idedelegate.clickable_dir = '/tmp/tests/.clickable'
         self.idedelegate.project_path = '/tmp/tests/qmlproject'
