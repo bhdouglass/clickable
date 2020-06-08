@@ -13,7 +13,6 @@ class TestIdeQtCreatorCommand(UnitTest):
         self.setUpConfig()
         self.command = IdeCommand(self.config)
         self.command.prepare_run()
-        self.command.prepare_run()
         self.docker_config = self.command.setup_docker()
 
         self.idedelegate = QtCreatorDelegate()
