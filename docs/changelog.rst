@@ -3,6 +3,16 @@
 Changelog
 =========
 
+Changes in v6.14.2
+------------------
+
+- Fixed issue where some directories were being created by root in the docker container
+- Various documentation updates
+- Restored the warning about spaces in the source path
+- Fixed container mode so it doesn't check for docker images
+- Fixed issues with env vars for libraries in container mode
+- Added env vars to the ide command
+
 Changes in v6.14.1
 ------------------
 
