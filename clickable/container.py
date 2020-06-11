@@ -235,8 +235,6 @@ class Container(object):
                 network='--network="host"' if localhost else "",
             )
 
-            logger.info(wrapped_command)
-
         kwargs = {}
         if use_build_dir:
             kwargs['cwd'] = self.config.build_dir
