@@ -21,7 +21,7 @@ class IdeCommand(DesktopCommand):
         if 'qtcreator' in path_arg:
             self.idedelegate = QtCreatorDelegate()
             path_arg = self.idedelegate.override_command(path_arg)
-            logger.info('new command: {}'.format(path_arg))
+            logger.debug('new ide command: {}'.format(path_arg))
 
         self.command = path_arg
         super().run()
