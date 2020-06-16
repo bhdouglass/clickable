@@ -19,8 +19,8 @@ class IdeCommand(DesktopCommand):
 
         #get the preprocessor according to command if any
         if 'qtcreator' in path_arg.split():
-            self.idedelegate = QtCreatorDelegate()
-            path_arg = self.idedelegate.override_command(path_arg)
+            self.ide_delegate = QtCreatorDelegate()
+            path_arg = self.ide_delegate.override_command(path_arg)
             logger.debug('new ide command: {}'.format(path_arg))
 
         self.command = path_arg
