@@ -1,13 +1,10 @@
 import os
 import tarfile
 
-
 from clickable.logger import logger
-
 from .idedelegate import IdeCommandDelegate
 
 class QtCreatorDelegate(IdeCommandDelegate):
-
     clickable_dir = os.path.expanduser('~/.clickable')
     project_path = os.getcwd()
     template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'qtcreator')
