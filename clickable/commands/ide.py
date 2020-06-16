@@ -18,7 +18,7 @@ class IdeCommand(DesktopCommand):
             raise ClickableException('No command supplied for `clickable ide`')
 
         #get the preprocessor according to command if any
-        if 'qtcreator' in path_arg:
+        if 'qtcreator' in path_arg.split():
             self.idedelegate = QtCreatorDelegate()
             path_arg = self.idedelegate.override_command(path_arg)
             logger.debug('new ide command: {}'.format(path_arg))
