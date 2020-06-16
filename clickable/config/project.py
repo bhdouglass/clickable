@@ -261,7 +261,7 @@ class ProjectConfig(object):
                 self.build_arch = "{}-nvidia".format(self.build_arch)
 
             if self.is_ide_command():
-                self.build_arch = "{}-{}".format(self.build_arch, 'ide')
+                self.build_arch = "{}-ide".format(self.build_arch)
 
             container_mapping_host = Constants.container_mapping[self.host_arch]
             if ('16.04', self.build_arch) not in container_mapping_host:
