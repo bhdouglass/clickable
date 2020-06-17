@@ -27,6 +27,7 @@ class TestIdeQtCreatorCommand(UnitTest):
         self.idedelegate = QtCreatorDelegate()
         self.idedelegate.clickable_dir = '/tmp/tests/.clickable'
         self.idedelegate.project_path = '/tmp/tests/qmlproject'
+
         self.idedelegate.target_settings_path = os.path.join(self.idedelegate.clickable_dir ,'QtProject')
 
         os.makedirs(self.idedelegate.project_path)
@@ -34,8 +35,14 @@ class TestIdeQtCreatorCommand(UnitTest):
 
     def test_command_overrided(self):
 
-        path_arg =  self.idedelegate.override_command('qtcreator')
 
+
+        #path should not be added to qtcretor command
+        path_arg =  self.idedelegate.override_command('qtcreator')
+        self.assertEqual(path_arg, 'qtcreator -settingspath {} '.format(self.idedelegate.clickable_dir))
+
+        open(os.path.join(self.idedelegate.project_path,'clickable.json'), 'a')
+        path_arg =  self.idedelegate.override_command('qtcreator')
         self.assertEqual(path_arg, 'qtcreator -settingspath {} {}'.format(self.idedelegate.clickable_dir, self.idedelegate.project_path))
 
     def test_initialize_qtcreator_conf(self):
