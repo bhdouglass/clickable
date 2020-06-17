@@ -207,7 +207,7 @@ class ProjectConfig(object):
             if self.is_arch_agnostic():
                 self.config["arch"] = "all"
                 logger.debug('Architecture set to "all" because builder "{}" is architecture agnostic'.format(self.config['builder']))
-            elif self.is_desktop_mode():
+            elif self.is_desktop_mode() or self.is_ide_command():
                 self.config["arch"] = "amd64"
                 logger.debug('Architecture set to "amd64" because of desktop mode.')
             elif self.config["restrict_arch"]:
@@ -562,7 +562,7 @@ class ProjectConfig(object):
         return self.config["builder"] in Constants.arch_agnostic_builders
 
     def is_desktop_mode(self):
-        return bool(set(['desktop', 'ide', 'test']).intersection(self.commands))
+        return bool(set(['desktop', 'test']).intersection(self.commands))
 
     def is_ide_command(self):
         return "ide" in self.commands
