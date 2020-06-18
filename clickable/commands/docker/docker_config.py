@@ -6,6 +6,7 @@ class DockerConfig(object):
     extra_flags = []
 
     execute = None
+    pseudo_tty = False
 
     working_directory = ''
     docker_image = ''
@@ -75,8 +76,9 @@ class DockerConfig(object):
     def render_command_string(self, volumes_string, environment_string,
             extra_options_string, extra_flags_string):
         return (
-            '{docker} run --privileged --net=host {volumes} {env} {extra_options} {extra_flags} -w {working_dir} --user={uid} '
-            '--rm -i {docker_image} bash -c "{executable}"'
+            '{docker} run --privileged --net=host {volumes} {env} {extra_options} '
+            '{extra_flags} -w {working_dir} --user={uid} '
+            '--rm {tty} -i {docker_image} bash -c "{executable}"'
         ).format(
             docker=self.docker_executable,
             volumes=volumes_string,
@@ -87,4 +89,5 @@ class DockerConfig(object):
             uid=self.uid,
             docker_image=self.docker_image,
             executable=self.execute,
+            tty="--tty" if self.pseudo_tty else ""
         )
