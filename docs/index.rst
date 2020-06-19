@@ -60,8 +60,8 @@ Getting Started
 Code Editor Integrations
 ------------------------
 
-Use clickable with the `Atom Editor <https://atom.io>`__ by installing
-`atom-build-clickable <https://atom.io/packages/atom-build-clickable>`__
+Use clickable with the `Atom Editor <https://atom.io>`__ by installing `atom-clickable-plugin <https://atom.io/packages/atom-clickable-plugin>`__.
+This is an fork of the original (now unmaintained) `atom-build-clickable <https://atom.io/packages/atom-build-clickable>`__
 made by Stefano.
 
 Issues and Feature Requests

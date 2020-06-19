@@ -39,8 +39,8 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 
 ## Code Editor Integrations
 
-Use clickable with the [Atom Editor](https://atom.io) by installing
-[atom-build-clickable](https://atom.io/packages/atom-build-clickable)
+Use clickable with the [Atom Editor](https://atom.io) by installing [atom-clickable-plugin](https://atom.io/packages/atom-clickable-plugin).
+This is an fork of the original (now unmaintained) [atom-build-clickable](https://atom.io/packages/atom-build-clickable) 
 made by Stefano.
 
 ## Development
