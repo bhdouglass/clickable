@@ -1,3 +1,4 @@
+import shlex
 class DockerConfig(object):
     docker_executable = 'docker'
     volumes = {}
@@ -58,7 +59,7 @@ class DockerConfig(object):
             prefix=prefix,
             name=key_value_list[0],
             glue=glue,
-            value=key_value_list[1],
+            value=shlex.quote(key_value_list[1]),
             suffix=suffix
         ), dict.items())
 
