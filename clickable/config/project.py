@@ -231,9 +231,6 @@ class ProjectConfig(object):
             raise ClickableException('There is currently no support for architecture  "{}"'.format(self.config['arch']))
         self.config['arch_triplet'] = Constants.arch_triplet_mapping[self.config['arch']]
 
-        if self.host_arch not in Constants.container_mapping:
-            raise ClickableException('Clickable currently does not have docker images for your host architecture "{}"'.format(self.host_arch))
-
         if not self.config['kill']:
             if self.config['builder'] == Constants.CORDOVA:
                 self.config['kill'] = 'cordova-ubuntu'
@@ -256,6 +253,9 @@ class ProjectConfig(object):
 
         if self.needs_docker_image():
             self.check_nvidia_mode()
+
+            if self.host_arch not in Constants.container_mapping:
+                raise ClickableException('Clickable currently does not have docker images for your host architecture "{}"'.format(self.host_arch))
 
             if self.use_nvidia and not self.build_arch.endswith('-nvidia'):
                 self.build_arch = "{}-nvidia".format(self.build_arch)
