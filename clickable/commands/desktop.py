@@ -35,6 +35,7 @@ class DesktopCommand(Command):
         super().__init__(config)
         self.command = None
         self.custom_mode = False
+        self.ide_delegate = None
 
     def run(self, path_arg=None):
         self.prepare_run()
@@ -248,5 +249,8 @@ class DesktopCommand(Command):
         docker_config = self.setup_docker()
         command = docker_config.render_command()
         logger.debug(command)
+
+        if self.ide_delegate is not None:
+            self.ide_delegate.before_run(docker_config)
 
         subprocess.check_call(shlex.split(command), cwd=docker_config.working_directory)
