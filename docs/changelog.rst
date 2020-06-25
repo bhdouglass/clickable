@@ -3,6 +3,16 @@
 Changelog
 =========
 
+Changes in v6.15.0
+------------------
+
+- Vastly improved qtcreator support using ``clickable ide qtcreator``
+- Improved docs
+- Updated docs with the new Atom editor plugin
+- Fixed the warning about spaces in the path
+- Fixed various issues with container mode
+- Fixed using gdb and desktop mode
+
 Changes in v6.14.2
 ------------------
 
