@@ -1,3 +1,14 @@
+clickable (6.15.0) unstable; urgency=medium
+
+  * Vastly improved qtcreator support using clickable ide qtcreator
+  * Improved docs
+  * Updated docs with the new Atom editor plugin
+  * Fixed the warning about spaces in the path
+  * Fixed various issues with container mode
+  * Fixed using gdb and desktop mode
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Thu, 25 Jun 2020 00:56:00 -0500
+
 clickable (6.14.2) unstable; urgency=medium
 
   * Fixed issue where some directories were being created by root in the docker container
