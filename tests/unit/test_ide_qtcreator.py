@@ -53,7 +53,8 @@ class TestIdeQtCreatorCommand(UnitTest):
     def test_init_cmake_project(self):
 
         output_file = os.path.join(self.idedelegate.project_path, 'CMakeLists.txt.user.shared')
-
+        original_input = mock.builtins.input
+        mock.builtins.input = lambda _: "yes"
 
         #if Exec not found in desktop, should do nothing
         self.docker_config.environment.pop('CLICK_EXEC', None)
@@ -67,10 +68,19 @@ class TestIdeQtCreatorCommand(UnitTest):
                 "CLICK_EXEC_PARAMS": "qml/Main.qml",
             })
 
+        #user choose not to let clickable generate config
+        mock.builtins.input = lambda _: "no"
+        self.idedelegate.init_cmake_project(self.docker_config)
+        self.assertFalse(os.path.isfile(output_file))
+
+        #now he is ok to let clickable build the configuration template
+        mock.builtins.input = lambda _: "yes"
         self.idedelegate.init_cmake_project(self.docker_config)
         self.assertTrue(os.path.isfile(output_file))
         #test an example variable that have been replaced
         self.assertTrue(open(output_file, 'r').read().find('CustomExecutableRunConfiguration.Arguments">qmlscene</value>'))
+
+        mock.builtins.input = original_input
 
     def tearDown(self):
         shutil.rmtree(self.idedelegate.project_path, ignore_errors=True)
