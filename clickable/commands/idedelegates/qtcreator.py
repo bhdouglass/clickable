@@ -1,7 +1,8 @@
 import os
 import tarfile
+import re
 
-from clickable.logger import logger
+from clickable.logger import logger, Colors
 from .idedelegate import IdeCommandDelegate
 
 class QtCreatorDelegate(IdeCommandDelegate):
@@ -43,6 +44,15 @@ class QtCreatorDelegate(IdeCommandDelegate):
 
         #don't do all that if exec line not found
         if "CLICK_EXEC" in env_vars:
+
+            choice = input(Colors.INFO + 'Do you want Clickable to setup a QtCreator project for you? [Y/n]: ' + Colors.CLEAR
+                           ).strip().lower()
+            if choice != 'y' and choice != 'yes' and choice != '':
+                return
+
+            #just check if CLICK_EXEC is a variable
+            if re.match("@([-\w]+)@", env_vars["CLICK_EXEC"]):
+                logger.warning("Could not determine executable command '{}', please adjust your project's run settings".format(env_vars["CLICK_EXEC"]))
 
             clickable_ld_library_path='{}:{}'.format(env_vars["LD_LIBRARY_PATH"], env_vars["CLICK_LD_LIBRARY_PATH"])
             clickable_qml2_import_path='{}:{}'.format(env_vars["QML2_IMPORT_PATH"], env_vars["CLICK_QML2_IMPORT_PATH"])
