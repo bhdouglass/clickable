@@ -10,6 +10,7 @@ class QtCreatorDelegate(IdeCommandDelegate):
     template_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'qtcreator')
     init_settings_path = os.path.join(template_path, 'QtProject.tar.xz')
     target_settings_path = os.path.join(clickable_dir,'QtProject')
+    template_path = os.path.join(template_path,'CMakeLists.txt.user.shared.in')
 
 
     def override_command(self, path):
@@ -55,16 +56,9 @@ class QtCreatorDelegate(IdeCommandDelegate):
                 "CLICKABLE_EXEC_ARGS":env_vars["CLICK_EXEC_PARAMS"]
             }
 
-            #choose the right template according to the exec command
-            template_file_name = 'CMakeLists.txt.user.shared.binary.in'
-
-            if env_vars["CLICK_EXEC"] == 'qmlscene':
-                template_file_name = 'CMakeLists.txt.user.shared.qmlscene.in'
-
-            template_path = os.path.join(self.template_path,template_file_name)
             output_path = os.path.join(self.project_path,'CMakeLists.txt.user.shared')
             #now read template and generate the .shared file to the root project dir
-            with open(template_path, "r") as infile2, open(output_path, "w") as outfile:
+            with open(self.template_path, "r") as infile2, open(output_path, "w") as outfile:
                 for line in infile2:
                     for f_key, f_value in template_replacement.items():
                         if f_key in line:
