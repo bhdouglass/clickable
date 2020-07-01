@@ -21,7 +21,7 @@ class QtCreatorDelegate(IdeCommandDelegate):
         return path.replace('qtcreator', 'qtcreator -settingspath {} {}'.format(self.clickable_dir, p))
 
 
-    def before_run(self, docker_config):
+    def before_run(self, config, docker_config):
 
         #if first qtcreator launch, install common settings
         if not os.path.isdir(self.target_settings_path):
@@ -31,7 +31,7 @@ class QtCreatorDelegate(IdeCommandDelegate):
             tar.close()
 
         if self.is_cmake_project() and not os.path.isfile(os.path.join(self.project_path, 'CMakeLists.txt.user')):
-            self.init_cmake_project(docker_config)
+            self.init_cmake_project(config, docker_config)
 
 
 
@@ -39,11 +39,15 @@ class QtCreatorDelegate(IdeCommandDelegate):
         return os.path.isfile(os.path.join(self.project_path,'CMakeLists.txt'))
 
     #templates run/build generation for cmake project
-    def init_cmake_project(self, docker_config):
-        env_vars = docker_config.environment
+    def init_cmake_project(self, config, docker_config):
+
+        executable = config.project_files.find_any_executable()
+        exec_args = config.project_files.find_any_exec_args()
+
+        print("executable:" + executable)
 
         #don't do all that if exec line not found
-        if "CLICK_EXEC" in env_vars:
+        if executable:
 
             choice = input(Colors.INFO + 'Do you want Clickable to setup a QtCreator project for you? [Y/n]: ' + Colors.CLEAR
                            ).strip().lower()
@@ -51,19 +55,29 @@ class QtCreatorDelegate(IdeCommandDelegate):
                 return
 
             #just check if CLICK_EXEC is a variable
-            if re.match("@([-\w]+)@", env_vars["CLICK_EXEC"]):
-                logger.warning("Could not determine executable command '{}', please adjust your project's run settings".format(env_vars["CLICK_EXEC"]))
+            if re.match("@([-\w]+)@", executable):
+                logger.warning("Could not determine executable command '{}', please adjust your project's run settings".format(executable))
 
+            # work around for qtcreator bug when first run of a project to avoid qtcreator hang
+            # we need to create the build directory first
+            if not os.path.isdir(config.build_dir):
+                os.makedirs(config.build_dir)
+
+            env_vars = docker_config.environment
             clickable_ld_library_path='{}:{}'.format(env_vars["LD_LIBRARY_PATH"], env_vars["CLICK_LD_LIBRARY_PATH"])
             clickable_qml2_import_path='{}:{}'.format(env_vars["QML2_IMPORT_PATH"], env_vars["CLICK_QML2_IMPORT_PATH"])
 
             template_replacement = {
                 "CLICKABLE_LD_LIBRARY_PATH": clickable_ld_library_path,
-                "CLICKABLE_QML2_IMPORT_PATH":clickable_qml2_import_path,
-                "CLICKABLE_BUILD_DIR":env_vars["BUILD_DIR"],
-                "CLICKABLE_INSTALL_DIR":env_vars["INSTALL_DIR"],
-                "CLICKABLE_EXEC_CMD":env_vars["CLICK_EXEC"],
-                "CLICKABLE_EXEC_ARGS":env_vars["CLICK_EXEC_PARAMS"]
+                "CLICKABLE_QML2_IMPORT_PATH": clickable_qml2_import_path,
+                "CLICKABLE_BUILD_DIR": config.build_dir,
+                "CLICKABLE_INSTALL_DIR": config.install_dir,
+                "CLICKABLE_EXEC_CMD": executable,
+                "CLICKABLE_EXEC_ARGS": " ".join(exec_args),
+                "CLICKABLE_SRC_DIR": config.src_dir,
+                "CLICKABLE_BUILD_ARGS": " ".join(config.build_args),
+
+
             }
 
             output_path = os.path.join(self.project_path,'CMakeLists.txt.user.shared')

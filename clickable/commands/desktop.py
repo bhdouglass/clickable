@@ -252,6 +252,6 @@ class DesktopCommand(Command):
         logger.debug(command)
 
         if self.ide_delegate is not None:
-            self.ide_delegate.before_run(docker_config)
+            self.ide_delegate.before_run(self.config, docker_config)
 
         subprocess.check_call(shlex.split(command), cwd=docker_config.working_directory)
