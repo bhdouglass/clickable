@@ -43,9 +43,6 @@ class QtCreatorDelegate(IdeCommandDelegate):
 
         executable = config.project_files.find_any_executable()
         exec_args = config.project_files.find_any_exec_args()
-
-        print("executable:" + executable)
-
         #don't do all that if exec line not found
         if executable:
 
@@ -76,8 +73,6 @@ class QtCreatorDelegate(IdeCommandDelegate):
                 "CLICKABLE_EXEC_ARGS": " ".join(exec_args),
                 "CLICKABLE_SRC_DIR": config.src_dir,
                 "CLICKABLE_BUILD_ARGS": " ".join(config.build_args),
-
-
             }
 
             output_path = os.path.join(self.project_path,'CMakeLists.txt.user.shared')
