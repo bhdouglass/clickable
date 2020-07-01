@@ -20,18 +20,6 @@ class TestIdeQtCreatorCommand(UnitTest):
             }
         )
 
-        # self.project_files = ProjectFiles('/tmp/fake/qmlproject')
-        #
-        # self.projectConfig = ProjectConfig()
-        # self.config = {
-        #     'src_dir': '/tmp/fake/qmlproject',
-        #     'build_dir': '/tmp/fake/qmlproject/build/app',
-        #     'build_args': [],
-        #     'install_dir': '/tmp/fake/qmlproject/build/app/install',
-        # }
-        # print('OLLLALALAL' + self.config.src_dir)
-
-
         self.idedelegate = QtCreatorDelegate()
         self.idedelegate.clickable_dir = '/tmp/tests/.clickable'
         self.idedelegate.project_path = '/tmp/tests/qmlproject'
@@ -58,6 +46,27 @@ class TestIdeQtCreatorCommand(UnitTest):
         self.idedelegate.before_run(None, self.docker_config)
         self.assertTrue(os.path.isdir('/tmp/tests/.clickable/QtProject'))
 
+    def test_recurse_replace(self):
+
+        final_command = self.idedelegate.recurse_replace('qmlscene --ok=\"args\"', {})
+        self.assertEquals('qmlscene --ok=\"args\"', final_command)
+
+        final_command = self.idedelegate.recurse_replace('\"qmlscene --ok=\"args\"\"', {})
+        self.assertEquals('\"qmlscene --ok=\"args\"\"', final_command)
+
+        cmake_vars = {
+            'FAKE':'qmlscene'
+        }
+        final_command = self.idedelegate.recurse_replace('${FAKE} --ok=\"args\"', cmake_vars)
+        self.assertEquals('qmlscene --ok=\"args\"', final_command)
+
+        #test with recursive vars
+        cmake_vars = {
+            'FAKE_SUBVAR':'share/foo',
+            'FAKE_VAR':'${FAKE_SUBVAR}/hello'
+        }
+        final_command = self.idedelegate.recurse_replace('${FAKE_VAR} --args someargs', cmake_vars)
+        self.assertEquals('share/foo/hello --args someargs', final_command)
 
     @mock.patch('clickable.config.file_helpers.ProjectFiles.find_any_executable', return_value='')
     @mock.patch('clickable.config.file_helpers.ProjectFiles.find_any_exec_args')
@@ -93,6 +102,26 @@ class TestIdeQtCreatorCommand(UnitTest):
         self.assertTrue(open(self.output_file, 'r').read().find('CustomExecutableRunConfiguration.Arguments">fake_exe</value>'))
 
         mock.builtins.input = original_input
+
+
+    @mock.patch('clickable.config.file_helpers.ProjectFiles.find_any_executable', return_value='@FAKE_EXE@')
+    @mock.patch('clickable.config.file_helpers.ProjectFiles.find_any_exec_args', return_value=[])
+    def test_init_cmake_project_exe_as_var(self, find_any_executable_mock, find_any_exec_args_mock):
+        #mock prompt
+        original_input = mock.builtins.input
+        mock.builtins.input = lambda _: "yes"
+
+        #Exec command as variable
+        cmake_file = open(os.path.join(self.idedelegate.project_path,'CMakeLists.txt'), 'w')
+        cmake_file.write("set(FAKE_EXE \"qmlscene --ok=\"args\"\")")
+        cmake_file.close()
+
+        self.idedelegate.init_cmake_project(self.config, self.docker_config)
+        #test that final exe var is found
+        generated_shared_file = open(self.output_file, 'r').read()
+        self.assertTrue(generated_shared_file.find('CustomExecutableRunConfiguration.Arguments">qmlscene</value>'))
+        self.assertTrue(generated_shared_file.find('CustomExecutableRunConfiguration.Arguments">--ok="args"</value>'))
+
 
     def tearDown(self):
         shutil.rmtree(self.idedelegate.project_path, ignore_errors=True)
