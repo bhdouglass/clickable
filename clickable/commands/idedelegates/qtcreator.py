@@ -114,7 +114,11 @@ class QtCreatorDelegate(IdeCommandDelegate):
             cmd_var = match_exe_var.group(1)
             final_cmd = self.cmake_guess_exec_command(cmd_var)
             if final_cmd is not None:
-                (exe, exe_arg) = final_cmd.split(' ', maxsplit=1)
+                try:
+                    exe, exe_arg = final_cmd.split(' ', maxsplit=1)
+                except:
+                    exe, exe_arg = final_cmd, ''
+
                 executable = exe
                 exec_args = exe_arg
                 logger.debug('found that executable is {} with args: {}'.format(exe, exe_arg))
