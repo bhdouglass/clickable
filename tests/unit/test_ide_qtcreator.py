@@ -16,7 +16,8 @@ class TestIdeQtCreatorCommand(UnitTest):
                 "LD_LIBRARY_PATH":"/usr/bin",
                 "CLICK_LD_LIBRARY_PATH":"/tmp/fake/qmlproject/build/app/install",
                 "QML2_IMPORT_PATH":"/tmp/qmllibs",
-                "CLICK_QML2_IMPORT_PATH":"/tmp/fake/qmlproject/build/app/install"
+                "CLICK_QML2_IMPORT_PATH":"/tmp/fake/qmlproject/build/app/install",
+                "CLICK_PATH":"/tmp/fake/qmlproject/build/app/install/lib"
             }
         )
 
