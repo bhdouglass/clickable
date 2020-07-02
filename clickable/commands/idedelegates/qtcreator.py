@@ -43,6 +43,7 @@ class QtCreatorDelegate(IdeCommandDelegate):
         #delete conflicting env vars in some cases
         docker_config.environment.pop("INSTALL_DIR", None)
         docker_config.environment.pop("APP_DIR", None)
+        docker_config.environment.pop("SRC_DIR", None)
 
 
     def is_cmake_project(self):
@@ -145,6 +146,7 @@ class QtCreatorDelegate(IdeCommandDelegate):
             "CLICKABLE_EXEC_ARGS": exec_args,
             "CLICKABLE_SRC_DIR": config.src_dir,
             "CLICKABLE_BUILD_ARGS": " ".join(config.build_args),
+            "CLICKABLE_PATH":env_vars["CLICK_PATH"]
         }
 
         output_path = os.path.join(self.project_path,'CMakeLists.txt.user.shared')

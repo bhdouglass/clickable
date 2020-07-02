@@ -248,10 +248,11 @@ class DesktopCommand(Command):
 
     def run_app(self):
         docker_config = self.setup_docker()
-        command = docker_config.render_command()
-        logger.debug(command)
 
         if self.ide_delegate is not None:
             self.ide_delegate.before_run(self.config, docker_config)
+
+        command = docker_config.render_command()
+        logger.debug(command)
 
         subprocess.check_call(shlex.split(command), cwd=docker_config.working_directory)

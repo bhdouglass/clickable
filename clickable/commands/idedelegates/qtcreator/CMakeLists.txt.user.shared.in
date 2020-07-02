@@ -165,11 +165,12 @@
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes">
          <value type="QString">LD_LIBRARY_PATH=CLICKABLE_LD_LIBRARY_PATH</value>
          <value type="QString">QML2_IMPORT_PATH=CLICKABLE_QML2_IMPORT_PATH</value>
+         <value type="QString">PATH=CLICKABLE_PATH</value>
     </valuelist>
     <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Arguments">CLICKABLE_EXEC_ARGS</value>
     <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.Executable">CLICKABLE_EXEC_CMD</value>
     <value type="QString" key="ProjectExplorer.CustomExecutableRunConfiguration.WorkingDirectory">CLICKABLE_INSTALL_DIR</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Run</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Run CLICKABLE_EXEC_CMD</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">ProjectExplorer.CustomExecutableRunConfiguration</value>
     <value type="uint" key="RunConfiguration.QmlDebugServerPort">3768</value>
@@ -226,6 +227,7 @@
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes">
          <value type="QString">LD_LIBRARY_PATH=CLICKABLE_LD_LIBRARY_PATH</value>
          <value type="QString">QML2_IMPORT_PATH=CLICKABLE_QML2_IMPORT_PATH</value>
+         <value type="QString">PATH=CLICKABLE_PATH</value>
     </valuelist>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DefaultDisplayName">Run CLICKABLE_EXEC_CMD</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
