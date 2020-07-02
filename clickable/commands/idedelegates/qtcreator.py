@@ -134,7 +134,7 @@ class QtCreatorDelegate(IdeCommandDelegate):
 
         env_vars = docker_config.environment
         clickable_ld_library_path='{}:{}'.format(env_vars["LD_LIBRARY_PATH"], env_vars["CLICK_LD_LIBRARY_PATH"])
-        clickable_qml2_import_path='{}:{}'.format(env_vars["QML2_IMPORT_PATH"], env_vars["CLICK_QML2_IMPORT_PATH"])
+        clickable_qml2_import_path='{}:{}:{}'.format(env_vars["QML2_IMPORT_PATH"], env_vars["CLICK_QML2_IMPORT_PATH"], os.path.join(config.install_dir, 'lib') )
 
         template_replacement = {
             "CLICKABLE_LD_LIBRARY_PATH": clickable_ld_library_path,
