@@ -40,6 +40,9 @@ class QtCreatorDelegate(IdeCommandDelegate):
         if self.is_cmake_project() and not os.path.isfile(os.path.join(self.project_path, 'CMakeLists.txt.user')):
             self.init_cmake_project(config, docker_config)
 
+        #delete conflicting env vars in some cases
+        docker_config.environment.pop("INSTALL_DIR", None)
+        docker_config.environment.pop("APP_DIR", None)
 
 
     def is_cmake_project(self):
