@@ -45,9 +45,6 @@ class QtCreatorDelegate(IdeCommandDelegate):
         docker_config.environment.pop("APP_DIR", None)
         docker_config.environment.pop("SRC_DIR", None)
 
-        #work around for some issue with black or scrambled popups
-        docker_config.environment['QT_GRAPHICSSYSTEM']="native"
-
 
     def is_cmake_project(self):
         return os.path.isfile(os.path.join(self.project_path,'CMakeLists.txt'))
