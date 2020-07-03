@@ -17,7 +17,8 @@ class TestIdeQtCreatorCommand(UnitTest):
                 "CLICK_LD_LIBRARY_PATH":"/tmp/fake/qmlproject/build/app/install",
                 "QML2_IMPORT_PATH":"/tmp/qmllibs",
                 "CLICK_QML2_IMPORT_PATH":"/tmp/fake/qmlproject/build/app/install",
-                "CLICK_PATH":"/tmp/fake/qmlproject/build/app/install/lib"
+                "CLICK_PATH":"/tmp/fake/qmlproject/build/app/install/lib",
+                "PATH":"/usr/bin"
             }
         )
 
@@ -88,6 +89,8 @@ class TestIdeQtCreatorCommand(UnitTest):
         self.idedelegate.init_cmake_project(self.config, self.docker_config)
         self.assertFalse(os.path.isfile(self.output_file))
 
+        mock.builtins.input = original_input
+
 
     @mock.patch('clickable.config.file_helpers.ProjectFiles.find_any_executable', return_value='fake_exe')
     @mock.patch('clickable.config.file_helpers.ProjectFiles.find_any_exec_args', return_value=[])
@@ -123,6 +126,7 @@ class TestIdeQtCreatorCommand(UnitTest):
         self.assertTrue(generated_shared_file.find('CustomExecutableRunConfiguration.Arguments">qmlscene</value>'))
         self.assertTrue(generated_shared_file.find('CustomExecutableRunConfiguration.Arguments">--ok="args"</value>'))
 
+        mock.builtins.input = original_input
 
     def tearDown(self):
         shutil.rmtree(self.idedelegate.project_path, ignore_errors=True)
