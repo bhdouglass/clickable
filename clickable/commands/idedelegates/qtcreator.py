@@ -134,6 +134,7 @@ class QtCreatorDelegate(IdeCommandDelegate):
             os.makedirs(config.build_dir)
 
         env_vars = docker_config.environment
+        clickable_env_path = '{}:{}'.format(env_vars["PATH"], env_vars["CLICK_PATH"])
         clickable_ld_library_path='{}:{}'.format(env_vars["LD_LIBRARY_PATH"], env_vars["CLICK_LD_LIBRARY_PATH"])
         clickable_qml2_import_path='{}:{}:{}'.format(env_vars["QML2_IMPORT_PATH"], env_vars["CLICK_QML2_IMPORT_PATH"], os.path.join(config.install_dir, 'lib') )
 
@@ -146,7 +147,7 @@ class QtCreatorDelegate(IdeCommandDelegate):
             "CLICKABLE_EXEC_ARGS": exec_args,
             "CLICKABLE_SRC_DIR": config.src_dir,
             "CLICKABLE_BUILD_ARGS": " ".join(config.build_args),
-            "CLICKABLE_PATH":env_vars["CLICK_PATH"]
+            "CLICKABLE_PATH":clickable_env_path
         }
 
         output_path = os.path.join(self.project_path,'CMakeLists.txt.user.shared')
