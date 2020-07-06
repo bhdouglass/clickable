@@ -67,3 +67,25 @@ computer via adb. If you have multiple devices attached to your computer you
 can specify which device to install/launch/etc on by using the flag
 ``--serial-number`` or ``-s`` for short. You can get the serial number
 by running ``clickable devices``.
+
+Advanced Usage
+--------------
+
+.. _lxd:
+
+Running Clickable in an LXD container
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It is possible to run ``clickable`` in a container itself, using ``lxd``. This is not using ``--container-mode``, but allowing ``clickable`` to create docker containers as normal, but inside the existing ``lxd`` container. This may fail with a permissions error when mounting ``/proc``:
+
+.. code-block:: bash
+
+   docker: Error response from daemon: OCI runtime create failed: container_linux.go:349: starting container process caused "process_linux.go:449: container init caused \"rootfs_linux.go:58: mounting \\\"proc\\\" to rootfs \\\"/var/lib/docker/vfs/dir/bffeb203fe06662876a521b1bea3b74e4d5c6ea3535352215c199c75836aa925\\\" at \\\"/proc\\\" caused \\\"permission denied\\\"\"": unknown.
+
+If this error occurs then ``lxd`` needs to be `configured to allow nested containers <https://stackoverflow.com/questions/46645910/docker-rootfs-linux-go-permission-denied-when-mounting-proc>` on the host:
+
+.. code-block:: bash
+
+   lxc stop your-container-name
+   lxc config set your-container-name security.nesting true
+   lxc start your-container-name
