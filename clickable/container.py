@@ -23,20 +23,18 @@ from clickable.exceptions import ClickableException
 class Container(object):
     def __init__(self, config, name=None, minimum_version=None):
         self.config = config
-        self.docker_mode = self.config.needs_docker_image()
+        self.docker_mode = self.config.needs_docker()
         self.minimum_version = minimum_version
+        self.docker_image = self.config.docker_image
+        self.base_docker_image = self.docker_image
 
-        if self.docker_mode:
-            check_command('docker')
-
+        if self.config.needs_clickable_image():
             self.clickable_dir = '.clickable/{}'.format(self.config.build_arch)
             if name:
                 self.clickable_dir = '{}/{}'.format(self.clickable_dir, name)
+
             self.docker_name_file = '{}/name.txt'.format(self.clickable_dir)
             self.docker_file = '{}/Dockerfile'.format(self.clickable_dir)
-
-            self.docker_image = self.config.docker_image
-            self.base_docker_image = self.docker_image
 
             if self.needs_customized_container():
                 self.restore_cached_container()
@@ -51,6 +49,8 @@ class Container(object):
             if not image_exists(cached_container):
                 logger.warning("Cached container does not exist anymore")
                 return
+
+            self.check_docker()
 
             command_base = 'docker images -q {}'.format(self.base_docker_image)
             command_cached = 'docker history -q {}'.format(cached_container)
@@ -302,7 +302,9 @@ RUN {}
         return 'apt-get install -y --force-yes --no-install-recommends {}'.format(
                 ' '.join(dependencies))
 
-    def setup_image(self):
+    def setup_customized_image(self):
+        logger.debug('Checking dependencies and container setup')
+
         self.check_docker()
 
         commands = []
@@ -387,21 +389,14 @@ RUN {}
 
 
     def setup(self):
-        if self.config.is_custom_docker_image:
-            return
-
-        if not self.config.container_mode:
-            self.check_base_image_version()
-
-        if not self.needs_customized_container():
-            return
-
-        logger.debug('Checking dependencies and container setup')
-
         if self.config.container_mode:
             self.setup_container_mode()
-        else:
-            self.setup_image()
+
+        if self.config.needs_clickable_image():
+            self.check_base_image_version()
+
+            if self.needs_customized_container():
+                self.setup_customized_image()
 
     def clean_clickable(self):
         path = os.path.join(self.config.cwd, self.clickable_dir)
