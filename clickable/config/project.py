@@ -251,7 +251,7 @@ class ProjectConfig(object):
     def setup_image(self):
         self.set_build_arch()
 
-        if self.needs_docker_image():
+        if self.needs_clickable_image():
             self.check_nvidia_mode()
 
             if self.host_arch not in Constants.container_mapping:
@@ -569,16 +569,20 @@ class ProjectConfig(object):
 
     def is_build_cmd(self):
         return (self.is_desktop_mode() or
-                set(['build', 'build-libs', 'clean-build']).intersection(self.commands))
+                bool(set(['build', 'build-libs', 'clean-build']).intersection(self.commands)))
 
     def needs_builder(self):
         return self.is_build_cmd()
 
-    def needs_docker_image(self):
+    def needs_clickable_image(self):
         return (not self.is_custom_docker_image and
                 not self.container_mode and
                 (self.is_build_cmd() or
-                    set(['setup', 'run', 'ide', 'update', 'gdb', 'gdbserver', 'review']).intersection(self.commands)))
+                    bool(set(['setup', 'run', 'ide', 'update', 'gdb', 'gdbserver', 'review']).intersection(self.commands))))
+
+    def needs_docker(self):
+        return (not self.container_mode and
+                (self.needs_clickable_image() or self.is_custom_docker_image))
 
     def check_clickable_version(self):
         if self.config['clickable_minimum_required']:
