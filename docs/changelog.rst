@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v6.16.0
+------------------
+
+- Enhanced and fixed issues with the qtcreator support
+- Fixed the docker_image setting
+
 Changes in v6.15.0
 ------------------
 
