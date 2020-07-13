@@ -1,3 +1,10 @@
+clickable (6.16.0) unstable; urgency=medium
+
+  * Enhanced and fixed issues with the qtcreator support
+  * Fixed the docker_image setting
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Fri, 10 Jul 2020 00:41:00 -0500
+
 clickable (6.15.0) unstable; urgency=medium
 
   * Vastly improved qtcreator support using clickable ide qtcreator
