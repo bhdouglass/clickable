@@ -271,6 +271,9 @@ def main():
         ))
 
         sys.exit(2)
+    except KeyboardInterrupt as e:
+        logger.info('') # Print an empty space at then end so the cli prompt is nicer
+        sys.exit(0)
     except Exception as e:
         if isinstance(e, OSError) and '28' in str(e):
             logger.critical('No space left on device')
