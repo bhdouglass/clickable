@@ -1,3 +1,5 @@
+import os
+
 from .utils import (
     run_subprocess_check_output,
     run_subprocess_check_call,
@@ -48,6 +50,8 @@ class Device(object):
 
     def push_file(self, src, dst):
         if self.config.ssh:
+            dir_path = os.path.dirname(dst)
+            self.run_command('mkdir -p {}'.format(dir_path))
             command = 'scp {} phablet@{}:{}'.format(src, self.config.ssh, dst)
         else:
             adb_args = self.get_adb_args()
