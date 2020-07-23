@@ -31,7 +31,7 @@ class CreateCommand(Command):
     name = 'create'
     help = 'Generate a new app from a list of app template options'
 
-    def run(self, path_arg=None, no_input=False):
+    def run(self, path_arg=None):
         if not cookiecutter_available:
             raise ClickableException('Cookiecutter is not available on your computer, more information can be found here: https://cookiecutter.readthedocs.io/en/latest/installation.html#install-cookiecutter')
 
@@ -47,6 +47,8 @@ class CreateCommand(Command):
                 extra_context['Template'] = TEMPLATE_MAP[path_arg]
             else:
                 extra_context['Template'] = path_arg
+
+        no_input = not self.config.interactive
 
         try:
             cookiecutter.main.cookiecutter(

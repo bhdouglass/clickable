@@ -84,7 +84,7 @@ class Clickable(object):
         parser.add_argument(
             '--arch',
             '-a',
-            help='Use the specified arch when building (ignores the setting in clickable.json)'
+            help='Use the specified arch when building'
         )
         parser.add_argument(
             '--verbose',
@@ -113,7 +113,7 @@ class Clickable(object):
         parser.add_argument(
             '--dirty',
             action='store_true',
-            help='Do not clean build directory',
+            help='Do not clean build directory (affects default command chain and desktop command)',
             default=False,
         )
         parser.add_argument(
@@ -142,12 +142,12 @@ class Clickable(object):
         )
         parser.add_argument(
             '--gdbserver',
-            help='Start gdbserver at the given port to debug the app remotely (only desktop mode)',
+            help='Start gdbserver at the given port to debug the app remotely (only desktop mode, for on-device-debugging use gdbserver sub-command instead)',
         )
         parser.add_argument(
             '--gdb',
             action='store_true',
-            help='Start gdb to debug the app (only desktop mode)',
+            help='Start gdb to debug the app (only desktop mode, for on-device-debugging use gdb sub-command instead)',
             default=False,
         )
         parser.add_argument(
@@ -170,6 +170,12 @@ class Clickable(object):
             '--skip-build',
             action='store_true',
             help='Start app without building it first (only desktop mode)',
+            default=False,
+        )
+        parser.add_argument(
+            '--non-interactive',
+            action='store_true',
+            help='Do not show prompts for anything (meant for CIs and integration into other tools)',
             default=False,
         )
         return parser

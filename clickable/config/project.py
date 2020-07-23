@@ -83,6 +83,7 @@ class ProjectConfig(object):
     debug_gdb = False
     debug_gdb_port = None
     dark_mode = False
+    interactive = True
     desktop_locale = os.getenv('LANG', 'C')
     desktop_skip_build = False
 
@@ -356,6 +357,9 @@ class ProjectConfig(object):
         if self.get_env_var('CLICKABLE_DARK_MODE'):
             self.dark_mode = True
 
+        if self.get_env_var('CLICKABLE_NON_INTERACTIVE'):
+            self.interactive = False
+
         config = {}
         for var, name in self.ENV_MAP.items():
             if self.get_env_var(var):
@@ -413,6 +417,9 @@ class ProjectConfig(object):
 
         if args.dark_mode:
             self.dark_mode = True
+
+        if args.non_interactive:
+            self.interactive = False
 
         if args.lang:
             self.desktop_locale = args.lang
@@ -695,6 +702,9 @@ class ProjectConfig(object):
     def set_builder_interactive(self):
         if self.config['builder'] or not self.needs_builder():
             return
+
+        if not self.interactive:
+            raise ClickableException('No builder specified. Add a builder to your clickable.json.')
 
         choice = input(
             Colors.INFO + 'No builder was specified, would you like to auto detect the builder [y/N]: ' + Colors.CLEAR

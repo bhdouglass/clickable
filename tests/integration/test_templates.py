@@ -11,7 +11,7 @@ from .base_test import IntegrationTest
 
 class TestTemplates(IntegrationTest):
     def setUp(self):
-        super().setUp()
+        super().setUpConfig()
         self.original_path = os.getcwd()
         self.app_path = os.path.abspath(os.path.join(self.test_dir, 'appname'))
 
@@ -33,9 +33,8 @@ class TestTemplates(IntegrationTest):
             shutil.move(self.tmp_config_file, self.config_file)
 
     def create_and_run(self, template, arch):
-        create_config = {}
-        command = CreateCommand(create_config)
-        command.run(path_arg=template, no_input=True)
+        command = CreateCommand(self.config)
+        command.run(path_arg=template)
         os.chdir(self.app_path)
 
         if template == 'Go':
