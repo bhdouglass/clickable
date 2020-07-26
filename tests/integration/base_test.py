@@ -2,11 +2,35 @@ from unittest import TestCase
 import os
 import shutil
 
+from clickable.container import Container
 from clickable.commands.create import CreateCommand
 from clickable.exceptions import ClickableException
-from ..mocks import ClickableMock
+from ..mocks import ClickableMock, ConfigMock
 
 class IntegrationTest(TestCase):
+    def setUpConfig(self,
+                    expect_exception=False,
+                    mock_config_json={},
+                    mock_config_env={},
+                    *args, **kwargs):
+        IntegrationTest.setUp(self)
+
+        self.config = None
+        try:
+            self.config = ConfigMock(
+                mock_config_json=mock_config_json,
+                mock_config_env=mock_config_env,
+                mock_install_files=True,
+                *args, **kwargs
+            )
+            self.config.container = Container(self.config)
+            self.config.interactive = False
+            if expect_exception:
+                raise ClickableException("A ClickableException was expected, but was not raised")
+        except ClickableException as e:
+            if not expect_exception:
+                raise e
+
     def setUp(self):
         self.clickable = None
         self.test_dir = os.path.abspath("tests/tmp")

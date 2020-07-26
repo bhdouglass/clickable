@@ -26,6 +26,7 @@ class UnitTest(TestCase):
                 *args, **kwargs
             )
             self.config.container = Container(self.config)
+            self.config.interactive = False
             if expect_exception:
                 raise ClickableException("A ClickableException was expected, but was not raised")
         except ClickableException as e:
