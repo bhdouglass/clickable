@@ -1,4 +1,5 @@
 import os
+import subprocess
 
 from .base import Command
 
@@ -17,4 +18,11 @@ class ReviewCommand(Command):
             click_path = os.path.join(self.config.build_dir, click)
 
         cwd = os.path.dirname(os.path.realpath(click_path))
-        self.config.container.run_command('click-review {}'.format(click_path), use_build_dir=False, cwd=cwd)
+
+        try:
+            self.config.container.run_command('click-review {}'.format(click_path), use_build_dir=False, cwd=cwd)
+        except subprocess.CalledProcessError as e:
+            if e.returncode == 2 or e.returncode == 3:
+                pass
+            else:
+                raise e
