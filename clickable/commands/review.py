@@ -22,7 +22,7 @@ class ReviewCommand(Command):
         try:
             self.config.container.run_command('click-review {}'.format(click_path), use_build_dir=False, cwd=cwd)
         except subprocess.CalledProcessError as e:
-            if e.returncode == 1 or e.returncode == 2:
+            if e.returncode == 2 or e.returncode == 3:
                 pass
             else:
                 raise e
