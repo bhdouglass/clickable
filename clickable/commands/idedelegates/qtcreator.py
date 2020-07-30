@@ -22,9 +22,11 @@ class QtCreatorDelegate(IdeCommandDelegate):
 
 
     def override_command(self, path):
-        #point qtcreator to a custom location to make sure instance share the same configuration
+        #point qtcreator settingspath to a custom location to make sure instance share the same configuration
         #also add current project's dir to make qtcreator open directly the project
-        p = self.project_path if os.path.exists(os.path.join(self.project_path,'clickable.json')) else ''
+        p = ''
+        if self.is_cmake_project() or os.path.exists(os.path.join(self.project_path,'clickable.json')):
+            p = self.project_path
         return path.replace('qtcreator', 'qtcreator -settingspath {} {}'.format(self.clickable_dir, p))
 
 
