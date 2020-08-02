@@ -1,3 +1,12 @@
+clickable (6.17.0) unstable; urgency=medium
+
+  * Fixed errors when using ssh for some functions
+  * Added initial non-interactive mode to create new apps
+  * Added better error handling
+  * Allow opening qtcreator without a clickable.json file
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sat, 01 Aug 2020 23:28:00 -0500
+
 clickable (6.16.0) unstable; urgency=medium
 
   * Enhanced and fixed issues with the qtcreator support
