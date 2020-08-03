@@ -3,6 +3,14 @@
 Changelog
 =========
 
+Changes in v6.17.0
+------------------
+
+- Fixed errors when using ssh for some functions
+- Added initial non-interactive mode to create new apps
+- Added better error handling
+- Allow opening qtcreator without a clickable.json file
+
 Changes in v6.16.0
 ------------------
 
