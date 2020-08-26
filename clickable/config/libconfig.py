@@ -192,7 +192,7 @@ class LibConfig(object):
                     "Docker image setup is ignored when using a custom docker image!")
 
     def needs_clickable_image(self):
-        return not self.is_custom_docker_image
+        return not self.container_mode and not self.is_custom_docker_image
 
     def needs_docker(self):
-        return True
+        return not self.container_mode
