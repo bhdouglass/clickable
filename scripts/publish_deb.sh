@@ -33,6 +33,5 @@ function publish {
 publish trusty
 publish xenial
 publish bionic
-publish eoan
 publish focal
 publish groovy
