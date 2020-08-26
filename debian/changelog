@@ -1,3 +1,10 @@
+clickable (6.17.1) unstable; urgency=medium
+
+  * Fixed container mode when building libraries
+  * Added better handling of keyboard interrupts
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 26 Aug 2020 00:43:00 -0500
+
 clickable (6.17.0) unstable; urgency=medium
 
   * Fixed errors when using ssh for some functions

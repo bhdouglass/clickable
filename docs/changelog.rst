@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v6.17.1
+------------------
+
+- Fixed container mode when building libraries
+- Added better handling of keyboard interrupts
+
 Changes in v6.17.0
 ------------------
 
