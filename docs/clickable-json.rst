@@ -25,7 +25,7 @@ Placeholders & Environment Variables
 Placeholders are values provided by Clickable that can be used in some
 configuration fields as ``${PLACEHOLDER}`` (``$PLACEHOLDER`` is deprecated syntax).
 All placeholders are provided as environment variables during build, additionally.
-For custom environment variables see :ref:`libraries <clickable-json-env_vars>`.
+For custom environment variables see :ref:`env_vars <clickable-json-env_vars>`.
 
 The following table lists all available placeholders.
 
