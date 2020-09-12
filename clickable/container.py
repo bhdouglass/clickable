@@ -167,7 +167,7 @@ class Container(object):
             command_remove = 'docker rm {}'.format(container)
             run_subprocess_check_call(command_remove, stdout=subprocess.DEVNULL)
 
-    def run_command(self, command, sudo=False, get_output=False,
+    def run_command(self, command, root_user=False, get_output=False,
             use_build_dir=True, cwd=None, tty=False, localhost=False):
         wrapped_command = command
         cwd = cwd if cwd else os.path.abspath(self.config.root_dir)
@@ -222,13 +222,17 @@ class Container(object):
 
             env_vars = self.config.prepare_docker_env_vars()
 
-            wrapped_command = 'docker run -v {project}:{project}:Z {env} {go} {rust} -w {cwd} -u {uid} --rm {tty} {network} -i {image} bash -c "{cmd}"'.format(
+            user = ""
+            if not root_user:
+                user = "-u {}".format(os.getuid())
+
+            wrapped_command = 'docker run -v {project}:{project}:Z {env} {go} {rust} {user} -w {cwd} --rm {tty} {network} -i {image} bash -c "{cmd}"'.format(
                 project=cwd,
                 env=env_vars,
                 go=go_config,
                 rust=rust_config,
                 cwd=self.config.build_dir if use_build_dir else cwd,
-                uid=os.getuid(),
+                user=user,
                 image=self.docker_image,
                 cmd=command,
                 tty="-t" if tty else "",
@@ -336,7 +340,7 @@ RUN {}
     def setup_container_mode(self):
         dependencies = self.get_dependency_packages()
         if dependencies:
-            self.run_command('apt-get update', sudo=True, use_build_dir=False)
+            self.run_command('apt-get update', use_build_dir=False)
 
             run = False
             for dep in dependencies:
@@ -352,14 +356,13 @@ RUN {}
 
             if run:
                 self.run_command(self.get_apt_install_cmd(dependencies),
-                        sudo=True,
                         use_build_dir=False)
             else:
                 logger.debug('Dependencies already installed')
 
         if self.config.image_setup:
             for command in self.config.image_setup.get('run', []):
-                self.run_command(command, sudo=True, use_build_dir=False)
+                self.run_command(command, use_build_dir=False)
 
     def needs_customized_container(self):
         return self.config.dependencies_host \
