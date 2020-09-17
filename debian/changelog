@@ -1,8 +1,8 @@
-clickable (6.18.0) unstable; urgency=medium
+clickable (6.18.0b) unstable; urgency=medium
 
   * Updated the clickable run command to use the container's root user
 
- -- Brian Douglass <bhdouglass@gmail.com>  Thu, 17 Sept 2020 00:44:00 -0500
+ -- Brian Douglass <bhdouglass@gmail.com>  Thu, 17 Sep 2020 00:44:00 -0500
 
 clickable (6.17.1) unstable; urgency=medium
 
