@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.18.0
+------------------
+
+- Updated the ``clickable run`` command to use the container's root user
+
 Changes in v6.17.1
 ------------------
 

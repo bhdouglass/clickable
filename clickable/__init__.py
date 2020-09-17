@@ -15,7 +15,7 @@ from clickable.logger import logger, log_file, console_handler
 from clickable.exceptions import ClickableException
 
 
-__version__ = '6.17.1'
+__version__ = '6.18.0'
 __container_minimum_required__ = 2
 
 
