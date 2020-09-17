@@ -172,7 +172,9 @@ Publish your click app to the OpenStore with a message to add to the changelog.
 ``clickable run "some command"``
 --------------------------------
 
-Runs an arbitrary command in the clickable container.
+Runs an arbitrary command in the clickable container. Changes do not persist.
+This is only meant to inspect the container. Opens a root bash shell if not
+command is specified.
 
 ``clickable update``
 ---------------------------
