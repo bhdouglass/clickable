@@ -3,6 +3,7 @@ import sys
 import shutil
 
 from .base import Command
+from .review import ReviewCommand
 from clickable.utils import (
     get_builders,
     run_subprocess_check_call,
@@ -42,6 +43,10 @@ class BuildCommand(Command):
             run_subprocess_check_call(self.config.postbuild, cwd=self.config.build_dir, shell=True)
 
         self.click_build()
+
+        if not self.config.skip_review:
+            review = ReviewCommand(self.config)
+            review.check(self.click_path, raise_on_error=True)
 
     def build(self):
         builder_classes = get_builders()
@@ -114,7 +119,7 @@ class BuildCommand(Command):
         self.config.container.run_command(command)
 
         click = self.config.install_files.get_click_filename()
-        click_path = os.path.join(self.config.build_dir, click)
+        self.click_path = os.path.join(self.config.build_dir, click)
 
         if self.config.click_output:
             output_file = os.path.join(self.config.click_output, click)
@@ -122,7 +127,7 @@ class BuildCommand(Command):
             if not os.path.exists(self.config.click_output):
                 os.makedirs(self.config.click_output)
 
-            shutil.copyfile(click_path, output_file)
-            click_path = output_file
+            shutil.copyfile(self.click_path, output_file)
+            self.click_path = output_file
 
-        logger.debug('Click outputted to {}'.format(click_path))
+        logger.debug('Click outputted to {}'.format(self.click_path))
