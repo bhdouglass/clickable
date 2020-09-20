@@ -46,7 +46,7 @@ class BuildCommand(Command):
 
         if not self.config.skip_review:
             review = ReviewCommand(self.config)
-            review.check(self.click_path, raise_on_error=True)
+            review.check(self.click_path, raise_on_error=False)
 
     def build(self):
         builder_classes = get_builders()
