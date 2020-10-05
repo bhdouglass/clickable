@@ -84,6 +84,7 @@ class ProjectConfig(object):
     debug_gdb_port = None
     dark_mode = False
     interactive = True
+    skip_review = False
     desktop_locale = os.getenv('LANG', 'C')
     desktop_skip_build = False
 
@@ -420,6 +421,9 @@ class ProjectConfig(object):
 
         if args.non_interactive:
             self.interactive = False
+
+        if args.skip_review:
+            self.skip_review = True
 
         if args.lang:
             self.desktop_locale = args.lang

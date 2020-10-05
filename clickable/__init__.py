@@ -178,6 +178,12 @@ class Clickable(object):
             help='Do not show prompts for anything (meant for CIs and integration into other tools)',
             default=False,
         )
+        parser.add_argument(
+            '--skip-review',
+            action='store_true',
+            help='Do not review click package after build (useful for unconfined apps)',
+            default=False,
+        )
         return parser
 
     def parse_args(self):
