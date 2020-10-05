@@ -1,5 +1,6 @@
 from unittest import TestCase, mock
 from unittest.mock import ANY
+import multiprocessing
 
 from clickable.commands.clean import CleanCommand
 from clickable.container import Container
@@ -11,12 +12,19 @@ class TestConfigCommand(TestCase):
     def setUp(self):
         self.config = ConfigMock(mock_config_env={})
         self.config.arch = None
+        self.config.make_jobs = None
 
     def test_set_conditional_defaults_default(self):
         self.config.container_mode = False
         self.config.set_conditional_defaults()
         self.assertEqual(self.config.arch, 'armhf')
+        self.assertEqual(self.config.make_jobs, str(multiprocessing.cpu_count()))
 
+    def test_set_conditional_defaults_make_args(self):
+        self.config.make_args = 'test -j5 and more stuff'
+
+        self.config.set_conditional_defaults()
+        self.assertEqual(self.config.make_jobs, '5')
 
     def test_set_conditional_defaults_container_mode(self):
         self.config.host_arch = 'x86_64'
