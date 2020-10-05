@@ -257,6 +257,15 @@ class Container(object):
                 dependencies.append('{}:{}'.format(dep, self.config.arch))
         return dependencies
 
+    def get_ppa_adding_commands(self):
+        if self.config.dependencies_ppa:
+            return [
+                'add-apt-repository -y {}'.format(ppa)
+                for ppa in self.config.dependencies_ppa
+            ]
+
+        return []
+
     def construct_dockerfile_content(self, commands):
         return '''
 FROM {}
@@ -312,12 +321,7 @@ RUN {}
         self.check_docker()
 
         commands = []
-
-        if self.config.dependencies_ppa:
-            ppa_commands = [
-                'add-apt-repository {}'.format(ppa) for ppa in self.config.dependencies_ppa
-            ]
-            commands.append(' && '.join(ppa_commands))
+        commands += self.get_ppa_adding_commands()
 
         dependencies = self.get_dependency_packages()
         if dependencies:
@@ -328,7 +332,7 @@ RUN {}
                     self.get_apt_install_cmd(dependencies)))
 
         if self.config.image_setup:
-           commands.extend(self.config.image_setup.get('run', []))
+            commands.extend(self.config.image_setup.get('run', []))
 
         dockerfile_content = self.construct_dockerfile_content(commands)
 
@@ -338,6 +342,10 @@ RUN {}
             logger.debug('Image already setup')
 
     def setup_container_mode(self):
+        ppa_commands = self.get_ppa_adding_commands()
+        if ppa_commands:
+            self.run_command(' && '.join(ppa_commands))
+
         dependencies = self.get_dependency_packages()
         if dependencies:
             self.run_command('apt-get update', use_build_dir=False)
