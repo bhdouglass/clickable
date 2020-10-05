@@ -2,6 +2,7 @@ import os
 import json
 import platform
 import re
+import multiprocessing
 import xml.etree.ElementTree as ElementTree
 from collections import OrderedDict
 
@@ -12,6 +13,7 @@ from .constants import Constants
 
 from ..utils import (
     merge_make_jobs_into_args,
+    get_make_jobs_from_args,
     flexible_string_to_list,
     env,
     FileNotFoundException,
@@ -42,6 +44,7 @@ class ProjectConfig(object):
 
     static_placeholders = OrderedDict({
         "ARCH_TRIPLET": "arch_triplet",
+        "NUM_PROCS": "make_jobs",
         "ROOT": "root_dir",
         "BUILD_DIR": "build_dir",
         "SRC_DIR": "src_dir",
@@ -142,7 +145,7 @@ class ProjectConfig(object):
             'app_bin_dir': '${INSTALL_DIR}/lib/${ARCH_TRIPLET}/bin',
             'app_qml_dir': '${INSTALL_DIR}/lib/${ARCH_TRIPLET}',
             'ignore': [],
-            'make_jobs': 0,
+            'make_jobs': None,
             'gopath': None,
             'cargo_home': os.path.expanduser('~/.clickable/cargo'),
             'docker_image': None,
@@ -249,6 +252,22 @@ class ProjectConfig(object):
 
                 if desktop and 'Exec' in desktop:
                     self.config['kill'] = desktop['Exec'].replace('%u', '').replace('%U', '').strip()
+
+        make_jobs_args = get_make_jobs_from_args(self.config['make_args'])
+        if make_jobs_args:
+            if self.config['make_jobs']:
+                raise ClickableException('Conflict: Number of make jobs has been specified by both, "make_args" and "make_jobs"!')
+            else:
+                logger.warning('Number of make jobs has been set via "make_args". better use "make_jobs" instead.')
+                self.config['make_jobs'] = make_jobs_args
+        else:
+            if not self.config['make_jobs']:
+                self.config['make_jobs'] = multiprocessing.cpu_count()
+
+            self.config['make_args'] = merge_make_jobs_into_args(
+                    self.config['make_args'], self.config['make_jobs'])
+
+        self.config['make_jobs'] = str(self.config['make_jobs'])
 
     def setup_image(self):
         self.set_build_arch()
@@ -548,9 +567,6 @@ class ProjectConfig(object):
                 self.placeholders[placeholder_old] = key
 
     def cleanup_config(self):
-        self.make_args = merge_make_jobs_into_args(
-                make_args=self.make_args, make_jobs=self.make_jobs)
-
         for key in self.flexible_lists:
             self.config[key] = flexible_string_to_list(self.config[key])
 
