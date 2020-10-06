@@ -34,6 +34,7 @@ Placeholder             Output
 ======================= ======
 ARCH                    Target architecture (``armhf``, ``arm64``, ``amd64`` or ``all``)
 ARCH_TRIPLET            Target architecture triplet (``arm-linux-gnueabihf``, ``aarch63-linux-gnu``, ``x86_64-linux-gnu`` or ``all``)
+NUM_PROCS               Number of build jobs recommended (``make_jobs``) and used by the CMake and QMake builders
 ROOT                    Value of ``root_dir``
 BUILD_DIR               Value of ``build_dir``
 SRC_DIR                 Value of ``src_dir``
