@@ -1,3 +1,12 @@
+clickable (6.19.0) unstable; urgency=medium
+
+  * Click review is now run after each build by default
+  * Added NUM_PROCS env var and placeholder for use in custom builders
+  * Enabled dependencies_ppa and image_setup in container mode
+  * Fixed issues detecting the timezone for desktop mode
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 07 Oct 2020 11:23:00 -0500
+
 clickable (6.18.0b) unstable; urgency=medium
 
   * Updated the clickable run command to use the container's root user
