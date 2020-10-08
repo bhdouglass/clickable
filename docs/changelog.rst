@@ -3,6 +3,14 @@
 Changelog
 =========
 
+Changes in v6.19.0
+------------------
+
+- Click review is now run after each build by default
+- Added NUM_PROCS env var and placeholder for use in custom builders
+- Enabled dependencies_ppa and image_setup in container mode
+- Fixed issues detecting the timezone for desktop mode
+
 Changes in v6.18.0
 ------------------
 

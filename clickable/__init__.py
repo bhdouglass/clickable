@@ -15,7 +15,7 @@ from clickable.logger import logger, log_file, console_handler
 from clickable.exceptions import ClickableException
 
 
-__version__ = '6.18.0'
+__version__ = '6.19.0'
 __container_minimum_required__ = 2
 
 
@@ -176,6 +176,12 @@ class Clickable(object):
             '--non-interactive',
             action='store_true',
             help='Do not show prompts for anything (meant for CIs and integration into other tools)',
+            default=False,
+        )
+        parser.add_argument(
+            '--skip-review',
+            action='store_true',
+            help='Do not review click package after build (useful for unconfined apps)',
             default=False,
         )
         return parser

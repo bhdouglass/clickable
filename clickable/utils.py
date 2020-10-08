@@ -8,7 +8,6 @@ import glob
 import shutil
 import inspect
 from os.path import dirname, basename, isfile, join
-import multiprocessing
 
 from clickable.builders.base import Builder
 from clickable.logger import logger
@@ -137,24 +136,25 @@ def get_builders():
     return builder_classes
 
 
-def merge_make_jobs_into_args(make_args=None, make_jobs=0):
-    make_args_contains_jobs = make_args and any([arg.startswith('-j') for arg in make_args])
+def get_make_jobs_from_args(make_args):
+    for arg in flexible_string_to_list(make_args):
+        if arg.startswith('-j'):
+            jobs_str = arg[2:]
+            try:
+                return int(jobs_str)
+            except ValueError:
+                raise ClickableException('"{}" in "make_args" is not a number, but it should be.')
 
-    if make_args_contains_jobs:
-        if make_jobs:
-            raise ClickableException('Conflict: Number of make jobs has been specified by both, "make_args" and "make_jobs"!')
-        else:
-            return make_args
+    return None
+
+
+def merge_make_jobs_into_args(make_args, make_jobs):
+    make_jobs_arg = '-j{}'.format(make_jobs)
+
+    if make_args:
+        return '{} {}'.format(make_args, make_jobs_arg)
     else:
-        if make_jobs:
-            make_jobs_arg = '-j{}'.format(make_jobs)
-        else:
-            make_jobs_arg = '-j{}'.format(multiprocessing.cpu_count())
-
-        if make_args:
-            return '{} {}'.format(make_args, make_jobs_arg)
-        else:
-            return make_jobs_arg
+        return make_jobs_arg
 
 
 def flexible_string_to_list(variable):

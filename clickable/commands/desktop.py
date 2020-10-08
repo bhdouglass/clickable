@@ -142,13 +142,21 @@ class DesktopCommand(Command):
 
     def get_time_zone(self):
         try:
-            return run_subprocess_check_output('timedatectl show -p Timezone --value 2>/dev/null')
+            return run_subprocess_check_output(
+                'timedatectl show -p Timezone --value',
+                stderr=subprocess.DEVNULL)
         except:
-            pass
+            logger.debug(
+                'timedatectl show command failed. Falling back to alternative way to detect timezone...'
+            )
 
         if os.path.exists('/etc/timezone'):
             with open('/etc/timezone') as host_timezone_file:
                 return host_timezone_file.readline().strip()
+        else:
+            logger.debug(
+                '/etc/timezone does not exist. Falling back to alternative way to detect timezone...'
+            )
 
         try:
             output = run_subprocess_check_output('timedatectl status')
@@ -159,9 +167,11 @@ class DesktopCommand(Command):
                     end = line.find('(')
                     return line[start:end].strip()
         except:
-            logger.debug("Failed to set timezone from host in desktop mode. Falling back to UTC.")
-            pass
+            logger.debug(
+                "timedatctl status method failed to set timezone from host in desktop mode..."
+            )
 
+        logger.debug("Falling back to UTC as timezone.")
         return 'UTC'
 
     def setup_environment(self, working_directory):
