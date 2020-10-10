@@ -138,6 +138,10 @@
     "image_setup": {
       "type": ["object"],
       "properties": {
+        "env": {
+          "type": "object",
+          "additionalProperties": { "type": "string"}
+        },
         "run": {
           "type": "array",
           "items": {"type": "string"}
