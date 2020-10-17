@@ -17,12 +17,18 @@ class Constants(object):
     arch_agnostic_builders = [PURE_QML_QMAKE, PURE_QML_CMAKE, PURE]
 
     container_mapping = {
-        "x86_64": {
-            ('16.04', 'armhf'): 'clickable/ubuntu-sdk:16.04-armhf',
-            ('16.04', 'amd64'): 'clickable/ubuntu-sdk:16.04-amd64',
-            ('16.04', 'amd64-nvidia'): 'clickable/ubuntu-sdk:16.04-amd64-nvidia',
-            ('16.04', 'amd64-ide'): 'clickable/ubuntu-sdk:16.04-amd64-ide',
-            ('16.04', 'arm64'): 'clickable/ubuntu-sdk:16.04-arm64',
+        "armhf": {
+            ('16.04', 'armhf'): 'clickable/armhf-16.04-armhf',
+        },
+        "arm64": {
+            ('16.04', 'arm64'): 'clickable/arm64-16.04-arm64',
+        },
+        "amd64": {
+            ('16.04', 'armhf'): 'clickable/amd64-16.04-armhf',
+            ('16.04', 'arm64'): 'clickable/amd64-16.04-arm64',
+            ('16.04', 'amd64'): 'clickable/amd64-16.04-amd64',
+            ('16.04', 'amd64-nvidia'): 'clickable/amd64-16.04-amd64-nvidia',
+            ('16.04', 'amd64-ide'): 'clickable/amd64-16.04-amd64-ide',
         }
     }
 

@@ -203,7 +203,7 @@ class DesktopCommand(Command):
             'PATH': self.get_docker_path_env(working_directory),
             'HOME': Constants.device_home,
             'OXIDE_NO_SANDBOX': '1',
-            'UBUNTU_APP_LAUNCH_ARCH': 'x86_64-linux-gnu',
+            'UBUNTU_APP_LAUNCH_ARCH': self.config.arch_triplet,
         }
 
         if self.custom_mode:
@@ -214,7 +214,7 @@ class DesktopCommand(Command):
 
     def get_docker_lib_path_env(self, working_directory):
         return ':'.join([
-            os.path.join(working_directory, 'lib/x86_64-linux-gnu'),
+            os.path.join(working_directory, 'lib/{}'.format(self.config.arch_triplet)),
             os.path.join(working_directory, 'lib'),
             '/usr/local/nvidia/lib',
             '/usr/local/nvidia/lib64',
@@ -223,7 +223,7 @@ class DesktopCommand(Command):
     def get_docker_path_env(self, working_directory):
         return ':'.join([
             os.path.join(working_directory, 'bin'),
-            os.path.join(working_directory, 'lib/x86_64-linux-gnu/bin'),
+            os.path.join(working_directory, 'lib/{}/bin'.format(self.config.arch_triplet)),
             working_directory,
             '/usr/local/nvidia/bin',
             '/bin',
