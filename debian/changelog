@@ -1,3 +1,11 @@
+
+clickable (6.20.0) unstable; urgency=medium
+
+  * Added support for armhf and arm64 hosts with new docker images
+  * Added support for env vars in image setup
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Thu, 22 Oct 2020 00:37:00 -0500
+
 clickable (6.19.0) unstable; urgency=medium
 
   * Click review is now run after each build by default
