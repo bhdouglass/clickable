@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v6.20.0
+------------------
+
+- Added support for armhf and arm64 hosts with new docker images
+- Added support for env vars in image setup
+
 Changes in v6.19.0
 ------------------
 

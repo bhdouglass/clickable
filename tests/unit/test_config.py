@@ -27,7 +27,7 @@ class TestConfigCommand(TestCase):
         self.assertEqual(self.config.make_jobs, '5')
 
     def test_set_conditional_defaults_container_mode(self):
-        self.config.host_arch = 'x86_64'
+        self.config.host_arch = 'amd64'
         self.config.container_mode = True
 
         self.config.set_conditional_defaults()

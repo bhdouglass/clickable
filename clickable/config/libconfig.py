@@ -49,7 +49,7 @@ class LibConfig(object):
 
         self.debug_build = debug_build
 
-        self.host_arch = platform.machine()
+        self.set_host_arch()
         self.container_list = list(Constants.container_mapping[self.host_arch].values())
 
         self.config = {
@@ -190,6 +190,13 @@ class LibConfig(object):
             if self.image_setup:
                 logger.warning(
                     "Docker image setup is ignored when using a custom docker image!")
+
+    def set_host_arch(self):
+        host = platform.machine()
+        self.host_arch = Constants.host_arch_mapping.get(host, None)
+
+        if not self.host_arch:
+            raise ClickableException("No support for host architecture {}".format(host))
 
     def needs_clickable_image(self):
         return not self.container_mode and not self.is_custom_docker_image

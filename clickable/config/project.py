@@ -99,7 +99,7 @@ class ProjectConfig(object):
         self.placeholders.update({"ARCH": "arch"})
 
         self.clickable_version = clickable_version
-        self.host_arch = platform.machine()
+        self.set_host_arch()
         self.cwd = cwd if cwd else os.getcwd()
         self.project_files = ProjectFiles(self.cwd)
 
@@ -212,16 +212,16 @@ class ProjectConfig(object):
             if self.is_arch_agnostic():
                 self.config["arch"] = "all"
                 logger.debug('Architecture set to "all" because builder "{}" is architecture agnostic'.format(self.config['builder']))
-            elif self.is_desktop_mode() or self.is_ide_command():
-                self.config["arch"] = "amd64"
-                logger.debug('Architecture set to "amd64" because of desktop mode.')
+            elif self.is_desktop_mode():
+                self.config["arch"] = self.host_arch
+                logger.debug('Architecture set to "{}" because of desktop mode.'.format(self.config["arch"]))
             elif self.config["restrict_arch"]:
                 self.config["arch"] = self.config["restrict_arch"]
             elif self.config["restrict_arch_env"]:
                 self.config["arch"] = self.config["restrict_arch_env"]
                 logger.debug('Architecture set to "{}" due to environment restriction'.format(self.config["arch"]))
             elif self.container_mode:
-                self.config['arch'] = Constants.host_arch_mapping[self.host_arch]
+                self.config['arch'] = self.host_arch
                 logger.debug('Architecture set to "{}" due to container mode'.format(self.config['arch']))
             else:
                 self.config['arch'] = 'armhf'
@@ -235,6 +235,9 @@ class ProjectConfig(object):
         if self.config['arch'] not in Constants.arch_triplet_mapping:
             raise ClickableException('There is currently no support for architecture  "{}"'.format(self.config['arch']))
         self.config['arch_triplet'] = Constants.arch_triplet_mapping[self.config['arch']]
+
+        if self.host_arch not in Constants.container_mapping:
+            raise ClickableException('Clickable currently does not have docker images for your host architecture "{}"'.format(self.host_arch))
 
         if not self.config['kill']:
             if self.config['builder'] == Constants.CORDOVA:
@@ -274,9 +277,6 @@ class ProjectConfig(object):
 
         if self.needs_clickable_image():
             self.check_nvidia_mode()
-
-            if self.host_arch not in Constants.container_mapping:
-                raise ClickableException('Clickable currently does not have docker images for your host architecture "{}"'.format(self.host_arch))
 
             if self.use_nvidia and not self.build_arch.endswith('-nvidia'):
                 self.build_arch = "{}-nvidia".format(self.build_arch)
@@ -519,9 +519,16 @@ class ProjectConfig(object):
             if key in self.path_keys and self.config[key]:
                 self.config[key] = make_absolute(self.config[key])
 
+    def set_host_arch(self):
+        host = platform.machine()
+        self.host_arch = Constants.host_arch_mapping.get(host, None)
+
+        if not self.host_arch:
+            raise ClickableException("No support for host architecture {}".format(host))
+
     def set_build_arch(self):
         if self.is_desktop_mode() or self.config['arch'] == 'all':
-            self.build_arch = 'amd64'
+            self.build_arch = self.host_arch
         else:
             self.build_arch = self.config['arch']
 
@@ -589,7 +596,7 @@ class ProjectConfig(object):
         return self.config["builder"] in Constants.arch_agnostic_builders
 
     def is_desktop_mode(self):
-        return bool(set(['desktop', 'test']).intersection(self.commands))
+        return bool(set(['desktop', 'test', 'ide']).intersection(self.commands))
 
     def is_ide_command(self):
         return "ide" in self.commands
@@ -645,8 +652,8 @@ class ProjectConfig(object):
                 ))
         else:
             if self.is_desktop_mode():
-                if self.config["arch"] != "amd64":
-                    raise ClickableException('Desktop mode needs architecture "amd64", but "{}" was specified'.format(self.config["arch"]))
+                if self.config["arch"] != self.host_arch:
+                    raise ClickableException('Desktop mode needs host architecture "{}", but "{}" was specified'.format(self.host_arch, self.config["arch"]))
 
         if (self.config['restrict_arch'] and
                 self.config['restrict_arch'] != self.config['arch']):

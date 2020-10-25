@@ -266,13 +266,23 @@ class Container(object):
 
         return []
 
-    def construct_dockerfile_content(self, commands):
+    def construct_dockerfile_content(self, commands, env_vars):
+        env_strings = [
+            'ENV {}="{}"'.format(key, var) for key,var in env_vars.items()
+        ]
+
+        run_strings = [
+            'RUN {}'.format(cmd) for cmd in commands
+        ]
+
         return '''
 FROM {}
-RUN {}
+{}
+{}
         '''.format(
             self.base_docker_image,
-            '\nRUN '.join(commands)
+            '\n'.join(env_strings),
+            '\n'.join(run_strings)
         ).strip()
 
     def create_custom_container(self, dockerfile_content):
@@ -321,6 +331,8 @@ RUN {}
         self.check_docker()
 
         commands = []
+        env_vars = self.config.image_setup.get('env', {})
+
         commands += self.get_ppa_adding_commands()
 
         dependencies = self.get_dependency_packages()
@@ -334,7 +346,7 @@ RUN {}
         if self.config.image_setup:
             commands.extend(self.config.image_setup.get('run', []))
 
-        dockerfile_content = self.construct_dockerfile_content(commands)
+        dockerfile_content = self.construct_dockerfile_content(commands, env_vars)
 
         if self.is_dockerfile_outdated(dockerfile_content):
             self.create_custom_container(dockerfile_content)

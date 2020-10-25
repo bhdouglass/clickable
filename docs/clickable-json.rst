@@ -347,21 +347,34 @@ Can be specified as a string or a list of strings.
 image_setup
 -----------
 Optional, dictionary containing setup configuration for the docker image used.
-The image is based on the default image provided by Clickable.
-
-run
-^^^
-Optional, a list of commands to run on image setup (each added as `RUN <cmd>` to
-the corresponding Dockerfile). Example:
+The image is based on the default image provided by Clickable. Example:
 
 .. code-block:: javascript
 
     "image_setup": {
+        "env": {
+            "PATH": "/opt/someprogram/bin:$PATH"
+        },
         "run": [
             "rustup default nightly",
             "rustup install 1.39.0"
         ]
     }
+
+run
+^^^
+Optional, a list of commands to run on image setup (each added as `RUN <cmd>` to
+the corresponding Dockerfile).
+
+These commands also run in container mode (CI).
+
+env
+^^^
+Optional, a dictionary of env vars to add during image setup (each added as
+`ENV <key>="<val>"` to the corresponding Dockerfile).
+
+These are ignored in container mode (use
+:ref:`env_vars <clickable-json-env_vars>` instead).
 
 docker_image
 ------------
