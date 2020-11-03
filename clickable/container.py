@@ -396,19 +396,18 @@ FROM {}
 
         version = 0
         try:
-            version_string = self.run_command(
-                "cat /image_version",
-                get_output=True,
-                use_build_dir=False,
-            ).strip()
+            format_string = '{{ index .Config.Labels "image_version"}}'
+            command = "docker inspect --format '{}' {}".format(format_string,
+                    self.docker_image)
+            logger.debug('Checking docker image version via: {}'.format(command))
+
+            version_string = run_subprocess_check_output(command)
             version = int(version_string)
-        except ClickableException as e:
-            raise e
-        except Exception as e:
+        except (ValueError, subprocess.CalledProcessError):
             logger.warn("Could not read the image version from the container")
 
         if version < self.minimum_version:
-            raise ClickableException('This version of Clickable requires a newer version of the docker images than installed. Please run "clickable update" to update your local images.')
+            raise ClickableException('This version of Clickable requires Clickable docker image {} in version {} or higher (found version {}). Please run "clickable update" to update your local images.'.format(self.docker_image, self.minimum_version, version))
 
 
     def setup(self):
