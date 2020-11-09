@@ -9,6 +9,7 @@ from clickable.exceptions import ClickableException
 from clickable.logger import logger
 from .constants import Constants
 from collections import OrderedDict
+import multiprocessing
 import platform
 
 
@@ -70,7 +71,7 @@ class LibConfig(object):
             'dependencies_host': [],
             'dependencies_target': [],
             'dependencies_ppa': [],
-            'make_jobs': 0,
+            'make_jobs': None,
             'docker_image': None,
             'build_args': [],
             'env_vars': {},
@@ -163,6 +164,8 @@ class LibConfig(object):
                 self.config[key] = make_absolute(self.config[key])
 
     def cleanup_config(self):
+        if not self.config['make_jobs']:
+            self.config['make_jobs'] = multiprocessing.cpu_count()
         self.make_args = merge_make_jobs_into_args(
             make_args=self.make_args, make_jobs=self.make_jobs)
 
