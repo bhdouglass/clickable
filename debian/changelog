@@ -1,3 +1,8 @@
+clickable (6.20.1) unstable; urgency=medium
+
+  * Fixed building libraries using make
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Tue, 17 Nov 2020 09:22:00 -0500
 
 clickable (6.20.0) unstable; urgency=medium
 

@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.20.1
+------------------
+
+- Fixed building libraries using make
+
 Changes in v6.20.0
 ------------------
 
