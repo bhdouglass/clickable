@@ -151,6 +151,7 @@ class ProjectConfig(object):
             'docker_image': None,
             'build_args': [],
             'env_vars': {},
+            'env_env_vars': {},
             'make_args': [],
             'dirty': False,
             'libraries': {},
@@ -178,6 +179,7 @@ class ProjectConfig(object):
         self.config.update(json_config)
         env_config = self.load_env_config()
         self.config.update(env_config)
+        self.config['env_vars'].update(self.config['env_env_vars'])
 
         if args:
             arg_config = self.load_arg_config(args)
@@ -385,7 +387,13 @@ class ProjectConfig(object):
             if self.get_env_var(var):
                 config[name] = self.get_env_var(var)
 
+        config["env_env_vars"] = self.get_custom_env_vars(prefix="CLICKABLE_ENV_")
+
         return config
+
+    def get_custom_env_vars(self, prefix):
+        start = len(prefix)
+        return {k[start:]:v for k,v in os.environ.items() if k.startswith(prefix)}
 
     def get_env_var(self, key):
         return env(key)
