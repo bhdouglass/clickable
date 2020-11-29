@@ -99,21 +99,47 @@ class BuildCommand(Command):
         for p, dest in self.config.install_data.items():
             self.install_files(p, dest)
 
-    def set_arch(self):
-        manifest = self.config.install_files.get_manifest()
-
+    def set_arch(self, manifest):
         arch = manifest.get('architecture', None)
+
         if arch == '@CLICK_ARCH@':
-            arch = self.config.arch
-            manifest['architecture'] = arch
-            self.config.install_files.write_manifest(manifest)
+            manifest['architecture'] = self.config.arch
+            return True
 
         if arch != self.config.arch:
             raise ClickableException('Clickable is building for architecture "{}", but "{}" is specified in the manifest. You can set the architecture field to @CLICK_ARCH@ to let Clickable set the architecture field automatically.'.format(
                 self.config.arch, arch))
 
+        return False
+
+    def set_framework(self, manifest):
+        framework = manifest.get('framework', None)
+
+        if framework == '@CLICK_FRAMEWORK@':
+            manifest['framework'] = self.config.framework
+            return True
+
+        if framework != self.config.framework:
+            logger.warning('Framework in manifest is "{}", Clickable expected "{}".'.format(
+                framework, self.config.framework))
+
+        return False
+
+    def manipulate_manifest(self):
+        manifest = self.config.install_files.get_manifest()
+        has_changed = False
+
+        if self.set_arch(manifest):
+            has_changed = True
+
+        if self.set_framework(manifest):
+            has_changed = True
+
+        if has_changed:
+            self.config.install_files.write_manifest(manifest)
+
     def click_build(self):
-        self.set_arch()
+        self.manipulate_manifest()
 
         command = 'click build {} --no-validate'.format(self.config.install_dir)
         self.config.container.run_command(command)
