@@ -30,6 +30,8 @@ class ProjectConfig(object):
 
     ENV_MAP = {
         'CLICKABLE_ARCH': 'restrict_arch_env',
+        'CLICKABLE_FRAMEWORK': 'framework',
+        'CLICKABLE_QT_VERSION': 'qt_version',
         'CLICKABLE_BUILDER': 'builder',
         'CLICKABLE_BUILD_DIR': 'build_dir',
         'CLICKABLE_DEFAULT': 'default',
@@ -43,6 +45,8 @@ class ProjectConfig(object):
     }
 
     static_placeholders = OrderedDict({
+        "SDK_FRAMEWORK": "framework",
+        "QT_VERSION": "qt_version",
         "ARCH_TRIPLET": "arch_triplet",
         "NUM_PROCS": "make_jobs",
         "ROOT": "root_dir",

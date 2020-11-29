@@ -15,6 +15,16 @@ Clickable to be used during build.
 
 Restricts build commands (``build``, ``build-libs``, ``desktop``) to the specified architecture. Architecture agnostic builds (``all``) are not affected. Useful in container mode.
 
+``CLICKABLE_QT_VERSION``
+------------------------
+
+Overrides the clickable.json's :ref:`builder <clickable-json-qt_version>`.
+
+``CLICKABLE_FRAMEWORK``
+-----------------------
+
+Overrides the clickable.json's :ref:`builder <clickable-json-framework>`.
+
 ``CLICKABLE_BUILDER``
 ---------------------
 
