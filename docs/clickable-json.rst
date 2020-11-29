@@ -74,6 +74,25 @@ clickable_minimum_required
 Optional, a minimum Clickable version number required to build the project.
 Ex: ``"6"`` or ``"5.4.0"``
 
+.. _clickable-json-qt_version:
+
+qt_version
+----------
+
+Qt version consisting of major and minor version. This value is used to
+determine the framework automatically. Defaults to ``5.9``.
+Ex: ``5.12``
+
+.. _clickable-json-framework:
+
+framework
+---------
+
+The SDK framework which the app should be built for. This allows Clickable to
+choose the correct docker image and set the ``framework`` field in the manifest
+accordingly, if desired.
+Ex: ``ubuntu-sdk-16.04.4``
+
 .. _clickable-json-restrict_arch:
 
 restrict_arch

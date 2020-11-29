@@ -158,6 +158,8 @@ class ProjectConfig(object):
             'test': 'qmltestrunner',
             'install_dir': '${BUILD_DIR}/install',
             'image_setup': {},
+            'qt_version': Constants.default_qt,
+            'framework': None,
         }
 
     def parse_configs(self, args, commands):
@@ -274,6 +276,15 @@ class ProjectConfig(object):
 
         self.config['make_jobs'] = str(self.config['make_jobs'])
 
+        if not self.config['framework']:
+            qt = self.config['qt_version']
+            framework = Constants.default_qt_framework_mapping.get(qt, None)
+
+            if not framework:
+                raise ClickableException('Qt version "{}" is not known to Clickable'.format(qt))
+
+            self.config['framework'] = framework
+
     def setup_image(self):
         self.set_build_arch()
 
@@ -289,10 +300,13 @@ class ProjectConfig(object):
             if self.is_ide_command() and not self.use_nvidia:
                 self.build_arch = "{}-ide".format(self.build_arch)
 
+            image_framework = Constants.framework_image_mapping.get(
+                    self.config['framework'], Constants.framework_fallback)
+
             container_mapping_host = Constants.container_mapping[self.host_arch]
-            if ('16.04', self.build_arch) not in container_mapping_host:
-                raise ClickableException('There is currently no docker image for 16.04/{}'.format(self.build_arch))
-            self.config['docker_image'] = container_mapping_host[('16.04', self.build_arch)]
+            if (image_framework, self.build_arch) not in container_mapping_host:
+                raise ClickableException('There is currently no docker image for {}/{}'.format(image_framework, self.build_arch))
+            self.config['docker_image'] = container_mapping_host[(image_framework, self.build_arch)]
             self.container_list = list(container_mapping_host.values())
 
     def setup_helpers(self):

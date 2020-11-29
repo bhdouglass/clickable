@@ -60,6 +60,8 @@
         ""
       ]
     },
+    "framework": {"type": "string"},
+    "qt_version": {"type": "string"},
     "prebuild": {"type": "string"},
     "build": {"type": "string"},
     "postbuild": {"type": "string"},
