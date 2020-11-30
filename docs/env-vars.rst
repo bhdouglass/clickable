@@ -119,3 +119,12 @@ Overrides the clickable.json's :ref:`test <clickable-json-test>`.
 -----------------------
 
 Same as ``--dark-mode``
+
+``CLICKABLE_ENV_<CUSTOM>``
+--------------------------
+
+Adds custom env vars to the build container. E.g. set
+``CLICKABLE_ENV_BUILD_TESTS=ON`` to have ``BUILD_TESTS=ON`` set in the build
+container.
+
+Overrides env vars in :ref:`test <clickable-json-env_vars>`.
