@@ -29,7 +29,7 @@ class Device(object):
     def check_any_attached(self):
         devices = self.detect_attached()
         if len(devices) == 0:
-            raise ClickableException('No devices available via adb')
+            raise ClickableException('Cannot access device.\nADB: No devices attached\nSSH: no IP address specified (--ssh)')
 
     def check_multiple_attached(self):
         devices = self.detect_attached()
@@ -59,6 +59,29 @@ class Device(object):
 
         run_subprocess_check_call(command, shell=True)
 
+    def get_ssh_command(self, command, forward_port=None):
+        ssh_args = ""
+
+        if forward_port:
+            ssh_args = "{0} -L {1}:localhost:{1}".format(ssh_args, forward_port)
+
+        if isinstance(command, list):
+            command = " && ".join(command)
+
+        return 'echo "{}" | ssh {} phablet@{}'.format(
+                command, ssh_args, self.config.ssh)
+
+    def get_adb_command(self, command, forward_port=None):
+        adb_args = self.get_adb_args()
+
+        if forward_port:
+            self.forward_port_adb(forward_port, adb_args)
+
+        if isinstance(command, list):
+            command = ";".join(command)
+
+        return 'adb {} shell "{}"'.format(adb_args, command)
+
     def run_command(self, command, cwd=None, get_output=False, forward_port=None):
         if self.config.container_mode:
             logger.debug('Skipping device command, running in container mode')
@@ -69,26 +92,11 @@ class Device(object):
 
         wrapped_command = ''
         if self.config.ssh:
-            ssh_args = ""
-
-            if forward_port:
-                ssh_args = "{0} -L {1}:localhost:{1}".format(ssh_args, forward_port)
-
-            if isinstance(command, list):
-                command = " && ".join(command)
-
-            wrapped_command = 'echo "{}" | ssh {} phablet@{}'.format(
-                command, ssh_args, self.config.ssh)
+            logger.debug("Accessing {} via SSH".format(self.config.ssh))
+            wrapped_command = self.get_ssh_command(command, forward_port)
         else:
-            adb_args = self.get_adb_args()
-
-            if forward_port:
-                self.forward_port_adb(forward_port, adb_args)
-
-            if isinstance(command, list):
-                command = ";".join(command)
-
-            wrapped_command = 'adb {} shell "{}"'.format(adb_args, command)
+            logger.debug("Accessing device via ADB")
+            wrapped_command = self.get_adb_command(command, forward_port)
 
         if get_output:
             return run_subprocess_check_output(wrapped_command, cwd=cwd, shell=True)
