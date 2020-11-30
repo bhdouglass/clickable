@@ -28,6 +28,7 @@ class Constants(object):
             ('16.04', 'arm64'): 'clickable/amd64-16.04-arm64',
             ('16.04', 'amd64'): 'clickable/amd64-16.04-amd64',
             ('16.04', 'amd64-nvidia'): 'clickable/amd64-16.04-amd64-nvidia',
+            ('16.04', 'amd64-nvidia-ide'): 'clickable/amd64-16.04-amd64-nvidia-ide',
             ('16.04', 'amd64-ide'): 'clickable/amd64-16.04-amd64-ide',
         }
     }

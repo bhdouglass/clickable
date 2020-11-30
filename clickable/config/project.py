@@ -279,9 +279,12 @@ class ProjectConfig(object):
             self.check_nvidia_mode()
 
             if self.use_nvidia and not self.build_arch.endswith('-nvidia'):
-                self.build_arch = "{}-nvidia".format(self.build_arch)
+                if self.is_ide_command():
+                    self.build_arch = "{}-nvidia-ide".format(self.build_arch)
+                else:
+                    self.build_arch = "{}-nvidia".format(self.build_arch)
 
-            if self.is_ide_command():
+            if self.is_ide_command() and not self.use_nvidia:
                 self.build_arch = "{}-ide".format(self.build_arch)
 
             container_mapping_host = Constants.container_mapping[self.host_arch]
