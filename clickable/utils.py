@@ -182,9 +182,11 @@ def validate_clickable_json(config, schema):
         logger.warning("Dependency 'jsonschema' not found. Could not validate clickable.json.")
         pass
 
+
 def image_exists(image):
-    command = 'docker images -q {}'.format(image)
-    return run_subprocess_check_output(command).strip() != ""
+    command = 'docker image inspect {}'.format(image)
+    return run_subprocess_call(command,
+            stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL) == 0
 
 
 def makedirs(path):

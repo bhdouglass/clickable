@@ -394,6 +394,9 @@ FROM {}
         if not self.minimum_version:
             return
 
+        if not image_exists(self.docker_image):
+            return
+
         version = 0
         try:
             format_string = '{{ index .Config.Labels "image_version"}}'
