@@ -5,7 +5,7 @@ from clickable.exceptions import ClickableException
 
 qmake_arch_spec_mapping = {
     'amd64': 'linux-g++',
-    'armhf': 'ubuntu-arm-gnueabihf-g++',
+    'armhf': 'linux-arm-gnueabihf-g++',
     'arm64': 'linux-aarch64-gnu-g++'
 }
 
