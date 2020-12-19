@@ -1,3 +1,14 @@
+clickable (6.21.0) unstable; urgency=medium
+
+  * Added option to use an nvidia specific container for Clickable's ide feature
+  * Improved error messages when no device can be found
+  * Added option to set custom env vars for the build container
+  * Improved how container version numbers are checked
+  * Improved checking for container updates
+  * Minor fixes
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sat, 19 Dec 2020 09:44:00 -0500
+
 clickable (6.20.1) unstable; urgency=medium
 
   * Fixed building libraries using make

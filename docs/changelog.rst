@@ -3,6 +3,16 @@
 Changelog
 =========
 
+Changes in v6.21.0
+------------------
+
+- Added option to use an nvidia specific container for Clickable's ide feature
+- Improved error messages when no device can be found
+- Added option to set custom env vars for the build container
+- Improved how container version numbers are checked
+- Improved checking for container updates
+- Minor fixes
+
 Changes in v6.20.1
 ------------------
 
