@@ -70,6 +70,18 @@ can specify which device to install/launch/etc on by using the flag
 ``--serial-number`` or ``-s`` for short. You can get the serial number
 by running ``clickable devices``.
 
+App Manifest
+------------
+
+The ``architecture`` and ``framework`` fields in the ``manifest.json`` need to be set according
+to the architecture the app is build for (``--arch``) and the minimum framework version it
+requires, e.g. depending on the QT Version (:ref:`qt_version <clickable-json-qt_version>`).
+To let Clickable automatically set those fields, leave them empty or set them to
+``@CLICK_ARCH@`` and ``@CLICK_FRAMEWORK@`` respectively.
+
+Note: The app templates provided by Clickable make use of CMake's ``configure()`` to set
+the fields in the ``manifest.json``.
+
 Advanced Usage
 --------------
 

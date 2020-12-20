@@ -18,7 +18,7 @@ Restricts build commands (``build``, ``build-libs``, ``desktop``) to the specifi
 ``CLICKABLE_QT_VERSION``
 ------------------------
 
-Overrides the clickable.json's :ref:`builder <clickable-json-qt_version>`.
+Overrides the clickable.json's :ref:`qt_version <clickable-json-qt_version>`.
 
 ``CLICKABLE_FRAMEWORK``
 -----------------------
