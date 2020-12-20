@@ -102,7 +102,7 @@ class BuildCommand(Command):
     def set_arch(self, manifest):
         arch = manifest.get('architecture', None)
 
-        if arch == '@CLICK_ARCH@':
+        if arch == '@CLICK_ARCH@' or arch == '':
             manifest['architecture'] = self.config.arch
             return True
 
@@ -115,7 +115,7 @@ class BuildCommand(Command):
     def set_framework(self, manifest):
         framework = manifest.get('framework', None)
 
-        if framework == '@CLICK_FRAMEWORK@':
+        if framework == '@CLICK_FRAMEWORK@' or framework == '':
             manifest['framework'] = self.config.framework
             return True
 
