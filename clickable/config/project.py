@@ -105,7 +105,7 @@ class ProjectConfig(object):
 
         self.set_default_config()
         self.parse_configs(args, commands)
-        self.check_home()
+        self.check_paths()
         self.set_builder_interactive()
         self.set_conditional_defaults()
         self.setup()
@@ -684,12 +684,15 @@ class ProjectConfig(object):
             if self.config['install_qml']:
                 logger.warning("Be aware that QML modules are going to be installed to {}, which is not part of 'QML2_IMPORT_PATH' at runtime.".format(self.config['app_qml_dir']))
 
-    def check_home(self):
-        if not self.is_build_cmd():
-            return
-
-        if os.path.normpath(self.cwd) == os.path.normpath(os.path.expanduser('~')):
+    def check_paths(self):
+        if self.is_build_cmd() and os.path.normpath(self.cwd) == os.path.normpath(os.path.expanduser('~')):
             raise ClickableException('Your are running a build command in your home directory.\nPlease navigate to an existing project or run "clickable create".')
+
+        if os.path.normpath(self.config['build_dir']) == os.path.normpath(self.config['root_dir']):
+            raise ClickableException('Your "build_dir" is configured to be the same as your project "root_dir".\nPlease configure a sub-directory to avoid deleting your project on cleaning.')
+
+        if os.path.normpath(self.config['build_dir']) == os.path.normpath(self.config['src_dir']):
+            raise ClickableException('Your "build_dir" is configured to be the same as your "src_dir".\nPlease configure different paths to avoid deleting your sources on cleaning.')
 
     def check_builder_rules(self):
         if not self.needs_builder():
