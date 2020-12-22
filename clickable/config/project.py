@@ -721,7 +721,7 @@ class ProjectConfig(object):
             raise ClickableException("Valgrind debugging is only supported in desktop mode! Consider running 'clickable desktop --valgrind'")
 
         if self.debug_gdb and not self.is_desktop_mode():
-            raise ClickableException("GDB debugging is only supported in desktop mode! Consider running 'clickable desktop --gdb'")
+            raise ClickableException('"--gdb" and "--gdbserver" are flags for desktop mode. Use `clickable gdb` and `clickable gdbserver` for on-device debugging.')
 
         if self.is_desktop_mode():
             if self.use_nvidia and self.avoid_nvidia:
