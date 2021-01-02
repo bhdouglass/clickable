@@ -9,6 +9,8 @@ Getting Started
 At this point it is assumed that you have completed the :ref:`installation
 process <install>`
 
+To find out all supported command line arguments run ``clickable --help``.
+
 You can get started with using clickable with an existing Ubuntu Touch app.
 You can use clickable with apps generated from the old Ubuntu Touch SDK IDE
 or you can start fresh by running ``clickable create`` which is outlined in more
