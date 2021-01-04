@@ -3,6 +3,14 @@
 Changelog
 =========
 
+Changes in v6.22.0
+------------------
+
+- Added more docs and improved error messages
+- Added checks to avoid removing sources based on configuration
+- Added support for building against Qt 5.12 or Qt 5.9
+- Fixed rust problem when using nvidia
+
 Changes in v6.21.0
 ------------------
 

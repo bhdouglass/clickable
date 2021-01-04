@@ -1,3 +1,12 @@
+clickable (6.22.0) unstable; urgency=medium
+
+  * Added more docs and improved error messages
+  * Added checks to avoid removing sources based on configuration
+  * Added support for building against Qt 5.12 or Qt 5.9
+  * Fixed rust problem when using nvidia
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sat, 19 Dec 2020 09:44:00 -0500
+
 clickable (6.21.0) unstable; urgency=medium
 
   * Added option to use an nvidia specific container for Clickable's ide feature
