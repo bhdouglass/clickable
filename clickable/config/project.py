@@ -30,6 +30,8 @@ class ProjectConfig(object):
 
     ENV_MAP = {
         'CLICKABLE_ARCH': 'restrict_arch_env',
+        'CLICKABLE_FRAMEWORK': 'framework',
+        'CLICKABLE_QT_VERSION': 'qt_version',
         'CLICKABLE_BUILDER': 'builder',
         'CLICKABLE_BUILD_DIR': 'build_dir',
         'CLICKABLE_DEFAULT': 'default',
@@ -43,6 +45,8 @@ class ProjectConfig(object):
     }
 
     static_placeholders = OrderedDict({
+        "SDK_FRAMEWORK": "framework",
+        "QT_VERSION": "qt_version",
         "ARCH_TRIPLET": "arch_triplet",
         "NUM_PROCS": "make_jobs",
         "ROOT": "root_dir",
@@ -105,7 +109,7 @@ class ProjectConfig(object):
 
         self.set_default_config()
         self.parse_configs(args, commands)
-        self.check_home()
+        self.check_paths()
         self.set_builder_interactive()
         self.set_conditional_defaults()
         self.setup()
@@ -158,6 +162,8 @@ class ProjectConfig(object):
             'test': 'qmltestrunner',
             'install_dir': '${BUILD_DIR}/install',
             'image_setup': {},
+            'qt_version': Constants.default_qt,
+            'framework': None,
         }
 
     def parse_configs(self, args, commands):
@@ -274,6 +280,15 @@ class ProjectConfig(object):
 
         self.config['make_jobs'] = str(self.config['make_jobs'])
 
+        if not self.config['framework']:
+            qt = self.config['qt_version']
+            framework = Constants.default_qt_framework_mapping.get(qt, None)
+
+            if not framework:
+                raise ClickableException('Qt version "{}" is not known to Clickable'.format(qt))
+
+            self.config['framework'] = framework
+
     def setup_image(self):
         self.set_build_arch()
 
@@ -289,10 +304,13 @@ class ProjectConfig(object):
             if self.is_ide_command() and not self.use_nvidia:
                 self.build_arch = "{}-ide".format(self.build_arch)
 
+            image_framework = Constants.framework_image_mapping.get(
+                    self.config['framework'], Constants.framework_fallback)
+
             container_mapping_host = Constants.container_mapping[self.host_arch]
-            if ('16.04', self.build_arch) not in container_mapping_host:
-                raise ClickableException('There is currently no docker image for 16.04/{}'.format(self.build_arch))
-            self.config['docker_image'] = container_mapping_host[('16.04', self.build_arch)]
+            if (image_framework, self.build_arch) not in container_mapping_host:
+                raise ClickableException('There is currently no docker image for {}/{}'.format(image_framework, self.build_arch))
+            self.config['docker_image'] = container_mapping_host[(image_framework, self.build_arch)]
             self.container_list = list(container_mapping_host.values())
 
     def setup_helpers(self):
@@ -684,12 +702,15 @@ class ProjectConfig(object):
             if self.config['install_qml']:
                 logger.warning("Be aware that QML modules are going to be installed to {}, which is not part of 'QML2_IMPORT_PATH' at runtime.".format(self.config['app_qml_dir']))
 
-    def check_home(self):
-        if not self.is_build_cmd():
-            return
-
-        if os.path.normpath(self.cwd) == os.path.normpath(os.path.expanduser('~')):
+    def check_paths(self):
+        if self.is_build_cmd() and os.path.normpath(self.cwd) == os.path.normpath(os.path.expanduser('~')):
             raise ClickableException('Your are running a build command in your home directory.\nPlease navigate to an existing project or run "clickable create".')
+
+        if os.path.normpath(self.config['build_dir']) == os.path.normpath(self.config['root_dir']):
+            raise ClickableException('Your "build_dir" is configured to be the same as your project "root_dir".\nPlease configure a sub-directory to avoid deleting your project on cleaning.')
+
+        if os.path.normpath(self.config['build_dir']) == os.path.normpath(self.config['src_dir']):
+            raise ClickableException('Your "build_dir" is configured to be the same as your "src_dir".\nPlease configure different paths to avoid deleting your sources on cleaning.')
 
     def check_builder_rules(self):
         if not self.needs_builder():
@@ -721,7 +742,7 @@ class ProjectConfig(object):
             raise ClickableException("Valgrind debugging is only supported in desktop mode! Consider running 'clickable desktop --valgrind'")
 
         if self.debug_gdb and not self.is_desktop_mode():
-            raise ClickableException("GDB debugging is only supported in desktop mode! Consider running 'clickable desktop --gdb'")
+            raise ClickableException('"--gdb" and "--gdbserver" are flags for desktop mode. Use `clickable gdb` and `clickable gdbserver` for on-device debugging.')
 
         if self.is_desktop_mode():
             if self.use_nvidia and self.avoid_nvidia:
