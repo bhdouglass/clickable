@@ -43,12 +43,14 @@ class LibConfig(object):
     container_mode = False
     use_nvidia = False
     gopath = None
+    verbose = False
 
-    def __init__(self, name, json_config, arch, root_dir, debug_build):
+    def __init__(self, name, json_config, arch, root_dir, debug_build, verbose):
         # Must come after ARCH_TRIPLET to avoid breaking it
         self.placeholders.update({"ARCH": "arch"})
 
         self.debug_build = debug_build
+        self.verbose = verbose
 
         self.set_host_arch()
         self.container_list = list(Constants.container_mapping[self.host_arch].values())
