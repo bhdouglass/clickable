@@ -211,6 +211,7 @@
           "build_dir": {"type": "string"},
           "src_dir": {"type": "string"},
           "install_dir": {"type": "string"},
+          "test": {"type": "string"},
           "image_setup": {
             "type": ["object"],
             "properties": {

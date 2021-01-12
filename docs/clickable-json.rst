@@ -476,7 +476,7 @@ It's a dictionary of dictionaries similar to the clickable.json itself. Example:
         }
     }
 
-The keywords ``install_dir``, ``prebuild``, ``build``, ``postbuild``,
+The keywords ``test``, ``install_dir``, ``prebuild``, ``build``, ``postbuild``,
 ``postmake``, ``make_jobs``, ``make_args``, ``env_vars``, ``build_args``, ``docker_image``,
 ``dependencies_host``, ``dependencies_target`` and ``dependencies_ppa``,
 can be used for a library the same way as described above for the app.
@@ -490,9 +490,11 @@ Placeholder   Output
 NAME          The library name (key name in the ``libraries`` dictionary)
 ============= ======
 
-A single library can be build by specifying its name as ``clickable build-libs lib1 --arch arm64``
-to build the library with name ``lib1`` for the architecture ``arm64``.
+A single library can be build by specifying its name as
+``clickable build-libs lib1 --arch arm64`` to build the library with name
+``lib1`` for the architecture ``arm64``.
 ``clickable clean-libs lib1 --arch arm64`` cleans the libraries build dir.
+``clickable test-libs lib1`` tests the library.
 
 builder
 ^^^^^^^
