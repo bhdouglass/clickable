@@ -625,7 +625,7 @@ class ProjectConfig(object):
         return self.config["builder"] in Constants.arch_agnostic_builders
 
     def is_desktop_mode(self):
-        return bool(set(['desktop', 'test', 'ide']).intersection(self.commands))
+        return bool(set(['desktop', 'test-libs', 'test', 'ide']).intersection(self.commands))
 
     def is_ide_command(self):
         return "ide" in self.commands

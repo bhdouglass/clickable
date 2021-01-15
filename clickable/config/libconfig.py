@@ -78,6 +78,7 @@ class LibConfig(object):
             'make_args': [],
             'install_dir': '${BUILD_DIR}/install',
             'image_setup': {},
+            'test': 'ctest',
         }
 
         # TODO remove support for deprecated "template" in clickable.json
