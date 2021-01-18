@@ -18,20 +18,20 @@ class Constants(object):
 
     container_mapping = {
         "armhf": {
-            ('16.04.4', 'armhf'): 'clickable/armhf-16.04-armhf:16.04.4',
+            ('16.04.4', 'armhf'): 'clickable/armhf-16.04-armhf:16.04.4-qt5.9',
             ('16.04.5', 'armhf'): 'clickable/armhf-16.04-armhf:16.04.5',
         },
         "arm64": {
-            ('16.04.4', 'arm64'): 'clickable/arm64-16.04-arm64:16.04.4',
+            ('16.04.4', 'arm64'): 'clickable/arm64-16.04-arm64:16.04.4-qt5.9',
             ('16.04.5', 'arm64'): 'clickable/arm64-16.04-arm64:16.04.5',
         },
         "amd64": {
-            ('16.04.4', 'armhf'): 'clickable/amd64-16.04-armhf:16.04.4',
-            ('16.04.4', 'arm64'): 'clickable/amd64-16.04-arm64:16.04.4',
-            ('16.04.4', 'amd64'): 'clickable/amd64-16.04-amd64:16.04.4',
-            ('16.04.4', 'amd64-nvidia'): 'clickable/amd64-16.04-amd64-nvidia:16.04.4',
-            ('16.04.4', 'amd64-ide'): 'clickable/amd64-16.04-amd64-ide:16.04.4',
-            ('16.04.4', 'amd64-nvidia-ide'): 'clickable/amd64-16.04-amd64-nvidia-ide:16.04.4',
+            ('16.04.4', 'armhf'): 'clickable/amd64-16.04-armhf:16.04.4-qt5.9',
+            ('16.04.4', 'arm64'): 'clickable/amd64-16.04-arm64:16.04.4-qt5.9',
+            ('16.04.4', 'amd64'): 'clickable/amd64-16.04-amd64:16.04.4-qt5.9',
+            ('16.04.4', 'amd64-nvidia'): 'clickable/amd64-16.04-amd64-nvidia:16.04.4-qt5.9',
+            ('16.04.4', 'amd64-ide'): 'clickable/amd64-16.04-amd64-ide:16.04.4-qt5.9',
+            ('16.04.4', 'amd64-nvidia-ide'): 'clickable/amd64-16.04-amd64-nvidia-ide:16.04.4-qt5.9',
             ('16.04.5', 'armhf'): 'clickable/amd64-16.04-armhf:16.04.5',
             ('16.04.5', 'arm64'): 'clickable/amd64-16.04-arm64:16.04.5',
             ('16.04.5', 'amd64'): 'clickable/amd64-16.04-amd64:16.04.5',
