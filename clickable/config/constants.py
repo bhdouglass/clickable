@@ -18,42 +18,43 @@ class Constants(object):
 
     container_mapping = {
         "armhf": {
-            ('16.04.3', 'armhf'): 'clickable/armhf-16.04-armhf',
             ('16.04.4', 'armhf'): 'clickable/armhf-16.04-armhf:16.04.4',
+            ('16.04.5', 'armhf'): 'clickable/armhf-16.04-armhf:16.04.5',
         },
         "arm64": {
-            ('16.04.3', 'arm64'): 'clickable/arm64-16.04-arm64',
             ('16.04.4', 'arm64'): 'clickable/arm64-16.04-arm64:16.04.4',
+            ('16.04.5', 'arm64'): 'clickable/arm64-16.04-arm64:16.04.5',
         },
         "amd64": {
-            ('16.04.3', 'armhf'): 'clickable/amd64-16.04-armhf',
-            ('16.04.3', 'arm64'): 'clickable/amd64-16.04-arm64',
-            ('16.04.3', 'amd64'): 'clickable/amd64-16.04-amd64',
-            ('16.04.3', 'amd64-nvidia'): 'clickable/amd64-16.04-amd64-nvidia',
-            ('16.04.3', 'amd64-ide'): 'clickable/amd64-16.04-amd64-ide',
-            ('16.04.3', 'amd64-nvidia-ide'): 'clickable/amd64-16.04-amd64-nvidia-ide',
             ('16.04.4', 'armhf'): 'clickable/amd64-16.04-armhf:16.04.4',
             ('16.04.4', 'arm64'): 'clickable/amd64-16.04-arm64:16.04.4',
             ('16.04.4', 'amd64'): 'clickable/amd64-16.04-amd64:16.04.4',
             ('16.04.4', 'amd64-nvidia'): 'clickable/amd64-16.04-amd64-nvidia:16.04.4',
             ('16.04.4', 'amd64-ide'): 'clickable/amd64-16.04-amd64-ide:16.04.4',
             ('16.04.4', 'amd64-nvidia-ide'): 'clickable/amd64-16.04-amd64-nvidia-ide:16.04.4',
+            ('16.04.5', 'armhf'): 'clickable/amd64-16.04-armhf:16.04.5',
+            ('16.04.5', 'arm64'): 'clickable/amd64-16.04-arm64:16.04.5',
+            ('16.04.5', 'amd64'): 'clickable/amd64-16.04-amd64:16.04.5',
+            ('16.04.5', 'amd64-nvidia'): 'clickable/amd64-16.04-amd64-nvidia:16.04.5',
+            ('16.04.5', 'amd64-ide'): 'clickable/amd64-16.04-amd64-ide:16.04.5',
+            ('16.04.5', 'amd64-nvidia-ide'): 'clickable/amd64-16.04-amd64-nvidia-ide:16.04.5',
         }
     }
 
     framework_image_mapping = {
-        "ubuntu-sdk-16.04": "16.04.3",
-        "ubuntu-sdk-16.04.1": "16.04.3",
-        "ubuntu-sdk-16.04.2": "16.04.3",
-        "ubuntu-sdk-16.04.3": "16.04.3",
+        "ubuntu-sdk-16.04": "16.04.4",
+        "ubuntu-sdk-16.04.1": "16.04.4",
+        "ubuntu-sdk-16.04.2": "16.04.4",
+        "ubuntu-sdk-16.04.3": "16.04.4",
         "ubuntu-sdk-16.04.4": "16.04.4",
+        "ubuntu-sdk-16.04.5": "16.04.5",
     }
 
-    framework_fallback = "16.04.4"
+    framework_fallback = "16.04.5"
 
     default_qt_framework_mapping = {
-        '5.9': 'ubuntu-sdk-16.04.3',
-        '5.12': 'ubuntu-sdk-16.04.4',
+        '5.9': 'ubuntu-sdk-16.04.4',
+        '5.12': 'ubuntu-sdk-16.04.5',
     }
 
     default_qt = '5.9'

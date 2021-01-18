@@ -24,7 +24,7 @@ from clickable.exceptions import ClickableException
 
 
 __version__ = '6.22.0'
-__container_minimum_required__ = 2
+__container_minimum_required__ = 3
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
