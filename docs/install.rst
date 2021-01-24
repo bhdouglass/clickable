@@ -8,9 +8,11 @@ Install Via Pip (Recommended)
 
 * Install docker, adb, git, python3 and pip3
   (in Ubuntu: ``sudo apt install docker.io adb git python3 python3-pip python3-setuptools``)
-* Run: ``pip3 install --user --upgrade clickable-ut``
+* Run: ``pip3 install --user clickable-ut``
 * Add pip scripts to your PATH: ``echo 'export PATH="$PATH:~/.local/bin"' >> ~/.bashrc`` and open a new terminal for the setting to take effect
 * Alternatively, to install nightly builds: ``pip3 install --user git+https://gitlab.com/clickable/clickable.git@dev``
+
+To update Clickable via pip, run the same command as for installing, adding ``--upgrade``.
 
 Install Via PPA (Ubuntu)
 ------------------------
