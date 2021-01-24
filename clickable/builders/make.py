@@ -21,6 +21,9 @@ class MakeBuilder(Builder):
         if self.config.make_args:
             command = '{} {}'.format(command, ' '.join(self.config.make_args))
 
+        if self.config.verbose:
+            command = '{} {}'.format(command, 'VERBOSE=1')
+
         self.config.container.run_command(command)
 
     def make_install(self):

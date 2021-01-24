@@ -4,9 +4,17 @@ import argparse
 import sys
 import inspect
 import glob
-from os.path import dirname, basename, isfile, join
+from os.path import dirname, basename, isfile, join, expanduser
 import subprocess
 import logging
+from datetime import datetime, timedelta
+import json
+
+requests_available = True
+try:
+    import requests
+except ImportError:
+    requests_available = False
 
 from clickable.commands.base import Command
 from clickable.config.project import ProjectConfig
@@ -15,8 +23,10 @@ from clickable.logger import logger, log_file, console_handler
 from clickable.exceptions import ClickableException
 
 
-__version__ = '6.22.0'
-__container_minimum_required__ = 2
+__version__ = '6.23.0'
+__container_minimum_required__ = 3
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
 
 
 class Clickable(object):
@@ -61,9 +71,13 @@ class Clickable(object):
     @staticmethod
     def create_parser(help_msg):
         parser = argparse.ArgumentParser(description='clickable')
-        parser.add_argument('--version', '-v', action='version',
-                            version='%(prog)s ' + __version__)
         parser.add_argument('commands', nargs='*', help=help_msg)
+        parser.add_argument(
+            '--version',
+            '-v',
+            help='Displays the version number',
+            action='store_true'
+        )
         parser.add_argument(
             '--serial-number',
             '-s',
@@ -193,6 +207,10 @@ class Clickable(object):
             parser.print_help()
             sys.exit(0)
 
+        if args.version:
+            self.show_version()
+            sys.exit(0)
+
         return args
 
     def setup_config(self, args, commands):
@@ -201,6 +219,61 @@ class Clickable(object):
             clickable_version=__version__,
             commands=commands,
         )
+
+    def show_version(self):
+        logger.info('clickable ' + __version__)
+        self.check_version()
+
+    def check_version(self, quiet=False):
+        if requests_available:
+            version = None
+            check = True
+            version_check = expanduser('~/.clickable/version_check.json')
+            if isfile(version_check):
+                with open(version_check, 'r') as f:
+                    try:
+                        version_check_data = json.load(f)
+                    except ValueError:
+                        version_check_data = None
+
+                if version_check_data and 'version' in version_check_data and 'datetime' in version_check_data:
+                    last_check = datetime.strptime(version_check_data['datetime'], DATE_FORMAT)
+                    if last_check > (datetime.now() - timedelta(days=2)):
+                        check = False
+                        version = version_check_data['version']
+
+            if check:
+                try:
+                    response = requests.get(
+                        'https://clickable-ut.dev/en/latest/_static/version.json',
+                        timeout=5
+                    )
+                    response.raise_for_status()
+
+                    data = response.json()
+                    version = data['version']
+                except requests.exceptions.Timeout as e:
+                    logger.warning('Unable to check for updates to clickable, the request timedout')
+                except Exception as e:
+                    logger.debug('Version check failed:' + str(e.cmd), exc_info=e)
+                    logger.warning('Unable to check for updates to clickable, an unknown error occurred')
+
+                if version:
+                    with open(version_check, 'w') as f:
+                        json.dump({
+                            'version': version,
+                            'datetime': datetime.now().strftime(DATE_FORMAT)
+                        }, f)
+
+            if version:
+                if version != __version__:
+                    logger.info('v{} of clickable is available, update to get the latest features and improvements!'.format(version))
+                else:
+                    if not quiet:
+                        logger.info('You are running the latest version of clickable!')
+        else:
+            if not quiet:
+                logger.warning('Unable to check for updates to clickable, please install "requests"')
 
     def run(self, arg_commands=[], args=None):
         self.config = self.setup_config(args, arg_commands)
@@ -270,6 +343,7 @@ def main():
     if args.verbose:
         console_handler.setLevel(logging.DEBUG)
     logger.debug('Clickable v' + __version__)
+    clickable.check_version(quiet=True)
 
     try:
         clickable.run(args.commands, args)

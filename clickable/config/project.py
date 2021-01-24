@@ -581,7 +581,8 @@ class ProjectConfig(object):
                 lib,
                 self.config['arch'],
                 self.config['root_dir'],
-                self.debug_build
+                self.debug_build,
+                self.verbose
             ) for name, lib in self.config['libraries'].items()
         ]
 

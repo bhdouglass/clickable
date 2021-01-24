@@ -3,6 +3,14 @@
 Changelog
 =========
 
+Changes in v6.23.0
+------------------
+
+- Added new test-libs command to run tests on libs
+- When using the verbosity flag make commands will also be verbose
+- Fixed Qt version to Ubuntu framework mapping
+- Added new version checker
+
 Changes in v6.22.0
 ------------------
 

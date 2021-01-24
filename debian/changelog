@@ -1,3 +1,12 @@
+clickable (6.23.0) unstable; urgency=medium
+
+  * Added new test-libs command to run tests on libs
+  * When using the verbosity flag make commands will also be verbose
+  * Fixed Qt version to Ubuntu framework mapping
+  * Added new version checker
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sat, 23 Jan 2020 09:32:00 -0500
+
 clickable (6.22.0) unstable; urgency=medium
 
   * Added more docs and improved error messages
