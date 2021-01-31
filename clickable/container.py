@@ -6,6 +6,7 @@ import shutil
 import getpass
 import uuid
 import sys
+import json
 
 from clickable.utils import (
     run_subprocess_call,
@@ -33,34 +34,49 @@ class Container(object):
             if name:
                 self.clickable_dir = '{}/{}'.format(self.clickable_dir, name)
 
-            self.docker_name_file = '{}/name.txt'.format(self.clickable_dir)
+            self.docker_name_file = '{}/image.json'.format(self.clickable_dir)
             self.docker_file = '{}/Dockerfile'.format(self.clickable_dir)
 
             if self.needs_customized_container():
-                self.restore_cached_container()
+                self.restore_cached_image()
 
-    def restore_cached_container(self):
+    def restore_cached_image(self):
         if not os.path.exists(self.docker_name_file):
             return
 
         with open(self.docker_name_file, 'r') as f:
-            cached_container = f.read().strip()
+            cached_image = None
+            cached_base_image = None
 
-            if not image_exists(cached_container):
+            try:
+                image_file = json.load(f)
+                cached_image = image_file.get('name', None)
+                cached_base_image = image_file.get('base_image', None)
+            except ValueError:
+                pass
+
+            if not cached_image:
+                logger.warning("Cached image file is invalid")
+                return
+
+            if not image_exists(cached_image):
                 logger.warning("Cached container does not exist anymore")
                 return
+
+            if self.base_docker_image != cached_base_image:
+                logger.warning("Cached image has a different base image")
 
             self.check_docker()
 
             command_base = 'docker images -q {}'.format(self.base_docker_image)
-            command_cached = 'docker history -q {}'.format(cached_container)
+            command_cached = 'docker history -q {}'.format(cached_image)
 
             hash_base = run_subprocess_check_output(command_base).strip()
             history_cached = run_subprocess_check_output(command_cached).strip()
 
             if hash_base in history_cached:
                 logger.debug("Found cached container")
-                self.docker_image = cached_container
+                self.docker_image = cached_image
             else:
                 logger.warning("Cached container is outdated")
 
@@ -294,7 +310,10 @@ FROM {}
 
         self.docker_image = '{}-{}'.format(self.base_docker_image, uuid.uuid4())
         with open(self.docker_name_file, 'w') as f:
-            f.write(self.docker_image)
+            json.dump({
+                'name': self.docker_image,
+                'base_image': self.base_docker_image,
+            },f)
 
         logger.debug('Generating new docker image')
         try:
