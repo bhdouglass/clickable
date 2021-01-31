@@ -3,6 +3,12 @@
 Changelog
 =========
 
+Changes in v6.23.1
+------------------
+
+- Improved the Qt 5.9 docker images
+- Rebuild docker images if the base image changes
+
 Changes in v6.23.0
 ------------------
 

@@ -1,3 +1,10 @@
+clickable (6.23.1) unstable; urgency=medium
+
+  * Improved the Qt 5.9 docker images
+  * Rebuild docker images if the base image changes
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Sat, 30 Jan 2020 23:34:00 -0500
+
 clickable (6.23.0) unstable; urgency=medium
 
   * Added new test-libs command to run tests on libs
