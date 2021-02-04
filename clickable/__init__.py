@@ -238,11 +238,17 @@ class Clickable(object):
 
                 if version_check_data and 'version' in version_check_data and 'datetime' in version_check_data:
                     last_check = datetime.strptime(version_check_data['datetime'], DATE_FORMAT)
-                    if last_check > (datetime.now() - timedelta(days=2)):
+                    if last_check > (datetime.now() - timedelta(days=2)) and \
+                        'current_version' in version_check_data and \
+                        version_check_data['current_version'] == __version__:
+
                         check = False
                         version = version_check_data['version']
+                        logger.debug('Using cached version check')
 
             if check:
+                logger.debug('Checking for updates to clickable')
+
                 try:
                     response = requests.get(
                         'https://clickable-ut.dev/en/latest/_static/version.json',
@@ -262,7 +268,8 @@ class Clickable(object):
                     with open(version_check, 'w') as f:
                         json.dump({
                             'version': version,
-                            'datetime': datetime.now().strftime(DATE_FORMAT)
+                            'datetime': datetime.now().strftime(DATE_FORMAT),
+                            'current_version': __version__,
                         }, f)
 
             if version:
