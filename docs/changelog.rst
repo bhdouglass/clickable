@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.23.2
+------------------
+
+- Fixed version checker
+
 Changes in v6.23.1
 ------------------
 

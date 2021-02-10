@@ -35,3 +35,4 @@ publish xenial
 publish bionic
 publish focal
 publish groovy
+publish hirsute
