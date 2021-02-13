@@ -1,6 +1,7 @@
 clickable (6.23.2) unstable; urgency=medium
 
   * Fixed version checker
+  * Fixed update command
 
  -- Brian Douglass <bhdouglass@gmail.com>  Wed, 10 Feb 2020 08:00:00 -0500
 

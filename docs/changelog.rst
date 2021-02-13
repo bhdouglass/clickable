@@ -7,6 +7,7 @@ Changes in v6.23.2
 ------------------
 
 - Fixed version checker
+- Fixed update command
 
 Changes in v6.23.1
 ------------------
