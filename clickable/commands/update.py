@@ -1,6 +1,7 @@
 import subprocess
 import shlex
 
+from clickable.config.constants import Constants
 from .base import Command
 from clickable.utils import (
     run_subprocess_check_call,
@@ -22,5 +23,6 @@ class UpdateCommand(Command):
     def run(self, path_arg=None):
         self.config.container.check_docker()
 
-        for image in self.config.container_list:
+        container_mapping = Constants.container_mapping[self.config.host_arch]
+        for image in container_mapping.values():
             update_image(image)
