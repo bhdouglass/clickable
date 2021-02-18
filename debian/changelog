@@ -1,3 +1,10 @@
+clickable (6.23.3) unstable; urgency=medium
+
+  * You can now specify a specific .pro file using the ``build_args`` setting
+  * Fixed using the wrong qmake binary when using Qt 5.12
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 17 Feb 2020 23:33:00 -0500
+
 clickable (6.23.2) unstable; urgency=medium
 
   * Fixed version checker
