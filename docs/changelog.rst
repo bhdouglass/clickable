@@ -6,8 +6,8 @@ Changelog
 Changes in v6.23.3
 ------------------
 
-- You can now specify a specific .pro file using the ``build_args`` setting
-- Fixed using the wrong qmake binary when using Qt 5.12
+- When using the qmake builder a specific .pro file can be specified using the ``build_args`` setting
+- Fixed cross-compiling for armhf with qmake when using Qt 5.12
 
 Changes in v6.23.2
 ------------------
