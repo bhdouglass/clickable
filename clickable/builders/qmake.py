@@ -39,6 +39,10 @@ class QMakeBuilder(MakeBuilder):
         if self.config.debug_build:
             command = '{} {}'.format(command, 'CONFIG+=debug')
 
-        self.config.container.run_command('{} {}'.format(command, self.config.src_dir))
+        # user may have defined a specific .pro file, so qmake must not read others (if any)
+        if not any(arg.endswith(".pro") for arg in self.config.build_args):
+            command = '{} {}'.format(command, self.config.src_dir)
+
+        self.config.container.run_command(command)
 
         super().build()
