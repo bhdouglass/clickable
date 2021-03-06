@@ -581,8 +581,9 @@ class ProjectConfig(object):
                 lib,
                 self.config['arch'],
                 self.config['root_dir'],
+                self.config['qt_version'],
                 self.debug_build,
-                self.verbose
+                self.verbose,
             ) for name, lib in self.config['libraries'].items()
         ]
 

@@ -45,10 +45,11 @@ class LibConfig(object):
     gopath = None
     verbose = False
 
-    def __init__(self, name, json_config, arch, root_dir, debug_build, verbose):
+    def __init__(self, name, json_config, arch, root_dir, qt_version, debug_build, verbose):
         # Must come after ARCH_TRIPLET to avoid breaking it
         self.placeholders.update({"ARCH": "arch"})
 
+        self.qt_version = qt_version
         self.debug_build = debug_build
         self.verbose = verbose
 
