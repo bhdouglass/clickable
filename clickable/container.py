@@ -165,26 +165,66 @@ class Container(object):
                         os.remove(dst_path)
                     shutil.copy(f, dst_parent, follow_symlinks=False)
         else:  # Docker
-            command_create = 'docker create -v {}:{}:Z {}'.format(
-                    self.config.root_dir,
-                    self.config.root_dir,
-                    self.docker_image
-            )
+            mounts = self.render_mounts(
+                self.get_docker_mounts(transparent=[self.config.root_dir]))
+            command_create = 'docker create {} {}'.format(
+                mounts, self.docker_image)
             container = run_subprocess_check_output(command_create).strip()
 
             for f in files:
                 command_copy = 'docker cp {}:{} {}'.format(
-                    container,
-                    f,
-                    dst_parent
-                )
+                    container, f, dst_parent)
                 run_subprocess_check_call(command_copy)
 
             command_remove = 'docker rm {}'.format(container)
-            run_subprocess_check_call(command_remove, stdout=subprocess.DEVNULL)
+            run_subprocess_check_call(command_remove,
+                                      stdout=subprocess.DEVNULL)
 
-    def run_command(self, command, root_user=False, get_output=False,
-            use_build_dir=True, cwd=None, tty=False, localhost=False):
+    def get_docker_mounts(self, transparent=[]):
+        # container path is key, host path is value
+        mounts = {}
+
+        if self.config.builder == Constants.GO and self.config.gopath:
+            gopaths = self.config.gopath.split(':')
+            for (index, path) in enumerate(gopaths):
+                mounts['/gopath/path{}'.format(index)] = path
+
+        if self.config.builder == Constants.RUST and self.config.cargo_home:
+            cargo_registry = os.path.join(self.config.cargo_home, 'registry')
+            cargo_git = os.path.join(self.config.cargo_home, 'git')
+            cargo_package_cache_lock = os.path.join(self.config.cargo_home,
+                                                    '.package-cache')
+
+            os.makedirs(cargo_registry, exist_ok=True)
+            os.makedirs(cargo_git, exist_ok=True)
+
+            # create .package-cache if it doesn't exist
+            with open(cargo_package_cache_lock, "a"):
+                pass
+
+            mounts['/opt/rust/cargo/registry'] = cargo_registry
+            mounts['/opt/rust/cargo/git'] = cargo_git
+            mounts['/opt/rust/cargo/.package-cache'] = cargo_package_cache_lock
+
+        for path in transparent:
+            mounts[path] = path
+
+        return mounts
+
+    def render_mounts(self, mounts):
+        return " ".join([
+            "-v {}:{}:Z".format(host, container)
+            for container, host in mounts.items()
+        ])
+
+    def run_command(self,
+                    command,
+                    root_user=False,
+                    get_output=False,
+                    use_build_dir=True,
+                    cwd=None,
+                    tty=False,
+                    localhost=False):
         wrapped_command = command
         cwd = cwd if cwd else os.path.abspath(self.config.root_dir)
 
@@ -201,40 +241,19 @@ class Container(object):
                 self.config.first_docker_info = False
 
             go_config = ''
-            if self.config.gopath:
+            if self.config.builder == Constants.GO and self.config.gopath:
                 gopaths = self.config.gopath.split(':')
-
-                docker_gopaths = []
-                go_configs = []
-                for (index, path) in enumerate(gopaths):
-                    go_configs.append('-v {}:/gopath/path{}:Z'.format(path, index))
-                    docker_gopaths.append('/gopath/path{}'.format(index))
-
-                go_config = '{} -e GOPATH={}'.format(
-                    ' '.join(go_configs),
-                    ':'.join(docker_gopaths),
-                )
+                docker_gopaths = [
+                    '/gopath/path{}'.format(index)
+                    for index in range(len(gopaths))
+                ]
+                go_config = '-e GOPATH={}'.format(':'.join(docker_gopaths), )
 
             rust_config = ''
 
             if self.config.builder == Constants.RUST and self.config.cargo_home:
-                logger.info("Caching cargo related files in {}".format(self.config.cargo_home))
-                cargo_registry = os.path.join(self.config.cargo_home, 'registry')
-                cargo_git = os.path.join(self.config.cargo_home, 'git')
-                cargo_package_cache_lock = os.path.join(self.config.cargo_home, '.package-cache')
-
-                os.makedirs(cargo_registry, exist_ok=True)
-                os.makedirs(cargo_git, exist_ok=True)
-
-                # create .package-cache if it doesn't exist
-                with open(cargo_package_cache_lock, "a"):
-                    pass
-
-                rust_config = '-v {}:/opt/rust/cargo/registry:Z -v {}:/opt/rust/cargo/git:Z -v {}:/opt/rust/cargo/.package-cache'.format(
-                    cargo_registry,
-                    cargo_git,
-                    cargo_package_cache_lock,
-                )
+                logger.info("Caching cargo related files in {}".format(
+                    self.config.cargo_home))
 
             env_vars = self.config.prepare_docker_env_vars()
 
@@ -242,8 +261,11 @@ class Container(object):
             if not root_user:
                 user = "-u {}".format(os.getuid())
 
-            wrapped_command = 'docker run -v {project}:{project}:Z {env} {go} {rust} {user} -w {cwd} --rm {tty} {network} -i {image} bash -c "{cmd}"'.format(
-                project=cwd,
+            mounts = self.render_mounts(
+                self.get_docker_mounts(transparent=[cwd]))
+
+            wrapped_command = 'docker run {mounts} {env} {go} {rust} {user} -w {cwd} --rm {tty} {network} -i {image} bash -c "{cmd}"'.format(
+                mounts=mounts,
                 env=env_vars,
                 go=go_config,
                 rust=rust_config,
