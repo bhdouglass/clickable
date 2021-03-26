@@ -1,3 +1,9 @@
+clickable (6.24.0) unstable; urgency=medium
+
+  * Switched to use Qt 5.12 by default
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Fri, 26 Mar 2020 18:18:00 -0500
+
 clickable (6.23.3) unstable; urgency=medium
 
   * When using the qmake builder a specific .pro file can be specified using the build_args setting

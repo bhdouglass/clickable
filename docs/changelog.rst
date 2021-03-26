@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.24.0
+------------------
+
+- Switched to use Qt 5.12 by default
+
 Changes in v6.23.3
 ------------------
 

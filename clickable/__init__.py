@@ -23,7 +23,7 @@ from clickable.logger import logger, log_file, console_handler
 from clickable.exceptions import ClickableException
 
 
-__version__ = '6.23.3'
+__version__ = '6.24.0'
 __container_minimum_required__ = 4
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
