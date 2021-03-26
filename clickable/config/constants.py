@@ -57,7 +57,7 @@ class Constants(object):
         '5.12': 'ubuntu-sdk-16.04.5',
     }
 
-    default_qt = '5.9'
+    default_qt = '5.12'
 
     arch_triplet_mapping = {
         'armhf': 'arm-linux-gnueabihf',
