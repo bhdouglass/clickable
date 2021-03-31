@@ -400,7 +400,7 @@ docker_image
 
 Optional, the name of a docker image to use. When building a custom docker image
 it's recommended to use one of the Clickable images as a base. You can find them
-on `Docker Hub <https://hub.docker.com/r/clickable/ubuntu-sdk/tags/>`__.
+on `Docker Hub <https://hub.docker.com/u/clickable>`__.
 
 ignore
 ------
