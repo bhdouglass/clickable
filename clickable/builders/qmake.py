@@ -12,7 +12,7 @@ class QMakeBuilder(MakeBuilder):
         self.config.container.run_command('make INSTALL_ROOT={}/ install'.format(self.config.install_dir))
 
     def build(self):
-        if self.config.arch == self.config.host_arch or self.config.qt_version == "5.9":
+        if self.config.arch == self.config.host_arch or self.config.qt_version == "5.9" or self.config.arch == "all":
             command = 'qmake'
         else:
             command = '/usr/lib/{}/qt5/bin/qmake'.format(self.config.arch_triplet)
