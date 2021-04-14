@@ -54,6 +54,23 @@ On Ubuntu, install these requirements using ``apt install nvidia-modprobe nvidia
 
 On Ubuntu, install these requirements using ``apt install nvidia-container-toolkit``.
 
+To be able to install the nvidia-container-toolkit you have to perform the following commands
+(as mentioned on https://www.server-world.info/en/note?os=Ubuntu_20.04&p=nvidia&f=2):
+
+As root: 
+
+.. code-block:: bash
+
+   curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | apt-key add -
+
+   curl -s -L https://nvidia.github.io/nvidia-docker/ubuntu20.04/nvidia-docker.list > /etc/apt/sources.list.d/nvidia-docker.list
+
+   apt update
+
+   apt -y install nvidia-container-toolkit
+
+   systemctl restart docker
+
 Run clickable with the ``--verbose`` flag to see the executed command for your system.
 
 .. _commands-ide:
