@@ -40,23 +40,28 @@ Compile, build, and deploy Ubuntu Touch click packages all from the command line
 ## Code Editor Integrations
 
 Use clickable with the [Atom Editor](https://atom.io) by installing [atom-clickable-plugin](https://atom.io/packages/atom-clickable-plugin).
-This is an fork of the original (now unmaintained) [atom-build-clickable](https://atom.io/packages/atom-build-clickable) 
+This is an fork of the original (now unmaintained) [atom-build-clickable](https://atom.io/packages/atom-build-clickable)
 made by Stefano.
 
 ## Development
 
 ### Run clickable
 
-To test clickable, run `clickable-dev` from the repository root directory. To
-enable configuration validation either install **jsonschema** via pip
+Best add your clickable folder to `PATH`, so you don't need to run the clickable commands from the repo root.
+This can be done by adding `export PATH="$PATH:$HOME/clickable"` to your `.bashrc`.
+Replace `$HOME/clickable` with your path.
+
+To test clickable, run `clickable-dev`. Add the `--verbose` option for additional output.
+
+To enable configuration validation either install **jsonschema** via pip
 (`pip3 install jsonschema`) or apt (`apt install python3-jsonschema`). If you
 got clickable regularly installed, you already have jsonschema, too.
 
 ### Run the tests
 
-Install nose and the coverage modules: `pip3 install nose coverage`
+Install nose and the coverage modules: `pip3 install nose coverage`.
 
-Run nose to complete the tests: `nosetests`
+Run nose to complete the tests: `nosetests`.
 
 ### Related Repositories
 
