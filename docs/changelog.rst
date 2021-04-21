@@ -3,6 +3,11 @@
 Changelog
 =========
 
+Changes in v6.24.1
+------------------
+
+- Fixed qmake building a pure qml app
+
 Changes in v6.24.0
 ------------------
 

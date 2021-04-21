@@ -1,29 +1,35 @@
+clickable (6.24.1) unstable; urgency=medium
+
+  * Fixed qmake building a pure qml app
+
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 21 Apr 2021 16:27:00 -0500
+
 clickable (6.24.0) unstable; urgency=medium
 
   * Switched to use Qt 5.12 by default
 
- -- Brian Douglass <bhdouglass@gmail.com>  Fri, 26 Mar 2020 18:18:00 -0500
+ -- Brian Douglass <bhdouglass@gmail.com>  Fri, 26 Mar 2021 18:18:00 -0500
 
 clickable (6.23.3) unstable; urgency=medium
 
   * When using the qmake builder a specific .pro file can be specified using the build_args setting
   * Fixed cross-compiling for armhf with qmake when using Qt 5.12
 
- -- Brian Douglass <bhdouglass@gmail.com>  Wed, 17 Feb 2020 23:33:00 -0500
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 17 Feb 2021 23:33:00 -0500
 
 clickable (6.23.2) unstable; urgency=medium
 
   * Fixed version checker
   * Fixed image update
 
- -- Brian Douglass <bhdouglass@gmail.com>  Wed, 10 Feb 2020 08:00:00 -0500
+ -- Brian Douglass <bhdouglass@gmail.com>  Wed, 10 Feb 2021 08:00:00 -0500
 
 clickable (6.23.1) unstable; urgency=medium
 
   * Improved the Qt 5.9 docker images
   * Rebuild docker images if the base image changes
 
- -- Brian Douglass <bhdouglass@gmail.com>  Sat, 30 Jan 2020 23:34:00 -0500
+ -- Brian Douglass <bhdouglass@gmail.com>  Sat, 30 Jan 2021 23:34:00 -0500
 
 clickable (6.23.0) unstable; urgency=medium
 
@@ -32,7 +38,7 @@ clickable (6.23.0) unstable; urgency=medium
   * Fixed Qt version to Ubuntu framework mapping
   * Added new version checker
 
- -- Brian Douglass <bhdouglass@gmail.com>  Sat, 23 Jan 2020 09:32:00 -0500
+ -- Brian Douglass <bhdouglass@gmail.com>  Sat, 23 Jan 2021 09:32:00 -0500
 
 clickable (6.22.0) unstable; urgency=medium
 
