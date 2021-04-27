@@ -14,11 +14,95 @@ unit-test:
   script:
     - nosetests tests/unit
 
+build-deb:
+  stage: publish
+  image: clickable/build-deb:bionic
+  rules:
+    - if: $CI_COMMIT_TAG == null
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - ../*.deb
+  script:
+    - dpkg-buildpackage
+
 publish-pypi:
   stage: publish
-  image: clickable/build-deb:focal
-  only:
-    - tags
+  image: clickable/clickable-ci
+  rules:
+    - if: $CI_COMMIT_TAG
   script:
     - python3 setup.py sdist bdist_wheel
     - python3 -m twine upload dist/*
+
+publish-trusty:
+  stage: publish
+  image: clickable/build-deb:bionic
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo $GPG_PUBLIC > pub.gpg && gpg --import pub.gpg && rm pub.gpg
+    - echo $GPG_PRIVATE > pri.gpg && gpg --allow-secret-key-import --import pri.gpg && rm pri.gpg
+    - sed -i "s/) unstable/~trusty) trusty/g" debian/changelog
+    - debuild -S
+    - dput ppa:bhdouglass/clickable ../clickable_*_source.changes
+
+publish-xenial:
+  stage: publish
+  image: clickable/build-deb:bionic
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo $GPG_PUBLIC > pub.gpg && gpg --import pub.gpg && rm pub.gpg
+    - echo $GPG_PRIVATE > pri.gpg && gpg --allow-secret-key-import --import pri.gpg && rm pri.gpg
+    - sed -i "s/) unstable/~xenial) xenial/g" debian/changelog
+    - debuild -S
+    - dput ppa:bhdouglass/clickable ../clickable_*_source.changes
+
+publish-bionic:
+  stage: publish
+  image: clickable/build-deb:bionic
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo $GPG_PUBLIC > pub.gpg && gpg --import pub.gpg && rm pub.gpg
+    - echo $GPG_PRIVATE > pri.gpg && gpg --allow-secret-key-import --import pri.gpg && rm pri.gpg
+    - sed -i "s/) unstable/~bionic) bionic/g" debian/changelog
+    - debuild -S
+    - dput ppa:bhdouglass/clickable ../clickable_*_source.changes
+
+publish-focal:
+  stage: publish
+  image: clickable/build-deb:bionic
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo $GPG_PUBLIC > pub.gpg && gpg --import pub.gpg && rm pub.gpg
+    - echo $GPG_PRIVATE > pri.gpg && gpg --allow-secret-key-import --import pri.gpg && rm pri.gpg
+    - sed -i "s/) unstable/~focal) focal/g" debian/changelog
+    - debuild -S
+    - dput ppa:bhdouglass/clickable ../clickable_*_source.changes
+
+publish-groovy:
+  stage: publish
+  image: clickable/build-deb:bionic
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo $GPG_PUBLIC > pub.gpg && gpg --import pub.gpg && rm pub.gpg
+    - echo $GPG_PRIVATE > pri.gpg && gpg --allow-secret-key-import --import pri.gpg && rm pri.gpg
+    - sed -i "s/) unstable/~groovy) groovy/g" debian/changelog
+    - debuild -S
+    - dput ppa:bhdouglass/clickable ../clickable_*_source.changes
+
+publish-hirsute:
+  stage: publish
+  image: clickable/build-deb:bionic
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo $GPG_PUBLIC > pub.gpg && gpg --import pub.gpg && rm pub.gpg
+    - echo $GPG_PRIVATE > pri.gpg && gpg --allow-secret-key-import --import pri.gpg && rm pri.gpg
+    - sed -i "s/) unstable/~hirsute) hirsute/g" debian/changelog
+    - debuild -S
+    - dput ppa:bhdouglass/clickable ../clickable_*_source.changes
